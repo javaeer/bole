@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: server
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+  # 添加静态资源配置
+  web:
+    resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+  mvc:
+    static-path-pattern: /**
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    # 文件上传配置
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+# 添加应用信息配置（Knife4j 必需）
+info:
+  app:
+    name: server
+    version: 1.0.0
+    description: 伯乐简历后端服务
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    cn.net.yunlou.bole: DEBUG
+    org.springframework.security: DEBUG
+    org.springdoc: DEBUG
+    com.github.xiaoymin: DEBUG
+    org.springframework.web: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/bole-server.log
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: true
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted  # 逻辑删除字段
+      logic-delete-value: 1        # 逻辑已删除值
+      logic-not-delete-value: 0    # 逻辑未删除值
+      insert-strategy: not_null    # 插入策略
+      update-strategy: not_null    # 更新策略
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: cn.net.yunlou.bole.entity
+
+# 应用配置
+app:
+  config:
+    version: 1.0.0
+    name: 伯乐简历后端服务
+    upload:
+      max-file-size: 10MB
+      allowed-extensions: jpg,jpeg,png,pdf,doc,docx
+    security:
+      jwt-secret: bole-secret-key-2024-spring-boot-3-jwt-token
+      jwt-expiration: 86400000 # 24小时
+      token-prefix: "Bearer "
+      header: Authorization
