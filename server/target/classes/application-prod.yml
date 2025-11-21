@@ -1,0 +1,65 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:bole_resume_prod}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  # 关闭 JPA
+  jpa:
+    hibernate:
+      ddl-auto: none  # 使用 Flyway 管理数据库结构
+    show-sql: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+      timeout: 3000
+      jedis:
+        pool:
+          max-active: 50
+          max-wait: 3000
+          max-idle: 20
+          min-idle: 10
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+knife4j:
+  enable: false
+  production: true
+
+
+# 生产环境特定配置
+app:
+  config:
+    environment: prod
+    cors:
+      allowed-origins: "https://bole.com,https://www.bole.com,https://api.bole.com"
+      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+      allowed-headers: "*"
+      allow-credentials: true
+    file:
+      upload-dir: /app/uploads/
+      access-url: https://api.bole.com/uploads/
+
+# 生产环境日志配置
+logging:
+  level:
+    cn.net.yunlou.bole: INFO
+    org.springframework.security: WARN
+  file:
+    name: logs/bole-server.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
