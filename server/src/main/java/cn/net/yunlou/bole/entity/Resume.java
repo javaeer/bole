@@ -5,10 +5,11 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("resumes")
+@TableName("t_resumes")
 public class Resume extends BaseEntity {
 
     @TableField(value = "user_id")
@@ -48,16 +49,16 @@ public class Resume extends BaseEntity {
     private String salaryExpectation;
 
     @TableField(value = "status")
-    private String status = "DRAFT";
+    private String status;
 
     @TableField(value = "template_id")
     private Long templateId;
 
     @TableField(value = "view_count")
-    private Integer viewCount = 0;
+    private Integer viewCount;
 
     @TableField(value = "download_count")
-    private Integer downloadCount = 0;
+    private Integer downloadCount;
 
     // 非数据库字段 - 关联用户信息
     @TableField(exist = false)

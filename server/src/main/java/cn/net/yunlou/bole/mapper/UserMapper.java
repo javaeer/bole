@@ -4,7 +4,13 @@ import cn.net.yunlou.bole.common.IBaseMapper;
 import cn.net.yunlou.bole.entity.User;
 
 /**
- * FileName: UserMapper Description: Created By laughtiger Created At 2025/11/19 14:04 Modified By
+ * FileName: UserMapper
+ * Description:
+ * Created By laughtiger
+ * Created At 2025/11/19 14:04
+ *
+ * Modified By
  * Modified At
  */
-public interface UserMapper extends IBaseMapper<User> {}
+public interface UserMapper extends IBaseMapper<User> {
+}

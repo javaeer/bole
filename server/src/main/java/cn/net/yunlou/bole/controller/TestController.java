@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.controller;
 
-import cn.net.yunlou.bole.common.ApiResponse;
+import cn.net.yunlou.bole.common.BusinessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,17 +16,17 @@ public class TestController {
 
     @GetMapping("/hello")
     @Operation(summary = "Hello World", description = "一个简单的测试接口")
-    public ApiResponse<String> hello() {
-        return ApiResponse.success("Hello, Knife4j!");
+    public BusinessResponse<String> hello() {
+        return BusinessResponse.success("Hello, Knife4j!");
     }
 
     @PostMapping("/echo")
     @Operation(summary = "回声测试", description = "返回接收到的消息")
-    public ApiResponse<EchoResponse> echo(@Valid @RequestBody EchoRequest request) {
+    public BusinessResponse<EchoResponse> echo(@Valid @RequestBody EchoRequest request) {
         EchoResponse response = new EchoResponse();
         response.setMessage("Echo: " + request.getMessage());
         response.setTimestamp(System.currentTimeMillis());
-        return ApiResponse.success(response);
+        return BusinessResponse.success(response);
     }
 
     @GetMapping("/secure")
@@ -35,8 +35,8 @@ public class TestController {
         description = "这个接口需要 JWT Token 认证",
         security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ApiResponse<String> secureEndpoint() {
-        return ApiResponse.success("这个接口需要认证才能访问");
+    public BusinessResponse<String> secureEndpoint() {
+        return BusinessResponse.success("这个接口需要认证才能访问");
     }
 
     @Data

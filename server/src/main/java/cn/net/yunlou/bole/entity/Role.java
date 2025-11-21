@@ -4,12 +4,22 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 /**
- * FileName: Role Description: Created By laughtiger Created At 2025/11/19 14:01 Modified By
+ * FileName: Role
+ * Description:
+ * Created By laughtiger
+ * Created At 2025/11/19 14:01
+ * Modified By
  * Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("t_role")
-public class Role extends BaseEntity {}
+public class Role extends BaseEntity {
+
+    private String name;
+
+
+}

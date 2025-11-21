@@ -6,9 +6,15 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 /**
- * FileName: UserRole Description: Created By laughtiger Created At 2025/11/19 13:32 Modified By
+ * FileName: UserRole
+ * Description:
+ * Created By laughtiger
+ * Created At 2025/11/19 13:32
+ *
+ * Modified By
  * Modified At
  */
 @Data

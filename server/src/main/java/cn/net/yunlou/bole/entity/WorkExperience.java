@@ -1,17 +1,19 @@
 package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("work_experiences")
+@TableName("t_work_experiences")
 public class WorkExperience extends BaseEntity {
 
     @TableField(value = "resume_id")
@@ -32,7 +34,7 @@ public class WorkExperience extends BaseEntity {
     private LocalDate endDate;
 
     @TableField(value = "is_current")
-    private Boolean isCurrent = false;
+    private Boolean isCurrent;
 
     @TableField(value = "description")
     private String description;
@@ -43,13 +45,5 @@ public class WorkExperience extends BaseEntity {
     private List<String> achievements;
 
     @TableField(value = "sort_order")
-    private Integer sortOrder = 0;
-
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
-
-    @TableLogic
-    @TableField(value = "deleted", fill = FieldFill.INSERT)
-    private Integer deleted = 0;
+    private Integer sortOrder;
 }

@@ -4,11 +4,18 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 /**
- * FileName: BaseEntity Description: Created By laughtiger Created At 2025/11/19 13:45 Modified By
+ * FileName: BaseEntity
+ * Description:
+ * Created By laughtiger
+ * Created At 2025/11/19 13:45
+ * Modified By
  * Modified At
  */
 @Data
@@ -28,5 +35,5 @@ public class BaseEntity implements Serializable {
 
     @TableLogic
     @TableField(value = "deleted", fill = FieldFill.INSERT)
-    private Integer deleted = 0;
+    private Integer deleted;
 }

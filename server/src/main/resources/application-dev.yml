@@ -19,9 +19,9 @@ spring:
   #Redis 配置
   data:
     redis:
-      host: 127.0.0.1
+      host: 119.3.172.150
       port: 6379
-      password: 12345678
+      password: Walker@Boundless
       database: 0
       timeout: 3000
       jedis:

@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-circular-references: true
   application:
     name: server
   profiles:
@@ -15,6 +17,29 @@ spring:
   mvc:
     static-path-pattern: /**
 
+security:
+  white-list:
+    - "/doc.html"
+    - "/webjars/**"
+    - "/favicon.ico"
+    - "/v3/api-docs/**"
+    - "/v3/api-docs"
+    - "/v3/api-docs.yaml"
+    - "/v3/api-docs/default"
+    - "/swagger-resources/**"
+    - "/swagger-ui/**"
+    - "/swagger-ui.html"
+    - "/api-docs/**"
+    - "/api/auth/login"
+    - "/api/auth/register"
+    - "/api/debug/**"
+    - "/api/health/**"
+    - "/api/uploads/**"
+    - "/error"
+    - "/actuator/health"
+    - "/actuator/info"
+
+
 server:
   port: 8080
   servlet:
@@ -27,13 +52,6 @@ server:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
     min-response-size: 1024
-
-# 添加应用信息配置（Knife4j 必需）
-info:
-  app:
-    name: server
-    version: 1.0.0
-    description: 伯乐简历后端服务
 
 # 日志配置
 logging:

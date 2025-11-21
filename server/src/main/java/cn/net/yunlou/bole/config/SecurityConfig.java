@@ -36,46 +36,28 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+
     @Value("${app.config.cors.allowed-origins:http://localhost:8080,http://localhost:3000}")
     private String allowedOrigins;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // Knife4j 相关路径白名单
-    private static final String[] KNIFE4J_WHITELIST = {
-            "/doc.html",
-            "/webjars/**",
-            "/favicon.ico",
-            "/v3/api-docs/**",
-            "/v3/api-docs",
-            "/v3/api-docs.yaml",
-            "/v3/api-docs/default",  // 添加默认分组
-            "/swagger-resources/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/api-docs/**"
-    };
+    private final SecurityWhitelistConfig securityWhitelistConfig;
 
-    // 应用公开接口路径
-    private static final String[] APP_WHITELIST = {
-            "/api/auth/**",
-            "/api/debug/**",  // 添加调试接口
-            "/api/health/**",  // 添加调试接口
-            "/api/uploads/**",
-            "/error",
-            "/actuator/health",
-            "/actuator/info"
-    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        String[] whiteList = securityWhitelistConfig.getWhiteList().toArray(String[]::new);
+
+        log.info("跳过验证的路径: {}", Arrays.toString(whiteList));
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(KNIFE4J_WHITELIST).permitAll()
-                        .requestMatchers(APP_WHITELIST).permitAll()
+                        .requestMatchers(whiteList).permitAll()
                         .anyRequest().authenticated()
                 )
                 // 添加请求日志过滤器
@@ -83,23 +65,6 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    // 请求日志过滤器
-    private static class RequestLoggingFilter extends OncePerRequestFilter {
-        @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                        FilterChain filterChain) throws ServletException, IOException {
-            String requestURI = request.getRequestURI();
-            log.debug("请求路径: {} - 方法: {}", requestURI, request.getMethod());
-
-            // 如果是 Knife4j 相关路径，记录详细信息
-            if (requestURI.contains("doc.html") || requestURI.contains("api-docs") || requestURI.contains("swagger")) {
-                log.info("Knife4j 请求: {} {}?{}", request.getMethod(), requestURI, request.getQueryString());
-            }
-
-            filterChain.doFilter(request, response);
-        }
     }
 
     @Bean
@@ -143,5 +108,22 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    // 请求日志过滤器
+    private static class RequestLoggingFilter extends OncePerRequestFilter {
+        @Override
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                        FilterChain filterChain) throws ServletException, IOException {
+            String requestURI = request.getRequestURI();
+            log.debug("请求路径: {} - 方法: {}", requestURI, request.getMethod());
+
+            // 如果是 Knife4j 相关路径，记录详细信息
+            if (requestURI.contains("doc.html") || requestURI.contains("api-docs") || requestURI.contains("swagger")) {
+                log.info("Knife4j 请求: {} {}?{}", request.getMethod(), requestURI, request.getQueryString());
+            }
+
+            filterChain.doFilter(request, response);
+        }
     }
 }

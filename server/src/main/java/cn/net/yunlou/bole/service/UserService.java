@@ -8,13 +8,21 @@ import cn.net.yunlou.bole.response.UserResponse;
 import jakarta.validation.Valid;
 
 /**
- * FileName: IUserService Description: Created By laughtiger Created At 2025/11/19 13:48 Modified By
+ * FileName: IUserService
+ * Description:
+ * Created By laughtiger
+ * Created At 2025/11/19 13:48
+ * Modified By
  * Modified At
  */
-public interface IUserService extends IBaseService<User> {
+public interface UserService extends IBaseService<User> {
     User findByUsername(String username);
 
-    UserResponse login(@Valid LoginRequest loginRequest);
+    User findByEmail(String email);
 
-    UserResponse register(RegisterRequest registerRequest);
+    boolean updateLastLoginTime(Long id);
+
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
 }

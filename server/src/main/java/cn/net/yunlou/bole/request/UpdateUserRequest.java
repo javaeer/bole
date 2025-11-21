@@ -20,8 +20,6 @@ public class UpdateUserRequest {
     @Schema(description = "密码", example = "123456")
     private String password;
 
-    private String realName;
-
     private String email;
 
     private String phone;
