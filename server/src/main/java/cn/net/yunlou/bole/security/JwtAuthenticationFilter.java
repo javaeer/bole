@@ -1,13 +1,13 @@
 package cn.net.yunlou.bole.security;
 
 import cn.net.yunlou.bole.config.SecurityWhitelistConfig;
+import cn.net.yunlou.bole.utils.SecurityContextUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
@@ -36,20 +36,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 
-        String token = getTokenFromRequest(request);
+        String token = SecurityContextUtils.getCurrentToken();
 
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             UsernamePasswordAuthenticationToken authentication = authenticationService.getAuthentication(token, request);
             if (authentication != null) {
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextUtils.setAuthentication(authentication);
             }
         }
-
         chain.doFilter(request, response);
     }
 
-    private String getTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        return jwtTokenProvider.resolveToken(bearerToken);
-    }
 }

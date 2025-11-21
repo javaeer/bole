@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
+import org.springframework.security.core.GrantedAuthority;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -17,6 +19,7 @@ public class User extends BaseEntity {
 
     private String username;
 
+    @JsonIgnore
     private String password;
 
     private String email;
@@ -54,5 +57,8 @@ public class User extends BaseEntity {
     // 非数据库字段 - 用户角色
     @TableField(exist = false)
     private List<UserRole> userRoles;
+
+    @TableField(exist = false)
+    private List<GrantedAuthority> authorities;
 
 }

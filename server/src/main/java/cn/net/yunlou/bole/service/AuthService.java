@@ -2,7 +2,9 @@ package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.request.LoginRequest;
 import cn.net.yunlou.bole.request.RegisterRequest;
-import cn.net.yunlou.bole.response.UserResponse;
+import cn.net.yunlou.bole.response.AccessTokenResponse;
+import cn.net.yunlou.bole.response.RefreshTokenResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 /**
@@ -16,8 +18,11 @@ import jakarta.validation.Valid;
 public interface AuthService{
 
 
-    UserResponse login(@Valid LoginRequest loginRequest);
+    AccessTokenResponse login(@Valid LoginRequest loginRequest);
 
+    AccessTokenResponse register(@Valid RegisterRequest registerRequest);
 
-    UserResponse register(@Valid RegisterRequest registerRequest);
+    RefreshTokenResponse refreshToken(@Valid String refreshToken);
+
+    void logout();
 }

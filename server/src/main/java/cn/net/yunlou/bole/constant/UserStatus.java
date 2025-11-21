@@ -1,4 +1,4 @@
-package cn.net.yunlou.bole.constract;
+package cn.net.yunlou.bole.constant;
 
 import cn.net.yunlou.bole.common.IEnum;
 import lombok.AllArgsConstructor;

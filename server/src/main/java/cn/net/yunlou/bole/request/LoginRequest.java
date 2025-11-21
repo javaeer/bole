@@ -2,9 +2,11 @@ package cn.net.yunlou.bole.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 @Schema(description = "登录请求")
 public class LoginRequest {
 

@@ -1,43 +1,28 @@
 package cn.net.yunlou.bole.security;
 
-import cn.net.yunlou.bole.constract.UserStatus;
-import cn.net.yunlou.bole.entity.Role;
+import cn.net.yunlou.bole.constant.UserStatus;
 import cn.net.yunlou.bole.entity.User;
-import com.google.common.collect.Lists;
-import lombok.Getter;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class CustomUserDetails implements UserDetails {
-    @Getter
-    private final User user;
 
-    private final List<GrantedAuthority> authorities;
+    private final User user;
 
     public CustomUserDetails(User user) {
         this.user = user;
-
-        ArrayList<@Nullable Role> roles = Lists.newArrayList();
-        Role role1 = new Role();
-        role1.setName("ADMIN");
-        roles.add(role1);
-        this.authorities = roles.stream().filter(Objects::nonNull)
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                .collect(Collectors.toList());
     }
 
+    public User getUser() {
+        return user;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return user.getAuthorities();
     }
 
     @Override
