@@ -24,6 +24,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -147,5 +148,23 @@ public class BusinessExceptionHandler {
     public BusinessResponse handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         log.error(e.getMessage(), e);
         return BusinessResponse.error(BusinessStatus.REQUEST_PARAM_BLANK);
+    }
+
+    /**
+     * <p>
+     * Unsupported Media Type
+     * </p>
+     *
+     * @Param
+     * @Return
+     * @Author javaeer(javaeer @ aliyun.com)
+     * @Date 2019/7/4 17:35
+     */
+    @ResponseBody
+    @ExceptionHandler(value = AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public BusinessResponse handleAccessDeniedException(AccessDeniedException e) {
+        log.error(e.getMessage(), e);
+        return BusinessResponse.error(BusinessStatus.FORBIDDEN_NO_PERMISSION);
     }
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -55,6 +56,7 @@ public class UserController {
 
     @GetMapping("/list")
     @Operation(summary = "获取用户列表(管理员)")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BusinessResponse<Page<User>>> getUserList(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {

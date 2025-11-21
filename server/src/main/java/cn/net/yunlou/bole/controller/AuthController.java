@@ -41,19 +41,15 @@ public class AuthController {
         return ResponseEntity.ok(BusinessResponse.success(accessTokenResponse));
     }
 
-    /**
-     * 刷新访问令牌
-     */
     @PostMapping("/refresh-token")
+    @Operation(summary = "刷新访问令牌")
     public ResponseEntity<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         RefreshTokenResponse response = authService.refreshToken(request.getRefreshToken());
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 用户登出
-     */
     @PostMapping("/logout")
+    @Operation(summary = "用户登出")
     public ResponseEntity<BusinessResponse<String>> logout() {
 
         authService.logout();
