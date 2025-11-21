@@ -22,7 +22,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 @EnableConfigurationProperties(CacheProperties.class)
 @Configuration
 @EnableCaching
-public class CustomRedisCacheConfig {
+public class RedisCacheConfig {
 
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory, CacheProperties cacheProperties) {

@@ -30,7 +30,7 @@ import java.time.Duration;
  */
 @Configuration
 @AutoConfigureBefore(RedisAutoConfiguration.class)
-public class CustomRedisConfig {
+public class RedisConfig {
 
     private final String SCHEMA_URL = "redis://";
 
