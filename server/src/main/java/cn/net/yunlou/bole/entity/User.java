@@ -1,21 +1,26 @@
 package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
-import org.springframework.security.core.GrantedAuthority;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_user")
 public class User extends BaseEntity {
+
+
+    /**
+     * 当前所在企业
+     */
+    private Long companyId;
 
     private String username;
 
@@ -31,8 +36,6 @@ public class User extends BaseEntity {
     private String avatar;
 
     private String title;
-
-    private String company;
 
     private String location;
 
@@ -54,11 +57,16 @@ public class User extends BaseEntity {
 
     private LocalDateTime lastLoginAt;
 
+    private Integer workYears;
+
     // 非数据库字段 - 用户角色
     @TableField(exist = false)
     private List<UserRole> userRoles;
 
     @TableField(exist = false)
     private List<GrantedAuthority> authorities;
+
+    @TableField(exist = false)
+    private Company company;
 
 }

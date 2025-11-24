@@ -1,5 +1,7 @@
 package cn.net.yunlou.bole.utils;
 
+import cn.net.yunlou.bole.common.BusinessException;
+import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.constant.BaseConstant;
 import cn.net.yunlou.bole.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,7 +49,7 @@ public class SecurityContextUtils {
     public static String getCurrentUsername() {
         return getAuthentication()
                 .map(Authentication::getName)
-                .orElse("");
+                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
     /**
@@ -63,7 +65,7 @@ public class SecurityContextUtils {
 
     /**
      * 📋 获取用户权限集合
-     * @return 权限集合，未认证返回空集合
+     * @return 权限集合，未认证抛出异常
      */
     public static Set<String> getAuthorities() {
         return getAuthentication()
@@ -72,7 +74,7 @@ public class SecurityContextUtils {
                 .map(authorities -> authorities.stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toSet()))
-                .orElse(Collections.emptySet());
+                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
     /**
@@ -131,7 +133,7 @@ public class SecurityContextUtils {
      * @param roles 角色名称数组
      */
     public static boolean hasAnyRole(String... roles) {
-        if (roles == null || roles.length == 0) {
+        if (roles == null) {
             return false;
         }
         
@@ -159,27 +161,34 @@ public class SecurityContextUtils {
     }
 
     /**
-     * 📝 获取当前用户ID（需在UserDetails中实现getId方法）
-     * @return 用户ID，未实现返回null
+     * 📝 获取当前用户ID（需在 UserDetails 中实现 getUser().getId()）
+     * @return 当前登录用户的 ID
+     * @throws BusinessException 如果用户未登录或身份信息无效
      */
     public static Long getCurrentUserId() {
         return getCurrentUserDetails()
                 .filter(userDetails -> userDetails instanceof CustomUserDetails)
                 .map(userDetails -> ((CustomUserDetails) userDetails).getUser().getId())
-                .orElse(null);
+                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
     /**
      * 📧 获取当前用户邮箱（需在UserDetails中实现getEmail方法）
+     * @throws BusinessException 如果用户未登录或身份信息无效
      */
     public static String getCurrentUserEmail() {
         return getCurrentUserDetails()
                 .filter(userDetails -> userDetails instanceof CustomUserDetails)
                 .map(userDetails -> ((CustomUserDetails) userDetails).getUser().getEmail())
-                .orElse("");
+                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
 
+    /**
+     * 获取当前用户 token
+     * @throws BusinessException 如果用户未登录或身份信息无效
+     * @return
+     */
 
     public static String getCurrentToken() {
 
@@ -191,6 +200,7 @@ public class SecurityContextUtils {
             return bearerToken.substring(7);
         }
 
-        return null;
+        throw new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED);
+        //return null;
     }
 }

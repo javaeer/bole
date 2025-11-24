@@ -1,10 +1,8 @@
 package cn.net.yunlou.bole.common;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * <p>
@@ -17,10 +15,4 @@ import java.util.Date;
  */
 @Data
 public class BaseModel implements Serializable {
-
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    protected Date startAt;
-
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    protected Date stopAt;
 }

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
-@Tag(name = "认证管理", description = "用户认证相关接口")
+@Tag(name = "01.认证管理", description = "用户认证相关接口")
 @RequiredArgsConstructor
 public class AuthController {
 

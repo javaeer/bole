@@ -4,7 +4,6 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: Skill
@@ -20,5 +19,6 @@ import lombok.experimental.SuperBuilder;
 @TableName("t_skill")
 public class Skill extends BaseEntity {
 
+    private Long userId;
 
 }

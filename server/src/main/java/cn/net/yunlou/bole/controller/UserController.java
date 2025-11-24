@@ -26,13 +26,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-@Tag(name = "用户管理", description = "用户相关接口")
+@Tag(name = "02.用户管理", description = "用户相关接口")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    private final UserRoleService userRoleService;
 
     @GetMapping("/profile")
     @Operation(summary = "获取当前用户信息")
@@ -54,20 +52,14 @@ public class UserController {
     @PutMapping("/profile")
     @Operation(summary = "更新用户信息")
     public ResponseEntity<BusinessResponse<User>> updateUser(
-            @Valid @RequestBody UpdateUserRequest updateRequest) {
+            @Valid @RequestBody UpdateUserRequest request) {
         String username = SecurityContextUtils.getCurrentUsername();
         User currentUser = userService.findByUsername(username);
 
-        User user = new User();
+        User user = ModelUtils.modelToBean(request,User.class);
+
         user.setId(currentUser.getId());
-        user.setName(updateRequest.getName());
-        user.setTitle(updateRequest.getTitle());
-        user.setCompany(updateRequest.getCompany());
-        user.setLocation(updateRequest.getLocation());
-        user.setWebsite(updateRequest.getWebsite());
-        user.setGithub(updateRequest.getGithub());
-        user.setWechat(updateRequest.getWechat());
-        user.setBio(updateRequest.getBio());
+
         userService.updateById(user);
         return ResponseEntity.ok(BusinessResponse.success(userService.getById(currentUser.getId())));
     }

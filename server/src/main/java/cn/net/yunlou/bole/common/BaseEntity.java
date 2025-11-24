@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * FileName: BaseEntity
@@ -40,4 +41,12 @@ public class BaseEntity implements Serializable {
 
     @TableField(exist = false)
     private String keyField;
+
+    @TableField(exist = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:MM:SS", timezone = "GMT+8")
+    private Date queryStartAt;
+
+    @TableField(exist = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:MM:SS", timezone = "GMT+8")
+    private Date queryStopAt;
 }

@@ -16,34 +16,24 @@ import java.util.List;
 @TableName("t_work_experiences")
 public class WorkExperience extends BaseEntity {
 
-    @TableField(value = "resume_id")
-    private Long resumeId;
+    private Long userId;
 
-    @TableField(value = "company")
     private String company;
 
-    @TableField(value = "position")
     private String position;
 
-    @TableField(value = "start_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
-    @TableField(value = "end_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    @TableField(value = "is_current")
     private Boolean isCurrent;
 
-    @TableField(value = "description")
     private String description;
 
-    @TableField(
-            value = "achievements",
-            typeHandler = com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler.class)
+    @TableField(typeHandler = com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler.class)
     private List<String> achievements;
 
-    @TableField(value = "sort_order")
-    private Integer sortOrder;
+    private Integer sort;
 }

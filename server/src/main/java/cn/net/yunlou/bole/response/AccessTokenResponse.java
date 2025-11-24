@@ -1,6 +1,7 @@
 package cn.net.yunlou.bole.response;
 
 import cn.net.yunlou.bole.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ import java.util.List;
  */
 @Data
 @Builder
+@Schema(description = "登录响应体")
 public class AccessTokenResponse implements Serializable {
 
     private String accessToken;

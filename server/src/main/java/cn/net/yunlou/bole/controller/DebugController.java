@@ -13,7 +13,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/api/debug")
-@Tag(name = "系统诊断", description = "系统状态诊断接口")
+@Tag(name = "16.系统诊断", description = "系统状态诊断接口")
 public class DebugController {
 
     @GetMapping("/status")

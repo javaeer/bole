@@ -102,5 +102,14 @@ public abstract class BaseService<M extends BaseMapper<T>, T extends BaseEntity>
         return SkipInvalidValueWrappers.lambdaUpdate(entity);
     }
 
-    protected abstract SkipInvalidValueLambdaQueryWrapper<T> getKeyFieldQueryWrapper(SkipInvalidValueLambdaQueryWrapper<T> queryWrapper, T entity);
+    /**
+     * 如果存在 关键字 查询 请务必 重写此方法
+     *
+     * @param queryWrapper 现有 条件
+     * @param entity       实体
+     * @return 组合条件
+     */
+    protected SkipInvalidValueLambdaQueryWrapper<T> getKeyFieldQueryWrapper(SkipInvalidValueLambdaQueryWrapper<T> queryWrapper, T entity) {
+        return queryWrapper;
+    }
 }

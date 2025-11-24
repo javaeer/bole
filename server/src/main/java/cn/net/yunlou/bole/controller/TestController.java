@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/test")
-@Tag(name = "测试接口", description = "用于测试 Knife4j 集成的接口")
+@Tag(name = "15.测试接口", description = "用于测试 Knife4j 集成的接口")
 public class TestController {
 
     @GetMapping("/hello")

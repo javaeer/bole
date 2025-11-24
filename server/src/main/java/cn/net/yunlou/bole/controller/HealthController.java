@@ -16,9 +16,9 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("api/health")
 @RequiredArgsConstructor
-@Tag(name = "系统监控", description = "系统健康检查和状态监控")
+@Tag(name = "17.系统监控", description = "系统健康检查和状态监控")
 public class HealthController {
 
     @Value("${spring.application.name:server}")
@@ -30,7 +30,7 @@ public class HealthController {
     @Value("${app.config.environment:dev}")
     private String environment;
 
-    @GetMapping("/health")
+    @GetMapping
     @Operation(summary = "健康检查", description = "检查系统运行状态")
     public ResponseEntity<Map<String, Object>> health() {
         Map<String, Object> healthInfo = new HashMap<>();
@@ -50,7 +50,7 @@ public class HealthController {
         return ResponseEntity.ok(healthInfo);
     }
 
-    @GetMapping("/debug/config")
+    @GetMapping("config")
     @Operation(summary = "配置调试", description = "查看当前配置信息")
     public ResponseEntity<Map<String, Object>> debugConfig() {
         Map<String, Object> config = new HashMap<>();
