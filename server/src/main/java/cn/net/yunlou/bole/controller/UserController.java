@@ -1,10 +1,18 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
+import cn.net.yunlou.bole.common.EnumDTO;
+import cn.net.yunlou.bole.common.IEnum;
+import cn.net.yunlou.bole.constant.UserKeyFieldEnum;
 import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.request.UpdateUserRequest;
+import cn.net.yunlou.bole.request.UserSearchRequest;
 import cn.net.yunlou.bole.service.UserRoleService;
 import cn.net.yunlou.bole.service.UserService;
+import cn.net.yunlou.bole.utils.BeanUtils;
+import cn.net.yunlou.bole.utils.EntityUtils;
+import cn.net.yunlou.bole.utils.ModelUtils;
+import cn.net.yunlou.bole.utils.SecurityContextUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -28,16 +38,24 @@ public class UserController {
     @Operation(summary = "获取当前用户信息")
     public ResponseEntity<BusinessResponse<User>> getCurrentUser() {
         // 从 SecurityContext 获取当前用户
-        String username = "123";
+        String username = SecurityContextUtils.getCurrentUsername();
         User user = userService.findByUsername(username);
         return ResponseEntity.ok(BusinessResponse.success(user));
+    }
+
+    @GetMapping("keyField")
+    @Operation(summary = "获取查询关键字")
+    public ResponseEntity<BusinessResponse<List<EnumDTO>>> getKeyField() {
+        // 从 SecurityContext 获取当前用户
+        List<EnumDTO> enumDTOS = IEnum.toDTOList(UserKeyFieldEnum.class);
+        return ResponseEntity.ok(BusinessResponse.success(enumDTOS));
     }
 
     @PutMapping("/profile")
     @Operation(summary = "更新用户信息")
     public ResponseEntity<BusinessResponse<User>> updateUser(
             @Valid @RequestBody UpdateUserRequest updateRequest) {
-        String username = "123";
+        String username = SecurityContextUtils.getCurrentUsername();
         User currentUser = userService.findByUsername(username);
 
         User user = new User();
@@ -54,13 +72,24 @@ public class UserController {
         return ResponseEntity.ok(BusinessResponse.success(userService.getById(currentUser.getId())));
     }
 
-    @GetMapping("/list")
+    @PostMapping("page")
     @Operation(summary = "获取用户列表(管理员)")
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasAnyAuthority('read','write')")
+    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Page<User>>> getUserList(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) {
-        Page<User> userPage = new Page<>(page, size);
-        return ResponseEntity.ok(BusinessResponse.success(userService.page(userPage)));
+            @RequestParam(defaultValue = "1") long page,
+            @RequestParam(defaultValue = "10") long size,
+            @RequestBody UserSearchRequest request) {
+        //Page<User> userPage = new Page<>(page, size);
+        User user  = ModelUtils.modelToBean(request,User.class);
+
+        //user.setEmail(request.getEmail());
+        //user.setPhone(request.getPhone());
+        //user.setKeyField(request.getKeyField());
+        //user.setKeyWords(request.getKeyWords());
+        return ResponseEntity.ok(BusinessResponse.success(userService.page(page, size, user)));
     }
+
+
+
 }

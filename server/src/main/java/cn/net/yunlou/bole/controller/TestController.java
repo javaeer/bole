@@ -36,7 +36,7 @@ public class TestController {
         security = @SecurityRequirement(name = "bearerAuth")
     )
     public BusinessResponse<String> secureEndpoint() {
-        return BusinessResponse.success("这个接口需要认证才能访问");
+        return BusinessResponse.success("已认证，访问正常！");
     }
 
     @Data

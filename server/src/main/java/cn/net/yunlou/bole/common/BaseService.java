@@ -1,20 +1,25 @@
 package cn.net.yunlou.bole.common;
 
 import cn.net.yunlou.bole.utils.DateUtils;
+import cn.net.yunlou.bole.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 /**
- * FileName: BaseService Description: Created By laughtiger Created At 2025/11/19 13:50 Modified By
+ * FileName: BaseService
+ * Description:
+ * Created By laughtiger
+ * Created At 2025/11/19 13:50
+ * Modified By
  * Modified At
  */
 @Slf4j
@@ -55,6 +60,11 @@ public abstract class BaseService<M extends BaseMapper<T>, T extends BaseEntity>
     }
 
     @Override
+    public Page<T> page(long pageNum, long pageSize, T entity) {
+        return page(pageNum, pageSize, 0L, entity);
+    }
+
+    @Override
     public Page<T> page(long pageNum, long pageSize, long timestamp, T entity) {
         return page(pageNum, pageSize, timestamp, getBaseQueryWrapper(entity));
     }
@@ -80,11 +90,17 @@ public abstract class BaseService<M extends BaseMapper<T>, T extends BaseEntity>
 
     @Override
     public LambdaQueryWrapper<T> getBaseQueryWrapper(T entity) {
-        return Wrappers.lambdaQuery(entity);
+        SkipInvalidValueLambdaQueryWrapper<T> queryWrapper = SkipInvalidValueWrappers.lambdaQuery(entity);
+        if (ValueUtils.isValid(entity.getKeyWords())) {
+            queryWrapper = getKeyFieldQueryWrapper(queryWrapper, entity);
+        }
+        return queryWrapper;
     }
 
     @Override
     public LambdaUpdateWrapper<T> getBaseUpdateWrapper(T entity) {
-        return Wrappers.lambdaUpdate(entity);
+        return SkipInvalidValueWrappers.lambdaUpdate(entity);
     }
+
+    protected abstract SkipInvalidValueLambdaQueryWrapper<T> getKeyFieldQueryWrapper(SkipInvalidValueLambdaQueryWrapper<T> queryWrapper, T entity);
 }

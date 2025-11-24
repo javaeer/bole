@@ -2,13 +2,11 @@ package cn.net.yunlou.bole.common;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * FileName: BaseEntity
@@ -36,4 +34,10 @@ public class BaseEntity implements Serializable {
     @TableLogic
     @TableField(value = "deleted", fill = FieldFill.INSERT)
     private Integer deleted;
+
+    @TableField(exist = false)
+    private String keyWords;
+
+    @TableField(exist = false)
+    private String keyField;
 }

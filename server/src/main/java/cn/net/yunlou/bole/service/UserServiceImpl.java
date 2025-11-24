@@ -1,9 +1,14 @@
 package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.BaseService;
+import cn.net.yunlou.bole.common.IEnum;
+import cn.net.yunlou.bole.common.SkipInvalidValueLambdaQueryWrapper;
+import cn.net.yunlou.bole.constant.UserKeyFieldEnum;
 import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.mapper.UserMapper;
+import cn.net.yunlou.bole.utils.ValueUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +22,7 @@ import java.time.LocalDateTime;
  * Modified By
  * Modified At
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl extends BaseService<UserMapper, User> implements UserService {
@@ -58,18 +64,20 @@ public class UserServiceImpl extends BaseService<UserMapper, User> implements Us
         return exist(entity);
     }
 
-    /*@Override
-    public LambdaQueryWrapper<User> getBaseQueryWrapper(User entity) {
-        LambdaQueryWrapper<User> queryWrapper = super.getBaseQueryWrapper(entity);
-        if (!ObjectUtils.isEmpty(entity.getUsername())) {
-            queryWrapper.eq(User::getUsername, entity.getUsername());
+    @Override
+    protected SkipInvalidValueLambdaQueryWrapper<User> getKeyFieldQueryWrapper(SkipInvalidValueLambdaQueryWrapper<User> queryWrapper, User entity) {
+
+        UserKeyFieldEnum ukfe = ValueUtils.isValid(entity.getKeyField())
+                ? IEnum.getEnumByValue(entity.getKeyField(), UserKeyFieldEnum.class)
+                : UserKeyFieldEnum.ALL;
+
+        if (ukfe == null) {
+            log.warn("Unknown key field: {}, using default ALL search", entity.getKeyField());
+            ukfe = UserKeyFieldEnum.ALL;
         }
-        if (!ObjectUtils.isEmpty(entity.getEmail())) {
-            queryWrapper.eq(User::getEmail, entity.getEmail());
-        }
-        if (!ObjectUtils.isEmpty(entity.getPhone())) {
-            queryWrapper.eq(User::getPhone, entity.getPhone());
-        }
+
+        ukfe.applyQuery(queryWrapper, entity.getKeyWords());
+
         return queryWrapper;
-    }*/
+    }
 }

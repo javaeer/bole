@@ -21,6 +21,8 @@ public interface IBaseService<T> extends IService<T> {
 
     List<T> list(T entity);
 
+    Page<T> page(long pageNum, long pageSize, T entity);
+
     Page<T> page(long pageNum, long pageSize, long timestamp, T entity);
 
     Page<T> page(long pageNum, long pageSize, long timestamp, LambdaQueryWrapper<T> queryWrapper);

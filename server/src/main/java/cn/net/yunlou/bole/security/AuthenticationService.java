@@ -1,5 +1,7 @@
 package cn.net.yunlou.bole.security;
 
+import cn.net.yunlou.bole.common.BusinessException;
+import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.constant.BaseConstant;
 import cn.net.yunlou.bole.entity.Role;
 import cn.net.yunlou.bole.entity.User;
@@ -83,6 +85,8 @@ public class AuthenticationService {
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
 
 
+        storeRefreshToken(user.getUsername(), refreshToken);
+
         // 从 UserDetails 获取权限
         //List<String> permissions = userDetails.getAuthorities().stream()
         //        .map(GrantedAuthority::getAuthority)
@@ -130,14 +134,14 @@ public class AuthenticationService {
         try {
             // 验证刷新令牌
             if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
-                throw new RuntimeException("无效的刷新令牌");
+                throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "无效的刷新令牌");
             }
 
             String username = jwtTokenProvider.extractUsername(refreshToken);
 
             // 检查刷新令牌是否在Redis中（可选，用于令牌撤销）
             if (!isRefreshTokenValid(username, refreshToken)) {
-                throw new RuntimeException("刷新令牌已失效");
+                throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "刷新令牌已失效");
             }
 
             // 验证用户是否存在且有效
@@ -160,7 +164,7 @@ public class AuthenticationService {
 
         } catch (Exception e) {
             log.error("刷新令牌失败: {}", e.getMessage());
-            throw new RuntimeException("刷新令牌失败: " + e.getMessage());
+            throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "刷新令牌失败: " + e.getMessage());
         }
     }
 
