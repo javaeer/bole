@@ -19,4 +19,9 @@ import lombok.EqualsAndHashCode;
 @Builder
 @Schema(description = "新增角色请求")
 public class RoleAddRequest extends BaseModel {
+
+    private String name;
+
+    private String code;
+
 }

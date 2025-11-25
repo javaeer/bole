@@ -29,6 +29,7 @@ public class CompanyExperience extends BaseEntity {
 
     private String description;
 
+    @TableField(typeHandler = com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler.class)
     private List<String> website;
 
     private Integer sort;

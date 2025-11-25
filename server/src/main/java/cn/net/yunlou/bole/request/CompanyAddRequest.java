@@ -21,5 +21,20 @@ import lombok.EqualsAndHashCode;
 @Schema(description = "新增企业请求")
 public class CompanyAddRequest extends BaseModel {
 
+    private String name;
+
+    private String email;
+
+    private String holder;
+
+    private String location;
+
+    private String website;
+
+    private String github;
+
+    private String wechat;
+
+    private String bio;
 
 }

@@ -18,7 +18,7 @@ public class WorkExperience extends BaseEntity {
 
     private Long userId;
 
-    private String company;
+    private Long companyId;
 
     private String position;
 

@@ -2,6 +2,7 @@ package cn.net.yunlou.bole.common;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -37,16 +38,20 @@ public class BaseEntity implements Serializable {
     private Integer deleted;
 
     @TableField(exist = false)
+    @JsonIgnore
     private String keyWords;
 
     @TableField(exist = false)
+    @JsonIgnore
     private String keyField;
 
     @TableField(exist = false)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:MM:SS", timezone = "GMT+8")
+    @JsonIgnore
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date queryStartAt;
 
     @TableField(exist = false)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:MM:SS", timezone = "GMT+8")
+    @JsonIgnore
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date queryStopAt;
 }

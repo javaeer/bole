@@ -44,12 +44,6 @@ public class Company extends BaseEntity {
     private Integer likes;
 
     /**
-     * 企业评分
-     */
-    @TableField(exist = false)
-    private List<CompanyScore> companyScores;
-
-    /**
      * 企业内部评论
      */
     @TableField(exist = false)

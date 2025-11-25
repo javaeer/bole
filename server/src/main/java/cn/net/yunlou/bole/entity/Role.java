@@ -23,5 +23,6 @@ public class Role extends BaseEntity {
 
     private String code;
 
+    private String description;
 
 }
