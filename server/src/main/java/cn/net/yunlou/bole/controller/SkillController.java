@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/api/skill")
+@RequestMapping("skill")
 @Tag(name = "12.职业技能管理", description = "职业技能相关接口")
 @RequiredArgsConstructor
 public class SkillController {

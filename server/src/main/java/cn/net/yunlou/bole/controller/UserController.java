@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("user")
 @Tag(name = "02.用户管理", description = "用户相关接口")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/profile")
+    @GetMapping("profile")
     @Operation(summary = "获取当前用户信息")
     public ResponseEntity<BusinessResponse<User>> getCurrentUser() {
         // 从 SecurityContext 获取当前用户
@@ -46,7 +46,7 @@ public class UserController {
         return ResponseEntity.ok(BusinessResponse.success(enumDTOS));
     }
 
-    @PutMapping("/profile")
+    @PutMapping("profile")
     @Operation(summary = "更新用户信息")
     public ResponseEntity<BusinessResponse<User>> updateUser(
             @Valid @RequestBody UpdateUserRequest request) {

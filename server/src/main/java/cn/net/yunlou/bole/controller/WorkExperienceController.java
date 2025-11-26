@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/api/workExperience")
+@RequestMapping("work-experience")
 @Tag(name = "11.工作经历管理", description = "工作经历相关接口")
 @RequiredArgsConstructor
 public class WorkExperienceController {

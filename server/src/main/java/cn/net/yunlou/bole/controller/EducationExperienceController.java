@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/api/educationExperience")
+@RequestMapping("education-experience")
 @Tag(name = "09.教育经历管理", description = "教育经历相关接口")
 @RequiredArgsConstructor
 public class EducationExperienceController {

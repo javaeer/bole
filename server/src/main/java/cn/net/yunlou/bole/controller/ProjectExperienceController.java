@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/api/projectExperience")
+@RequestMapping("project-experience")
 @Tag(name = "10.项目经历管理", description = "项目经历相关接口")
 @RequiredArgsConstructor
 public class ProjectExperienceController {

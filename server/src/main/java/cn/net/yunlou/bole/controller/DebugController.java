@@ -12,11 +12,11 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/debug")
+@RequestMapping("debug")
 @Tag(name = "16.系统诊断", description = "系统状态诊断接口")
 public class DebugController {
 
-    @GetMapping("/status")
+    @GetMapping("status")
     @Operation(summary = "系统状态检查")
     public Map<String, Object> status() {
         log.info("系统状态检查接口被调用");
@@ -27,7 +27,7 @@ public class DebugController {
         return result;
     }
 
-    @GetMapping("/knife4j-paths")
+    @GetMapping("knife4j-paths")
     @Operation(summary = "Knife4j 路径检查")
     public Map<String, Object> knife4jPaths() {
         Map<String, Object> result = new HashMap<>();

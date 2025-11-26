@@ -36,7 +36,7 @@ public class StartupConfig {
         log.info("   Knife4j UI: http://localhost:8080/doc.html");
         log.info("   OpenAPI JSON: http://localhost:8080/v3/api-docs");
         log.info("   API 分组: http://localhost:8080/v3/api-docs/bole-server");
-        log.info("   健康检查: http://localhost:8080/api/health");
+        log.info("   健康检查: http://localhost:8080/health");
         log.info("=== 配置检查结束 ===");
     }
 }

@@ -10,17 +10,17 @@ import lombok.Data;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("test")
 @Tag(name = "15.测试接口", description = "用于测试 Knife4j 集成的接口")
 public class TestController {
 
-    @GetMapping("/hello")
+    @GetMapping("hello")
     @Operation(summary = "Hello World", description = "一个简单的测试接口")
     public BusinessResponse<String> hello() {
         return BusinessResponse.success("Hello, Knife4j!");
     }
 
-    @PostMapping("/echo")
+    @PostMapping("echo")
     @Operation(summary = "回声测试", description = "返回接收到的消息")
     public BusinessResponse<EchoResponse> echo(@Valid @RequestBody EchoRequest request) {
         EchoResponse response = new EchoResponse();
@@ -29,7 +29,7 @@ public class TestController {
         return BusinessResponse.success(response);
     }
 
-    @GetMapping("/secure")
+    @GetMapping("secure")
     @Operation(
         summary = "需要认证的接口", 
         description = "这个接口需要 JWT Token 认证",

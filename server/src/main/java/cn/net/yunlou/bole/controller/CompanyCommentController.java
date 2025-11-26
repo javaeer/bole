@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/api/companyComment")
+@RequestMapping("company-comment")
 @Tag(name = "06.企业评价管理", description = "企业评价相关接口")
 @RequiredArgsConstructor
 public class CompanyCommentController {

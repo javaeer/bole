@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/api/resumesTemplate")
+@RequestMapping("resumes-template")
 @Tag(name = "08.简历模板管理", description = "简历模板相关接口")
 @RequiredArgsConstructor
 public class ResumesTemplateController {

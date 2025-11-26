@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/api/role")
+@RequestMapping("role")
 @Tag(name = "03.角色管理", description = "角色相关接口")
 @RequiredArgsConstructor
 public class RoleController {

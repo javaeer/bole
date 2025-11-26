@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/api/city")
+@RequestMapping("city")
 @Tag(name = "18.城市管理", description = "城市相关接口")
 @RequiredArgsConstructor
 public class CityController {

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("auth")
 @Tag(name = "01.认证管理", description = "用户认证相关接口")
 @RequiredArgsConstructor
 public class AuthController {
@@ -26,28 +26,28 @@ public class AuthController {
     private final AuthService authService;
 
 
-    @PostMapping("/login")
+    @PostMapping("login")
     @Operation(summary = "用户登录")
     public ResponseEntity<BusinessResponse<AccessTokenResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
         AccessTokenResponse accessTokenResponse = authService.login(loginRequest);
         return ResponseEntity.ok(BusinessResponse.success(accessTokenResponse));
     }
 
-    @PostMapping("/register")
+    @PostMapping("register")
     @Operation(summary = "用户注册")
     public ResponseEntity<BusinessResponse<AccessTokenResponse>> register(@Valid @RequestBody RegisterRequest registerRequest) {
         AccessTokenResponse accessTokenResponse = authService.register(registerRequest);
         return ResponseEntity.ok(BusinessResponse.success(accessTokenResponse));
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("refresh")
     @Operation(summary = "刷新访问令牌")
     public ResponseEntity<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         RefreshTokenResponse response = authService.refreshToken(request.getRefreshToken());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/logout")
+    @PostMapping("logout")
     @Operation(summary = "用户登出")
     public ResponseEntity<BusinessResponse<String>> logout() {
 

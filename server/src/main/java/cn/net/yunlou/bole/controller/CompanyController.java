@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-@RequestMapping("/api/company")
+@RequestMapping("company")
 @Tag(name = "04.企业管理", description = "企业相关接口")
 @RequiredArgsConstructor
 public class CompanyController {

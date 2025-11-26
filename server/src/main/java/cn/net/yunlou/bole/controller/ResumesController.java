@@ -30,7 +30,7 @@ import java.util.Objects;
  */
 
 @RestController
-@RequestMapping("/api/resumes")
+@RequestMapping("resumes")
 @Tag(name = "07.简历管理", description = "简历相关接口")
 @RequiredArgsConstructor
 public class ResumesController {
