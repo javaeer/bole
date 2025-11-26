@@ -127,6 +127,27 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     (4, '项目管理', '高级', '管理', '具备大型项目管理经验，熟悉敏捷开发流程', 80, 8.0, true, 'PMP认证', '2021-09-30', '项目管理,敏捷,PMP', true, 1),
     (4, '团队协作', '高级', '软技能', '良好的团队沟通和协作能力', 90, 10.0, false, NULL, NULL, '沟通,协作,领导力', true, 2);
 
+    -- 插入城市等级数据
+    INSERT INTO bole_app.t_city_grade (name, level, created_at, updated_at) VALUES
+    ('省', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('市', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('区/县', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('乡/镇', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('村/街道', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+    -- 插入城市数据
+    INSERT INTO bole_app.t_city (name, parent_id, grade_id, created_at, updated_at) VALUES
+    ('北京市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('上海市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('广州市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('深圳市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('杭州市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('南京市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('苏州市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('西安市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('成都市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('重庆市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
     -- 插入系统配置数据
     INSERT INTO bole_app.system_config (config_key, config_value, description, updated_by) VALUES
     ('site_name', '"技术伯乐"', '网站名称', 'admin'),

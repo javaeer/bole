@@ -823,7 +823,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     CREATE INDEX IF NOT EXISTS idx_component_library_default_config ON bole_app.t_component_library USING GIN (default_config);
 
     -- 创建全文搜索索引（如果需要对描述进行搜索）
--- CREATE INDEX IF NOT EXISTS idx_component_library_description_search ON bole_app.t_component_library USING GIN (to_tsvector('chinese', description));
+    -- CREATE INDEX IF NOT EXISTS idx_component_library_description_search ON bole_app.t_component_library USING GIN (to_tsvector('chinese', description)); 
 
     -- 注释
     COMMENT ON TABLE bole_app.t_component_library IS '组件库表';
@@ -838,6 +838,36 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     COMMENT ON COLUMN bole_app.t_component_library.created_at IS '创建时间';
     COMMENT ON COLUMN bole_app.t_component_library.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_component_library.deleted IS '逻辑删除(0-正常,1-删除)';
+
+    -- 城市等级表
+    CREATE TABLE IF NOT EXISTS bole_app.t_city_grade (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        level VARCHAR(50) NOT NULL,
+        
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_city_grade_name ON bole_app.t_city_grade(name);
+    CREATE INDEX IF NOT EXISTS idx_city_grade_level ON bole_app.t_city_grade(level);
+    CREATE INDEX IF NOT EXISTS idx_city_grade_created_at ON bole_app.t_city_grade(created_at);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_city_grade IS '城市等级表';
+    COMMENT ON COLUMN bole_app.t_city_grade.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_city_grade.name IS '等级名称';
+    COMMENT ON COLUMN bole_app.t_city_grade.level IS '等级级别（洲，国，省，市，区/县,乡镇，街道）';
+    COMMENT ON COLUMN bole_app.t_city_grade.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_city_grade.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_city_grade.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
+    
     --城市表
     CREATE TABLE IF NOT EXISTS bole_app.t_city (
             -- 主键字段
@@ -863,10 +893,14 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
             -- 逻辑删除字段
         deleted INTEGER DEFAULT 0,
             
-            --添加外键约束
-            CONSTRAINT fk_city_parent 
-            FOREIGN KEY (parent_id) 
-            REFERENCES bole_app.t_city(id)
+        --添加外键约束
+        CONSTRAINT fk_city_parent 
+        FOREIGN KEY (parent_id) 
+        REFERENCES bole_app.t_city(id),
+
+        CONSTRAINT fk_city_city_grade 
+        FOREIGN KEY (city_grade_id) 
+        REFERENCES bole_app.t_city_grade(id)
     );
 
     -- 创建索引
@@ -889,7 +923,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     COMMENT ON COLUMN bole_app.t_city.short_name IS '简称';
     COMMENT ON COLUMN bole_app.t_city.longitude IS '经度';
     COMMENT ON COLUMN bole_app.t_city.latitude IS '纬度';
-    COMMENT ON COLUMN bole_app.t_city.city_grade_id IS '城市等级ID';
+    COMMENT ON COLUMN bole_app.t_city.city_grade_id IS '城市等级ID，外键关联t_city_grade表';
     COMMENT ON COLUMN bole_app.t_city.cnw_station_code IS '中国天气网站点编码';
     COMMENT ON COLUMN bole_app.t_city.nmc_station_code IS '中央气象台站点编码';
     COMMENT ON COLUMN bole_app.t_city.nmc_province_code IS '中央气象台省份编码';
@@ -946,7 +980,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
                 't_company_experiences', 't_work_experiences', 
                 't_education_experience', 't_project_experience',
                 't_resumes', 't_resumes_template', 't_component_library',
-                't_resumes_template_component','t_skill'
+                't_resumes_template_component','t_skill',
+                't_city_grade','t_city'
             )
         LOOP
             EXECUTE format('
