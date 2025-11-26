@@ -132,31 +132,37 @@ public abstract class BaseService<
 
     @Override
     public D getDTOById(Serializable id) {
-        return structMapper.toDTO(getById(id));
+        T entity = getById(id);
+        return structMapper.toDTO(entity);
     }
 
     @Override
     public boolean saveByDTO(D dto) {
-        return save(structMapper.toEntity(dto));
+        T entity = structMapper.toEntity(dto);
+        return save(entity);
     }
 
     @Override
     public boolean updateDTO(D dto) {
-        return update(structMapper.toEntity(dto));
+        T entity = structMapper.toEntity(dto);
+        return update(entity);
     }
 
     @Override
     public boolean removeDTO(D dto) {
-        return remove(structMapper.toEntity(dto));
+        T entity = structMapper.toEntity(dto);
+        return remove(entity);
     }
 
     @Override
     public Page<D> pageDTOByQuery(long pageNum, long pageSize, Q query) {
-        return structMapper.toDTOPage(page(pageNum, pageSize, structMapper.queryToEntity(query)));
+        T entity = structMapper.queryToEntity(query);
+        return structMapper.toDTOPage(page(pageNum, pageSize, entity));
     }
 
     @Override
     public List<D> listDTOByQuery(Q query) {
-        return structMapper.toDTOList(list(structMapper.queryToEntity(query)));
+        T entity = structMapper.queryToEntity(query);
+        return structMapper.toDTOList(list(entity));
     }
 }

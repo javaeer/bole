@@ -823,7 +823,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     CREATE INDEX IF NOT EXISTS idx_component_library_default_config ON bole_app.t_component_library USING GIN (default_config);
 
     -- 创建全文搜索索引（如果需要对描述进行搜索）
---     CREATE INDEX IF NOT EXISTS idx_component_library_description_search ON bole_app.t_component_library USING GIN (to_tsvector('chinese', description));
+-- CREATE INDEX IF NOT EXISTS idx_component_library_description_search ON bole_app.t_component_library USING GIN (to_tsvector('chinese', description));
 
     -- 注释
     COMMENT ON TABLE bole_app.t_component_library IS '组件库表';
@@ -838,6 +838,65 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     COMMENT ON COLUMN bole_app.t_component_library.created_at IS '创建时间';
     COMMENT ON COLUMN bole_app.t_component_library.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_component_library.deleted IS '逻辑删除(0-正常,1-删除)';
+    --城市表
+    CREATE TABLE IF NOT EXISTS bole_app.t_city (
+            -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        parent_id BIGINT DEFAULT 0,
+        path VARCHAR(255),
+        level INTEGER DEFAULT 1,
+        name VARCHAR(255) NOT NULL,
+        en_name VARCHAR(255),
+        initial VARCHAR(10),
+        pinyin VARCHAR(255),
+        short_name VARCHAR(255),
+        longitude DOUBLE PRECISION,
+        latitude DOUBLE PRECISION,
+        city_grade_id BIGINT,
+        cnw_station_code VARCHAR(100),
+        nmc_station_code VARCHAR(100),
+        nmc_province_code VARCHAR(100),
+        cma_station_code VARCHAR(100),
+            -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0,
+            
+            --添加外键约束
+            CONSTRAINT fk_city_parent 
+            FOREIGN KEY (parent_id) 
+            REFERENCES bole_app.t_city(id)
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_city_parent_id  ON bole_app.t_city(parent_id);
+    CREATE INDEX IF NOT EXISTS idx_city_level  ON bole_app.t_city(level);
+    CREATE INDEX IF NOT EXISTS idx_city_name  ON bole_app.t_city(name);
+    CREATE INDEX IF NOT EXISTS idx_city_pinyin  ON bole_app.t_city(pinyin);
+    CREATE INDEX IF NOT EXISTS idx_city_city_grade_id  ON bole_app.t_city(city_grade_id);
+    CREATE INDEX IF NOT EXISTS idx_city_created_at  ON bole_app.t_city(created_at);
+    -- 注释
+    COMMENT ON TABLE bole_app.t_city IS '城市表';
+    COMMENT ON COLUMN bole_app.t_city.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_city.parent_id IS '父节点ID';
+    COMMENT ON COLUMN bole_app.t_city.path IS '路径';
+    COMMENT ON COLUMN bole_app.t_city.level IS '层级';
+    COMMENT ON COLUMN bole_app.t_city.name IS '城市名称';
+    COMMENT ON COLUMN bole_app.t_city.en_name IS '英文名称';
+    COMMENT ON COLUMN bole_app.t_city.initial IS '首字母';
+    COMMENT ON COLUMN bole_app.t_city.pinyin IS '拼音';
+    COMMENT ON COLUMN bole_app.t_city.short_name IS '简称';
+    COMMENT ON COLUMN bole_app.t_city.longitude IS '经度';
+    COMMENT ON COLUMN bole_app.t_city.latitude IS '纬度';
+    COMMENT ON COLUMN bole_app.t_city.city_grade_id IS '城市等级ID';
+    COMMENT ON COLUMN bole_app.t_city.cnw_station_code IS '中国天气网站点编码';
+    COMMENT ON COLUMN bole_app.t_city.nmc_station_code IS '中央气象台站点编码';
+    COMMENT ON COLUMN bole_app.t_city.nmc_province_code IS '中央气象台省份编码';
+    COMMENT ON COLUMN bole_app.t_city.cma_station_code IS '中国气象局站点编码';
+    COMMENT ON COLUMN bole_app.t_city.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_city.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_city.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
     -- 系统配置表
     CREATE TABLE IF NOT EXISTS bole_app.system_config (

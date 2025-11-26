@@ -1,8 +1,8 @@
 package cn.net.yunlou.bole.service;
 
-import cn.net.yunlou.bole.common.IBaseService;
-import cn.net.yunlou.bole.model.dto.CityDTO;
+import cn.net.yunlou.bole.common.IBaseTreeService;
 import cn.net.yunlou.bole.entity.City;
+import cn.net.yunlou.bole.model.dto.CityDTO;
 import cn.net.yunlou.bole.model.query.CityQuery;
 
 /**
@@ -13,5 +13,5 @@ import cn.net.yunlou.bole.model.query.CityQuery;
  * Modified By
  * Modified At
  */
-public interface CityService extends IBaseService<City, CityDTO, CityQuery> {
+public interface CityService extends IBaseTreeService<City, CityDTO, CityQuery> {
 }

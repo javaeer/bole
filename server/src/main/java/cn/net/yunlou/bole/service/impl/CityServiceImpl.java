@@ -1,12 +1,12 @@
 package cn.net.yunlou.bole.service.impl;
 
-import cn.net.yunlou.bole.common.BaseService;
-import cn.net.yunlou.bole.model.dto.CityDTO;
-import cn.net.yunlou.bole.struct.CityStructMapper;
-import cn.net.yunlou.bole.model.query.CityQuery;
+import cn.net.yunlou.bole.common.BaseTreeService;
 import cn.net.yunlou.bole.entity.City;
 import cn.net.yunlou.bole.mapper.CityMapper;
+import cn.net.yunlou.bole.model.dto.CityDTO;
+import cn.net.yunlou.bole.model.query.CityQuery;
 import cn.net.yunlou.bole.service.CityService;
+import cn.net.yunlou.bole.struct.CityStructMapper;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,5 +18,5 @@ import org.springframework.stereotype.Service;
  * Modified At
  */
 @Service
-public class CityServiceImpl extends BaseService<CityMapper, City, CityDTO, CityQuery, CityStructMapper> implements CityService {
+public class CityServiceImpl extends BaseTreeService<CityMapper, City, CityDTO, CityQuery, CityStructMapper> implements CityService {
 }
