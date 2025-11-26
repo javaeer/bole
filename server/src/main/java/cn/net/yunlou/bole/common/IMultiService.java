@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * FileName: IMultiService Description: Created By laughtiger Created At 2025/11/19 15:28 Modified
+ * FileName: IMultiService Description: Created By MR. WANG Created At 2025/11/19 15:28 Modified
  * By Modified At
  */
 public interface IMultiService<

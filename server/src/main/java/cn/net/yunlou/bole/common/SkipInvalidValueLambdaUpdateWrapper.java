@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.common;
 
-import cn.net.yunlou.bole.utils.EntityUtils;
-import cn.net.yunlou.bole.utils.ValueUtils;
+import cn.net.yunlou.bole.common.utils.EntityUtils;
+import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import lombok.Getter;

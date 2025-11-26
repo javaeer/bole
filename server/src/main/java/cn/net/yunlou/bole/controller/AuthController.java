@@ -1,15 +1,14 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.request.LoginRequest;
-import cn.net.yunlou.bole.request.RefreshTokenRequest;
-import cn.net.yunlou.bole.request.RegisterRequest;
-import cn.net.yunlou.bole.response.AccessTokenResponse;
-import cn.net.yunlou.bole.response.RefreshTokenResponse;
+import cn.net.yunlou.bole.model.request.LoginRequest;
+import cn.net.yunlou.bole.model.request.RefreshTokenRequest;
+import cn.net.yunlou.bole.model.request.RegisterRequest;
+import cn.net.yunlou.bole.model.response.AccessTokenResponse;
+import cn.net.yunlou.bole.model.response.RefreshTokenResponse;
 import cn.net.yunlou.bole.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

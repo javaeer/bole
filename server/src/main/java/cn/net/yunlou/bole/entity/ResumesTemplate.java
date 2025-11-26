@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * FileName: ResumeTemplate
  * Description: 简历模板
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 20:00
  * Modified By
  * Modified At

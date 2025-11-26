@@ -2,11 +2,11 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.Company;
-import cn.net.yunlou.bole.request.CompanyAddRequest;
-import cn.net.yunlou.bole.request.CompanyEditRequest;
-import cn.net.yunlou.bole.request.CompanySearchRequest;
+import cn.net.yunlou.bole.model.request.CompanyAddRequest;
+import cn.net.yunlou.bole.model.request.CompanyEditRequest;
+import cn.net.yunlou.bole.model.request.CompanySearchRequest;
 import cn.net.yunlou.bole.service.CompanyService;
-import cn.net.yunlou.bole.utils.ModelUtils;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * FileName: CompanyController
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 21:27
  * Modified By
  * Modified At
@@ -37,7 +37,7 @@ public class CompanyController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> add(
             @RequestBody CompanyAddRequest request) {
-        Company company = ModelUtils.modelToBean(request, Company.class);
+        Company company = QueryUtils.modelToBean(request, Company.class);
         return ResponseEntity.ok(BusinessResponse.success(companyService.save(company)));
     }
 
@@ -55,7 +55,7 @@ public class CompanyController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> edit(
             @RequestBody CompanyEditRequest request) {
-        Company company = ModelUtils.modelToBean(request, Company.class);
+        Company company = QueryUtils.modelToBean(request, Company.class);
         return ResponseEntity.ok(BusinessResponse.success(companyService.updateById(company)));
     }
 
@@ -73,7 +73,7 @@ public class CompanyController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody CompanySearchRequest request) {
-        Company company = ModelUtils.modelToBean(request, Company.class);
+        Company company = QueryUtils.modelToBean(request, Company.class);
         return ResponseEntity.ok(BusinessResponse.success(companyService.page(page, size, company)));
     }
 

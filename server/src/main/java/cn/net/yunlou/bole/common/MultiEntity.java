@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 /**
  * FileName: ManyEntity
  * Description: 多主键 实体
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/19 15:21
  * Modified By
  * Modified At

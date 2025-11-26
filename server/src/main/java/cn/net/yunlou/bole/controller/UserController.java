@@ -3,16 +3,13 @@ package cn.net.yunlou.bole.controller;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.EnumDTO;
 import cn.net.yunlou.bole.common.IEnum;
-import cn.net.yunlou.bole.constant.UserKeyFieldEnum;
+import cn.net.yunlou.bole.common.constant.UserKeyFieldEnum;
 import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.request.UpdateUserRequest;
-import cn.net.yunlou.bole.request.UserSearchRequest;
-import cn.net.yunlou.bole.service.UserRoleService;
+import cn.net.yunlou.bole.model.request.UpdateUserRequest;
+import cn.net.yunlou.bole.model.request.UserSearchRequest;
 import cn.net.yunlou.bole.service.UserService;
-import cn.net.yunlou.bole.utils.BeanUtils;
-import cn.net.yunlou.bole.utils.EntityUtils;
-import cn.net.yunlou.bole.utils.ModelUtils;
-import cn.net.yunlou.bole.utils.SecurityContextUtils;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
+import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,7 +53,7 @@ public class UserController {
         String username = SecurityContextUtils.getCurrentUsername();
         User currentUser = userService.findByUsername(username);
 
-        User user = ModelUtils.modelToBean(request,User.class);
+        User user = QueryUtils.modelToBean(request,User.class);
 
         user.setId(currentUser.getId());
 
@@ -73,7 +70,7 @@ public class UserController {
             @RequestParam(defaultValue = "10") long size,
             @RequestBody UserSearchRequest request) {
         //Page<User> userPage = new Page<>(page, size);
-        User user  = ModelUtils.modelToBean(request,User.class);
+        User user  = QueryUtils.modelToBean(request,User.class);
 
         //user.setEmail(request.getEmail());
         //user.setPhone(request.getPhone());

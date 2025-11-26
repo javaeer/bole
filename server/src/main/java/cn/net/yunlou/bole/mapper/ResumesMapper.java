@@ -6,7 +6,7 @@ import cn.net.yunlou.bole.entity.Resumes;
 /**
  * FileName: ResumesMapper
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 22:01
  * Modified By
  * Modified At

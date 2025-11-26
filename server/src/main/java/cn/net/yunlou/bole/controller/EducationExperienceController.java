@@ -2,11 +2,11 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.EducationExperience;
-import cn.net.yunlou.bole.request.EducationExperienceAddRequest;
-import cn.net.yunlou.bole.request.EducationExperienceEditRequest;
-import cn.net.yunlou.bole.request.EducationExperienceSearchRequest;
+import cn.net.yunlou.bole.model.request.EducationExperienceAddRequest;
+import cn.net.yunlou.bole.model.request.EducationExperienceEditRequest;
+import cn.net.yunlou.bole.model.request.EducationExperienceSearchRequest;
 import cn.net.yunlou.bole.service.EducationExperienceService;
-import cn.net.yunlou.bole.utils.ModelUtils;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * FileName: EducationExperienceController
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 21:27
  * Modified By
  * Modified At
@@ -37,7 +37,7 @@ public class EducationExperienceController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> add(
             @RequestBody EducationExperienceAddRequest request) {
-        EducationExperience educationExperience = ModelUtils.modelToBean(request, EducationExperience.class);
+        EducationExperience educationExperience = QueryUtils.modelToBean(request, EducationExperience.class);
         return ResponseEntity.ok(BusinessResponse.success(educationExperienceService.save(educationExperience)));
     }
 
@@ -55,7 +55,7 @@ public class EducationExperienceController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> edit(
             @RequestBody EducationExperienceEditRequest request) {
-        EducationExperience educationExperience = ModelUtils.modelToBean(request, EducationExperience.class);
+        EducationExperience educationExperience = QueryUtils.modelToBean(request, EducationExperience.class);
         return ResponseEntity.ok(BusinessResponse.success(educationExperienceService.updateById(educationExperience)));
     }
 
@@ -73,7 +73,7 @@ public class EducationExperienceController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody EducationExperienceSearchRequest request) {
-        EducationExperience educationExperience = ModelUtils.modelToBean(request, EducationExperience.class);
+        EducationExperience educationExperience = QueryUtils.modelToBean(request, EducationExperience.class);
         return ResponseEntity.ok(BusinessResponse.success(educationExperienceService.page(page, size, educationExperience)));
     }
 

@@ -3,12 +3,12 @@ package cn.net.yunlou.bole.controller;
 import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
-import cn.net.yunlou.bole.entity.Resumes;
 import cn.net.yunlou.bole.entity.ResumesTemplate;
-import cn.net.yunlou.bole.request.*;
+import cn.net.yunlou.bole.model.request.ResumesTemplateAddRequest;
+import cn.net.yunlou.bole.model.request.ResumesTemplateEditRequest;
+import cn.net.yunlou.bole.model.request.ResumesTemplateSearchRequest;
 import cn.net.yunlou.bole.service.ResumesTemplateService;
-import cn.net.yunlou.bole.utils.ModelUtils;
-import cn.net.yunlou.bole.utils.SecurityContextUtils;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,12 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
-
 /**
  * FileName: ResumesController
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 21:27
  * Modified By
  * Modified At
@@ -42,7 +40,7 @@ public class ResumesTemplateController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> add(
             @RequestBody ResumesTemplateAddRequest request) {
-        ResumesTemplate resumesTemplate = ModelUtils.modelToBean(request, ResumesTemplate.class);
+        ResumesTemplate resumesTemplate = QueryUtils.modelToBean(request, ResumesTemplate.class);
         return ResponseEntity.ok(BusinessResponse.success(resumesTemplateService.save(resumesTemplate)));
     }
 
@@ -61,7 +59,7 @@ public class ResumesTemplateController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> edit(
             @RequestBody @Valid ResumesTemplateEditRequest request) {
-        ResumesTemplate resumesTemplate = ModelUtils.modelToBean(request, ResumesTemplate.class);
+        ResumesTemplate resumesTemplate = QueryUtils.modelToBean(request, ResumesTemplate.class);
 
         ResumesTemplate dbResumesTemplate = resumesTemplateService.getById(resumesTemplate.getId());
         if (dbResumesTemplate == null) {
@@ -85,7 +83,7 @@ public class ResumesTemplateController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody ResumesTemplateSearchRequest request) {
-        ResumesTemplate resumesTemplate = ModelUtils.modelToBean(request, ResumesTemplate.class);
+        ResumesTemplate resumesTemplate = QueryUtils.modelToBean(request, ResumesTemplate.class);
         return ResponseEntity.ok(BusinessResponse.success(resumesTemplateService.page(page, size, resumesTemplate)));
     }
 

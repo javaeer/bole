@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.config;
 
-import cn.net.yunlou.bole.security.JwtAuthenticationFilter;
+import cn.net.yunlou.bole.common.security.JwtAuthenticationFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

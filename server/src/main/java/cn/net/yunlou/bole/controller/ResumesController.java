@@ -4,12 +4,12 @@ import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.entity.Resumes;
-import cn.net.yunlou.bole.request.ResumesAddRequest;
-import cn.net.yunlou.bole.request.ResumesEditRequest;
-import cn.net.yunlou.bole.request.ResumesSearchRequest;
+import cn.net.yunlou.bole.model.request.ResumesAddRequest;
+import cn.net.yunlou.bole.model.request.ResumesEditRequest;
+import cn.net.yunlou.bole.model.request.ResumesSearchRequest;
 import cn.net.yunlou.bole.service.ResumesService;
-import cn.net.yunlou.bole.utils.ModelUtils;
-import cn.net.yunlou.bole.utils.SecurityContextUtils;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
+import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * FileName: ResumesController
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 21:27
  * Modified By
  * Modified At
@@ -41,7 +41,7 @@ public class ResumesController {
     @Operation(summary = "新增简历")
     public ResponseEntity<BusinessResponse<Boolean>> add(
             @RequestBody ResumesAddRequest request) {
-        Resumes resumes = ModelUtils.modelToBean(request, Resumes.class);
+        Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
         resumes.setUserId(SecurityContextUtils.getCurrentUserId());
         return ResponseEntity.ok(BusinessResponse.success(resumesService.save(resumes)));
     }
@@ -64,7 +64,7 @@ public class ResumesController {
     @Operation(summary = "编辑简历")
     public ResponseEntity<BusinessResponse<Boolean>> edit(
             @RequestBody @Valid ResumesEditRequest request) {
-        Resumes resumes = ModelUtils.modelToBean(request, Resumes.class);
+        Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
 
         Resumes dbResumes = resumesService.getById(resumes.getId());
         if (dbResumes == null) {
@@ -91,7 +91,7 @@ public class ResumesController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody ResumesSearchRequest request) {
-        Resumes resumes = ModelUtils.modelToBean(request, Resumes.class);
+        Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
         return ResponseEntity.ok(BusinessResponse.success(resumesService.page(page, size, resumes)));
     }
 

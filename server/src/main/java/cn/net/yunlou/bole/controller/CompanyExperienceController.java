@@ -1,11 +1,12 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.entity.Company;
 import cn.net.yunlou.bole.entity.CompanyExperience;
-import cn.net.yunlou.bole.request.*;
+import cn.net.yunlou.bole.model.request.CompanyExperienceAddRequest;
+import cn.net.yunlou.bole.model.request.CompanyExperienceEditRequest;
+import cn.net.yunlou.bole.model.request.CompanyExperienceSearchRequest;
 import cn.net.yunlou.bole.service.CompanyExperienceService;
-import cn.net.yunlou.bole.utils.ModelUtils;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * FileName: CompanyController
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 21:27
  * Modified By
  * Modified At
@@ -36,7 +37,7 @@ public class CompanyExperienceController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> add(
             @RequestBody CompanyExperienceAddRequest request) {
-        CompanyExperience companyExperience = ModelUtils.modelToBean(request, CompanyExperience.class);
+        CompanyExperience companyExperience = QueryUtils.modelToBean(request, CompanyExperience.class);
         return ResponseEntity.ok(BusinessResponse.success(companyExperienceService.save(companyExperience)));
     }
 
@@ -54,7 +55,7 @@ public class CompanyExperienceController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> edit(
             @RequestBody CompanyExperienceEditRequest request) {
-        CompanyExperience companyExperience = ModelUtils.modelToBean(request, CompanyExperience.class);
+        CompanyExperience companyExperience = QueryUtils.modelToBean(request, CompanyExperience.class);
         return ResponseEntity.ok(BusinessResponse.success(companyExperienceService.updateById(companyExperience)));
     }
 
@@ -72,7 +73,7 @@ public class CompanyExperienceController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody CompanyExperienceSearchRequest request) {
-        CompanyExperience companyExperience = ModelUtils.modelToBean(request, CompanyExperience.class);
+        CompanyExperience companyExperience = QueryUtils.modelToBean(request, CompanyExperience.class);
         return ResponseEntity.ok(BusinessResponse.success(companyExperienceService.page(page, size, companyExperience)));
     }
 

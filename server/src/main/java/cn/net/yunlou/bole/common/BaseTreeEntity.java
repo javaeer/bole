@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 /**
  * FileName: BaseTreeEntity
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/25 17:00
  * Modified By
  * Modified At

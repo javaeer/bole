@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @author laughtiger
+ * @author MR. WANG
  * @see org.springframework.http.HttpStatus
  * 200 OK - [GET]：服务器成功返回用户请求的数据，该操作是幂等的（Idempotent）。
  * 201 CREATED - [POST/PUT/PATCH]：用户新建或修改数据成功。

@@ -2,11 +2,11 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.WorkExperience;
-import cn.net.yunlou.bole.request.WorkExperienceAddRequest;
-import cn.net.yunlou.bole.request.WorkExperienceEditRequest;
-import cn.net.yunlou.bole.request.WorkExperienceSearchRequest;
+import cn.net.yunlou.bole.model.request.WorkExperienceAddRequest;
+import cn.net.yunlou.bole.model.request.WorkExperienceEditRequest;
+import cn.net.yunlou.bole.model.request.WorkExperienceSearchRequest;
 import cn.net.yunlou.bole.service.WorkExperienceService;
-import cn.net.yunlou.bole.utils.ModelUtils;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * FileName: WorkExperienceController
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 21:27
  * Modified By
  * Modified At
@@ -37,7 +37,7 @@ public class WorkExperienceController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> add(
             @RequestBody WorkExperienceAddRequest request) {
-        WorkExperience workExperience = ModelUtils.modelToBean(request, WorkExperience.class);
+        WorkExperience workExperience = QueryUtils.modelToBean(request, WorkExperience.class);
         return ResponseEntity.ok(BusinessResponse.success(workExperienceService.save(workExperience)));
     }
 
@@ -55,7 +55,7 @@ public class WorkExperienceController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> edit(
             @RequestBody WorkExperienceEditRequest request) {
-        WorkExperience workExperience = ModelUtils.modelToBean(request, WorkExperience.class);
+        WorkExperience workExperience = QueryUtils.modelToBean(request, WorkExperience.class);
         return ResponseEntity.ok(BusinessResponse.success(workExperienceService.updateById(workExperience)));
     }
 
@@ -73,7 +73,7 @@ public class WorkExperienceController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody WorkExperienceSearchRequest request) {
-        WorkExperience workExperience = ModelUtils.modelToBean(request, WorkExperience.class);
+        WorkExperience workExperience = QueryUtils.modelToBean(request, WorkExperience.class);
         return ResponseEntity.ok(BusinessResponse.success(workExperienceService.page(page, size, workExperience)));
     }
 

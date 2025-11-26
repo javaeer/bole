@@ -1,0 +1,19 @@
+package cn.net.yunlou.bole.struct;
+
+import cn.net.yunlou.bole.common.BaseStructMapper;
+import cn.net.yunlou.bole.model.dto.WorkExperienceDTO;
+import cn.net.yunlou.bole.entity.WorkExperience;
+import cn.net.yunlou.bole.model.query.WorkExperienceQuery;
+import org.mapstruct.Mapper;
+
+/**
+ * FileName: WorkExperienceStructMapper
+ * Description:
+ * Created By MR. WANG
+ * Created At 2025/11/26 19:09
+ * Modified By
+ * Modified At
+ */
+@Mapper(componentModel = "spring")
+public interface WorkExperienceStructMapper extends BaseStructMapper<WorkExperience, WorkExperienceDTO, WorkExperienceQuery> {
+}

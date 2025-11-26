@@ -26,7 +26,7 @@ import java.time.Duration;
 /**
  * Redis 配置类
  *
- * @author laughtiger
+ * @author MR. WANG
  */
 @Configuration
 @AutoConfigureBefore(RedisAutoConfiguration.class)

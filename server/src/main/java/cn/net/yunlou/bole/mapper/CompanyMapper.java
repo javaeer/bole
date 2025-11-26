@@ -6,7 +6,7 @@ import cn.net.yunlou.bole.entity.Company;
 /**
  * FileName: CompanyMapper
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 21:30
  * Modified By
  * Modified At

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * FileName: SucurityWaitlistConfig
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/21 17:13
  * Modified By
  * Modified At

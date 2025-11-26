@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * FileName: MultiMapper Description: Created By laughtiger Created At 2025/11/19 15:34 Modified By
+ * FileName: MultiMapper Description: Created By MR. WANG Created At 2025/11/19 15:34 Modified By
  * Modified At
  */
 public interface IMultiMapper<T, L, R> extends BaseMapper<T> {

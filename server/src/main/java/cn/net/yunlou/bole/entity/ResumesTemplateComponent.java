@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 /**
  * FileName: ResumesTemplateComponent
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/25 18:32
  * Modified By
  * Modified At

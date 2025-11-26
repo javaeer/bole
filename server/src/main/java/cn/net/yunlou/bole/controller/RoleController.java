@@ -2,11 +2,11 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.Role;
-import cn.net.yunlou.bole.request.RoleAddRequest;
-import cn.net.yunlou.bole.request.RoleEditRequest;
-import cn.net.yunlou.bole.request.RoleSearchRequest;
+import cn.net.yunlou.bole.model.request.RoleAddRequest;
+import cn.net.yunlou.bole.model.request.RoleEditRequest;
+import cn.net.yunlou.bole.model.request.RoleSearchRequest;
 import cn.net.yunlou.bole.service.RoleService;
-import cn.net.yunlou.bole.utils.ModelUtils;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * FileName: RoleController
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 21:27
  * Modified By
  * Modified At
@@ -37,7 +37,7 @@ public class RoleController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> add(
             @RequestBody RoleAddRequest request) {
-        Role role = ModelUtils.modelToBean(request, Role.class);
+        Role role = QueryUtils.modelToBean(request, Role.class);
         return ResponseEntity.ok(BusinessResponse.success(roleService.save(role)));
     }
 
@@ -55,7 +55,7 @@ public class RoleController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> edit(
             @RequestBody RoleEditRequest request) {
-        Role role = ModelUtils.modelToBean(request, Role.class);
+        Role role = QueryUtils.modelToBean(request, Role.class);
         return ResponseEntity.ok(BusinessResponse.success(roleService.updateById(role)));
     }
 
@@ -73,7 +73,7 @@ public class RoleController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody RoleSearchRequest request) {
-        Role role = ModelUtils.modelToBean(request, Role.class);
+        Role role = QueryUtils.modelToBean(request, Role.class);
         return ResponseEntity.ok(BusinessResponse.success(roleService.page(page, size, role)));
     }
 

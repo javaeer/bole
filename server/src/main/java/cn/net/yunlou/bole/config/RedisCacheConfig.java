@@ -17,7 +17,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
  * <p>
  * 供spring的@Cacheable、@CacheEvict、@CachePut 等注解来更优雅的实现快速缓存
  *
- * @author laughtiger
+ * @author MR. WANG
  */
 @EnableConfigurationProperties(CacheProperties.class)
 @Configuration

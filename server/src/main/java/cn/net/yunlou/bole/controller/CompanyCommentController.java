@@ -2,11 +2,11 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.CompanyComment;
-import cn.net.yunlou.bole.request.CompanyCommentAddRequest;
-import cn.net.yunlou.bole.request.CompanyCommentEditRequest;
-import cn.net.yunlou.bole.request.CompanyCommentSearchRequest;
+import cn.net.yunlou.bole.model.request.CompanyCommentAddRequest;
+import cn.net.yunlou.bole.model.request.CompanyCommentEditRequest;
+import cn.net.yunlou.bole.model.request.CompanyCommentSearchRequest;
 import cn.net.yunlou.bole.service.CompanyCommentService;
-import cn.net.yunlou.bole.utils.ModelUtils;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * FileName: CompanyCommentController
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 21:27
  * Modified By
  * Modified At
@@ -30,15 +30,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CompanyCommentController {
 
-    private final CompanyCommentService companyCommentCommentService;
+    private final CompanyCommentService companyCommentService;
 
     @PostMapping("add")
     @Operation(summary = "新增企业评价")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> add(
             @RequestBody CompanyCommentAddRequest request) {
-        CompanyComment companyComment = ModelUtils.modelToBean(request, CompanyComment.class);
-        return ResponseEntity.ok(BusinessResponse.success(companyCommentCommentService.save(companyComment)));
+        CompanyComment companyComment = QueryUtils.modelToBean(request, CompanyComment.class);
+        return ResponseEntity.ok(BusinessResponse.success(companyCommentService.save(companyComment)));
     }
 
     @DeleteMapping("del")
@@ -46,7 +46,7 @@ public class CompanyCommentController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> del(
             @RequestParam(value = "主键") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(companyCommentCommentService.removeById(id)));
+        return ResponseEntity.ok(BusinessResponse.success(companyCommentService.removeById(id)));
     }
 
 
@@ -55,8 +55,8 @@ public class CompanyCommentController {
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public ResponseEntity<BusinessResponse<Boolean>> edit(
             @RequestBody CompanyCommentEditRequest request) {
-        CompanyComment companyComment = ModelUtils.modelToBean(request, CompanyComment.class);
-        return ResponseEntity.ok(BusinessResponse.success(companyCommentCommentService.updateById(companyComment)));
+        CompanyComment companyComment = QueryUtils.modelToBean(request, CompanyComment.class);
+        return ResponseEntity.ok(BusinessResponse.success(companyCommentService.updateById(companyComment)));
     }
 
 
@@ -64,7 +64,7 @@ public class CompanyCommentController {
     @Operation(summary = "获取企业评价信息")
     public ResponseEntity<BusinessResponse<CompanyComment>> get(
             @PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(companyCommentCommentService.getById(id)));
+        return ResponseEntity.ok(BusinessResponse.success(companyCommentService.getById(id)));
     }
 
     @PostMapping("page")
@@ -73,8 +73,8 @@ public class CompanyCommentController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody CompanyCommentSearchRequest request) {
-        CompanyComment companyComment = ModelUtils.modelToBean(request, CompanyComment.class);
-        return ResponseEntity.ok(BusinessResponse.success(companyCommentCommentService.page(page, size, companyComment)));
+        CompanyComment companyComment = QueryUtils.modelToBean(request, CompanyComment.class);
+        return ResponseEntity.ok(BusinessResponse.success(companyCommentService.page(page, size, companyComment)));
     }
 
 }

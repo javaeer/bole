@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * FileName: ResumesTemplateMapper
  * Description:
- * Created By laughtiger
+ * Created By MR. WANG
  * Created At 2025/11/24 23:55
  * Modified By
  * Modified At
