@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("api/health")
+@RequestMapping("health")
 @RequiredArgsConstructor
 @Tag(name = "17.系统监控", description = "系统健康检查和状态监控")
 public class HealthController {

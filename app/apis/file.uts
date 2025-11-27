@@ -1,0 +1,13 @@
+class FileService {
+  async uploadFile(filePath: string): Promise<ApiResponse<UploadResponse>> {
+    return httpRequest.upload('/api/upload/file', filePath)
+  }
+  
+  async uploadImage(filePath: string): Promise<ApiResponse<UploadResponse>> {
+    return httpRequest.upload('/api/upload/image', filePath)
+  }
+  
+  async uploadMultiple(files: string[]): Promise<ApiResponse<UploadResponse[]>> {
+    // 批量上传逻辑
+  }
+}

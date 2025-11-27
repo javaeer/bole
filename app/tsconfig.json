@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "lib": ["ES2018", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "types": [
+      "@dcloudio/types",
+      "vite/client"
+    ],
+    "strict": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      // 修正：指向根目录而不是 src
+      "@/*": ["./*"],
+      "@/stores/*": ["./stores/*"],
+      "@/apis/*": ["./apis/*"],
+      "@/utils/*": ["./utils/*"],
+      "@/types/*": ["./types/*"],
+      "@/components/*": ["./components/*"],
+      "@/styles/*": ["./styles/*"],
+      "@/static/*": ["./static/*"],
+      "@/pages/*": ["./pages/*"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    // 修正包含路径，指向根目录文件
+    "**/*",
+    "types/**/*",
+    "auto-imports.d.ts",
+    "env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "unpackage",
+    "dist"
+  ]
+}

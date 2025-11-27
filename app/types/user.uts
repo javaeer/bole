@@ -1,0 +1,77 @@
+// 登录请求参数
+export interface LoginParams {
+  /* 用户名 */
+  username: string;
+  /* 密码 */
+  password: string;
+}
+
+// 权限信息
+export interface Authority {
+  authority: string;
+}
+
+// 用户信息 - 确保包含所有必要的属性
+export interface UserInfo {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  deleted: number;
+  companyId: number;
+  username: string;
+  email: string;
+  phone: string | null;
+  name: string | null;
+  avatar: string | null;
+  title: string | null;
+  location: string | null;
+  website: string | null;
+  github: string | null;
+  wechat: string | null;
+  bio: string | null;
+  followers: number;
+  fans: number;
+  likes: number;
+  status: number;
+  lastLoginAt: string;
+  workYears: number;
+  userRoles: any | null;
+  authorities: Authority[];
+  company: any | null;
+}
+
+// 部分用户信息（用于更新等场景）
+export interface PartialUserInfo {
+  id?: number;
+  username?: string;
+  email?: string;
+  phone?: string | null;
+  name?: string | null;
+  avatar?: string | null;
+  title?: string | null;
+  location?: string | null;
+  website?: string | null;
+  github?: string | null;
+  wechat?: string | null;
+  bio?: string | null;
+  workYears?: number;
+}
+
+// 登录响应数据
+export interface LoginResult {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
+  refreshExpiresIn: number | null;
+  userInfo: UserInfo;
+  permissions: string[];
+}
+
+// 登录响应（包含基础响应结构）
+export interface LoginRes {
+  code: number;
+  message: string;
+  data: LoginResult;
+  timestamp: number;
+}

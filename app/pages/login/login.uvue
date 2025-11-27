@@ -1,0 +1,211 @@
+<template>
+  <view class="login-container">
+    <view class="login-header">
+      <text class="login-title">欢迎登录</text>
+      <text class="login-subtitle">Boole 社交平台</text>
+    </view>
+    
+    <view class="login-form">
+      <view class="form-item">
+        <input 
+          v-model="form.username" 
+          class="input" 
+          placeholder="请输入用户名"
+          type="text"
+          @confirm="handleLogin"
+        />
+      </view>
+      
+      <view class="form-item">
+        <input 
+          v-model="form.password" 
+          class="input" 
+          placeholder="请输入密码"
+          password
+          type="text"
+          @confirm="handleLogin"
+        />
+      </view>
+      
+      <button 
+        class="login-btn" 
+        :disabled="loading" 
+        @click="handleLogin"
+        :loading="loading"
+      >
+        {{ loading ? '登录中...' : '登录' }}
+      </button>
+    </view>
+    
+    <view class="login-footer">
+      <text class="footer-text">© 2024 Boole 社交平台</text>
+    </view>
+  </view>
+</template>
+
+<script lang="uts">
+import { AuthApi } from '@/apis/auth'
+import { StorageUtil } from '@/utils/storage'
+import { useUserStore } from '@/stores/user'
+import type { LoginParams } from '@/types/user'
+
+export default {
+  data() {
+    return {
+      form: {
+        username: '',
+        password: ''
+      } as LoginParams,
+      loading: false
+    }
+  },
+  
+  onLoad() {
+    // 检查是否已登录
+    this.checkLoginStatus()
+  },
+  
+  methods: {
+    /**
+     * 检查登录状态
+     */
+    async checkLoginStatus(): Promise<void> {
+      const isLoggedIn = await StorageUtil.isLoggedIn()
+      if (isLoggedIn) {
+        // 已登录，跳转到首页
+        uni.switchTab({
+          url: '/pages/index/index'
+        })
+      }
+    },
+    
+    /**
+     * 处理登录
+     */
+    async handleLogin(): Promise<void> {
+      // 表单验证
+      if (!this.form.username.trim()) {
+        uni.showToast({ title: '请输入用户名', icon: 'none' })
+        return
+      }
+      
+      if (!this.form.password.trim()) {
+        uni.showToast({ title: '请输入密码', icon: 'none' })
+        return
+      }
+      
+      this.loading = true
+      
+      try {
+        // 调用登录接口
+        const loginResult = await AuthApi.login(this.form)
+        
+        // 保存登录信息
+        await StorageUtil.saveLoginData(loginResult)
+        
+        // 更新用户状态
+        const userStore = useUserStore()
+        await userStore.setLoginData(loginResult)
+        
+        // 登录成功提示
+        uni.showToast({
+          title: '登录成功',
+          icon: 'success',
+          duration: 1500
+        })
+        
+        // 跳转到首页
+        setTimeout(() => {
+          uni.switchTab({
+            url: '/pages/index/index'
+          })
+        }, 1500)
+        
+      } catch (error) {
+        console.error('登录失败:', error)
+        // 错误信息已在请求层统一处理
+      } finally {
+        this.loading = false
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 120rpx 60rpx 80rpx;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 100rpx;
+}
+
+.login-title {
+  display: block;
+  font-size: 48rpx;
+  color: #fff;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.login-subtitle {
+  display: block;
+  font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.login-form {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 60rpx 40rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.1);
+}
+
+.form-item {
+  margin-bottom: 40rpx;
+}
+
+.input {
+  border: 2rpx solid #e5e5e5;
+  border-radius: 16rpx;
+  padding: 28rpx 24rpx;
+  font-size: 32rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #007AFF;
+}
+
+.login-btn {
+  background: #007AFF;
+  color: #fff;
+  border: none;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  font-size: 32rpx;
+  width: 100%;
+  margin-top: 20rpx;
+}
+
+.login-btn:disabled {
+  background: #ccc;
+}
+
+.login-footer {
+  text-align: center;
+}
+
+.footer-text {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+</style>

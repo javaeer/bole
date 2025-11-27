@@ -1,0 +1,10 @@
+export function testEnvConfig(): void {
+  console.log('=== 环境配置测试 ===')
+  console.log('BASE_URL:', EnvConfig.getBaseURL())
+  console.log('API Prefix:', EnvConfig.getApiPrefix())
+  console.log('完整 API URL:', EnvConfig.getFullApiURL('user/profile'))
+  console.log('是否是开发环境:', EnvConfig.isDev())
+  console.log('是否是生产环境:', EnvConfig.isProd())
+  console.log('应用标题:', EnvConfig.getAppTitle())
+  console.log('=== 测试结束 ===')
+}

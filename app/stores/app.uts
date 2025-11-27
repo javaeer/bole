@@ -1,0 +1,44 @@
+export const useAppStore = defineStore('app', {
+  state: (): {
+    platform: string
+    theme: 'light' | 'dark'
+    language: string
+    loading: boolean
+    networkConnected: boolean
+    globalError: string | null
+  } => ({
+    platform: PlatformUtils.getPlatform(),
+    theme: 'light',
+    language: 'zh-CN',
+    loading: false,
+    networkConnected: true,
+    globalError: null
+  }),
+
+  actions: {
+    setTheme(theme: 'light' | 'dark'): void {
+      this.theme = theme
+      uni.setStorageSync('theme', theme)
+      this.applyTheme(theme)
+    },
+    
+    setLanguage(language: string): void {
+      this.language = language
+      uni.setStorageSync('language', language)
+    },
+    
+    initAppState(): void {
+      // 初始化应用状态
+    },
+    
+    showGlobalLoading(): void {
+      this.loading = true
+      uni.showLoading({ title: '加载中...', mask: true })
+    },
+    
+    hideGlobalLoading(): void {
+      this.loading = false
+      uni.hideLoading()
+    }
+  }
+})

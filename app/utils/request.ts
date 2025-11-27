@@ -1,440 +1,289 @@
-import { getPlatform } from './platform'
+import { EnvConfig } from './env'
+import { StorageUtil } from './storage'
+import { AuthApi } from '@/apis/auth'
+import { 
+  BaseResponse, 
+  PageResponse, 
+  RequestOptions, 
+  RequestError, // 改为直接导入，而不是 import type
+  BasePageResponse
+} from '@/types/api'
 
-// 定义请求配置接口
-export interface RequestOptions<T = any> {
-	url : string
-	method ?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
-	data ?: T
-	header ?: Record<string, string>
-	timeout ?: number
-	showLoading ?: boolean
-	loadingText ?: string
-}
+export class RequestUtil {
+  private static baseURL: string = EnvConfig.getBaseURL()
+  private static apiPrefix: string = EnvConfig.getApiPrefix()
+  
+  /**
+   * 通用请求方法
+   */
+  static async request<T = any>(
+    url: string,
+    options: RequestOptions = {}
+  ): Promise<T> {
+    const {
+      method = 'GET',
+      header = {},
+      data,
+      timeout = 10000,
+      showLoading = true,
+      showError = true,
+      retryOnTokenExpired = true
+    } = options
 
-// 定义响应接口
-export interface ResponseData<T = any> {
-	code : number
-	data : T
-	message : string
-	success : boolean
-}
+    if (showLoading) {
+      uni.showLoading({ title: '加载中...', mask: true })
+    }
 
-interface UniRequestSuccess {
-	data : any
-	statusCode : number
-	header : Record<string, string>
-	cookies ?: string[]
-}
+    try {
+      const requestHeader = await this.buildRequestHeader(header)
+      const fullURL = this.buildFullURL(url)
 
-interface UniRequestFail {
-	errMsg : string
-}
+      // 修复：明确指定返回类型
+      const originalRequest = async (): Promise<any> => {
+        const response = await uni.request({
+          url: fullURL,
+          method,
+          data,
+          header: requestHeader as any, // 使用类型断言解决 UTSJSONObject 问题
+          timeout
+        })
+        return response
+      }
 
-// ====== token 获取器 ======
-let tokenGetter : (() => string | null) | null = null
+      const response = await originalRequest()
+      
+      return await this.handleEnhancedResponse<T>(
+        response, 
+        showError, 
+        retryOnTokenExpired ? originalRequest : undefined
+      )
+    } catch (error) {
+      return this.handleError(error, showError)
+    } finally {
+      if (showLoading) {
+        uni.hideLoading()
+      }
+    }
+  }
 
-export const setTokenGetter = (getter : () => string | null) => {
-	tokenGetter = getter
-}
-//====== 清除 token 回调 =====
-let clearTokenCallback : (() => void) | null = null
+  /**
+   * GET 请求
+   */
+  static async get<T = any>(
+    url: string,
+    params?: Record<string, any>,
+    options: RequestOptions = {}
+  ): Promise<T> {
+    let finalUrl = url
+    if (params && Object.keys(params).length > 0) {
+      const queryString = Object.keys(params)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+        .join('&')
+      finalUrl += `?${queryString}`
+    }
 
-export const setClearTokenCallback = (callback : () => void) => {
-	clearTokenCallback = callback
-}
+    return this.request<T>(finalUrl, { ...options, method: 'GET' })
+  }
 
-// 基础配置
-const TIMEOUT = 10000
+  /**
+   * POST 请求
+   */
+  static async post<T = any>(
+    url: string,
+    data?: any,
+    options: RequestOptions = {}
+  ): Promise<T> {
+    return this.request<T>(url, { ...options, method: 'POST', data })
+  }
 
-// 动态获取 BASE_URL（避免静态初始化问题）
-const getBaseUrl = () : string => {
-	// #ifdef H5
-	return import.meta.env.VITE_APP_BASE_API as string || ''
-	// #endif
-	// #ifndef H5
-	return import.meta.env.VITE_APP_API_URL as string || ''
-	// #endif
-}
+  /**
+   * PUT 请求
+   */
+  static async put<T = any>(
+    url: string,
+    data?: any,
+    options: RequestOptions = {}
+  ): Promise<T> {
+    return this.request<T>(url, { ...options, method: 'PUT', data })
+  }
 
-// 请求队列，用于管理全局 loading
-let requestQueue = 0
+  /**
+   * DELETE 请求
+   */
+  static async delete<T = any>(
+    url: string,
+    options: RequestOptions = {}
+  ): Promise<T> {
+    return this.request<T>(url, { ...options, method: 'DELETE' })
+  }
 
-const showLoading = (text : string = '加载中...') => {
-	if (requestQueue === 0) {
-		uni.showLoading({
-			title: text,
-			mask: true
-		})
-	}
-	requestQueue++
-}
+  /**
+   * 构建请求头 - 修复类型问题
+   */
+  private static async buildRequestHeader(customHeader: Record<string, string> = {}): Promise<Record<string, string>> {
+    const token = await StorageUtil.getAccessToken()
+    const tokenType = await StorageUtil.getTokenType()
+    
+    // 修复：确保 Authorization 不会是 undefined
+    const authHeader: Record<string, string> = token ? { 
+      'Authorization': `${tokenType} ${token}` 
+    } : {}
 
-const hideLoading = () => {
-	requestQueue--
-	if (requestQueue <= 0) {
-		uni.hideLoading()
-		requestQueue = 0
-	}
-}
+    return {
+      'Content-Type': 'application/json',
+      ...authHeader,
+      ...customHeader
+    }
+  }
 
-// 获取HTTP错误消息
-const getHttpErrorMessage = (statusCode : number) : string => {
-	const errorMessages : Record<number, string> = {
-		400: '请求参数错误',
-		401: '未授权，请重新登录',
-		403: '拒绝访问',
-		404: '请求地址不存在',
-		405: '请求方法不被允许',
-		408: '请求超时',
-		500: '服务器内部错误',
-		502: '网关错误',
-		503: '服务不可用',
-		504: '网关超时'
-	}
-	return errorMessages[statusCode] || '网络错误，请稍后重试'
-}
+  /**
+   * 处理 token 过期
+   */
+  private static async handleTokenExpired(): Promise<boolean> {
+    const refreshToken = await StorageUtil.getRefreshToken()
+    if (!refreshToken) {
+      this.redirectToLogin()
+      return false
+    }
 
-// 处理业务错误 从后台获取代码 数组
-const handleBusinessError = (data : any) => {
-	const errorMessage = data.message || '请求失败'
+    try {
+      const newLoginResult = await AuthApi.refreshToken(refreshToken)
+      await StorageUtil.saveLoginData(newLoginResult)
+      return true
+    } catch (error) {
+      console.error('刷新 token 失败:', error)
+      this.redirectToLogin()
+      return false
+    }
+  }
 
-	switch (data.code) {
-		case 401:
-			// clearTokenCallback?.()
-			// uni.navigateTo({ url: '/pages/login/login' })
-			// break
-			// 抛出原始错误，供上层判断
-			throw new Error(JSON.stringify({ code: data.code, message: errorMessage }))
-		case 403:
-			uni.showToast({
-				title: '没有权限访问',
-				icon: 'none'
-			})
-			break
-		default:
-			uni.showToast({
-				title: errorMessage,
-				icon: 'none'
-			})
-	}
-}
+   /**
+    * 跳转到登录页 - 使用 UniApp 原生路由
+    */
+   private static redirectToLogin(): void {
+     StorageUtil.clearAuthData()
+     
+     // 使用 UniApp 原生路由跳转，而不是动态导入
+     const currentPages = getCurrentPages()
+     if (currentPages.length === 0) {
+       // 没有页面栈，直接跳转到登录页
+       uni.reLaunch({
+         url: '/pages/login/login'
+       })
+     } else {
+       // 检查当前页面是否是登录页，避免重复跳转
+       const currentRoute = currentPages[currentPages.length - 1].route
+       if (!currentRoute.includes('login')) {
+         uni.redirectTo({
+           url: '/pages/login/login'
+         })
+       }
+     }
+   }
 
-// 处理HTTP错误
-const handleHttpError = (statusCode : number, data : any) => {
-	const message = getHttpErrorMessage(statusCode)
+  /**
+   * 增强的响应处理方法
+   */
+  private static async handleEnhancedResponse<T>(
+    response: any,
+    showError: boolean,
+    originalRequest?: () => Promise<any>
+  ): Promise<T> {
+    const { statusCode, data: responseData } = response
 
-	switch (statusCode) {
-		case 401:
-			// clearTokenCallback?.()
-			// uni.navigateTo({url: '/pages/login/login'})
-			// break
-			// 抛出原始错误，供上层判断
-			throw new Error(JSON.stringify({ code: data.code, message: message }))
-		case 404:
-			console.error('请求地址不存在:', data)
-			break
-		case 500:
-			console.error('服务器内部错误:', data)
-			break
-		default:
-			console.error(`HTTP错误 ${statusCode}:`, data)
-	}
+    if (statusCode === 200) {
+      const baseResponse = responseData as BaseResponse<T>
+      
+      if (baseResponse.code === 200) {
+        return baseResponse.data
+      } 
+      else if (baseResponse.code === 401) {
+        const refreshSuccess = await this.handleTokenExpired()
+        if (refreshSuccess && originalRequest) {
+          const retryResponse = await originalRequest()
+          return await this.handleEnhancedResponse<T>(retryResponse, showError)
+        }
+        // 修复：直接使用 Error 而不是 RequestError
+        throw new Error('登录已过期，请重新登录')
+      }
+      else {
+        // 修复：使用 Error 而不是 RequestError
+        const error = new Error(baseResponse.message)
+        
+        if (showError) {
+          this.showErrorToast(baseResponse.message)
+        }
+        
+        throw error
+      }
+    } 
+    else {
+      // 修复：使用 Error 而不是 RequestError
+      const error = new Error(`HTTP错误: ${statusCode}`)
+      
+      if (showError) {
+        this.showErrorToast(`网络错误: ${statusCode}`)
+      }
+      
+      throw error
+    }
+  }
 
-	uni.showToast({
-		title: message,
-		icon: 'none'
-	})
-}
+  /**
+   * 处理错误
+   */
+  private static handleError(error: any, showError: boolean): Promise<never> {
+    console.error('请求错误:', error)
+    
+    let errorMessage = '网络请求失败'
+    
+    // 修复：不再使用 instanceof RequestError
+    if (error.message) {
+      errorMessage = error.message
+    } else if (error.errMsg) {
+      errorMessage = error.errMsg
+    }
 
-// 错误处理
-const handleError = (error : any, showLoading : boolean) => {
-	if (showLoading) {
-		hideLoading()
-	}
-	console.error('❌ Request Error:', error)
+    if (showError) {
+      this.showErrorToast(errorMessage)
+    }
 
-	if (error.errMsg && error.errMsg.includes('request:fail')) {
-		uni.showToast({
-			title: '网络连接失败，请检查网络设置',
-			icon: 'none'
-		})
-	}
+    return Promise.reject(error)
+  }
 
-	return Promise.reject(error)
-}
+  /**
+   * 显示错误提示
+   */
+  private static showErrorToast(message: string): void {
+    uni.showToast({
+      title: message,
+      icon: 'none',
+      duration: 3000
+    })
+  }
 
-// 检查响应数据格式
-const isValidResponseData = (data : any) : data is ResponseData => {
-	return (
-		data &&
-		typeof data === 'object' &&
-		(typeof data.code === 'number' || typeof data.success === 'boolean')
-	)
-}
+  /**
+   * 构建完整 URL
+   */
+  private static buildFullURL(url: string): string {
+    if (url.startsWith('http')) {
+      return url
+    }
 
-// 请求拦截器
-const requestInterceptor = <T>(options : RequestOptions<T>) : RequestOptions<T> => {
-	console.log('🚀 Request Interceptor:', options)
+    const cleanUrl = url.replace(/^\//, '')
+    const cleanPrefix = this.apiPrefix.replace(/^\//, '').replace(/\/$/, '')
+    
+    return `${this.baseURL}/${cleanPrefix}/${cleanUrl}`
+  }
 
-	// ✅ 安全获取 token
-	const token = tokenGetter?.() || null
-
-	const headers : Record<string, string> = {
-		'Content-Type': 'application/json',
-		'X-Platform': getPlatform(),
-		...options.header
-	}
-
-	if (token) {
-		headers['Authorization'] = `Bearer ${token}`
-	}
-
-	return {
-		...options,
-		header: headers
-	}
-}
-
-// 响应拦截器
-const responseInterceptor = <T>(response : UniRequestSuccess, showLoading : boolean) : Promise<T> => {
-	if (showLoading) {
-		hideLoading()
-	}
-
-	const { statusCode, data } = response
-	console.log('📨 Response Interceptor:', { statusCode, data })
-
-	// HTTP 状态码处理
-	if (statusCode >= 200 && statusCode < 300) {
-		// 检查数据格式是否符合 ResponseData
-		if (isValidResponseData(data)) {
-			// 业务状态码处理
-			if (data.code === 0 || data.success) {
-				return Promise.resolve(data.data)
-			} else {
-				handleBusinessError(data)
-				return Promise.reject(new Error(data.message || '请求失败'))
-			}
-		} else {
-			// 如果数据格式不符合 ResponseData，直接返回原始数据
-			return Promise.resolve(data as T)
-		}
-	} else {
-		handleHttpError(statusCode, data)
-		return Promise.reject(new Error(getHttpErrorMessage(statusCode)))
-	}
-}
-
-// 主请求函数
-export default function request<T = any>(options : RequestOptions) : Promise<T> {
-	const needLoading = !!options.showLoading
-	const loadingText = options.loadingText
-
-	if (needLoading) {
-		showLoading(loadingText)
-	}
-
-	const finalOptions = requestInterceptor({
-		timeout: TIMEOUT,
-		...options,
-		url: `${getBaseUrl()}${options.url}`
-	})
-
-	return new Promise((resolve, reject) => {
-		uni.request({
-			url: finalOptions.url,
-			method: finalOptions.method || 'GET',
-			data: finalOptions.data,
-			header: finalOptions.header as any,
-			timeout: finalOptions.timeout,
-			success: (res) => {
-				responseInterceptor<T>(res, needLoading)
-					.then(resolve)
-					.catch(reject)
-			},
-			fail: (err) => {
-				handleError(err, needLoading).catch(reject)
-			}
-		})
-	})
-}
-
-// 快捷方法
-export const http = {
-	get: <T = any>(
-		url : string,
-		data ?: any,
-		options ?: Omit<RequestOptions, 'url' | 'method' | 'data'>
-	) => request<T>({ ...options, url, method: 'GET', data }),
-
-	post: <T = any>(
-		url : string,
-		data ?: any,
-		options ?: Omit<RequestOptions, 'url' | 'method' | 'data'>
-	) => request<T>({ ...options, url, method: 'POST', data }),
-
-	put: <T = any>(
-		url : string,
-		data ?: any,
-		options ?: Omit<RequestOptions, 'url' | 'method' | 'data'>
-	) => request<T>({ ...options, url, method: 'PUT', data }),
-
-	delete: <T = any>(
-		url : string,
-		data ?: any,
-		options ?: Omit<RequestOptions, 'url' | 'method' | 'data'>
-	) => request<T>({ ...options, url, method: 'DELETE', data }),
-
-	patch: <T = any>(
-		url : string,
-		data ?: any,
-		options ?: Omit<RequestOptions, 'url' | 'method' | 'data'>
-	) => request<T>({ ...options, url, method: 'PATCH', data })
-}
-
-// 文件上传
-export const uploadFile = <T = any>(
-	url : string,
-	filePath : string,
-	formData ?: Record<string, any>,
-	fileName : string = 'file',
-	options ?: Omit<RequestOptions, 'url' | 'method' | 'data'>
-) : Promise<T> => {
-	const needLoading = !!options?.showLoading
-	if (needLoading) {
-		showLoading(options.loadingText)
-	}
-
-	// ✅ 安全获取 token
-	const token = tokenGetter?.() || null
-
-	const header : Record<string, string> = {
-		'X-Platform': getPlatform(),
-		...options?.header
-	}
-	if (token) {
-		header['Authorization'] = `Bearer ${token}`
-	}
-
-	return new Promise((resolve, reject) => {
-		uni.uploadFile({
-			url: `${getBaseUrl()}${url}`,
-			filePath,
-			name: fileName,
-			formData: formData as any,
-			header: header as any,
-			success: (res) => {
-				if (needLoading) {
-					hideLoading()
-				}
-
-				try {
-					// 解析响应数据
-					const responseData = typeof res.data === 'string' ? JSON.parse(res.data) : res.data
-
-					if (isValidResponseData(responseData)) {
-						if (responseData.code === 0 || responseData.success) {
-							resolve(responseData.data)
-						} else {
-							handleBusinessError(responseData)
-							reject(new Error(responseData.message || '上传失败'))
-						}
-					} else {
-						// 如果数据格式不符合 ResponseData，直接返回原始数据
-						resolve(responseData as T)
-					}
-				} catch (error) {
-					reject(new Error('解析响应数据失败'))
-				}
-			},
-			fail: (err) => {
-				handleError(err, needLoading).catch(reject)
-			}
-		})
-	})
-}
-
-// 文件下载
-export const downloadFile = (
-	url : string,
-	options ?: Omit<RequestOptions, 'url' | 'method'>
-) : Promise<string> => {
-	const needLoading = !!options?.showLoading
-	if (needLoading) {
-		showLoading(options.loadingText)
-	}
-
-	// ✅ 安全获取 token
-	const token = tokenGetter?.() || null
-
-	const header : Record<string, string> = {
-		'X-Platform': getPlatform(),
-		...options?.header
-	}
-	if (token) {
-		header['Authorization'] = `Bearer ${token}`
-	}
-
-	return new Promise((resolve, reject) => {
-		uni.downloadFile({
-			url: `${getBaseUrl()}${url}`,
-			header: header as any,
-			success: (res) => {
-				if (needLoading) {
-					hideLoading()
-				}
-
-				if (res.statusCode === 200) {
-					resolve(res.tempFilePath)
-				} else {
-					handleHttpError(res.statusCode, res.data)
-					reject(new Error(getHttpErrorMessage(res.statusCode)))
-				}
-			},
-			fail: (err) => {
-				handleError(err, needLoading).catch(reject)
-			}
-		})
-	})
-}
-
-// 带重试的请求
-export const requestWithRetry = async <T = any>(options : RequestOptions, maxRetries : number = 3) : Promise<T> => {
-	for (let attempt = 1; attempt <= maxRetries; attempt++) {
-		try {
-			return await request<T>(options)
-		} catch (error : any) {
-			console.log(`请求失败，第 ${attempt} 次重试:`, error)
-
-			if (attempt === maxRetries) {
-				throw error
-			}
-
-			// 等待一段时间后重试
-			await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
-		}
-	}
-	throw new Error('请求失败，已达到最大重试次数')
-}
-
-// 网络状态检查
-export const checkNetworkStatus = () : Promise<boolean> => {
-	return new Promise((resolve) => {
-		uni.getNetworkType({
-			success: (res) => {
-				const networkType = res.networkType
-				const isConnected = networkType !== 'none'
-				if (!isConnected) {
-					uni.showToast({
-						title: '网络连接不可用',
-						icon: 'none'
-					})
-				}
-				resolve(isConnected)
-			},
-			fail: () => {
-				resolve(false)
-			}
-		})
-	})
+  /**
+   * 分页请求方法
+   */
+  static async pageRequest<T = any>(
+    url: string,
+    params: Record<string, any> = {},
+    options: RequestOptions = {}
+  ): Promise<PageResponse<T>> {
+    return this.get<PageResponse<T>>(url, params, options)
+  }
 }
