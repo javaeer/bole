@@ -4,6 +4,7 @@ import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.BaseConstant;
 import cn.net.yunlou.bole.common.security.CustomUserDetails;
+import cn.net.yunlou.bole.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,7 +42,17 @@ public class SecurityContextUtils {
     }
 
     /**
+     * 🔄 设置认证信息
+     *
+     * @param authentication 认证对象
+     */
+    public static void setAuthentication(Authentication authentication) {
+        getContext().setAuthentication(authentication);
+    }
+
+    /**
      * 🔍 获取当前用户名
+     *
      * @return 用户名，未认证返回空字符串
      */
     public static String getCurrentUsername() {
@@ -52,6 +63,7 @@ public class SecurityContextUtils {
 
     /**
      * 👥 获取当前用户详细信息
+     *
      * @return UserDetails对象，未认证返回empty
      */
     public static Optional<UserDetails> getCurrentUserDetails() {
@@ -63,6 +75,7 @@ public class SecurityContextUtils {
 
     /**
      * 📋 获取用户权限集合
+     *
      * @return 权限集合，未认证抛出异常
      */
     public static Set<String> getAuthorities() {
@@ -86,6 +99,7 @@ public class SecurityContextUtils {
 
     /**
      * 🛡️ 检查是否拥有指定权限
+     *
      * @param authority 权限标识
      */
     public static boolean hasAuthority(String authority) {
@@ -97,13 +111,14 @@ public class SecurityContextUtils {
 
     /**
      * 🛡️ 检查是否拥有任意指定权限
+     *
      * @param authorities 权限标识数组
      */
     public static boolean hasAnyAuthority(String... authorities) {
         if (authorities == null || authorities.length == 0) {
             return false;
         }
-        
+
         Set<String> userAuthorities = getAuthorities();
         for (String authority : authorities) {
             if (userAuthorities.contains(authority)) {
@@ -115,40 +130,34 @@ public class SecurityContextUtils {
 
     /**
      * 👑 检查是否拥有指定角色
+     *
      * @param role 角色名称（自动添加ROLE_前缀）
      */
     public static boolean hasRole(String role) {
         if (role == null || role.trim().isEmpty()) {
             return false;
         }
-        
+
         String roleName = role.startsWith(BaseConstant.ROLE_PREFIX) ? role : BaseConstant.ROLE_PREFIX + role;
         return hasAuthority(roleName);
     }
 
     /**
      * 👑 检查是否拥有任意指定角色
+     *
      * @param roles 角色名称数组
      */
     public static boolean hasAnyRole(String... roles) {
         if (roles == null) {
             return false;
         }
-        
+
         for (String role : roles) {
             if (hasRole(role)) {
                 return true;
             }
         }
         return false;
-    }
-
-    /**
-     * 🔄 设置认证信息
-     * @param authentication 认证对象
-     */
-    public static void setAuthentication(Authentication authentication) {
-        getContext().setAuthentication(authentication);
     }
 
     /**
@@ -160,6 +169,7 @@ public class SecurityContextUtils {
 
     /**
      * 📝 获取当前用户ID（需在 UserDetails 中实现 getUser().getId()）
+     *
      * @return 当前登录用户的 ID
      * @throws BusinessException 如果用户未登录或身份信息无效
      */
@@ -172,6 +182,7 @@ public class SecurityContextUtils {
 
     /**
      * 📧 获取当前用户邮箱（需在UserDetails中实现getEmail方法）
+     *
      * @throws BusinessException 如果用户未登录或身份信息无效
      */
     public static String getCurrentUserEmail() {
@@ -184,8 +195,9 @@ public class SecurityContextUtils {
 
     /**
      * 获取当前用户 token
-     * @throws BusinessException 如果用户未登录或身份信息无效
+     *
      * @return
+     * @throws BusinessException 如果用户未登录或身份信息无效
      */
 
     public static String getCurrentToken() {
@@ -199,6 +211,12 @@ public class SecurityContextUtils {
         }
 
         throw new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED);
-        //return null;
+    }
+
+    public static User getCurrentUser() {
+        return getCurrentUserDetails()
+                .filter(userDetails -> userDetails instanceof CustomUserDetails)
+                .map(userDetails -> ((CustomUserDetails) userDetails).getUser())
+                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 }

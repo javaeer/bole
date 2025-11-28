@@ -1,5 +1,6 @@
 package cn.net.yunlou.bole.controller;
 
+import cn.net.yunlou.bole.common.BusinessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class HealthController {
 
     @GetMapping
     @Operation(summary = "健康检查", description = "检查系统运行状态")
-    public ResponseEntity<Map<String, Object>> health() {
+    public BusinessResponse<Map<String, Object>> health() {
         Map<String, Object> healthInfo = new HashMap<>();
         healthInfo.put("status", "UP");
         healthInfo.put("application", appName);
@@ -47,12 +48,12 @@ public class HealthController {
         ));
         
         log.info("健康检查请求 - 应用: {}, 环境: {}", appName, environment);
-        return ResponseEntity.ok(healthInfo);
+        return BusinessResponse.success(healthInfo);
     }
 
     @GetMapping("config")
     @Operation(summary = "配置调试", description = "查看当前配置信息")
-    public ResponseEntity<Map<String, Object>> debugConfig() {
+    public BusinessResponse<Map<String, Object>> debugConfig() {
         Map<String, Object> config = new HashMap<>();
         config.put("profiles", java.util.Arrays.asList("dev"));
         config.put("serverPort", 8080);
@@ -60,6 +61,6 @@ public class HealthController {
         config.put("springDocEnabled", true);
         config.put("currentTime", LocalDateTime.now());
         
-        return ResponseEntity.ok(config);
+        return BusinessResponse.success(config);
     }
 }

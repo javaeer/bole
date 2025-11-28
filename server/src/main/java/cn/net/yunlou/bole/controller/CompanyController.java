@@ -1,17 +1,16 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.entity.Company;
 import cn.net.yunlou.bole.model.request.CompanyAddRequest;
 import cn.net.yunlou.bole.model.request.CompanyEditRequest;
 import cn.net.yunlou.bole.model.request.CompanySearchRequest;
 import cn.net.yunlou.bole.service.CompanyService;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,46 +34,46 @@ public class CompanyController {
     @PostMapping("add")
     @Operation(summary = "新增企业")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> add(
+    public BusinessResponse<Boolean> add(
             @RequestBody CompanyAddRequest request) {
         Company company = QueryUtils.modelToBean(request, Company.class);
-        return ResponseEntity.ok(BusinessResponse.success(companyService.save(company)));
+        return BusinessResponse.success(companyService.save(company));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除企业")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> del(
+    public BusinessResponse<Boolean> del(
             @RequestParam(value = "主键") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(companyService.removeById(id)));
+        return BusinessResponse.success(companyService.removeById(id));
     }
 
 
     @PutMapping("edit")
     @Operation(summary = "编辑企业")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> edit(
+    public BusinessResponse<Boolean> edit(
             @RequestBody CompanyEditRequest request) {
         Company company = QueryUtils.modelToBean(request, Company.class);
-        return ResponseEntity.ok(BusinessResponse.success(companyService.updateById(company)));
+        return BusinessResponse.success(companyService.updateById(company));
     }
 
 
     @GetMapping("{id}")
     @Operation(summary = "获取企业信息")
-    public ResponseEntity<BusinessResponse<Company>> get(
+    public BusinessResponse<Company> get(
             @PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(companyService.getById(id)));
+        return BusinessResponse.success(companyService.getById(id));
     }
 
     @PostMapping("page")
     @Operation(summary = "获取企业列表")
-    public ResponseEntity<BusinessResponse<Page<Company>>> page(
+    public BusinessResponse<Page<Company>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody CompanySearchRequest request) {
         Company company = QueryUtils.modelToBean(request, Company.class);
-        return ResponseEntity.ok(BusinessResponse.success(companyService.page(page, size, company)));
+        return BusinessResponse.success(companyService.page(page, size, company));
     }
 
 }

@@ -1,17 +1,16 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.entity.Role;
 import cn.net.yunlou.bole.model.request.RoleAddRequest;
 import cn.net.yunlou.bole.model.request.RoleEditRequest;
 import cn.net.yunlou.bole.model.request.RoleSearchRequest;
 import cn.net.yunlou.bole.service.RoleService;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,46 +34,46 @@ public class RoleController {
     @PostMapping("add")
     @Operation(summary = "新增角色")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> add(
+    public BusinessResponse<Boolean> add(
             @RequestBody RoleAddRequest request) {
         Role role = QueryUtils.modelToBean(request, Role.class);
-        return ResponseEntity.ok(BusinessResponse.success(roleService.save(role)));
+        return BusinessResponse.success(roleService.save(role));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除角色")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> del(
+    public BusinessResponse<Boolean> del(
             @RequestParam(value = "主键") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(roleService.removeById(id)));
+        return BusinessResponse.success(roleService.removeById(id));
     }
 
 
     @PutMapping("edit")
     @Operation(summary = "编辑角色")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> edit(
+    public BusinessResponse<Boolean> edit(
             @RequestBody RoleEditRequest request) {
         Role role = QueryUtils.modelToBean(request, Role.class);
-        return ResponseEntity.ok(BusinessResponse.success(roleService.updateById(role)));
+        return BusinessResponse.success(roleService.updateById(role));
     }
 
 
     @GetMapping("{id}")
     @Operation(summary = "获取角色信息")
-    public ResponseEntity<BusinessResponse<Role>> get(
+    public BusinessResponse<Role> get(
             @PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(roleService.getById(id)));
+        return BusinessResponse.success(roleService.getById(id));
     }
 
     @PostMapping("page")
     @Operation(summary = "获取角色列表")
-    public ResponseEntity<BusinessResponse<Page<Role>>> page(
+    public BusinessResponse<Page<Role>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody RoleSearchRequest request) {
         Role role = QueryUtils.modelToBean(request, Role.class);
-        return ResponseEntity.ok(BusinessResponse.success(roleService.page(page, size, role)));
+        return BusinessResponse.success(roleService.page(page, size, role));
     }
 
 }

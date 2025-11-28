@@ -3,13 +3,17 @@ package cn.net.yunlou.bole.service.impl;
 import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.UserStatus;
-import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.model.request.LoginRequest;
-import cn.net.yunlou.bole.model.request.RegisterRequest;
-import cn.net.yunlou.bole.model.response.AccessTokenResponse;
-import cn.net.yunlou.bole.model.response.RefreshTokenResponse;
 import cn.net.yunlou.bole.common.security.AuthenticationService;
 import cn.net.yunlou.bole.common.security.CustomUserDetails;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
+import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
+import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.request.ChangePasswordRequest;
+import cn.net.yunlou.bole.model.request.LoginRequest;
+import cn.net.yunlou.bole.model.request.RegisterRequest;
+import cn.net.yunlou.bole.model.request.ResetPasswordRequest;
+import cn.net.yunlou.bole.model.response.AccessTokenResponse;
+import cn.net.yunlou.bole.model.response.RefreshTokenResponse;
 import cn.net.yunlou.bole.service.AuthService;
 import cn.net.yunlou.bole.service.UserService;
 import jakarta.validation.Valid;
@@ -19,6 +23,7 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -95,11 +100,28 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout() {
-        //String token = jwtTokenProvider.resolveToken(request.getHeader("Authorization"));
-        //if (token != null) {
-        //    String username = jwtTokenProvider.extractUsername(token);
-        //    authService.revokeTokens(username);
-        //}
         authenticationService.logout();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean changePassword( @Valid ChangePasswordRequest request) {
+
+        User toBean = QueryUtils.modelToBean(request, User.class);
+
+        toBean.setId(SecurityContextUtils.getCurrentUserId());
+
+        return userService.updateById(toBean);
+    }
+
+    @Override
+    public Boolean resetPassword(@Valid ResetPasswordRequest request) {
+
+        //1.验证短信、邮箱验证码
+
+        //2.重置密码 到用户新密码
+
+
+        return null;
     }
 }

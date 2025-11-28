@@ -12,6 +12,50 @@ echo "插入bole数据库示例数据..."
 
 # 插入bole数据库示例数据
 psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
+
+    -- 插入系统配置测试数据
+    INSERT INTO bole_app.t_system_config (config_key, config_value, config_desc, created_by_id, updated_by_id) VALUES
+    ('system.name', '伯乐简历', '系统名称', 1, 1),
+    ('system.version', '2.1.0', '系统版本号', 1, 1),
+    ('system.copyright', 'Copyright © 2025 云楼科技 All Rights Reserved.', '系统版权信息', 1, 1),
+    ('system.logo', '/static/images/logo.png', '系统Logo路径', 1, 1),
+    ('system.favicon', '/static/images/favicon.ico', '网站图标路径', 1, 1),
+    ('upload.max-size', '10485760', '文件上传最大大小(字节)', 1, 1),
+    ('upload.allowed-types', 'jpg,jpeg,png,gif,pdf,doc,docx', '允许上传的文件类型', 1, 1),
+    ('email.smtp.host', 'smtp.163.com', 'SMTP服务器地址', 1, 1),
+    ('email.smtp.port', '465', 'SMTP服务器端口', 1, 1),
+    ('email.smtp.ssl', 'true', '是否启用SSL加密', 1, 1),
+    ('sms.provider', 'aliyun', '短信服务提供商', 1, 1),
+    ('sms.signature', '云楼科技', '短信签名', 1, 1),
+    ('security.login.max-attempts', '5', '最大登录尝试次数', 1, 1),
+    ('security.login.lock-time', '30', '账户锁定时间(分钟)', 1, 1),
+    ('security.password.min-length', '8', '密码最小长度', 1, 1),
+    ('security.password.require-special-char', 'true', '密码是否需要特殊字符', 1, 1),
+    ('cache.enabled', 'true', '是否启用缓存', 1, 1),
+    ('cache.duration', '3600', '缓存持续时间(秒)', 1, 1),
+    ('backup.enabled', 'true', '是否启用自动备份', 1, 1),
+    ('backup.schedule', '0 2 * * *', '备份计划任务(cron表达式)', 1, 1),
+    ('backup.retention-days', '30', '备份文件保留天数', 1, 1),
+    ('notification.enabled', 'true', '是否启用系统通知', 1, 1),
+    ('notification.email-enabled', 'true', '是否启用邮件通知', 1, 1),
+    ('notification.sms-enabled', 'false', '是否启用短信通知', 1, 1),
+    ('api.rate-limit.enabled', 'true', '是否启用API限流', 1, 1),
+    ('api.rate-limit.requests-per-minute', '100', '每分钟API请求限制', 1, 1),
+    ('ui.theme', 'default', '系统主题', 1, 1),
+    ('ui.language', 'zh-CN', '系统语言', 1, 1),
+    ('ui.timezone', 'Asia/Shanghai', '系统时区', 1, 1),
+    ('maintenance.mode', 'false', '是否处于维护模式', 1, 1)
+    ON CONFLICT (config_key) DO UPDATE SET
+        config_value = EXCLUDED.config_value,
+        config_desc = EXCLUDED.config_desc,
+        updated_by_id = EXCLUDED.updated_by_id,
+        updated_at = CURRENT_TIMESTAMP;
+
+    -- 验证插入的数据
+    SELECT config_key, config_value, config_desc 
+    FROM t_system_config 
+    ORDER BY config_key;
+
     -- 插入企业数据
     INSERT INTO bole_app.t_company (id, name, email, holder, location, website, github, wechat, bio, followers, fans, likes) VALUES
     (1, '腾讯科技', 'hr@tencent.com', '马化腾', '深圳', 'https://www.tencent.com', 'tencent', 'Tencent_Official', '领先的互联网科技公司', 50000, 2000, 15000),

@@ -2,11 +2,12 @@ package cn.net.yunlou.bole.model.response;
 
 import cn.net.yunlou.bole.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * FileName: UserResponse
@@ -18,6 +19,8 @@ import java.util.List;
  */
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "登录响应体")
 public class AccessTokenResponse implements Serializable {
 
@@ -32,6 +35,4 @@ public class AccessTokenResponse implements Serializable {
     private Long refreshExpiresIn;
 
     private User userInfo;
-
-    private List<String> permissions;
 }

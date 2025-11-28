@@ -6,15 +6,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "刷新token响应体")
-public class RefreshTokenResponse {
+public class RefreshTokenResponse implements Serializable {
+
     private String accessToken;
+
     private String refreshToken;
+
     private String tokenType;
+
     private Long expiresIn;
+
     private Long refreshExpiresIn;
 }

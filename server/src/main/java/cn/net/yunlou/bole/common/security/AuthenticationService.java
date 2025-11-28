@@ -3,15 +3,13 @@ package cn.net.yunlou.bole.common.security;
 import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.BaseConstant;
-import cn.net.yunlou.bole.entity.Role;
+import cn.net.yunlou.bole.common.utils.RedisCacheUtils;
+import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.entity.UserRole;
 import cn.net.yunlou.bole.model.response.AccessTokenResponse;
 import cn.net.yunlou.bole.model.response.RefreshTokenResponse;
 import cn.net.yunlou.bole.service.UserRoleService;
 import cn.net.yunlou.bole.service.UserService;
-import cn.net.yunlou.bole.common.utils.RedisCacheUtils;
-import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -87,45 +80,17 @@ public class AuthenticationService {
 
         storeRefreshToken(user.getUsername(), refreshToken);
 
-        // 从 UserDetails 获取权限
-        //List<String> permissions = userDetails.getAuthorities().stream()
-        //        .map(GrantedAuthority::getAuthority)
-        //        .collect(Collectors.toList());
-
-        List<String> permissions = getUserAuthorities(user.getId());
 
         return AccessTokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType(BaseConstant.TOKEN_PREFIX.trim())
                 .expiresIn(jwtTokenProvider.getAccessTokenRemainingTime(accessToken) / 1000)
+                .refreshExpiresIn(jwtTokenProvider.getRefreshTokenRemainingTime(refreshToken) / 1000)
                 .userInfo(user)
-                .permissions(permissions)
                 .build();
 
     }
-
-    /**
-     * 获取用户权限列表
-     */
-    private List<String> getUserAuthorities(Long userId) {
-        UserRole entity = new UserRole();
-        entity.setUserId(userId);
-        List<Role> roles = userRoleService.listRight(entity);
-
-        if (CollectionUtils.isEmpty(roles)) {
-            return Collections.emptyList();
-        }
-
-        // 将角色编码转换为带 "ROLE_" 前缀的权限字符串集合
-        return roles.stream()
-                .map(role -> {
-                    String roleCode = role.getCode().toUpperCase();
-                    return BaseConstant.ROLE_PREFIX + roleCode;
-                })
-                .collect(Collectors.toList());
-    }
-
 
     /**
      * 刷新访问令牌
@@ -205,10 +170,7 @@ public class AuthenticationService {
 
 
     public void logout() {
-        String token = SecurityContextUtils.getCurrentToken();
-        if (token != null) {
-            String username = jwtTokenProvider.extractUsername(token);
-            revokeTokens(username);
-        }
+        String username = SecurityContextUtils.getCurrentUsername();
+        revokeTokens(username);
     }
 }

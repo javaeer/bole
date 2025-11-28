@@ -95,6 +95,19 @@ public class JwtTokenProvider {
     }
 
     /**
+     * 获取刷新令牌剩余时间（毫秒）
+     */
+    public Long getRefreshTokenRemainingTime(String refreshToken) {
+        try {
+            Claims claims = extractAllClaims(refreshToken);
+            Date expiration = claims.getExpiration();
+            return expiration.getTime() - System.currentTimeMillis();
+        } catch (Exception e) {
+            return 0L;
+        }
+    }
+
+    /**
      * 判断 token 是否有效
      *
      * @param token
@@ -206,4 +219,6 @@ public class JwtTokenProvider {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(now).setExpiration(expiryDate).signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
+
+
 }

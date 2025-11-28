@@ -35,46 +35,46 @@ public class EducationExperienceController {
     @PostMapping("add")
     @Operation(summary = "新增教育经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> add(
+    public BusinessResponse<Boolean> add(
             @RequestBody EducationExperienceAddRequest request) {
         EducationExperience educationExperience = QueryUtils.modelToBean(request, EducationExperience.class);
-        return ResponseEntity.ok(BusinessResponse.success(educationExperienceService.save(educationExperience)));
+        return BusinessResponse.success(educationExperienceService.save(educationExperience));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除教育经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> del(
+    public BusinessResponse<Boolean> del(
             @RequestParam(value = "主键") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(educationExperienceService.removeById(id)));
+        return BusinessResponse.success(educationExperienceService.removeById(id));
     }
 
 
     @PutMapping("edit")
     @Operation(summary = "编辑教育经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> edit(
+    public BusinessResponse<Boolean> edit(
             @RequestBody EducationExperienceEditRequest request) {
         EducationExperience educationExperience = QueryUtils.modelToBean(request, EducationExperience.class);
-        return ResponseEntity.ok(BusinessResponse.success(educationExperienceService.updateById(educationExperience)));
+        return BusinessResponse.success(educationExperienceService.updateById(educationExperience));
     }
 
 
     @GetMapping("{id}")
     @Operation(summary = "获取教育经历信息")
-    public ResponseEntity<BusinessResponse<EducationExperience>> get(
+    public BusinessResponse<EducationExperience> get(
             @PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(educationExperienceService.getById(id)));
+        return BusinessResponse.success(educationExperienceService.getById(id));
     }
 
     @PostMapping("page")
     @Operation(summary = "获取教育经历列表")
-    public ResponseEntity<BusinessResponse<Page<EducationExperience>>> page(
+    public BusinessResponse<Page<EducationExperience>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody EducationExperienceSearchRequest request) {
         EducationExperience educationExperience = QueryUtils.modelToBean(request, EducationExperience.class);
-        return ResponseEntity.ok(BusinessResponse.success(educationExperienceService.page(page, size, educationExperience)));
+        return BusinessResponse.success(educationExperienceService.page(page, size, educationExperience));
     }
 
 }

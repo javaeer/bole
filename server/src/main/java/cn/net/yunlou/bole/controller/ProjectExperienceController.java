@@ -1,17 +1,16 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
+import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.entity.ProjectExperience;
 import cn.net.yunlou.bole.model.request.ProjectExperienceAddRequest;
 import cn.net.yunlou.bole.model.request.ProjectExperienceEditRequest;
 import cn.net.yunlou.bole.model.request.ProjectExperienceSearchRequest;
 import cn.net.yunlou.bole.service.ProjectExperienceService;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,46 +34,46 @@ public class ProjectExperienceController {
     @PostMapping("add")
     @Operation(summary = "新增项目经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> add(
+    public BusinessResponse<Boolean> add(
             @RequestBody ProjectExperienceAddRequest request) {
         ProjectExperience projectExperience = QueryUtils.modelToBean(request, ProjectExperience.class);
-        return ResponseEntity.ok(BusinessResponse.success(projectExperienceService.save(projectExperience)));
+        return BusinessResponse.success(projectExperienceService.save(projectExperience));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除项目经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> del(
+    public BusinessResponse<Boolean> del(
             @RequestParam(value = "主键") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(projectExperienceService.removeById(id)));
+        return BusinessResponse.success(projectExperienceService.removeById(id));
     }
 
 
     @PutMapping("edit")
     @Operation(summary = "编辑项目经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public ResponseEntity<BusinessResponse<Boolean>> edit(
+    public BusinessResponse<Boolean> edit(
             @RequestBody ProjectExperienceEditRequest request) {
         ProjectExperience projectExperience = QueryUtils.modelToBean(request, ProjectExperience.class);
-        return ResponseEntity.ok(BusinessResponse.success(projectExperienceService.updateById(projectExperience)));
+        return BusinessResponse.success(projectExperienceService.updateById(projectExperience));
     }
 
 
     @GetMapping("{id}")
     @Operation(summary = "获取项目经历信息")
-    public ResponseEntity<BusinessResponse<ProjectExperience>> get(
+    public BusinessResponse<ProjectExperience> get(
             @PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(BusinessResponse.success(projectExperienceService.getById(id)));
+        return BusinessResponse.success(projectExperienceService.getById(id));
     }
 
     @PostMapping("page")
     @Operation(summary = "获取项目经历列表")
-    public ResponseEntity<BusinessResponse<Page<ProjectExperience>>> page(
+    public BusinessResponse<Page<ProjectExperience>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody ProjectExperienceSearchRequest request) {
         ProjectExperience projectExperience = QueryUtils.modelToBean(request, ProjectExperience.class);
-        return ResponseEntity.ok(BusinessResponse.success(projectExperienceService.page(page, size, projectExperience)));
+        return BusinessResponse.success(projectExperienceService.page(page, size, projectExperience));
     }
 
 }
