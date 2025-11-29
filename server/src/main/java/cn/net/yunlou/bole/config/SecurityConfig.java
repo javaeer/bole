@@ -27,7 +27,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Configuration
@@ -36,14 +38,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final SecurityWhitelistConfig securityWhitelistConfig;
     @Value("${app.config.cors.allowed-origins:http://localhost:8080,http://localhost:3000}")
     private String allowedOrigins;
-
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    private final SecurityWhitelistConfig securityWhitelistConfig;
-
+    @Value("${app.config.cors.allowed-methods:GET,POST,PUT,DELETE,OPTIONS}")
+    private String allowedMethods;
+    @Value("${app.config.cors.allowed-headers:*}")
+    private String allowedHeaders;
+    @Value("${app.config.cors.exposed-headers:*}")
+    private String exposedHeaders;
+    @Value("${app.config.cors.allow-credentials:false}")
+    private boolean allowCredentials;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -81,28 +87,42 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 允许的源
-        List<String> origins = Arrays.asList(allowedOrigins.split(","));
-        configuration.setAllowedOriginPatterns(origins);
-        log.info("CORS 允许的源: {}", origins);
+        if (allowCredentials) {
+            // 必须明确指定源，不能有 *
+            List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                    .map(String::trim)
+                    .filter(origin -> !"*".equals(origin))
+                    .collect(Collectors.toList());
+            if (origins.isEmpty()) {
+                throw new IllegalStateException("allowCredentials=true 时，allowedOrigins 不能为空或仅包含 *");
+            }
+            configuration.setAllowedOriginPatterns(origins);
+            configuration.setAllowCredentials(true);
+            log.info("CORS 允许的源: {}", origins);
+        } else {
+            // 不需要凭证 → 可安全使用 *
+            configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+            configuration.setAllowCredentials(false);
+        }
 
         // 允许的请求方法
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
+        List<String> methods = Arrays.stream(allowedMethods.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+        configuration.setAllowedMethods(methods);
 
         // 允许的请求头
-        configuration.setAllowedHeaders(Arrays.asList(
-                "Authorization", "Content-Type", "X-Requested-With", "Accept",
-                "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers",
-                "X-Api-Key", "Cache-Control"
-        ));
+        List<String> headers = Arrays.stream(allowedHeaders.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+        configuration.setAllowedHeaders(headers);
 
         // 允许的响应头
-        configuration.setExposedHeaders(Arrays.asList(
-                "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials",
-                "X-Total-Count", "Content-Disposition"
-        ));
+        List<String> exposeHeaders = Arrays.stream(exposedHeaders.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+        configuration.setExposedHeaders(exposeHeaders);
 
-        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

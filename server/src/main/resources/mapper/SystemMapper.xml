@@ -9,12 +9,14 @@
         <result property="createdAt" column="created_at"/>
         <result property="updatedById" column="updated_by_id"/>
         <result property="updatedAt" column="updated_at"/>
+<!--
 
         <association property="createdBy" column="created_by_id"
                      select="cn.net.yunlou.bole.mapper.UserMapper.selectById"/>
 
         <association property="updatedBy" column="updated_by_id"
                      select="cn.net.yunlou.bole.mapper.UserMapper.selectById"/>
+-->
 
     </resultMap>
 </mapper>
