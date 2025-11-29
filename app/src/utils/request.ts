@@ -1,6 +1,8 @@
-import { clearAll, getToken } from "@/utils/store";
+import { hasRefreshToken, isTokenExpiring } from "@/utils/store";
 import { ResultCode } from "@/constants/result-code";
 import { buildUrl } from "@/utils/url";
+import AuthAPI from "@/api/auth";
+import { useUserStore } from "@/stores/user";
 
 // H5 使用 VITE_APP_BASE_API 作为代理路径，其他平台使用 VITE_APP_API_URL 作为请求路径
 const getBaseApi = (): string => {
@@ -13,11 +15,45 @@ const getBaseApi = (): string => {
 // 防止重复跳转的标记
 let isRedirecting = false;
 
+/**
+ * 获取认证头信息，自动处理令牌刷新
+ */
+const getAuthHeader = async (config: RequestConfig): Promise<Record<string, string>> => {
+  // 跳过认证的请求（如刷新令牌接口本身）
+  if (config.skipAuth) {
+    return {};
+  }
+
+  const userStore = useUserStore();
+  let token = userStore.token;
+
+  // 如果令牌即将过期且有刷新令牌，尝试刷新
+  if (isTokenExpiring() && hasRefreshToken() && token) {
+    try {
+      token = await AuthAPI.refreshToken();
+    } catch (error) {
+      console.warn('刷新令牌失败:', error);
+      // 刷新失败不立即跳转，等接口返回401再处理
+    }
+  }
+
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 // 请求拦截器
-const requestInterceptor = (config: RequestConfig): RequestConfig => {
+const requestInterceptor = async (config: RequestConfig): Promise<RequestConfig> => {
   if (config.loading) {
     uni.showLoading({ title: "加载中...", mask: true });
   }
+
+  // 获取认证头信息
+  const authHeader = await getAuthHeader(config);
+  config.header = {
+    "Content-Type": "application/json",
+    ...authHeader,
+    ...config.header,
+  };
+
   return config;
 };
 
@@ -26,7 +62,7 @@ const responseInterceptor = <T>(
   response: UniApp.RequestSuccessCallbackResult,
   config: RequestConfig,
 ): T => {
-  const resData = response.data as ResponseResult<T>;
+  const resData = response.data as ResponseData<T>;
 
   // 关闭 loading
   if (config.loading) {
@@ -57,7 +93,10 @@ const handleUnauthorized = () => {
 
   console.log("令牌失效或过期处理");
   isRedirecting = true;
-  clearAll();
+
+  // 使用 userStore 清除用户数据
+  const userStore = useUserStore();
+  userStore.clearUserData();
 
   uni.showToast({
     title: "登录已过期，请重新登录",
@@ -76,7 +115,7 @@ const handleUnauthorized = () => {
 };
 
 // 业务错误处理
-const handleBusinessError = <T>(resData: ResponseResult<T>, config: RequestConfig) => {
+const handleBusinessError = <T>(resData: ResponseData<T>, config: RequestConfig) => {
   if (config.showError !== false) {
     uni.showToast({
       title: resData.msg || "请求失败",
@@ -113,39 +152,38 @@ const handleNetworkError = (error: any, config: RequestConfig) => {
 export default function request<T>(options: RequestConfig): Promise<T> {
   const baseApi = getBaseApi();
 
-  // 请求拦截
-  const config = requestInterceptor(options);
+  return new Promise(async (resolve, reject) => {
+    try {
+      // 请求拦截
+      const config = await requestInterceptor(options);
 
-  // 构建完整 URL（包含查询参数）
-  const url = buildUrl(`${baseApi}${options.url}`, options.params);
+      // 构建完整 URL（包含查询参数）
+      const url = buildUrl(`${baseApi}${options.url}`, options.params);
 
-  return new Promise((resolve, reject) => {
-    uni.request({
-      ...config,
-      url: url,
-      header: {
-        "Content-Type": "application/json",
-        ...options.header,
-        Authorization: getToken() ? `Bearer ${getToken()}` : "",
-      },
-      success: (response) => {
-        console.log("请求成功:", response);
-        try {
-          const data = responseInterceptor<T>(response, config);
-          resolve(data);
-        } catch (error) {
-          reject(error);
-        }
-      },
-      fail: (error) => {
-        console.log("请求失败:", error);
-        try {
-          handleNetworkError(error, config);
-        } catch (error) {
-          reject(error);
-        }
-      },
-    });
+      uni.request({
+        ...config,
+        url: url,
+        success: (response) => {
+          console.log("请求成功:", response);
+          try {
+            const data = responseInterceptor<T>(response, config);
+            resolve(data);
+          } catch (error) {
+            reject(error);
+          }
+        },
+        fail: (error) => {
+          console.log("请求失败:", error);
+          try {
+            handleNetworkError(error, config);
+          } catch (error) {
+            reject(error);
+          }
+        },
+      });
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 

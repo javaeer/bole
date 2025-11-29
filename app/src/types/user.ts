@@ -33,7 +33,7 @@ export interface LoginResult extends TokenResult {
   userInfo: UserInfo;
 }
 
-export interface LoginFormData {
+export interface LoginForm {
   username: string;
   password: string;
 }
@@ -192,4 +192,23 @@ export interface UserForm {
   status?: number;
   /** 用户名 */
   username?: string;
+}
+
+export interface ResetPasswordForm {
+  /** 用户头像 */
+  password?: string;
+  /** 部门ID */
+  newPassword?: number;
+}
+
+/**
+ * 用户注册表单
+ */
+export interface RegisterForm {
+  username: string;
+  password: string;
+  confirmPassword?: string;
+  email?: string;
+  phone?: string;
+  invitationCode?: string;
 }

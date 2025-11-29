@@ -1,13 +1,13 @@
 import { Dict } from "@/types/dict";
 import { StoreKey } from "@/constants/store-key";
-import type { SystemConfigItem } from "@/types/system-config";
-import { UserInfo } from "@/types/user";
+import { LoginResult, UserInfo } from "@/types/user";
+import { SystemConfigResult } from "@/types/config";
 
 
 /**
  * 将配置列表存入本地存储
  */
-export const setConfig = (configList: SystemConfigItem[]): void => {
+export const setConfig = (configList: SystemConfigResult): void => {
   try {
     // 方法1：将整个配置数组存储
     uni.setStorageSync(StoreKey.SYSTEM_CONFIG_LIST, JSON.stringify(configList));
@@ -48,9 +48,10 @@ export const clearConfig = (): void => {
 
 /**
  * 设置令牌信息
+ * 如果包含 userInfo 则一起存储，否则只更新令牌
  */
-export const setToken = (tokenInfo: TokenInfo): void => {
-  const { accessToken, refreshToken, expiresIn } = tokenInfo;
+export const setToken = (result: LoginResult | TokenResult): void => {
+  const { accessToken, refreshToken, expiresIn, userInfo } = result;
 
   // 计算过期时间（当前时间 + 过期秒数 - 提前5分钟刷新）
   const expireTime = Date.now() + (expiresIn - 300) * 1000;
@@ -58,8 +59,11 @@ export const setToken = (tokenInfo: TokenInfo): void => {
   uni.setStorageSync(StoreKey.TOKEN_KEY, accessToken);
   uni.setStorageSync(StoreKey.REFRESH_TOKEN_KEY, refreshToken);
   uni.setStorageSync(StoreKey.TOKEN_EXPIRE_KEY, expireTime.toString());
-};
 
+  if (userInfo !== null && userInfo !== undefined) {
+    setUserInfo(userInfo);
+  }
+};
 /**
  * 获取访问令牌
  */
@@ -102,12 +106,15 @@ export const clearToken = (): void => {
 
 // 设置用户信息
 export const setUserInfo = (userInfo: UserInfo) => {
-  uni.setStorageSync(StoreKey.USER_INFO_KEY, userInfo);
+  // uni.setStorageSync(StoreKey.USER_INFO_KEY, userInfo);
+  uni.setStorageSync(StoreKey.USER_INFO_KEY, JSON.stringify(userInfo));
 };
 
 // 获取用户信息
 export const getUserInfo = (): any => {
-  return uni.getStorageSync(StoreKey.USER_INFO_KEY) || null;
+  // return uni.getStorageSync(StoreKey.USER_INFO_KEY) || null;
+  const userInfo = uni.getStorageSync(StoreKey.USER_INFO_KEY);
+  return userInfo ? JSON.parse(userInfo) : null;
 };
 
 // 清除用户信息
