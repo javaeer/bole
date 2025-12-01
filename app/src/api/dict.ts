@@ -1,4 +1,4 @@
-import request from "@/utils/request";
+import { del, get, page, post, put } from "@/utils/request";
 import { DictForm, DictPageResult, DictQuery, DictResult } from "@/types/dict";
 
 const DICT_BASE_URL = "/dict";
@@ -10,12 +10,8 @@ const DictAPI = {
    * @param queryParams 查询参数
    * @returns 字典分页结果
    */
-  getPage(queryParams: DictQuery) {
-    return request<DictPageResult>({
-      url: `${DICT_BASE_URL}/page`,
-      method: "GET",
-      data: queryParams,
-    });
+  getPage(pageQuery: PageQuery, queryParams: DictQuery) {
+    return page<DictPageResult>(`${DICT_BASE_URL}/page`, pageQuery, queryParams);
   },
 
   /**
@@ -25,10 +21,7 @@ const DictAPI = {
    * @returns 字典表单数据
    */
   getFormData(id: number) {
-    return request<DictForm>({
-      url: `${DICT_BASE_URL}/${id}/form`,
-      method: "GET",
-    });
+    return get<DictForm>(`${DICT_BASE_URL}/${id}/form`);
   },
 
   /**
@@ -37,11 +30,7 @@ const DictAPI = {
    * @param data 字典表单数据
    */
   add(data: DictForm) {
-    return request({
-      url: `${DICT_BASE_URL}`,
-      method: "POST",
-      data: data,
-    });
+    return post(`${DICT_BASE_URL}`, data);
   },
 
   /**
@@ -51,11 +40,7 @@ const DictAPI = {
    * @param data 字典表单数据
    */
   update(id: number, data: DictForm) {
-    return request({
-      url: `${DICT_BASE_URL}/${id}`,
-      method: "PUT",
-      data: data,
-    });
+    return put(`${DICT_BASE_URL}/${id}`, data);
   },
 
   /**
@@ -64,10 +49,7 @@ const DictAPI = {
    * @param ids 字典ID，多个以英文逗号(,)分隔
    */
   deleteByIds(ids: string) {
-    return request({
-      url: `${DICT_BASE_URL}/${ids}`,
-      method: "delete",
-    });
+    return del(`${DICT_BASE_URL}`, ids);
   },
 
   /**
@@ -76,10 +58,7 @@ const DictAPI = {
    * @returns 字典列表
    */
   getList() {
-    return request<DictResult>({
-      url: `${DICT_BASE_URL}/list`,
-      method: "GET",
-    });
+    return get<DictResult>(`${DICT_BASE_URL}/list`);
   },
 };
 

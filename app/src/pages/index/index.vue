@@ -82,9 +82,7 @@
 
 	import { useConfigStore } from '@/stores/config';
 
-	// import { dayjs } from "wot-design-uni";
-
-	// import LogAPI, { VisitStatsVO } from "@/api/system/log";
+	// import LogAPI, { VisitStatsVO } from "@/api/log";
 
 
 	const configStore = useConfigStore();
@@ -176,7 +174,7 @@
 	// 事件处理
 	const handleSearch = () => {
 		uni.navigateTo({
-			url: '/pages/search/index'
+			url: '/pages/search/search'
 		})
 	}
 

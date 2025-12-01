@@ -1,7 +1,7 @@
 {
-  "name": "",
-  "appid": "",
-  "description": "",
+  "name": "bole",
+  "appid": "__UNI__150C470",
+  "description": "伯乐在线",
   "versionName": "1.0.0",
   "versionCode": "100",
   "transformPx": false,
@@ -50,7 +50,7 @@
   "quickapp": {},
   /* 小程序特有相关 */
   "mp-weixin": {
-    "appid": "",
+    "appid": "wx17f4001d0c2c6801",
     "setting": {
       "urlCheck": false
     },

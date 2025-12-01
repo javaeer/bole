@@ -1,13 +1,13 @@
-import { Dict } from "@/types/dict";
+import { Dict, DictResult } from "@/types/dict";
 import { StoreKey } from "@/constants/store-key";
 import { LoginResult, UserInfo } from "@/types/user";
-import { SystemConfigResult } from "@/types/config";
+import { ConfigResult } from "@/types/config";
 
 
 /**
  * 将配置列表存入本地存储
  */
-export const setConfig = (configList: SystemConfigResult): void => {
+export const setConfig = (configList: ConfigResult): void => {
   try {
     // 方法1：将整个配置数组存储
     uni.setStorageSync(StoreKey.SYSTEM_CONFIG_LIST, JSON.stringify(configList));
@@ -104,43 +104,90 @@ export const clearToken = (): void => {
 };
 
 
-// 设置用户信息
+/**
+ * 设置用户信息
+ * @param userInfo
+ */
 export const setUserInfo = (userInfo: UserInfo) => {
   // uni.setStorageSync(StoreKey.USER_INFO_KEY, userInfo);
   uni.setStorageSync(StoreKey.USER_INFO_KEY, JSON.stringify(userInfo));
 };
 
-// 获取用户信息
+/**
+ * 获取用户信息
+ */
 export const getUserInfo = (): any => {
   // return uni.getStorageSync(StoreKey.USER_INFO_KEY) || null;
   const userInfo = uni.getStorageSync(StoreKey.USER_INFO_KEY);
   return userInfo ? JSON.parse(userInfo) : null;
 };
 
-// 清除用户信息
+/**
+ * 清除用户信息
+ */
 export const clearUserInfo = (): void => {
   uni.removeStorageSync(StoreKey.USER_INFO_KEY);
 };
 
-// 设置字典缓存
-export function setDictCache(dict: Record<string, Dict[]>) {
-  uni.setStorageSync(StoreKey.DICT_KEY, dict);
-}
+/**
+ * 获取本地存储中的字典数据
+ */
+export const getDict = (): Record<string, DictResult> => {
+  try {
+    const dictStr = uni.getStorageSync(StoreKey.DICT_KEY);
+    return dictStr ? JSON.parse(dictStr) : {};
+  } catch (error) {
+    console.error('获取字典缓存失败:', error);
+    return {};
+  }
+};
 
-// 获取字典缓存
-export function getDictCache(): Record<string, Dict[]> {
-  return uni.getStorageSync(StoreKey.DICT_KEY) || {};
-}
+/**
+ * 设置字典数据到本地存储
+ */
+export const setDict = (dictData: Dict): void => {
+  try {
+    const currentDict = getDict();
+    // 使用字典类型作为键
+    currentDict[dictData.type] = dictData;
+    uni.setStorageSync(StoreKey.DICT_KEY, JSON.stringify(currentDict));
+  } catch (error) {
+    console.error('设置字典缓存失败:', error);
+  }
+};
 
-// 清除字典缓存
-export function clearDictCache() {
-  uni.removeStorageSync(StoreKey.DICT_KEY);
-}
+/**
+ * 清除字典缓存
+ */
+export const clearDict = (): void => {
+  try {
+    uni.removeStorageSync(StoreKey.DICT_KEY);
+  } catch (error) {
+    console.error('清除字典缓存失败:', error);
+  }
+};
+
+/**
+ * 获取特定类型的字典项
+ */
+export const getDictByType = (type: string): DictItem[] => {
+  const dict = getDict();
+  return dict[type]?.children || [];
+};
+
+/**
+ * 获取字典项的标签
+ */
+export const getDictLabel = (type: string, value: string): string => {
+  const items = getDictByType(type);
+  const item = items.find(item => item.value === value);
+  return item?.label || value;
+};
 
 // 清除所有缓存信息
 export function clearAll() {
   clearToken();
   clearConfig();
   clearUserInfo();
-  clearDictCache();
+  clearDict();
 }

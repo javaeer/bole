@@ -90,6 +90,52 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     COMMENT ON COLUMN bole_app.t_system_banner.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_system_banner.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
+-- 字典表
+    CREATE TABLE IF NOT EXISTS bole_app.t_dict (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        parent_id BIGINT DEFAULT 0,
+        path VARCHAR(255),
+        level INTEGER DEFAULT 1,
+        name VARCHAR(255) NOT NULL,
+        type VARCHAR(100),
+        code VARCHAR(100),
+        value VARCHAR(500),
+        label VARCHAR(500),
+        state INTEGER DEFAULT 1,
+        
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0,
+        
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_dict_parent_id ON bole_app.t_dict(parent_id);
+    CREATE INDEX IF NOT EXISTS idx_dict_level ON bole_app.t_dict(level);
+    CREATE INDEX IF NOT EXISTS idx_dict_type ON bole_app.t_dict(type);
+    CREATE INDEX IF NOT EXISTS idx_dict_code ON bole_app.t_dict(code);
+    CREATE INDEX IF NOT EXISTS idx_dict_state ON bole_app.t_dict(state);
+    CREATE INDEX IF NOT EXISTS idx_dict_created_at ON bole_app.t_dict(created_at);
+
+    -- 表注释和字段注释
+    COMMENT ON TABLE bole_app.t_dict IS '字典表';
+    COMMENT ON COLUMN bole_app.t_dict.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_dict.parent_id IS '父节点ID';
+    COMMENT ON COLUMN bole_app.t_dict.path IS '路径';
+    COMMENT ON COLUMN bole_app.t_dict.level IS '层级';
+    COMMENT ON COLUMN bole_app.t_dict.name IS '字典名称';
+    COMMENT ON COLUMN bole_app.t_dict.type IS '字典类型';
+    COMMENT ON COLUMN bole_app.t_dict.code IS '字典编码';
+    COMMENT ON COLUMN bole_app.t_dict.value IS '字典值';
+    COMMENT ON COLUMN bole_app.t_dict.label IS '字典标签';
+    COMMENT ON COLUMN bole_app.t_dict.state IS '状态（1启用，0停用）';
+    COMMENT ON COLUMN bole_app.t_dict.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_dict.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_dict.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
     -- 创建用户表
     CREATE TABLE IF NOT EXISTS bole_app.t_user (
@@ -997,14 +1043,6 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     COMMENT ON COLUMN bole_app.t_city.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_city.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
-    -- 系统配置表
-    CREATE TABLE IF NOT EXISTS bole_app.system_config (
-        config_key VARCHAR(100) PRIMARY KEY,
-        config_value JSONB NOT NULL,
-        description TEXT,
-        updated_by VARCHAR(50),
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
 
     -- 审计日志表
     CREATE TABLE IF NOT EXISTS bole_audit.audit_logs (
@@ -1041,7 +1079,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
             FROM information_schema.tables 
             WHERE table_schema = 'bole_app' 
             AND table_name IN (
-                't_system_banner', 't_system_config', 
+                 't_system_config', 't_system_banner','t_dict',
                 't_user', 't_company', 't_role', 't_company_comment', 
                 't_company_experiences', 't_work_experiences', 
                 't_education_experience', 't_project_experience',

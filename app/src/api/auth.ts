@@ -1,7 +1,7 @@
-// src/api/auth.ts
 import { get, post } from "@/utils/request";
 import { LoginForm, LoginResult, RegisterForm, ResetPasswordForm, TokenResult } from "@/types/user";
 import { useUserStore } from "@/stores/user";
+import { clearAll, setToken } from "@/utils/store";
 
 const AuthAPI = {
   /**
@@ -10,11 +10,7 @@ const AuthAPI = {
   async login(data: LoginForm): Promise<LoginResult> {
     console.log("登录请求数据:", data);
     const response = await post<LoginResult>("/auth/login", data, { skipAuth: true });
-
-    // 使用 userStore 设置用户数据
-    const userStore = useUserStore();
-    userStore.setUserData(response);
-
+    setToken(response);
     return response;
   },
 
@@ -23,11 +19,7 @@ const AuthAPI = {
    */
   async wechatLogin(code: string): Promise<LoginResult> {
     const response = await post<LoginResult>("/auth/wechat-login", { code }, { skipAuth: true });
-
-    // 使用 userStore 设置用户数据
-    const userStore = useUserStore();
-    userStore.setUserData(response);
-
+    setToken(response);
     return response;
   },
 
@@ -40,9 +32,7 @@ const AuthAPI = {
     } catch (error) {
       console.warn("登出请求失败:", error);
     } finally {
-      // 使用 userStore 清除用户数据
-      const userStore = useUserStore();
-      userStore.clearUserData();
+      clearAll();
     }
   },
 
@@ -51,7 +41,6 @@ const AuthAPI = {
    */
   async refreshToken(): Promise<string> {
     const userStore = useUserStore();
-
     if (userStore.isRefreshing) {
       // 如果已经在刷新，返回一个等待的 Promise
       return new Promise((resolve) => {
@@ -74,14 +63,8 @@ const AuthAPI = {
         { skipAuth: true },
       );
 
-      // 将 TokenResult 转换为 LoginResult，userInfo 为 null
-      const loginResult: LoginResult = {
-        ...response,
-        userInfo: null // 刷新令牌时不更新用户信息
-      };
-
-      // 使用 userStore 更新令牌数据
-      userStore.setUserData(loginResult);
+      //更新令牌数据
+      setToken(response);
 
       // 通知所有等待的请求
       userStore.onRefreshed(response.accessToken);
@@ -112,9 +95,8 @@ const AuthAPI = {
   async register(data: RegisterForm): Promise<LoginResult> {
     const response = await post<LoginResult>("/auth/register", data, { skipAuth: true });
 
-    // 使用 userStore 设置用户数据
-    const userStore = useUserStore();
-    userStore.setUserData(response);
+    // 使用设置用户数据
+    setToken(response);
 
     return response;
   },

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onHide, onLaunch, onShow } from "@dcloudio/uni-app";
-import { systemConfigHandler } from "@/utils/config";
+import { configHandler } from "@/utils/config";
 
 onLaunch(() => {
   console.log("App Launch");
 
   // 初始化系统配置
-  systemConfigHandler.initConfigHandling()
+  configHandler.initConfigHandling()
     .then(() => {
       console.log("✅ 配置初始化完成，可以继续其他启动逻辑");
     })

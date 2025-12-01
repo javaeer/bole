@@ -7,13 +7,15 @@ import cn.net.yunlou.bole.model.dto.CityDTO;
 import cn.net.yunlou.bole.model.query.CityQuery;
 import cn.net.yunlou.bole.model.request.CityAddRequest;
 import cn.net.yunlou.bole.model.request.CityEditRequest;
-import cn.net.yunlou.bole.service.impl.CityServiceImpl;
+import cn.net.yunlou.bole.service.CityService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * FileName: CityController
@@ -30,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CityController {
 
-    private final CityServiceImpl cityService;
+    private final CityService cityService;
 
     @PostMapping("add")
     @Operation(summary = "新增城市")
@@ -78,6 +80,15 @@ public class CityController {
 
 
         return BusinessResponse.success(cityService.pageDTOByQuery(page, size, request));
+    }
+
+    @PostMapping("tree")
+    @Operation(summary = "获取城市树形列表")
+    public BusinessResponse<List<City>> tree(@RequestBody CityQuery request) {
+        //City city = QueryUtils.modelToBean(request, City.class);
+
+
+        return BusinessResponse.success(cityService.listAllChildren());
     }
 
 }

@@ -1,7 +1,8 @@
 package cn.net.yunlou.bole.common;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -36,11 +37,11 @@ public interface IBaseService<T, D, Q> extends IService<T>, IStructService<D, Q>
 
     Page<T> page(long pageNum, long pageSize, long timestamp, T entity);
 
-    Page<T> page(long pageNum, long pageSize, long timestamp, LambdaQueryWrapper<T> queryWrapper);
+    Page<T> page(long pageNum, long pageSize, long timestamp, QueryWrapper<T> queryWrapper);
 
-    LambdaQueryWrapper<T> getBaseQueryWrapper(T entity);
+    QueryWrapper<T> getBaseQueryWrapper(T entity);
 
-    LambdaUpdateWrapper<T> getBaseUpdateWrapper(T entity);
+    UpdateWrapper<T> getBaseUpdateWrapper(T entity);
 
     //  ==============针对 MP mapper 定制结束 =================
 }

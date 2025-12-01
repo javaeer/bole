@@ -43,6 +43,12 @@ public class AuthController {
         return BusinessResponse.success(response);
     }
 
+    @GetMapping("verify")
+    @Operation(summary = "校验token是否有效")
+    public BusinessResponse<Boolean> verify() {
+        return BusinessResponse.success(SecurityContextUtils.isAuthenticated());
+    }
+
     @GetMapping("current")
     @Operation(summary = "获取当前用户信息")
     public BusinessResponse<User> getCurrent() {

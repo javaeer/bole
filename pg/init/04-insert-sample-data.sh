@@ -51,10 +51,42 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
         updated_by_id = EXCLUDED.updated_by_id,
         updated_at = CURRENT_TIMESTAMP;
 
-    -- 验证插入的数据
-    SELECT config_key, config_value, config_desc 
-    FROM t_system_config 
-    ORDER BY config_key;
+
+    -- 插入性别字典数据（类型：sys_sex）
+    INSERT INTO bole_app.t_dict (parent_id, path, level, name, type, code, value, label, state, created_at, updated_at, deleted) VALUES
+    (0, '1', 1, '性别', 'sys_sex', 'sex_root', '', '性别分类', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (1, '1.2', 2, '男', 'sys_sex', 'male', '1', '男', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (1, '1.3', 2, '女', 'sys_sex', 'female', '2', '女', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (1, '1.4', 2, '未知', 'sys_sex', 'unknown', '0', '未知', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
+
+    -- 插入用户状态字典数据（类型：user_status）
+    INSERT INTO bole_app.t_dict (parent_id, path, level, name, type, code, value, label, state, created_at, updated_at, deleted) VALUES
+    (0, '5', 1, '用户状态', 'user_status', 'user_status_root', '', '用户状态分类', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (5, '5.6', 2, '正常', 'user_status', 'normal', '1', '正常', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (5, '5.7', 2, '禁用', 'user_status', 'disabled', '0', '禁用', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (5, '5.8', 2, '锁定', 'user_status', 'locked', '2', '锁定', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (5, '5.9', 2, '未激活', 'user_status', 'inactive', '3', '未激活', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
+
+    -- 插入订单状态字典数据（类型：order_status）
+    INSERT INTO bole_app.t_dict (parent_id, path, level, name, type, code, value, label, state, created_at, updated_at, deleted) VALUES
+    (0, '10', 1, '订单状态', 'order_status', 'order_status_root', '', '订单状态分类', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (10, '10.11', 2, '待支付', 'order_status', 'pending_payment', '1', '待支付', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (10, '10.12', 2, '已支付', 'order_status', 'paid', '2', '已支付', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (10, '10.13', 2, '已发货', 'order_status', 'shipped', '3', '已发货', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (10, '10.14', 2, '已完成', 'order_status', 'completed', '4', '已完成', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (10, '10.15', 2, '已取消', 'order_status', 'cancelled', '5', '已取消', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (10, '10.16', 2, '退款中', 'order_status', 'refunding', '6', '退款中', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (10, '10.17', 2, '已退款', 'order_status', 'refunded', '7', '已退款', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
+
+    -- 插入商品状态字典数据（类型：product_status）
+    INSERT INTO bole_app.t_dict (parent_id, path, level, name, type, code, value, label, state, created_at, updated_at, deleted) VALUES
+    (0, '18', 1, '商品状态', 'product_status', 'product_status_root', '', '商品状态分类', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (18, '18.19', 2, '上架', 'product_status', 'on_sale', '1', '上架', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (18, '18.20', 2, '下架', 'product_status', 'off_shelf', '0', '下架', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (18, '18.21', 2, '缺货', 'product_status', 'out_of_stock', '2', '缺货', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (18, '18.22', 2, '预售', 'product_status', 'pre_sale', '3', '预售', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0),
+    (18, '18.23', 2, '停售', 'product_status', 'discontinued', '4', '停售', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
+
 
     -- 插入企业数据
     INSERT INTO bole_app.t_company (id, name, email, holder, location, website, github, wechat, bio, followers, fans, likes) VALUES
@@ -208,6 +240,9 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
 
 
     -- 更新序列值，确保后续插入的主键不会冲突
+    SELECT setval('bole_app.t_system_config_id_seq', (SELECT MAX(id) FROM bole_app.t_system_config));
+    SELECT setval('bole_app.t_system_banner_id_seq', (SELECT MAX(id) FROM bole_app.t_system_banner));
+    SELECT setval('bole_app.t_dict_id_seq', (SELECT MAX(id) FROM bole_app.t_dict));
     SELECT setval('bole_app.t_user_id_seq', (SELECT MAX(id) FROM bole_app.t_user));
     SELECT setval('bole_app.t_company_id_seq', (SELECT MAX(id) FROM bole_app.t_company));
     SELECT setval('bole_app.t_role_id_seq', (SELECT MAX(id) FROM bole_app.t_role));

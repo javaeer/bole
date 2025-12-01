@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.mapper;
 
-import cn.net.yunlou.bole.common.IBaseMapper;
 import cn.net.yunlou.bole.entity.SystemConfig;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * FileName: SystemMapper
@@ -11,5 +11,5 @@ import cn.net.yunlou.bole.entity.SystemConfig;
  * Modified By
  * Modified At
  */
-public interface SystemMapper extends IBaseMapper<SystemConfig> {
+public interface SystemMapper extends BaseMapper<SystemConfig> {
 }

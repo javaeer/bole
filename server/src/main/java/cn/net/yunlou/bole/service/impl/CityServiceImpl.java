@@ -1,6 +1,7 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseTreeService;
+import cn.net.yunlou.bole.common.TreeServiceConfig;
 import cn.net.yunlou.bole.entity.City;
 import cn.net.yunlou.bole.mapper.CityMapper;
 import cn.net.yunlou.bole.model.dto.CityDTO;
@@ -18,5 +19,6 @@ import org.springframework.stereotype.Service;
  * Modified At
  */
 @Service
+@TreeServiceConfig(cacheName = "cityTree", keyPrefix = "city")
 public class CityServiceImpl extends BaseTreeService<CityMapper, City, CityDTO, CityQuery, CityStructMapper> implements CityService {
 }

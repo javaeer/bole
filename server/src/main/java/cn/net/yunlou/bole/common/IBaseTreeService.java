@@ -7,44 +7,34 @@ import java.util.List;
  * 树形服务接口
  */
 public interface IBaseTreeService<T, D, Q> extends IBaseService<T, D, Q> {
-    
-    /**
-     * 获取子节点（包含直接子节点）
-     */
+
+    // 获取直接子节点（带children）
     T getChildren(Serializable id);
-    
-    /**
-     * 获取所有子节点（递归）
-     */
+
+    // 获取所有子孙节点（完整子树）
     T getAllChildren(Serializable id);
-    
-    /**
-     * 获取直接子节点列表
-     */
+
+    // 获取直接子节点列表
     List<T> listChildren(Serializable id);
-    
+
     /**
      * 获取直接子节点列表
      */
     List<T> listChildren(T entity);
-    
-    /**
-     * 获取所有子节点列表（从根开始）
-     */
+
+    // 构建整棵树（从根节点开始）
     List<T> listAllChildren();
-    
-    /**
-     * 获取所有子节点列表（从指定节点开始）
-     */
+
+    // 构建指定节点的完整子树
     List<T> listAllChildren(Serializable id);
-    
+
     /**
      * 获取所有子节点列表（从指定实体开始）
      */
     List<T> listAllChildren(T entity);
     
     /**
-     * 获取叶子节点列表
+     * 获取叶子节点（最末梢节点）
      */
     List<T> listLeaf(Serializable id);
     

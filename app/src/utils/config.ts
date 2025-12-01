@@ -44,7 +44,7 @@ export class Config {
       console.log("✅ 本地配置加载完成");
 
       // 然后从服务器获取最新配置
-      await this.configStore!.fetchSystemConfig();
+      await this.configStore!.fetchConfig();
       console.log('✅ 服务器配置加载完成:');
 
       const systemName = this.configStore!.getConfigValue('system.name') || 'bole';
@@ -74,4 +74,4 @@ export class Config {
 }
 
 // 创建实例但不立即初始化
-export const systemConfigHandler = new Config();
+export const configHandler = new Config();

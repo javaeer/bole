@@ -1,45 +1,36 @@
 /**
- * 字典数据
- *
- * @description 字典数据
+ * 字典项数据
  */
 export interface DictItem {
+  patentId: number;
+  /** 字典编码 */
+  code: string;
   /** 字典数据值 */
   value: string;
-
   /** 字典数据标签 */
   label: string;
-
-  /** 标签类型 */
-  tagType: string;
+  /** 字典数据状态 */
+  state: number;
 }
 
 /**
- * 字典数据项分页VO
- *
- * @description 字典数据分页对象
+ * 字典类型
  */
 export interface Dict {
   /** 字典名称 */
   name: string;
-
-  /** 字典编码 */
-  dictCode: string;
-
+  /** 字典类型 */
+  type: string;
+  /** 标签类型 */
+  tagType: string;
   /** 字典数据集合 */
-  dictDataList: DictItem[];
+  children: DictItem[];
 }
-
 
 /**
  * 字典查询参数
  */
-export interface DictQuery{
-  /**
-   * 关键字(字典名称/编码)
-   */
-  keywords?: string;
-
+export interface DictQuery {
   /**
    * 字典状态（1:启用，0:禁用）
    */
@@ -47,13 +38,7 @@ export interface DictQuery{
 }
 
 /**
- * 字典分页对象
- */
-export interface DictPageResult extends PageResult<Dict>{
-}
-
-/**
- * 字典
+ * 字典表单
  */
 export interface DictForm {
   /**
@@ -78,5 +63,7 @@ export interface DictForm {
   remark?: string;
 }
 
-
-export type DictResult = Dict[]
+/**
+ * 字典结果类型
+ */
+export type DictResult = Dict[];

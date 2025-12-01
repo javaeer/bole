@@ -1,17 +1,17 @@
 import { defineStore } from "pinia";
-import SystemConfigAPI from "@/api/system-config";
-import type { SystemConfigItem, SystemConfigResult } from "@/types/config";
+import ConfigAPI from "@/api/config";
+import type { ConfigResult } from "@/types/config";
 import { getConfig, setConfig } from "@/utils/store";
 
-export const useConfigStore = defineStore("system-config", () => {
+export const useConfigStore = defineStore("config", () => {
   // 状态
-  const systemConfig = ref<SystemConfigItem[]>([]);
+  const config = ref<ConfigResult>([]);
   const loading = ref(false);
 
   // 计算属性：将配置数组转换为对象，便于通过 key 访问
   const configMap = computed(() => {
     const map: Record<string, string> = {};
-    systemConfig.value.forEach(item => {
+    config.value.forEach(item => {
       map[item.configKey] = item.configValue;
     });
     return map;
@@ -23,11 +23,11 @@ export const useConfigStore = defineStore("system-config", () => {
   };
 
   // Actions
-  const fetchSystemConfig = async (): Promise<SystemConfigResult> => {
+  const fetchConfig = async (): Promise<ConfigResult> => {
     loading.value = true;
     try {
-      const response = await SystemConfigAPI.getSystemConfig();
-      systemConfig.value = response;
+      const response = await ConfigAPI.getConfig();
+      config.value = response;
 
       // 将配置项存入本地存储
       setConfig(response);
@@ -47,7 +47,7 @@ export const useConfigStore = defineStore("system-config", () => {
 
   return {
     // State
-    systemConfig,
+    config,
     loading,
 
     // Getters
@@ -55,7 +55,7 @@ export const useConfigStore = defineStore("system-config", () => {
     getConfigValue,
 
     // Actions
-    fetchSystemConfig,
+    fetchConfig,
     loadConfig,
 
   };

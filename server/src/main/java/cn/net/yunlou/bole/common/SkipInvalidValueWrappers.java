@@ -42,6 +42,29 @@ public class SkipInvalidValueWrappers {
     // ============ Query Wrapper 方法 ============
 
     /**
+     * 获取忽略无效值的 QueryWrapper（基于实体）
+     */
+    public static <T> SkipInvalidValueQueryWrapper<T> query(T entity) {
+        return SkipInvalidValueQueryWrapper.of(entity);
+    }
+
+    /**
+     * 获取忽略无效值的 QueryWrapper（基于实体类）
+     */
+    public static <T> SkipInvalidValueQueryWrapper<T> query(Class<T> entityClass) {
+        return SkipInvalidValueQueryWrapper.of(entityClass);
+    }
+
+    /**
+     * 获取忽略无效值的 QueryWrapper（空构造）
+     */
+    public static <T> SkipInvalidValueQueryWrapper<T> query() {
+        return SkipInvalidValueQueryWrapper.create();
+    }
+
+    // ============ Lambda Query Wrapper 方法 ============
+
+    /**
      * 获取忽略无效值的 LambdaQueryWrapper（基于实体）
      */
     public static <T> SkipInvalidValueLambdaQueryWrapper<T> lambdaQuery(T entity) {
@@ -63,6 +86,29 @@ public class SkipInvalidValueWrappers {
     }
 
     // ============ Update Wrapper 方法 ============
+
+    /**
+     * 获取忽略无效值的 UpdateWrapper（基于实体）
+     */
+    public static <T> SkipInvalidValueUpdateWrapper<T> update(T entity) {
+        return SkipInvalidValueUpdateWrapper.of(entity);
+    }
+
+    /**
+     * 获取忽略无效值的 UpdateWrapper（基于实体类）
+     */
+    public static <T> SkipInvalidValueUpdateWrapper<T> update(Class<T> entityClass) {
+        return SkipInvalidValueUpdateWrapper.of(entityClass);
+    }
+
+    /**
+     * 获取忽略无效值的 LambdaUpdateWrapper（空构造）
+     */
+    public static <T> SkipInvalidValueUpdateWrapper<T> update() {
+        return SkipInvalidValueUpdateWrapper.create();
+    }
+
+    // ============ Lambda Update Wrapper 方法 ============
 
     /**
      * 获取忽略无效值的 LambdaUpdateWrapper（基于实体）

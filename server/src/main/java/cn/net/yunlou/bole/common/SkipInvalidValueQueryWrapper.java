@@ -2,8 +2,7 @@ package cn.net.yunlou.bole.common;
 
 import cn.net.yunlou.bole.common.utils.EntityUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,61 +10,61 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 /**
- * 忽略无效值的 LambdaQueryWrapper
+ * 忽略无效值的 QueryWrapper
  * 自动过滤 null、空字符串、空集合等无效值，避免无效条件被拼接到SQL中
  * <p>
  * // 基础使用
- * SkipInvalidValueLambdaQueryWrapper<User> wrapper = SkipInvalidValueLambdaQueryWrapper.of(User.class)
+ * SkipInvalidValueQueryWrapper<User> wrapper = SkipInvalidValueQueryWrapper.of(User.class)
  * .eq(User::getName, "张三")
  * .eq(User::getAge, null)  // 自动跳过
  * .like(User::getEmail, ""); // 自动跳过
  * <p>
  * // 启用严格模式（调试用）
- * SkipInvalidValueLambdaQueryWrapper<User> wrapper = SkipInvalidValueLambdaQueryWrapper.create()
+ * SkipInvalidValueQueryWrapper<User> wrapper = SkipInvalidValueQueryWrapper.create()
  * .strictMode()
  * .eq(User::getName, "张三");
  * <p>
  * // 链式操作
- * SkipInvalidValueLambdaQueryWrapper<User> wrapper = SkipInvalidValueLambdaQueryWrapper.create()
+ * SkipInvalidValueQueryWrapper<User> wrapper = SkipInvalidValueQueryWrapper.create()
  * .apply(w -> w.eq(User::getStatus, 1))
  * .likeRight(User::getName, "张");
  */
 @Getter
 @Slf4j
-public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T> {
+public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
 
     private boolean strictMode = false; // 严格模式，如果为true会记录跳过条件的日志
     private boolean allowNullValue = false; // 是否允许null值
-    public SkipInvalidValueLambdaQueryWrapper() {
+    public SkipInvalidValueQueryWrapper() {
         super();
     }
 
-    public SkipInvalidValueLambdaQueryWrapper(T entity) {
+    public SkipInvalidValueQueryWrapper(T entity) {
         super();
         T filteredEntity = EntityUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
     }
 
-    public SkipInvalidValueLambdaQueryWrapper(Class<T> entityClass) {
+    public SkipInvalidValueQueryWrapper(Class<T> entityClass) {
         super(entityClass);
     }
 
     // ============ 静态工厂方法 ============
 
-    public static <T> SkipInvalidValueLambdaQueryWrapper<T> of(Class<T> entityClass) {
-        return new SkipInvalidValueLambdaQueryWrapper<>(entityClass);
+    public static <T> SkipInvalidValueQueryWrapper<T> of(Class<T> entityClass) {
+        return new SkipInvalidValueQueryWrapper<>(entityClass);
     }
 
-    public static <T> SkipInvalidValueLambdaQueryWrapper<T> of(T entity) {
-        return new SkipInvalidValueLambdaQueryWrapper<>(entity);
+    public static <T> SkipInvalidValueQueryWrapper<T> of(T entity) {
+        return new SkipInvalidValueQueryWrapper<>(entity);
     }
 
-    public static <T> SkipInvalidValueLambdaQueryWrapper<T> create() {
-        return new SkipInvalidValueLambdaQueryWrapper<>();
+    public static <T> SkipInvalidValueQueryWrapper<T> create() {
+        return new SkipInvalidValueQueryWrapper<>();
     }
 
-    public static <T> SkipInvalidValueLambdaQueryWrapper<T> create(Class<T> entityClass) {
-        return new SkipInvalidValueLambdaQueryWrapper<>(entityClass);
+    public static <T> SkipInvalidValueQueryWrapper<T> create(Class<T> entityClass) {
+        return new SkipInvalidValueQueryWrapper<>(entityClass);
     }
 
     // ============ 配置方法 ============
@@ -73,7 +72,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     /**
      * 启用严格模式，跳过无效条件时会记录日志
      */
-    public SkipInvalidValueLambdaQueryWrapper<T> strictMode() {
+    public SkipInvalidValueQueryWrapper<T> strictMode() {
         this.strictMode = true;
         return this;
     }
@@ -81,12 +80,12 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     /**
      * 禁用严格模式
      */
-    public SkipInvalidValueLambdaQueryWrapper<T> lenientMode() {
+    public SkipInvalidValueQueryWrapper<T> lenientMode() {
         this.strictMode = false;
         return this;
     }
 
-    public SkipInvalidValueLambdaQueryWrapper<T> allowNullValue() {
+    public SkipInvalidValueQueryWrapper<T> allowNullValue() {
         this.allowNullValue = true;
         return this;
     }
@@ -94,7 +93,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     // ============ 重写核心方法 ============
 
     @Override
-    public LambdaQueryWrapper<T> setEntity(T entity) {
+    public QueryWrapper<T> setEntity(T entity) {
         T filteredEntity = EntityUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
         return this;
@@ -103,7 +102,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     // ============ 重写条件方法 ============
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> eq(SFunction<T, ?> column, Object val) {
+    public SkipInvalidValueQueryWrapper<T> eq(String column, Object val) {
         if (ValueUtils.isValid(val)) {
             super.eq(column, val);
         } else if (strictMode) {
@@ -113,7 +112,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     }
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> ne(SFunction<T, ?> column, Object val) {
+    public SkipInvalidValueQueryWrapper<T> ne(String column, Object val) {
         if (ValueUtils.isValid(val)) {
             super.ne(column, val);
         } else if (strictMode) {
@@ -123,7 +122,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     }
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> like(SFunction<T, ?> column, Object val) {
+    public SkipInvalidValueQueryWrapper<T> like(String column, Object val) {
         if (ValueUtils.isValid(val)) {
             super.like(column, val);
         } else if (strictMode) {
@@ -133,7 +132,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     }
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> gt(SFunction<T, ?> column, Object val) {
+    public SkipInvalidValueQueryWrapper<T> gt(String column, Object val) {
         if (ValueUtils.isValid(val)) {
             super.gt(column, val);
         } else if (strictMode) {
@@ -143,7 +142,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     }
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> ge(SFunction<T, ?> column, Object val) {
+    public SkipInvalidValueQueryWrapper<T> ge(String column, Object val) {
         if (ValueUtils.isValid(val)) {
             super.ge(column, val);
         } else if (strictMode) {
@@ -153,7 +152,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     }
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> lt(SFunction<T, ?> column, Object val) {
+    public SkipInvalidValueQueryWrapper<T> lt(String column, Object val) {
         if (ValueUtils.isValid(val)) {
             super.lt(column, val);
         } else if (strictMode) {
@@ -163,7 +162,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     }
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> le(SFunction<T, ?> column, Object val) {
+    public SkipInvalidValueQueryWrapper<T> le(String column, Object val) {
         if (ValueUtils.isValid(val)) {
             super.le(column, val);
         } else if (strictMode) {
@@ -173,7 +172,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     }
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> in(SFunction<T, ?> column, Object... values) {
+    public SkipInvalidValueQueryWrapper<T> in(String column, Object... values) {
         if (ValueUtils.isValid(values)) {
             super.in(column, values);
         } else if (strictMode) {
@@ -183,7 +182,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     }
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> in(SFunction<T, ?> column, Collection<?> values) {
+    public SkipInvalidValueQueryWrapper<T> in(String column, Collection<?> values) {
         if (ValueUtils.isValid(values)) {
             super.in(column, values);
         } else if (strictMode) {
@@ -198,7 +197,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
      * 模糊匹配 - 左模糊
      */
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> likeLeft(SFunction<T, ?> column, Object val) {
+    public SkipInvalidValueQueryWrapper<T> likeLeft(String column, Object val) {
         if (ValueUtils.isValid(val)) {
             super.likeLeft(column, val);
         } else if (strictMode) {
@@ -211,7 +210,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
      * 模糊匹配 - 右模糊
      */
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> likeRight(SFunction<T, ?> column, Object val) {
+    public SkipInvalidValueQueryWrapper<T> likeRight(String column, Object val) {
         if (ValueUtils.isValid(val)) {
             super.likeRight(column, val);
         } else if (strictMode) {
@@ -224,7 +223,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
      * 不包含
      */
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> notIn(SFunction<T, ?> column, Object... values) {
+    public SkipInvalidValueQueryWrapper<T> notIn(String column, Object... values) {
         if (ValueUtils.isValid(values)) {
             super.notIn(column, values);
         } else if (strictMode) {
@@ -234,7 +233,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     }
 
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> notIn(SFunction<T, ?> column, Collection<?> values) {
+    public SkipInvalidValueQueryWrapper<T> notIn(String column, Collection<?> values) {
         if (ValueUtils.isValid(values)) {
             super.notIn(column, values);
         } else if (strictMode) {
@@ -247,7 +246,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
      * BETWEEN 条件
      */
     @Override
-    public SkipInvalidValueLambdaQueryWrapper<T> between(SFunction<T, ?> column, Object val1, Object val2) {
+    public SkipInvalidValueQueryWrapper<T> between(String column, Object val1, Object val2) {
         boolean valid1 = ValueUtils.isValid(val1);
         boolean valid2 = ValueUtils.isValid(val2);
 
@@ -266,7 +265,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
     /**
      * 链式操作支持
      */
-    public SkipInvalidValueLambdaQueryWrapper<T> apply(Consumer<SkipInvalidValueLambdaQueryWrapper<T>> consumer) {
+    public SkipInvalidValueQueryWrapper<T> apply(Consumer<SkipInvalidValueQueryWrapper<T>> consumer) {
         consumer.accept(this);
         return this;
     }

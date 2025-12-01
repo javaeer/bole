@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.mapper;
 
-import cn.net.yunlou.bole.common.IBaseMapper;
+import cn.net.yunlou.bole.common.IBaseTreeMapper;
 import cn.net.yunlou.bole.entity.City;
 
 /**
@@ -11,5 +11,5 @@ import cn.net.yunlou.bole.entity.City;
  * Modified By
  * Modified At
  */
-public interface CityMapper extends IBaseMapper<City> {
+public interface CityMapper extends IBaseTreeMapper<City> {
 }

@@ -10,4 +10,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * Modified By
  * Modified At
  */
-public interface IBaseMapper<T> extends BaseMapper<T> {}
+public interface IBaseMapper<T extends BaseEntity> extends BaseMapper<T> {
+}

@@ -3,7 +3,9 @@ package cn.net.yunlou.bole.common;
 import cn.net.yunlou.bole.common.utils.DateUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -81,7 +83,7 @@ public abstract class BaseService<
     }
 
     @Override
-    public Page<T> page(long pageNum, long pageSize, long timestamp, LambdaQueryWrapper<T> queryWrapper) {
+    public Page<T> page(long pageNum, long pageSize, long timestamp, QueryWrapper<T> queryWrapper) {
         Page<T> page = new Page<>();
         page.setCurrent(pageNum);
         page.setSize(pageSize);
@@ -93,14 +95,14 @@ public abstract class BaseService<
             } else {
                 date = DateUtils.fromTimestamp(timestamp);
             }
-            queryWrapper.lt(T::getCreatedAt, DateUtils.truncate(date, Calendar.SECOND));
+            queryWrapper.lt("created_at", DateUtils.truncate(date, Calendar.SECOND));
         }
         return page(page, queryWrapper);
     }
 
     @Override
-    public LambdaQueryWrapper<T> getBaseQueryWrapper(T entity) {
-        SkipInvalidValueLambdaQueryWrapper<T> queryWrapper = SkipInvalidValueWrappers.lambdaQuery(entity);
+    public QueryWrapper<T> getBaseQueryWrapper(T entity) {
+        SkipInvalidValueQueryWrapper<T> queryWrapper = SkipInvalidValueWrappers.query(entity);
         if (ValueUtils.isValid(entity.getKeyWords())) {
             queryWrapper = getKeyFieldQueryWrapper(queryWrapper, entity);
         }
@@ -108,8 +110,8 @@ public abstract class BaseService<
     }
 
     @Override
-    public LambdaUpdateWrapper<T> getBaseUpdateWrapper(T entity) {
-        return SkipInvalidValueWrappers.lambdaUpdate(entity);
+    public UpdateWrapper<T> getBaseUpdateWrapper(T entity) {
+        return SkipInvalidValueWrappers.update(entity);
     }
 
     /**
@@ -120,6 +122,17 @@ public abstract class BaseService<
      * @return 组合条件
      */
     protected SkipInvalidValueLambdaQueryWrapper<T> getKeyFieldQueryWrapper(SkipInvalidValueLambdaQueryWrapper<T> queryWrapper, T entity) {
+        return queryWrapper;
+    }
+
+    /**
+     * 如果存在 关键字 查询 请务必 重写此方法
+     *
+     * @param queryWrapper 现有 条件
+     * @param entity       实体
+     * @return 组合条件
+     */
+    protected SkipInvalidValueQueryWrapper<T> getKeyFieldQueryWrapper(SkipInvalidValueQueryWrapper<T> queryWrapper, T entity) {
         return queryWrapper;
     }
 

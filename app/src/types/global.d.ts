@@ -11,11 +11,11 @@ declare global {
   }
 
   interface TokenResult {
-    accessToken : string;
-    refreshToken : string;
-    tokenType : string;
-    expiresIn : number;
-    refreshExpiresIn : number | null;
+    accessToken: string;
+    refreshToken: string;
+    tokenType: string;
+    expiresIn: number;
+    refreshExpiresIn: number | null;
   }
 
   /**
@@ -24,8 +24,8 @@ declare global {
   interface PageQuery {
     pageNum: number;
     pageSize: number;
-	sortBy?: string;
-	sortOrder?: 'asc' | 'desc';
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
   }
 
   /**
@@ -52,7 +52,6 @@ declare global {
   }
 
 
-
   /**
    * 请求配置
    */
@@ -68,7 +67,7 @@ declare global {
 
     constructor(message: string, code: number, data?: any) {
       super(message);
-      this.name = 'RequestError';
+      this.name = "RequestError";
       this.code = code;
       this.data = data;
     }
