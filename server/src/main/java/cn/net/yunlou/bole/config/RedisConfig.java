@@ -35,6 +35,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.util.StringUtils;
 
 import java.time.Duration;
@@ -80,20 +81,6 @@ public class RedisConfig {
     private static final String REDIS_SCHEMA = "redis://";
     private static final String REDISS_SCHEMA = "rediss://"; // SSL
 
-    @Value("${spring.data.redis.timeout:3000}")
-    private int redisTimeout;
-
-    @Value("${spring.data.redis.lettuce.pool.max-idle:8}")
-    private int maxIdle;
-
-    @Value("${spring.data.redis.lettuce.pool.min-idle:0}")
-    private int minIdle;
-
-    @Value("${spring.data.redis.lettuce.pool.max-active:8}")
-    private int maxActive;
-
-    @Value("${spring.data.redis.lettuce.pool.max-wait:-1}")
-    private long maxWait;
 
     /**
      * 自定义缓存配置（可按缓存名称配置不同的TTL）
@@ -162,14 +149,6 @@ public class RedisConfig {
         return config;
     }
 
-    /**
-     * 缓存解析器
-     */
-    @Bean
-    public CacheResolver cacheResolver(CacheManager cacheManager) {
-        return new SimpleCacheResolver(cacheManager);
-    }
-
 
     /**
      * 树形服务缓存解析器
@@ -180,51 +159,43 @@ public class RedisConfig {
     }
 
     /**
-     * Redis序列化器
+     * 创建专用于Redis的序列化器
+     * 使用独立的ObjectMapper，不注册为通用Bean，避免影响Web接口
      */
     @Bean
     public RedisSerializer<Object> redisSerializer() {
-        ObjectMapper objectMapper = createObjectMapper();
-        // 配置null值序列化
-        GenericJackson2JsonRedisSerializer.registerNullValueSerializer(objectMapper, null);
-        return new GenericJackson2JsonRedisSerializer(objectMapper);
-    }
+        ObjectMapper redisObjectMapper = new ObjectMapper();
 
-    /**
-     * 共享的ObjectMapper
-     */
-    @Bean
-    public ObjectMapper objectMapper() {
-        return createObjectMapper();
-    }
-
-    /**
-     * 创建ObjectMapper
-     */
-    private ObjectMapper createObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // 基础配置
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
-        objectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
-
-        // 时间处理
+        // 反序列化时候遇到不匹配的属性并不抛出异常
+        redisObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // 序列化时候遇到空对象不抛出异常
+        redisObjectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        // 反序列化的时候如果是无效子类型,不抛出异常
+        redisObjectMapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
+        // 不使用默认的dateTime进行序列化,
+        redisObjectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        // 使用JSR310提供的序列化类,里面包含了大量的JDK8时间序列化类
         JavaTimeModule javaTimeModule = new JavaTimeModule();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(formatter));
-        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(formatter));
-        objectMapper.registerModule(javaTimeModule);
 
-        // 类型信息
-        objectMapper.activateDefaultTyping(
+        // 配置LocalDateTime序列化和反序列化格式
+        javaTimeModule.addSerializer(LocalDateTime.class,
+                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        javaTimeModule.addDeserializer(LocalDateTime.class,
+                new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        redisObjectMapper.registerModule(javaTimeModule);
+
+        // 启用反序列化所需的类型信息,在属性中添加@class【此配置不会影响Spring MVC返回给前端的JSON】
+        redisObjectMapper.activateDefaultTyping(
                 LaissezFaireSubTypeValidator.instance,
                 ObjectMapper.DefaultTyping.NON_FINAL,
-                JsonTypeInfo.As.PROPERTY
+                //JsonTypeInfo.As.PROPERTY
+                JsonTypeInfo.As.WRAPPER_ARRAY // 使用WRAPPER_ARRAY比PROPERTY在循环引用上更安全
         );
 
-        return objectMapper;
+        // 配置null值序列化
+        GenericJackson2JsonRedisSerializer.registerNullValueSerializer(redisObjectMapper, null);
+        return new GenericJackson2JsonRedisSerializer(redisObjectMapper);
     }
 
     /**
@@ -238,10 +209,10 @@ public class RedisConfig {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(lettuceConnectionFactory);
 
-        // 序列化配置
-        template.setKeySerializer(RedisSerializer.string());
+        template.setKeySerializer(StringRedisSerializer.UTF_8);
         template.setValueSerializer(redisSerializer);
-        template.setHashKeySerializer(RedisSerializer.string());
+
+        template.setHashKeySerializer(StringRedisSerializer.UTF_8);
         template.setHashValueSerializer(redisSerializer);
 
         // 启用事务支持
@@ -258,10 +229,7 @@ public class RedisConfig {
     public RedissonClient redissonClient(RedisProperties redisProperties) {
         Config config = new Config();
 
-        String password = redisProperties.getPassword();
-        Duration timeout = redisProperties.getTimeout();
-        boolean sslEnabled = false;//redisProperties.isSsl();
-        String schema = sslEnabled ? REDISS_SCHEMA : REDIS_SCHEMA;
+        String schema = redisProperties.getSsl().isEnabled() ? REDISS_SCHEMA : REDIS_SCHEMA;
 
         // 配置集群、哨兵或单节点
         configureRedissonServer(config, redisProperties, schema);
@@ -272,9 +240,6 @@ public class RedisConfig {
         // 线程池配置
         config.setThreads(16);
         config.setNettyThreads(32);
-
-        // 编码配置
-        config.setCodec(new org.redisson.codec.JsonJacksonCodec(objectMapper()));
 
         try {
             return Redisson.create(config);
@@ -361,11 +326,9 @@ public class RedisConfig {
 
         // 单节点特定配置
         singleConfig.setDatabase(properties.getDatabase());
-        singleConfig.setConnectionPoolSize(maxActive);
-        singleConfig.setConnectionMinimumIdleSize(minIdle);
 
         // 连接超时和重试
-        singleConfig.setConnectTimeout(redisTimeout);
+        singleConfig.setConnectTimeout(3000);
         singleConfig.setRetryAttempts(3);
         singleConfig.setRetryInterval(1500);
     }
@@ -383,15 +346,6 @@ public class RedisConfig {
         long timeoutMillis = properties.getTimeout().toMillis();
         if (timeoutMillis > 0 && timeoutMillis <= Integer.MAX_VALUE) {
             config.setTimeout((int) timeoutMillis);
-        }
-
-        // 连接池配置
-        if (config instanceof BaseMasterSlaveServersConfig) {
-            BaseMasterSlaveServersConfig<?> msConfig = (BaseMasterSlaveServersConfig<?>) config;
-            msConfig.setMasterConnectionPoolSize(maxActive);
-            msConfig.setSlaveConnectionPoolSize(maxActive);
-            msConfig.setMasterConnectionMinimumIdleSize(minIdle);
-            msConfig.setSlaveConnectionMinimumIdleSize(minIdle);
         }
 
         // Ping连接间隔

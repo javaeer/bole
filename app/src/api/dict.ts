@@ -57,8 +57,15 @@ const DictAPI = {
    *
    * @returns 字典列表
    */
-  getList() {
-    return get<DictResult>(`${DICT_BASE_URL}/list`);
+  postList(queryParams: DictQuery) {
+    return post<DictResult>(`${DICT_BASE_URL}/list`,queryParams);
+  },
+
+  /**
+   * 获取整个字典树结构
+   */
+  getWholeTree(){
+    return get<DictResult>(`${DICT_BASE_URL}/children`);
   },
 };
 

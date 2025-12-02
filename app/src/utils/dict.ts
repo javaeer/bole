@@ -1,4 +1,5 @@
 import { useDictStore } from "@/stores/dict";
+import { DictItem } from "@/types/dict";
 
 export class DictHandler {
   private dictStore: ReturnType<typeof useDictStore> | null = null;
@@ -21,7 +22,7 @@ export class DictHandler {
   /**
    * 初始化字典数据
    */
-  async initDict(): Promise<void> {
+  async initDictHandling(): Promise<void> {
     if (this.initializationPromise) {
       return this.initializationPromise;
     }
@@ -60,13 +61,13 @@ export class DictHandler {
   async reloadDict(): Promise<void> {
     this.isInitialized = false;
     this.initializationPromise = null;
-    await this.initDict();
+    await this.initDictHandling();
   }
 
   /**
    * 获取字典项
    */
-  getDictItems(type: string) {
+  getDictItems(type: string): DictItem[] {
     this.ensureStore();
     return this.dictStore!.getDictItems(type);
   }
@@ -82,9 +83,25 @@ export class DictHandler {
   /**
    * 获取字典选项
    */
-  getDictOptions(type: string) {
+  getDictOptions(type: string): Array<{ label: string; value: string }> {
     this.ensureStore();
     return this.dictStore!.getDictOptions(type);
+  }
+
+  /**
+   * 获取字典类型信息
+   */
+  getDictTypeInfo(type: string) {
+    this.ensureStore();
+    return this.dictStore!.getDictTypeInfo(type);
+  }
+
+  /**
+   * 获取所有字典类型
+   */
+  getAllDictTypes() {
+    this.ensureStore();
+    return this.dictStore!.getAllDictTypes();
   }
 
   /**
@@ -100,6 +117,14 @@ export class DictHandler {
    */
   get initialized(): boolean {
     return this.isInitialized;
+  }
+
+  /**
+   * 获取原始树形数据（调试用）
+   */
+  getRawDictTree() {
+    this.ensureStore();
+    return this.dictStore!.getRawDictTree();
   }
 }
 

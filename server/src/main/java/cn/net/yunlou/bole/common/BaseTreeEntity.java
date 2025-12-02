@@ -1,6 +1,10 @@
 package cn.net.yunlou.bole.common;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -45,43 +49,13 @@ public class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEntity {
      * 子节点列表
      */
     @TableField(exist = false)
+    @JsonManagedReference //序列化时包含子对象
     private List<T> children;
 
     /**
      * 父节点
      */
     @TableField(exist = false)
+    @JsonBackReference  // 序列化时忽略父对象
     private T parent;
-
-    /**
-     * 获取子节点列表，如果为null则返回空列表
-     */
-    public List<T> getChildren() {
-        return children != null ? children : new ArrayList<>();
-    }
-
-    /**
-     * 设置子节点列表
-     */
-    public void setChildren(List<T> children) {
-        this.children = children;
-    }
-
-    /**
-     * 判断是否为根节点
-     */
-    public boolean isRoot() {
-        return ROOT_ID.equals(parentId);
-    }
-
-    /**
-     * 添加子节点
-     */
-    public void addChild(T child) {
-        if (this.children == null) {
-            this.children = new ArrayList<>();
-        }
-        this.children.add(child);
-        child.setParent((T) this);
-    }
 }

@@ -70,6 +70,12 @@ public class DictController {
         return BusinessResponse.success(dictService.getById(id));
     }
 
+    @GetMapping("children")
+    @Operation(summary = "获取字典下级信息")
+    public BusinessResponse<List<Dict>> getChildren() {
+        return BusinessResponse.success(dictService.listAllChildren());
+    }
+
     @GetMapping("children/{id}")
     @Operation(summary = "获取字典下级信息")
     public BusinessResponse<Dict> getChildren(
@@ -79,14 +85,14 @@ public class DictController {
 
     @PostMapping("list")
     @Operation(summary = "获取字典列表")
-    public BusinessResponse<List<DictDTO>> list(@RequestBody DictQuery request) {
+    public BusinessResponse<List<DictDTO>> list(@RequestBody(required = false) DictQuery request) {
         //Dict dict = QueryUtils.modelToBean(request, Dict.class);
         return BusinessResponse.success(dictService.listDTOByQuery(request));
     }
 
     @PostMapping("tree")
     @Operation(summary = "获取字典树形列表")
-    public BusinessResponse<List<Dict>> tree(@RequestBody DictQuery request) {
+    public BusinessResponse<List<Dict>> tree(@RequestBody(required = false) DictQuery request) {
         Dict dict = QueryUtils.modelToBean(request, Dict.class);
         return BusinessResponse.success(dictService.listAllChildren(dict));
     }
@@ -96,7 +102,7 @@ public class DictController {
     public BusinessResponse<Page<DictDTO>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody DictQuery request) {
+            @RequestBody(required = false) DictQuery request) {
         //Dict dict = QueryUtils.modelToBean(request, Dict.class);
 
 

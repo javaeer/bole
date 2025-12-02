@@ -316,10 +316,10 @@ public abstract class BaseTreeService<
      * @date 2020/7/24 17:36
      */
     @Override
-    @Cacheable(cacheResolver = "treeCacheResolver",
-            key = "#root.target.buildCacheKey('whole_tree:')",
-            unless = "!#root.target.isCacheEnabled()"
-    )
+    //@Cacheable(cacheResolver = "treeCacheResolver",
+    //        key = "#root.target.buildCacheKey('whole_tree:')",
+    //        unless = "!#root.target.isCacheEnabled()"
+    //)
     public List<T> listAllChildren() {
 
         // 1. 一次查询获取所有节点（关键优化！）

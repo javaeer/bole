@@ -1,4 +1,4 @@
-import { Dict, DictResult } from "@/types/dict";
+import { DictData, DictResult } from "@/types/dict";
 import { StoreKey } from "@/constants/store-key";
 import { LoginResult, UserInfo } from "@/types/user";
 import { ConfigResult } from "@/types/config";
@@ -103,7 +103,6 @@ export const clearToken = (): void => {
   uni.removeStorageSync(StoreKey.TOKEN_EXPIRE_KEY);
 };
 
-
 /**
  * 设置用户信息
  * @param userInfo
@@ -119,7 +118,10 @@ export const setUserInfo = (userInfo: UserInfo) => {
 export const getUserInfo = (): any => {
   // return uni.getStorageSync(StoreKey.USER_INFO_KEY) || null;
   const userInfo = uni.getStorageSync(StoreKey.USER_INFO_KEY);
-  return userInfo ? JSON.parse(userInfo) : null;
+  if (userInfo){
+    console.log("本地获取用户信息成功");
+    return userInfo ? JSON.parse(userInfo) : null;
+  }
 };
 
 /**
@@ -132,12 +134,16 @@ export const clearUserInfo = (): void => {
 /**
  * 获取本地存储中的字典数据
  */
-export const getDict = (): Record<string, DictResult> => {
+export const getDict = (): DictData => {
   try {
-    const dictStr = uni.getStorageSync(StoreKey.DICT_KEY);
-    return dictStr ? JSON.parse(dictStr) : {};
+
+    const storedDict = uni.getStorageSync(StoreKey.DICT_KEY);
+    if (storedDict) {
+      console.log("从本地加载字典数据成功");
+      return storedDict ? JSON.parse(storedDict) : {};
+    }
   } catch (error) {
-    console.error('获取字典缓存失败:', error);
+    console.error("获取字典缓存失败:", error);
     return {};
   }
 };
@@ -145,14 +151,11 @@ export const getDict = (): Record<string, DictResult> => {
 /**
  * 设置字典数据到本地存储
  */
-export const setDict = (dictData: Dict): void => {
+export const setDict = (dictData: DictData): void => {
   try {
-    const currentDict = getDict();
-    // 使用字典类型作为键
-    currentDict[dictData.type] = dictData;
-    uni.setStorageSync(StoreKey.DICT_KEY, JSON.stringify(currentDict));
+    uni.setStorageSync(StoreKey.DICT_KEY, JSON.stringify(dictData));
   } catch (error) {
-    console.error('设置字典缓存失败:', error);
+    console.error("设置字典缓存失败:", error);
   }
 };
 
@@ -162,27 +165,13 @@ export const setDict = (dictData: Dict): void => {
 export const clearDict = (): void => {
   try {
     uni.removeStorageSync(StoreKey.DICT_KEY);
+    console.log("字典缓存已清除");
   } catch (error) {
-    console.error('清除字典缓存失败:', error);
+    console.error("清除字典缓存失败:", error);
   }
 };
 
-/**
- * 获取特定类型的字典项
- */
-export const getDictByType = (type: string): DictItem[] => {
-  const dict = getDict();
-  return dict[type]?.children || [];
-};
 
-/**
- * 获取字典项的标签
- */
-export const getDictLabel = (type: string, value: string): string => {
-  const items = getDictByType(type);
-  const item = items.find(item => item.value === value);
-  return item?.label || value;
-};
 
 // 清除所有缓存信息
 export function clearAll() {

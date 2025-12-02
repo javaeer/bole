@@ -103,6 +103,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
         value VARCHAR(500),
         label VARCHAR(500),
         state INTEGER DEFAULT 1,
+        sort INTEGER DEFAULT 0,
         
         -- 时间字段
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -133,6 +134,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     COMMENT ON COLUMN bole_app.t_dict.value IS '字典值';
     COMMENT ON COLUMN bole_app.t_dict.label IS '字典标签';
     COMMENT ON COLUMN bole_app.t_dict.state IS '状态（1启用，0停用）';
+    COMMENT ON COLUMN bole_app.t_dict.sort IS '排序号';
     COMMENT ON COLUMN bole_app.t_dict.created_at IS '创建时间';
     COMMENT ON COLUMN bole_app.t_dict.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_dict.deleted IS '逻辑删除标志(0:未删除,1:已删除)';

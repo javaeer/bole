@@ -1,4 +1,5 @@
 import { useConfigStore } from "@/stores/config";
+import { DictItem } from "@/types/dict";
 
 export class Config {
   private configStore: ReturnType<typeof useConfigStore> | null = null;
@@ -71,6 +72,15 @@ export class Config {
     this.initializationPromise = null;
     await this.initConfigHandling();
   }
+
+  /**
+   * 获取配置项
+   */
+  getConfigValue(key: string): string {
+    this.ensureStore();
+    return this.configStore!.getConfigValue(key);
+  }
+
 }
 
 // 创建实例但不立即初始化
