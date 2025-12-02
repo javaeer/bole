@@ -11,7 +11,7 @@ done
 echo "插入bole数据库示例数据..."
 
 # 插入bole数据库示例数据
-psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
+psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 插入系统配置测试数据
     INSERT INTO bole_app.t_system_config (config_key, config_value, config_desc, created_by_id, updated_by_id) VALUES
@@ -96,10 +96,10 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
 
     -- 插入用户数据
     INSERT INTO bole_app.t_user (id, company_id, username, password, email, phone, name, avatar, title, location, website, github, wechat, bio, followers, fans, likes, status, work_years, last_login_at) VALUES
-    (1, 1, 'zhangsan', '$2a$10$r3d7i8JkL9mN0bV1c2X3Y4z', 'zhangsan@tencent.com', '13800138001', '张三', 'https://example.com/avatar1.jpg', '高级工程师', '深圳', 'https://zhangsan.dev', 'zhangsan', 'zhangsan_wx', '专注于后端开发和系统架构', 150, 80, 300, 1, 5, '2024-01-15 10:30:00'),
-    (2, 1, 'lisi', '$2a$10$r3d7i8JkL9mN0bV1c2X3Y4z', 'lisi@tencent.com', '13800138002', '李四', 'https://example.com/avatar2.jpg', '前端开发专家', '北京', 'https://lisi.dev', 'lisi', 'lisi_wx', '热爱前端技术和用户体验设计', 200, 120, 450, 1, 7, '2024-01-14 15:20:00'),
-    (3, 2, 'wangwu', '$2a$10$r3d7i8JkL9mN0bV1c2X3Y4z', 'wangwu@alibaba.com', '13800138003', '王五', 'https://example.com/avatar3.jpg', '架构师', '杭州', 'https://wangwu.dev', 'wangwu', 'wangwu_wx', '专注于分布式系统和云原生架构', 300, 150, 600, 1, 8, '2024-01-13 09:15:00'),
-    (4, 3, 'zhaoliu', '$2a$10$r3d7i8JkL9mN0bV1c2X3Y4z', 'zhaoliu@bytedance.com', '13800138004', '赵六', 'https://example.com/avatar4.jpg', '全栈工程师', '上海', 'https://zhaoliu.dev', 'zhaoliu', 'zhaoliu_wx', '全栈开发，热爱新技术', 180, 90, 350, 1, 4, '2024-01-12 14:45:00');
+    (1, 1, 'admin', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'zhangsan@tencent.com', '13800138001', '张三', 'https://example.com/avatar1.jpg', '高级工程师', '深圳', 'https://zhangsan.dev', 'zhangsan', 'zhangsan_wx', '专注于后端开发和系统架构', 150, 80, 300, 1, 5, '2024-01-15 10:30:00'),
+    (2, 1, 'lisi', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'lisi@tencent.com', '13800138002', '李四', 'https://example.com/avatar2.jpg', '前端开发专家', '北京', 'https://lisi.dev', 'lisi', 'lisi_wx', '热爱前端技术和用户体验设计', 200, 120, 450, 1, 7, '2024-01-14 15:20:00'),
+    (3, 2, 'wangwu', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'wangwu@alibaba.com', '13800138003', '王五', 'https://example.com/avatar3.jpg', '架构师', '杭州', 'https://wangwu.dev', 'wangwu', 'wangwu_wx', '专注于分布式系统和云原生架构', 300, 150, 600, 1, 8, '2024-01-13 09:15:00'),
+    (4, 3, 'zhaoliu', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'zhaoliu@bytedance.com', '13800138004', '赵六', 'https://example.com/avatar4.jpg', '全栈工程师', '上海', 'https://zhaoliu.dev', 'zhaoliu', 'zhaoliu_wx', '全栈开发，热爱新技术', 180, 90, 350, 1, 4, '2024-01-12 14:45:00');
 
     -- 插入角色数据
     INSERT INTO bole_app.t_role (id, name, code, description) VALUES
@@ -212,7 +212,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     ('村/街道', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
     -- 插入城市数据
-    INSERT INTO bole_app.t_city (name, parent_id, grade_id, created_at, updated_at) VALUES
+    INSERT INTO bole_app.t_city (name, parent_id, city_grade_id, created_at, updated_at) VALUES
     ('北京市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('上海市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('广州市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -224,13 +224,6 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
     ('成都市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('重庆市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-    -- 插入系统配置数据
-    INSERT INTO bole_app.system_config (config_key, config_value, description, updated_by) VALUES
-    ('site_name', '"技术伯乐"', '网站名称', 'admin'),
-    ('max_file_size', '10485760', '最大文件上传大小(字节)', 'admin'),
-    ('resume_template_count', '3', '可用简历模板数量', 'admin'),
-    ('comment_audit_enabled', 'true', '是否启用评论审核', 'admin');
-
     -- 插入审计日志数据
     INSERT INTO bole_audit.audit_logs (id, table_name, record_id, action, old_data, new_data, changed_by) VALUES
     (1, 't_user', 1, 'UPDATE', '{"name": "张三", "title": "工程师"}', '{"name": "张三", "title": "高级工程师"}', 'zhangsan'),
@@ -240,7 +233,6 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
 
 
     -- 更新序列值，确保后续插入的主键不会冲突
-    SELECT setval('bole_app.t_system_config_id_seq', (SELECT MAX(id) FROM bole_app.t_system_config));
     SELECT setval('bole_app.t_system_banner_id_seq', (SELECT MAX(id) FROM bole_app.t_system_banner));
     SELECT setval('bole_app.t_dict_id_seq', (SELECT MAX(id) FROM bole_app.t_dict));
     SELECT setval('bole_app.t_user_id_seq', (SELECT MAX(id) FROM bole_app.t_user));

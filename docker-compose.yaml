@@ -1,0 +1,87 @@
+version: '3.1'
+services:
+  bole-postgresql:
+    image: harbor.yunlou.net.cn/bole/bole-postgresql
+    container_name: bole-postgresql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - bole-network
+    restart: unless-stopped
+
+  bole-minio:
+    image: harbor.yunlou.net.cn/bole/bole-minio
+    container_name: bole-minio
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin123
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server --console-address ":9001" /data
+    networks:
+      - bole-network
+    restart: unless-stopped
+
+  bole-redis:
+    image: harbor.yunlou.net.cn/bole/bole-redis
+    container_name: bole-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - bole-network
+    restart: unless-stopped
+
+  bole-server:
+    image: harbor.yunlou.net.cn/bole/bole-server
+    container_name: bole-server
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://bole-postgresql:5432/bole_db
+      - SPRING_DATASOURCE_USERNAME=bole
+      - SPRING_DATASOURCE_PASSWORD=bole_password
+      - SPRING_REDIS_HOST=bole-redis
+      - SPRING_REDIS_PORT=6379
+      - MINIO_ENDPOINT=http://bole-minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin123
+    ports:
+      - "8080:8080"
+    depends_on:
+      - bole-postgresql
+      - bole-redis
+      - bole-minio
+    networks:
+      - bole-network
+    restart: unless-stopped
+
+  bole-app:
+    image: harbor.yunlou.net.cn/bole/bole-app
+    container_name: bole-app
+    environment:
+      - API_BASE_URL=http://bole-server:8080
+    ports:
+      - "80:80"
+    depends_on:
+      - bole-server
+    networks:
+      - bole-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  minio_data:
+  redis_data:
+
+networks:
+  bole-network:
+    driver: bridge

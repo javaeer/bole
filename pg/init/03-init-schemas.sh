@@ -4,9 +4,9 @@ set -e
 echo "=== 初始化数据库表结构 ==="
 
 # 等待PostgreSQL启动
-until pg_isready -h localhost -U postgres; do
+until pg_isready -U postgres; do
     echo "等待 PostgreSQL 启动..."
-    sleep 2
+    sleep 10
 done
 
 echo "初始化bole数据库表结构..."
@@ -18,7 +18,7 @@ if ! psql -U postgres -lqt | cut -d \| -f 1 | grep -qw bole; then
 fi
 
 # 初始化bole数据库
-psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
+psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     -- 创建schema
     CREATE SCHEMA IF NOT EXISTS bole_app;
     CREATE SCHEMA IF NOT EXISTS bole_audit;
@@ -110,8 +110,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         
         -- 逻辑删除字段
-        deleted INTEGER DEFAULT 0,
-        
+        deleted INTEGER DEFAULT 0
     );
 
     -- 创建索引
@@ -1005,12 +1004,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             -- 逻辑删除字段
         deleted INTEGER DEFAULT 0,
-            
-        --添加外键约束
-        CONSTRAINT fk_city_parent 
-        FOREIGN KEY (parent_id) 
-        REFERENCES bole_app.t_city(id),
 
+        --添加外键约束
         CONSTRAINT fk_city_city_grade 
         FOREIGN KEY (city_grade_id) 
         REFERENCES bole_app.t_city_grade(id)
@@ -1081,7 +1076,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-EOSQL
             FROM information_schema.tables 
             WHERE table_schema = 'bole_app' 
             AND table_name IN (
-                 't_system_config', 't_system_banner','t_dict',
+                't_system_config', 't_system_banner','t_dict',
                 't_user', 't_company', 't_role', 't_company_comment', 
                 't_company_experiences', 't_work_experiences', 
                 't_education_experience', 't_project_experience',

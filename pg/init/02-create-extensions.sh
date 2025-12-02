@@ -11,7 +11,7 @@ done
 echo "创建数据库扩展..."
 
 # 在bole数据库创建扩展
-psql -v ON_ERROR_STOP=1 -U postgres -d bole <<-EOSQL
+psql -v ON_ERROR_STOP=1 -U postgres -d bole <<-'EOSQL'
     -- 创建常用扩展
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     CREATE EXTENSION IF NOT EXISTS "pgcrypto";

@@ -6,7 +6,7 @@ echo "=== 创建PostgreSQL用户和数据库 ==="
 # 等待PostgreSQL启动
 until pg_isready -U postgres; do
     echo "等待PostgreSQL启动..."
-    sleep 2
+    sleep 10
 done
 
 echo "PostgreSQL已启动，开始创建用户和数据库..."

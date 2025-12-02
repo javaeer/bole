@@ -30,13 +30,13 @@ ORDER BY table_schema, table_name;"
 
 echo ""
 echo "5. 验证数据插入..."
-echo "   bole.users 表记录数:"
-psql -U bole -d bole -c "SELECT COUNT(*) FROM bole_app.users;"
+echo "   bole.t_user 表记录数:"
+psql -U bole -d bole -c "SELECT COUNT(*) FROM bole_app.t_user;"
 
 echo ""
 echo "6. 测试用户权限..."
 echo "   readonly用户访问测试:"
-psql -U readonly -d bole -c "SELECT username FROM bole_app.users LIMIT 1;" > /dev/null && echo "✅ readonly用户权限正常"
+psql -U readonly -d bole -c "SELECT username FROM bole_app.t_user LIMIT 1;" > /dev/null && echo "✅ readonly用户权限正常"
 
 echo ""
 echo "8. 检查扩展..."
