@@ -13,12 +13,12 @@
     <name>bole-server</name>
     <description>Bole Server Application</description>
 
-    <parent>
+    <!--<parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.5</version>
         <relativePath/>
-    </parent>
+    </parent>-->
 
     <properties>
         <java.version>17</java.version>
@@ -26,6 +26,9 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <spring-boot.version>3.1.5</spring-boot.version>
+        <lombok.version>1.18.30</lombok.version>
 
         <!-- 依赖版本管理 -->
         <mybatis-plus.version>3.5.6</mybatis-plus.version>
@@ -49,7 +52,23 @@
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <spotless-maven-plugin.version>2.37.0</spotless-maven-plugin.version>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+
+        <!--docker镜像-->
+        <docker.image.prefix>harbor.yunlou.net.cn/bole</docker.image.prefix>
     </properties>
+
+    <!-- 依赖管理 -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Spring Boot Starters -->
@@ -105,11 +124,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-            <version>${commons-pool2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.redisson</groupId>
@@ -188,12 +202,12 @@
         </dependency>
 
         <!-- 开发工具 -->
-<!--        <dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
-        </dependency>-->
+        </dependency>
 
         <!-- MapStruct -->
         <dependency>
@@ -300,25 +314,72 @@
     </pluginRepositories>
     <!--**********************************************************/主仓库配置，按设定顺序进行查找 end**********************************************************-->
 
-
+    <!-- ******************************************************** -->
+    <!-- Maven构建配置部分  -->
+    <!--此部分定义了项目的构建过程，包括最终输出名称、插件配置和资源处理规则-->
+    <!-- ******************************************************** -->
     <build>
+        <!--
+          最终生成文件的命名规则
+          ${project.artifactId}：项目标识符，如"my-app"
+          ${project.version}：项目版本号，如"1.0.0"
+          示例：my-app-1.0.0.jar
+        -->
         <finalName>${project.artifactId}-${project.version}</finalName>
 
+        <!-- Maven插件配置区 -->
         <plugins>
-            <!-- Spring Boot Maven Plugin -->
+            <!--
+              Spring Boot Maven插件
+              作用：将项目打包为可执行的Spring Boot应用（fat jar）
+              文档：https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/html/
+            -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
                 <configuration>
+                    <!--
+                      排除依赖项配置
+                      指定在打包可执行jar时需要排除的依赖项
+                      Lombok是编译时依赖，运行时不需要，因此可以排除以减少jar包大小
+                    -->
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
+                        <exclude>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                        </exclude>
                     </excludes>
+                    <!--
+                      指定Spring Boot应用的主启动类
+                      该类必须包含main方法，是应用程序的入口点
+                    -->
                     <mainClass>cn.net.yunlou.bole.BoleApplication</mainClass>
+                    <!--
+                      设置为true会生成可执行的jar/war文件
+                      在Linux/Unix系统中，可以直接使用 ./app.jar 方式运行
+                    -->
+                    <executable>true</executable>
+
+                    <!-- 优化：添加JVM启动参数 -->
+                    <jvmArguments>
+                        -Xmx512m
+                        -Xms256m
+                        -XX:+UseG1GC
+                        -XX:+HeapDumpOnOutOfMemoryError
+                        -XX:HeapDumpPath=./heapdump.hprof
+                    </jvmArguments>
+
                 </configuration>
                 <executions>
+                    <!--
+                      执行目标配置
+                      repackage目标：重新打包生成的jar，使其成为可执行的Spring Boot jar
+                    -->
                     <execution>
                         <goals>
                             <goal>repackage</goal>
@@ -327,25 +388,78 @@
                 </executions>
             </plugin>
 
-            <!-- 编译插件 -->
+            <!--
+              Docker构建插件（Spotify版）
+              作用：使用Dockerfile构建Docker镜像并推送到仓库
+              注意：此插件已由Spring Boot官方Docker插件取代，但仍可使用
+            -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.13</version>
+                <configuration>
+                    <!--
+                      Docker镜像仓库和名称
+                      ${docker.image.prefix}：通常在properties中定义，如"myregistry"
+                      示例：myregistry/my-app:1.0.0
+                    -->
+                    <repository>${docker.image.prefix}/${project.artifactId}</repository>
+                    <!-- Docker镜像标签，使用项目版本号 -->
+                    <tag>${project.version}</tag>
+                    <!--
+                      构建参数，传递给Dockerfile
+                      JAR_FILE：指定要打包到镜像中的jar文件路径
+                    -->
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+            </plugin>
+
+
+
+            <!--
+              Maven编译插件
+              作用：编译项目源代码，配置Java版本和编译参数
+              文档：https://maven.apache.org/plugins/maven-compiler-plugin/
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
+                    <!-- 源代码兼容版本 -->
                     <source>${java.version}</source>
+                    <!-- 目标字节码版本 -->
                     <target>${java.version}</target>
+                    <!-- 源代码文件编码 -->
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <!--
+                      设置为true，保留方法参数名信息（用于反射获取参数名）
+                      对Spring MVC等框架很有用
+                    -->
                     <parameters>true</parameters>
+                    <!--
+                      启用外部进程编译
+                      优点：避免内存泄漏，可以设置独立内存参数
+                    -->
                     <fork>true</fork>
+                    <!-- 编译进程的初始内存大小 -->
                     <meminitial>512m</meminitial>
+                    <!-- 编译进程的最大内存大小 -->
                     <maxmem>2048m</maxmem>
+                    <!--
+                      注解处理器路径配置
+                      指定编译时需要使用的注解处理器
+                    -->
                     <annotationProcessorPaths>
+                        <!-- Lombok注解处理器，用于生成getter/setter等方法 -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
                         </path>
+                        <!-- MapStruct注解处理器，用于生成对象映射代码 -->
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
@@ -355,30 +469,49 @@
                 </configuration>
             </plugin>
 
-            <!-- 资源处理插件 -->
+            <!--
+              资源处理插件
+              作用：处理项目资源文件，如配置文件、属性文件等
+              文档：https://maven.apache.org/plugins/maven-resources-plugin/
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>${maven-resources-plugin.version}</version>
                 <configuration>
+                    <!-- 资源文件编码 -->
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
 
-            <!-- 代码格式化插件 -->
+            <!--
+              代码格式化插件（Spotless）
+              作用：在构建过程中自动格式化代码，保持代码风格一致
+              文档：https://github.com/diffplug/spotless/tree/main/plugin-maven
+            -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>${spotless-maven-plugin.version}</version>
                 <configuration>
+                    <!-- Java代码格式化配置 -->
                     <java>
+                        <!-- 使用Google Java Format进行代码格式化 -->
                         <googleJavaFormat>
                             <version>1.17.0</version>
+                            <!-- 代码风格：AOSP（Android开源项目风格） -->
                             <style>AOSP</style>
                         </googleJavaFormat>
-                        <removeUnusedImports />
-                        <trimTrailingWhitespace />
-                        <endWithNewline />
+                        <!-- 移除未使用的import语句 -->
+                        <removeUnusedImports/>
+                        <!-- 修剪行尾空格 -->
+                        <trimTrailingWhitespace/>
+                        <!-- 文件以换行符结束 -->
+                        <endWithNewline/>
+                        <!--
+                          指定需要格式化的文件范围
+                          **/*.java：匹配所有子目录下的Java文件
+                        -->
                         <includes>
                             <include>src/main/java/**/*.java</include>
                             <include>src/test/java/**/*.java</include>
@@ -386,6 +519,10 @@
                     </java>
                 </configuration>
                 <executions>
+                    <!--
+                      执行配置：在compile阶段执行spotless的check目标
+                      check目标：检查代码格式是否符合规范，不符合则构建失败
+                    -->
                     <execution>
                         <goals>
                             <goal>check</goal>
@@ -395,22 +532,43 @@
                 </executions>
             </plugin>
 
-            <!-- 执行插件 -->
+            <!--
+              Maven执行插件
+              作用：在Maven构建过程中执行Java类
+              文档：https://www.mojohaus.org/exec-maven-plugin/
+            -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>${exec-maven-plugin.version}</version>
                 <configuration>
+                    <!--
+                      指定要执行的Java主类
+                      这里配置的是一个代码生成器，用于生成基础代码
+                    -->
                     <mainClass>cn.net.yunlou.bole.generator.CodeGenerator</mainClass>
                 </configuration>
             </plugin>
         </plugins>
 
-        <!-- 资源过滤配置 -->
+        <!--
+          资源文件处理配置
+          定义了资源文件的复制和过滤规则
+        -->
         <resources>
+            <!--
+              第一组资源：需要变量替换的资源文件
+              filtering=true：启用Maven属性过滤，将${property}替换为实际值
+            -->
             <resource>
+                <!-- 资源文件所在目录 -->
                 <directory>src/main/resources</directory>
+                <!-- 启用属性过滤 -->
                 <filtering>true</filtering>
+                <!--
+                  包含的文件类型：需要进行变量替换的配置文件
+                  通常包含需要注入Maven属性的文件
+                -->
                 <includes>
                     <include>**/*.properties</include>
                     <include>**/*.yml</include>
@@ -418,9 +576,19 @@
                     <include>**/*.xml</include>
                 </includes>
             </resource>
+
+            <!--
+              第二组资源：不需要变量替换的静态资源文件
+              filtering=false：禁用属性过滤，原样复制
+            -->
             <resource>
                 <directory>src/main/resources</directory>
+                <!-- 禁用属性过滤 -->
                 <filtering>false</filtering>
+                <!--
+                  排除的文件类型：上面已经处理过的配置文件
+                  其他文件（如图片、静态HTML等）将原样复制
+                -->
                 <excludes>
                     <exclude>**/*.properties</exclude>
                     <exclude>**/*.yml</exclude>
@@ -431,39 +599,82 @@
         </resources>
     </build>
 
+    <!--
+      优化：添加Profiles配置
+      支持不同环境的构建配置
+    -->
     <profiles>
-        <!-- 开发环境 -->
+        <!-- 开发环境配置 -->
         <profile>
             <id>dev</id>
-            <properties>
-                <spring.profiles.active>dev</spring.profiles.active>
-            </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <profile>dev</profile>
+                <skipTests>false</skipTests>
+                <skipDocker>true</skipDocker>
+            </properties>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                        <includes>
+                            <include>**/application-dev.yml</include>
+                            <include>**/application.yml</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
         </profile>
 
-        <!-- 测试环境 -->
+        <!-- 测试环境配置 -->
         <profile>
             <id>test</id>
             <properties>
-                <spring.profiles.active>test</spring.profiles.active>
+                <profile>test</profile>
+                <skipTests>false</skipTests>
+                <skipDocker>false</skipDocker>
             </properties>
         </profile>
 
-        <!-- 生产环境 -->
+        <!-- 生产环境配置 -->
         <profile>
             <id>prod</id>
             <properties>
-                <spring.profiles.active>prod</spring.profiles.active>
+                <profile>prod</profile>
+                <skipTests>true</skipTests>
+                <skipDocker>false</skipDocker>
             </properties>
+            <build>
+                <plugins>
+                    <!-- 生产环境特定插件配置 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- 性能分析配置 -->
+        <profile>
+            <id>profile</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
-                            <jvmArguments>-Dspring.profiles.active=prod</jvmArguments>
+                            <jvmArguments>
+                                -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+                                -XX:+FlightRecorder
+                                -XX:StartFlightRecording=duration=60s,filename=target/recording.jfr
+                            </jvmArguments>
                         </configuration>
                     </plugin>
                 </plugins>

@@ -5,14 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: SystemBannerAddRequest
- * Description:
- * Created By laughtiger
- * Created At 2025/11/28 13:28
- * Modified By
- * Modified At
+ * FileName: SystemBannerAddRequest Description: Created By laughtiger Created At 2025/11/28 13:28
+ * Modified By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SystemBannerAddRequest extends BaseQuery {
-}
+public class SystemBannerAddRequest extends BaseQuery {}

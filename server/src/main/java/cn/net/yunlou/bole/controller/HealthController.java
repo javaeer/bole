@@ -3,17 +3,15 @@ package cn.net.yunlou.bole.controller;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -40,13 +38,14 @@ public class HealthController {
         healthInfo.put("version", appVersion);
         healthInfo.put("environment", environment);
         healthInfo.put("timestamp", LocalDateTime.now());
-        healthInfo.put("docs", Map.of(
-            "knife4j", "http://localhost:8080/doc.html",
-            "api-docs", "http://localhost:8080/v3/api-docs",
-            "default-group", "http://localhost:8080/v3/api-docs/default",
-            "bole-server-group", "http://localhost:8080/v3/api-docs/bole-server"
-        ));
-        
+        healthInfo.put(
+                "docs",
+                Map.of(
+                        "knife4j", "http://localhost:8080/doc.html",
+                        "api-docs", "http://localhost:8080/v3/api-docs",
+                        "default-group", "http://localhost:8080/v3/api-docs/default",
+                        "bole-server-group", "http://localhost:8080/v3/api-docs/bole-server"));
+
         log.info("健康检查请求 - 应用: {}, 环境: {}", appName, environment);
         return BusinessResponse.success(healthInfo);
     }
@@ -60,7 +59,7 @@ public class HealthController {
         config.put("knife4jEnabled", true);
         config.put("springDocEnabled", true);
         config.put("currentTime", LocalDateTime.now());
-        
+
         return BusinessResponse.success(config);
     }
 }

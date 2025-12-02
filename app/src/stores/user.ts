@@ -1,12 +1,12 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { UserInfo } from "@/types/user";
-import { getToken, getUserInfo as getStoredUserInfo } from "@/utils/store";
+import { getToken, getUserInfo } from "@/utils/store";
 
-export const useUserStore = defineStore('user', () => {
+export const useUserStore = defineStore("user", () => {
   // 状态
   const token = ref<string | null>(getToken());
-  const userInfo = ref<UserInfo | null>(getStoredUserInfo());
+  const userInfo = ref<UserInfo | null>(getUserInfo());
   const isRefreshing = ref(false);
   const refreshSubscribers = ref<Array<(token: string) => void>>([]);
 
@@ -29,10 +29,6 @@ export const useUserStore = defineStore('user', () => {
     isRefreshing.value = refreshing;
   };
 
-  const getRefreshToken = () => {
-    return getRefreshToken();
-  };
-
   return {
     // 状态
     token,
@@ -48,6 +44,5 @@ export const useUserStore = defineStore('user', () => {
     addRefreshSubscriber,
     onRefreshed,
     setRefreshing,
-    getRefreshToken,
   };
 });

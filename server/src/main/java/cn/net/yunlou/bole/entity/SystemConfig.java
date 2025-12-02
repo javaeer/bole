@@ -2,25 +2,20 @@ package cn.net.yunlou.bole.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.*;
 
 /**
- * FileName: System
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:10
- * Modified By
+ * FileName: System Description: Created By MR. WANG Created At 2025/11/24 21:10 Modified By
  * Modified At
  */
 @Data
-@TableName(value = "t_system_config",resultMap = "systemConfigResultMap")
+@TableName(value = "t_system_config", resultMap = "systemConfigResultMap")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SystemConfig implements Serializable{
+public class SystemConfig implements Serializable {
 
     @TableId(type = IdType.INPUT)
     private String configKey;
@@ -46,5 +41,4 @@ public class SystemConfig implements Serializable{
 
     @TableField(exist = false)
     private User updatedBy;
-
 }

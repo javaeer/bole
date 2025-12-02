@@ -7,13 +7,8 @@ import cn.net.yunlou.bole.model.query.ResumesQuery;
 import org.mapstruct.Mapper;
 
 /**
- * FileName: ResumesStructMapper
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/26 19:15
- * Modified By
- * Modified At
+ * FileName: ResumesStructMapper Description: Created By MR. WANG Created At 2025/11/26 19:15
+ * Modified By Modified At
  */
 @Mapper(componentModel = "spring")
-public interface ResumesStructMapper extends BaseStructMapper<Resumes, ResumesDTO, ResumesQuery> {
-}
+public interface ResumesStructMapper extends BaseStructMapper<Resumes, ResumesDTO, ResumesQuery> {}

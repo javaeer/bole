@@ -6,6 +6,9 @@ import cn.net.yunlou.bole.common.constant.BaseConstant;
 import cn.net.yunlou.bole.common.security.CustomUserDetails;
 import cn.net.yunlou.bole.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -13,30 +16,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-/**
- * Spring Security 上下文工具类
- * 提供当前用户信息、权限验证等便捷方法
- */
+/** Spring Security 上下文工具类 提供当前用户信息、权限验证等便捷方法 */
 public class SecurityContextUtils {
 
     private SecurityContextUtils() {
         throw new UnsupportedOperationException("工具类不允许实例化");
     }
 
-    /**
-     * 🔐 获取安全上下文
-     */
+    /** 🔐 获取安全上下文 */
     public static SecurityContext getContext() {
         return SecurityContextHolder.getContext();
     }
 
-    /**
-     * 👤 获取认证信息
-     */
+    /** 👤 获取认证信息 */
     public static Optional<Authentication> getAuthentication() {
         return Optional.ofNullable(getContext().getAuthentication());
     }
@@ -58,7 +50,8 @@ public class SecurityContextUtils {
     public static String getCurrentUsername() {
         return getAuthentication()
                 .map(Authentication::getName)
-                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
+                .orElseThrow(
+                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
     /**
@@ -82,19 +75,18 @@ public class SecurityContextUtils {
         return getAuthentication()
                 .map(Authentication::getAuthorities)
                 .filter(authorities -> !CollectionUtils.isEmpty(authorities))
-                .map(authorities -> authorities.stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toSet()))
-                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
+                .map(
+                        authorities ->
+                                authorities.stream()
+                                        .map(GrantedAuthority::getAuthority)
+                                        .collect(Collectors.toSet()))
+                .orElseThrow(
+                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
-    /**
-     * ✅ 检查用户是否已认证
-     */
+    /** ✅ 检查用户是否已认证 */
     public static boolean isAuthenticated() {
-        return getAuthentication()
-                .map(Authentication::isAuthenticated)
-                .orElse(false);
+        return getAuthentication().map(Authentication::isAuthenticated).orElse(false);
     }
 
     /**
@@ -138,7 +130,8 @@ public class SecurityContextUtils {
             return false;
         }
 
-        String roleName = role.startsWith(BaseConstant.ROLE_PREFIX) ? role : BaseConstant.ROLE_PREFIX + role;
+        String roleName =
+                role.startsWith(BaseConstant.ROLE_PREFIX) ? role : BaseConstant.ROLE_PREFIX + role;
         return hasAuthority(roleName);
     }
 
@@ -160,9 +153,7 @@ public class SecurityContextUtils {
         return false;
     }
 
-    /**
-     * 🧹 清除安全上下文
-     */
+    /** 🧹 清除安全上下文 */
     public static void clearContext() {
         SecurityContextHolder.clearContext();
     }
@@ -177,7 +168,8 @@ public class SecurityContextUtils {
         return getCurrentUserDetails()
                 .filter(userDetails -> userDetails instanceof CustomUserDetails)
                 .map(userDetails -> ((CustomUserDetails) userDetails).getUser().getId())
-                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
+                .orElseThrow(
+                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
     /**
@@ -189,9 +181,9 @@ public class SecurityContextUtils {
         return getCurrentUserDetails()
                 .filter(userDetails -> userDetails instanceof CustomUserDetails)
                 .map(userDetails -> ((CustomUserDetails) userDetails).getUser().getEmail())
-                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
+                .orElseThrow(
+                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
-
 
     /**
      * 获取当前用户 token
@@ -199,7 +191,6 @@ public class SecurityContextUtils {
      * @return
      * @throws BusinessException 如果用户未登录或身份信息无效
      */
-
     public static String getCurrentToken() {
 
         HttpServletRequest request = RequestContextUtils.getRequestAttributes().getRequest();
@@ -217,6 +208,7 @@ public class SecurityContextUtils {
         return getCurrentUserDetails()
                 .filter(userDetails -> userDetails instanceof CustomUserDetails)
                 .map(userDetails -> ((CustomUserDetails) userDetails).getUser())
-                .orElseThrow(() -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
+                .orElseThrow(
+                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 }

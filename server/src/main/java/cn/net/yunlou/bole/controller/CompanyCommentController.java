@@ -15,14 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * FileName: CompanyCommentController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
- * Modified At
+ * FileName: CompanyCommentController Description: Created By MR. WANG Created At 2025/11/24 21:27
+ * Modified By Modified At
  */
-
 @RestController
 @RequestMapping("company-comment")
 @Tag(name = "06.企业评价管理", description = "企业评价相关接口")
@@ -34,8 +29,7 @@ public class CompanyCommentController {
     @PostMapping("add")
     @Operation(summary = "新增企业评价")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody CompanyCommentAddRequest request) {
+    public BusinessResponse<Boolean> add(@RequestBody CompanyCommentAddRequest request) {
         CompanyComment companyComment = QueryUtils.modelToBean(request, CompanyComment.class);
         return BusinessResponse.success(companyCommentService.save(companyComment));
     }
@@ -43,26 +37,21 @@ public class CompanyCommentController {
     @DeleteMapping("del")
     @Operation(summary = "删除企业评价")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(companyCommentService.removeById(id));
     }
-
 
     @PutMapping("edit")
     @Operation(summary = "编辑企业评价")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody CompanyCommentEditRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody CompanyCommentEditRequest request) {
         CompanyComment companyComment = QueryUtils.modelToBean(request, CompanyComment.class);
         return BusinessResponse.success(companyCommentService.updateById(companyComment));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取企业评价信息")
-    public BusinessResponse<CompanyComment> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<CompanyComment> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(companyCommentService.getById(id));
     }
 
@@ -75,5 +64,4 @@ public class CompanyCommentController {
         CompanyComment companyComment = QueryUtils.modelToBean(request, CompanyComment.class);
         return BusinessResponse.success(companyCommentService.page(page, size, companyComment));
     }
-
 }

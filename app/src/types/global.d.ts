@@ -58,6 +58,7 @@ declare global {
   interface RequestConfig extends UniApp.RequestOptions {
     loading?: boolean;
     showError?: boolean;
+    skipAuth?: boolean;
   }
 
   // 自定义错误类

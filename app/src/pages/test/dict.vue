@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { dictHandler } from "@/utils/dict";
-/*import { useDictStore } from "@/stores/dict";
+import { useDictStore } from "@/stores/dict";
 
 const dictStore = useDictStore()
 
@@ -58,5 +58,5 @@ onMounted(async () => {
 const onGenderChange = (event: any) => {
   const index = event.detail.value;
   user.value.gender = genderOptions.value[index]?.value || '';
-};*/
+};
 </script>

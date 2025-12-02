@@ -1,4 +1,4 @@
-import { hasRefreshToken, isTokenExpiring } from "@/utils/store";
+import { clearAll, clearToken, clearUserAll, hasRefreshToken, isTokenExpiring } from "@/utils/store";
 import { ResultCode } from "@/constants/result-code";
 import { buildUrl } from "@/utils/url";
 import AuthAPI from "@/api/auth";
@@ -11,6 +11,13 @@ const getBaseApi = (): string => {
   // #endif
   return import.meta.env.VITE_APP_API_URL as string;
 };
+
+// 请求队列管理
+let pendingQueue: Array<{
+  resolve: (value: any) => void;
+  reject: (reason?: any) => void;
+  config: RequestConfig;
+}> = [];
 
 // 防止重复跳转的标记
 let isRedirecting = false;
@@ -32,7 +39,7 @@ const getAuthHeader = async (config: RequestConfig): Promise<Record<string, stri
     try {
       token = await AuthAPI.refreshToken();
     } catch (error) {
-      console.warn('刷新令牌失败:', error);
+      console.warn("刷新令牌失败:", error);
       // 刷新失败不立即跳转，等接口返回401再处理
     }
   }
@@ -62,7 +69,7 @@ const responseInterceptor = <T>(
   response: UniApp.RequestSuccessCallbackResult,
   config: RequestConfig,
 ): T => {
-  const resData = response.data as ResponseData<T>;
+  const result = response.data as ResponseResult<T>;
 
   // 关闭 loading
   if (config.loading) {
@@ -70,20 +77,20 @@ const responseInterceptor = <T>(
   }
 
   // 业务状态码处理
-  switch (resData.code) {
+  switch (result.code) {
     case ResultCode.SUCCESS:
-      return resData.data;
+      return result.data;
 
     case ResultCode.UNAUTHORIZED:
       handleUnauthorized();
       throw new RequestError(
         "登录已过期",
-        resData.code,
-        resData.data,
+        result.code,
+        result.data,
       );
 
     default:
-      throw handleBusinessError(resData, config);
+      throw handleBusinessError(result, config);
   }
 };
 
@@ -94,9 +101,8 @@ const handleUnauthorized = () => {
   console.log("令牌失效或过期处理");
   isRedirecting = true;
 
-  // 使用 userStore 清除用户数据
-  const userStore = useUserStore();
-  userStore.clearUserData();
+  // 清除用户登录数据
+  clearUserAll();
 
   uni.showToast({
     title: "登录已过期，请重新登录",
@@ -106,7 +112,7 @@ const handleUnauthorized = () => {
   // 跳转到登录页
   setTimeout(() => {
     uni.reLaunch({
-      url: "/pages/login/index",
+      url: "/pages/login/login",
     });
     setTimeout(() => {
       isRedirecting = false;
@@ -115,19 +121,19 @@ const handleUnauthorized = () => {
 };
 
 // 业务错误处理
-const handleBusinessError = <T>(resData: ResponseData<T>, config: RequestConfig) => {
+const handleBusinessError = <T>(result: ResponseResult<T>, config: RequestConfig) => {
   if (config.showError !== false) {
     uni.showToast({
-      title: resData.msg || "请求失败",
+      title: result.msg || "请求失败",
       icon: "none",
       duration: 3000,
     });
   }
 
   return new RequestError(
-    resData.msg || "请求失败",
-    resData.code,
-    resData.data,
+    result.msg || "请求失败",
+    result.code,
+    result.data,
   );
 };
 
@@ -150,6 +156,7 @@ const handleNetworkError = (error: any, config: RequestConfig) => {
 
 // 主请求函数
 export default function request<T>(options: RequestConfig): Promise<T> {
+
   const baseApi = getBaseApi();
 
   return new Promise(async (resolve, reject) => {

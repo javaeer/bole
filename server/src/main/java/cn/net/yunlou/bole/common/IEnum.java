@@ -24,7 +24,6 @@ public interface IEnum<T> extends Serializable {
      */
     String getLabel();
 
-
     /**
      * 获取枚举
      *
@@ -51,9 +50,7 @@ public interface IEnum<T> extends Serializable {
      */
     static <E extends Enum<E> & IEnum<?>> String getLabelByValue(Object value, Class<E> clazz) {
         Objects.requireNonNull(value, "Value cannot be null");
-        return Optional.ofNullable(getEnumByValue(value, clazz))
-                .map(IEnum::getLabel)
-                .orElse(null);
+        return Optional.ofNullable(getEnumByValue(value, clazz)).map(IEnum::getLabel).orElse(null);
     }
 
     /**
@@ -97,8 +94,8 @@ public interface IEnum<T> extends Serializable {
      * @param <E>
      * @return
      */
-    static <E extends Enum<E> & IEnum<?>> Map<E, Object> toMap(Class<E> clazz,
-                                                               Function<E, Object> valueExtractor) {
+    static <E extends Enum<E> & IEnum<?>> Map<E, Object> toMap(
+            Class<E> clazz, Function<E, Object> valueExtractor) {
         EnumMap<E, Object> enumMap = new EnumMap<>(clazz);
         EnumSet.allOf(clazz).forEach(e -> enumMap.put(e, valueExtractor.apply(e)));
         return enumMap;
@@ -134,9 +131,7 @@ public interface IEnum<T> extends Serializable {
      * @return
      */
     static <E extends Enum<E> & IEnum<?>> List<Object> getValueList(Class<E> clazz) {
-        return EnumSet.allOf(clazz).stream()
-                .map(IEnum::getValue)
-                .collect(Collectors.toList());
+        return EnumSet.allOf(clazz).stream().map(IEnum::getValue).collect(Collectors.toList());
     }
 
     /**
@@ -147,9 +142,7 @@ public interface IEnum<T> extends Serializable {
      * @return
      */
     static <E extends Enum<E> & IEnum<?>> List<String> getLabelList(Class<E> clazz) {
-        return EnumSet.allOf(clazz).stream()
-                .map(IEnum::getLabel)
-                .collect(Collectors.toList());
+        return EnumSet.allOf(clazz).stream().map(IEnum::getLabel).collect(Collectors.toList());
     }
 
     /**
@@ -173,5 +166,4 @@ public interface IEnum<T> extends Serializable {
                 .map(e -> new EnumDTO(e.getValue(), e.getLabel()))
                 .collect(Collectors.toList());
     }
-
 }

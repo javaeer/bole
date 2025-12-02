@@ -7,13 +7,8 @@ import cn.net.yunlou.bole.model.query.CompanyQuery;
 import org.mapstruct.Mapper;
 
 /**
- * FileName: CompanyStructMapper
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/26 19:14
- * Modified By
- * Modified At
+ * FileName: CompanyStructMapper Description: Created By MR. WANG Created At 2025/11/26 19:14
+ * Modified By Modified At
  */
 @Mapper(componentModel = "spring")
-public interface CompanyStructMapper extends BaseStructMapper<Company, CompanyDTO, CompanyQuery> {
-}
+public interface CompanyStructMapper extends BaseStructMapper<Company, CompanyDTO, CompanyQuery> {}

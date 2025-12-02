@@ -75,6 +75,12 @@
 			"style": {
 				"navigationBarTitleText": ""
 			}
+		},
+		{
+			"path": "pages/test/dict",
+			"style": {
+				"navigationBarTitleText": "字典测试"
+			}
 		}
 ],
 	"globalStyle": {

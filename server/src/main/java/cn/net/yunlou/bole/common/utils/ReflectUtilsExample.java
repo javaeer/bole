@@ -1,14 +1,11 @@
 package cn.net.yunlou.bole.common.utils;
 
 import cn.net.yunlou.bole.entity.User;
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.Field;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- * ReflectUtils使用示例
- */
+/** ReflectUtils使用示例 */
 @Slf4j
 public class ReflectUtilsExample {
 
@@ -24,7 +21,8 @@ public class ReflectUtilsExample {
             String result = ReflectUtils.invokeMethod(userService, "getUserInfo", 123L);
 
             // 6. 高性能调用
-            String fastResult = ReflectUtils.invokeMethodWithHandle(userService, "getUserInfo", 456L);
+            String fastResult =
+                    ReflectUtils.invokeMethodWithHandle(userService, "getUserInfo", 456L);
 
             // 7. 获取所有字段
             List<Field> fields = ReflectUtils.getAllFields(User.class);

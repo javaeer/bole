@@ -1,39 +1,51 @@
 package cn.net.yunlou.bole.common.utils;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
-
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
 /**
  * 增强版Bean工具类 - 整合反射和Bean操作功能
- * <p>
- * 核心特性：
- * ✅ 基于BeanWrapper的高性能拷贝
- * ✅ 集成ReflectUtils的安全反射操作
- * ✅ 统一的缓存和异常处理
- * ✅ 支持复杂类型转换
- * ✅ Map与Bean智能互转
+ *
+ * <p>核心特性： ✅ 基于BeanWrapper的高性能拷贝 ✅ 集成ReflectUtils的安全反射操作 ✅ 统一的缓存和异常处理 ✅ 支持复杂类型转换 ✅ Map与Bean智能互转
  */
 @Slf4j
 public class BeanUtils {
 
     // ====== 缓存配置 ======
-    private static final ConcurrentMap<ClassPair, List<FieldMapping>> FIELD_MAPPING_CACHE = new ConcurrentHashMap<>(256);
+    private static final ConcurrentMap<ClassPair, List<FieldMapping>> FIELD_MAPPING_CACHE =
+            new ConcurrentHashMap<>(256);
 
     // ====== 简单类型判断 ======
-    private static final Set<Class<?>> SIMPLE_TYPES = Set.of(
-            int.class, Integer.class, boolean.class, Boolean.class, float.class, Float.class,
-            double.class, Double.class, long.class, Long.class, byte.class, Byte.class,
-            short.class, Short.class, java.math.BigInteger.class, java.math.BigDecimal.class,
-            char.class, String.class, Date.class, java.time.LocalDate.class,
-            java.time.LocalDateTime.class, java.time.LocalTime.class
-    );
+    private static final Set<Class<?>> SIMPLE_TYPES =
+            Set.of(
+                    int.class,
+                    Integer.class,
+                    boolean.class,
+                    Boolean.class,
+                    float.class,
+                    Float.class,
+                    double.class,
+                    Double.class,
+                    long.class,
+                    Long.class,
+                    byte.class,
+                    Byte.class,
+                    short.class,
+                    Short.class,
+                    java.math.BigInteger.class,
+                    java.math.BigDecimal.class,
+                    char.class,
+                    String.class,
+                    Date.class,
+                    java.time.LocalDate.class,
+                    java.time.LocalDateTime.class,
+                    java.time.LocalTime.class);
 
     private BeanUtils() {
         log.debug("BeanUtils initialized with BeanWrapper");
@@ -41,14 +53,13 @@ public class BeanUtils {
 
     // ====== Bean拷贝核心方法 ======
 
-    /**
-     * 基于反射的Bean属性拷贝
-     */
+    /** 基于反射的Bean属性拷贝 */
     public static <T> T copyProperties(Object source, Class<T> targetClass) {
         return copyProperties(source, targetClass, null);
     }
 
-    public static <T> T copyProperties(Object source, Class<T> targetClass, PropertyConverter converter) {
+    public static <T> T copyProperties(
+            Object source, Class<T> targetClass, PropertyConverter converter) {
         if (Objects.isNull(source)) {
             return null;
         }
@@ -58,15 +69,16 @@ public class BeanUtils {
             copyProperties(source, targetInstance, converter);
             return targetInstance;
         } catch (Exception e) {
-            log.error("Bean copy failed from {} to {}",
-                    source.getClass().getSimpleName(), targetClass.getSimpleName(), e);
+            log.error(
+                    "Bean copy failed from {} to {}",
+                    source.getClass().getSimpleName(),
+                    targetClass.getSimpleName(),
+                    e);
             throw new BeanOperationException("Bean copy failed", e);
         }
     }
 
-    /**
-     * 对象到对象的属性拷贝
-     */
+    /** 对象到对象的属性拷贝 */
     public static void copyProperties(Object source, Object target) {
         copyProperties(source, target, null);
     }
@@ -77,36 +89,44 @@ public class BeanUtils {
         }
 
         try {
-            List<FieldMapping> fieldMappings = getFieldMappings(source.getClass(), target.getClass());
+            List<FieldMapping> fieldMappings =
+                    getFieldMappings(source.getClass(), target.getClass());
 
             for (FieldMapping mapping : fieldMappings) {
                 try {
                     Object sourceValue = ReflectUtils.getFieldValue(source, mapping.sourceField);
-                    Object targetValue = convertValue(sourceValue, mapping.targetField.getType(), converter);
+                    Object targetValue =
+                            convertValue(sourceValue, mapping.targetField.getType(), converter);
 
                     if (targetValue != null || mapping.targetField.getType().isPrimitive()) {
-                        ReflectUtils.setFieldValue(target, mapping.targetField.getName(), targetValue);
+                        ReflectUtils.setFieldValue(
+                                target, mapping.targetField.getName(), targetValue);
                     }
                 } catch (Exception e) {
-                    log.debug("Failed to copy field {} to {}, skipping",
-                            mapping.sourceField.getName(), mapping.targetField.getName(), e);
+                    log.debug(
+                            "Failed to copy field {} to {}, skipping",
+                            mapping.sourceField.getName(),
+                            mapping.targetField.getName(),
+                            e);
                 }
             }
         } catch (Exception e) {
-            log.error("Bean copy failed from {} to {}",
-                    source.getClass().getSimpleName(), target.getClass().getSimpleName(), e);
+            log.error(
+                    "Bean copy failed from {} to {}",
+                    source.getClass().getSimpleName(),
+                    target.getClass().getSimpleName(),
+                    e);
             throw new BeanOperationException("Bean copy failed", e);
         }
     }
 
-    /**
-     * 批量Bean拷贝
-     */
+    /** 批量Bean拷贝 */
     public static <T> List<T> copyList(List<?> sources, Class<T> targetClass) {
         return copyList(sources, targetClass, null);
     }
 
-    public static <T> List<T> copyList(List<?> sources, Class<T> targetClass, PropertyConverter converter) {
+    public static <T> List<T> copyList(
+            List<?> sources, Class<T> targetClass, PropertyConverter converter) {
         if (Objects.isNull(sources) || sources.isEmpty()) {
             return Collections.emptyList();
         }
@@ -119,9 +139,7 @@ public class BeanUtils {
 
     // ====== Map与Bean互转 ======
 
-    /**
-     * Bean转Map（基于反射）
-     */
+    /** Bean转Map（基于反射） */
     public static Map<String, Object> toMap(Object source) {
         return toMap(source, false);
     }
@@ -147,8 +165,11 @@ public class BeanUtils {
                         result.put(field.getName(), processedValue);
                     }
                 } catch (Exception e) {
-                    log.debug("Failed to get field {} from {}, skipping",
-                            field.getName(), source.getClass().getSimpleName(), e);
+                    log.debug(
+                            "Failed to get field {} from {}, skipping",
+                            field.getName(),
+                            source.getClass().getSimpleName(),
+                            e);
                 }
             }
 
@@ -159,9 +180,7 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * Map转Bean（基于Spring BeanWrapper）
-     */
+    /** Map转Bean（基于Spring BeanWrapper） */
     public static <T> T fromMap(Map<String, Object> map, Class<T> targetClass) {
         if (Objects.isNull(map) || map.isEmpty()) {
             return createInstance(targetClass);
@@ -180,8 +199,11 @@ public class BeanUtils {
                         Object processedValue = processValueFromMap(value, targetClass, key);
                         wrapper.setPropertyValue(key, processedValue);
                     } catch (Exception e) {
-                        log.debug("Failed to set property {} on {}, skipping",
-                                key, targetClass.getSimpleName(), e);
+                        log.debug(
+                                "Failed to set property {} on {}, skipping",
+                                key,
+                                targetClass.getSimpleName(),
+                                e);
                     }
                 }
             }
@@ -208,20 +230,23 @@ public class BeanUtils {
             return;
         }
 
-        properties.forEach((key, value) -> {
-            try {
-                setProperty(bean, key, value);
-            } catch (Exception e) {
-                log.warn("Failed to set property {} on {}, skipping", key, bean.getClass().getSimpleName(), e);
-            }
-        });
+        properties.forEach(
+                (key, value) -> {
+                    try {
+                        setProperty(bean, key, value);
+                    } catch (Exception e) {
+                        log.warn(
+                                "Failed to set property {} on {}, skipping",
+                                key,
+                                bean.getClass().getSimpleName(),
+                                e);
+                    }
+                });
     }
 
     // ====== 高级功能 ======
 
-    /**
-     * 获取Bean的所有属性名
-     */
+    /** 获取Bean的所有属性名 */
     public static List<String> getPropertyNames(Class<?> clazz) {
         return ReflectUtils.getAllFields(clazz).stream()
                 .filter(field -> !shouldSkipField(field))
@@ -229,22 +254,22 @@ public class BeanUtils {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 获取Bean的属性类型
-     */
+    /** 获取Bean的属性类型 */
     public static Class<?> getPropertyType(Class<?> clazz, String propertyName) {
         try {
             Field field = ReflectUtils.findField(clazz, propertyName);
             return field.getType();
         } catch (Exception e) {
-            log.debug("Failed to get property type for {} in {}", propertyName, clazz.getSimpleName(), e);
+            log.debug(
+                    "Failed to get property type for {} in {}",
+                    propertyName,
+                    clazz.getSimpleName(),
+                    e);
             return null;
         }
     }
 
-    /**
-     * 判断Bean是否包含指定属性
-     */
+    /** 判断Bean是否包含指定属性 */
     public static boolean hasProperty(Class<?> clazz, String propertyName) {
         try {
             ReflectUtils.findField(clazz, propertyName);
@@ -260,39 +285,40 @@ public class BeanUtils {
         return ReflectUtils.createInstance(clazz);
     }
 
-    /**
-     * 获取字段映射关系
-     */
+    /** 获取字段映射关系 */
     private static List<FieldMapping> getFieldMappings(Class<?> sourceClass, Class<?> targetClass) {
         ClassPair key = new ClassPair(sourceClass, targetClass);
-        return FIELD_MAPPING_CACHE.computeIfAbsent(key, k -> {
-            List<FieldMapping> mappings = new ArrayList<>();
-            List<Field> sourceFields = ReflectUtils.getAllFields(sourceClass);
-            List<Field> targetFields = ReflectUtils.getAllFields(targetClass);
+        return FIELD_MAPPING_CACHE.computeIfAbsent(
+                key,
+                k -> {
+                    List<FieldMapping> mappings = new ArrayList<>();
+                    List<Field> sourceFields = ReflectUtils.getAllFields(sourceClass);
+                    List<Field> targetFields = ReflectUtils.getAllFields(targetClass);
 
-            Map<String, Field> targetFieldMap = targetFields.stream()
-                    .filter(field -> !shouldSkipField(field))
-                    .collect(Collectors.toMap(Field::getName, field -> field));
+                    Map<String, Field> targetFieldMap =
+                            targetFields.stream()
+                                    .filter(field -> !shouldSkipField(field))
+                                    .collect(Collectors.toMap(Field::getName, field -> field));
 
-            for (Field sourceField : sourceFields) {
-                if (shouldSkipField(sourceField)) {
-                    continue;
-                }
+                    for (Field sourceField : sourceFields) {
+                        if (shouldSkipField(sourceField)) {
+                            continue;
+                        }
 
-                Field targetField = targetFieldMap.get(sourceField.getName());
-                if (targetField != null && isAssignable(sourceField.getType(), targetField.getType())) {
-                    mappings.add(new FieldMapping(sourceField, targetField));
-                }
-            }
+                        Field targetField = targetFieldMap.get(sourceField.getName());
+                        if (targetField != null
+                                && isAssignable(sourceField.getType(), targetField.getType())) {
+                            mappings.add(new FieldMapping(sourceField, targetField));
+                        }
+                    }
 
-            return Collections.unmodifiableList(mappings);
-        });
+                    return Collections.unmodifiableList(mappings);
+                });
     }
 
-    /**
-     * 值转换
-     */
-    private static Object convertValue(Object value, Class<?> targetType, PropertyConverter converter) {
+    /** 值转换 */
+    private static Object convertValue(
+            Object value, Class<?> targetType, PropertyConverter converter) {
         if (value == null) {
             return null;
         }
@@ -309,9 +335,7 @@ public class BeanUtils {
         return ReflectUtils.TypeConverter.convert(value, targetType);
     }
 
-    /**
-     * 处理Map值转换
-     */
+    /** 处理Map值转换 */
     @SuppressWarnings("unchecked")
     private static Object processValueForMap(Object value) {
         if (value == null) return null;
@@ -335,10 +359,9 @@ public class BeanUtils {
         return toMap(value);
     }
 
-    /**
-     * 从Map值转换处理
-     */
-    private static Object processValueFromMap(Object value, Class<?> targetClass, String fieldName) {
+    /** 从Map值转换处理 */
+    private static Object processValueFromMap(
+            Object value, Class<?> targetClass, String fieldName) {
         try {
             Class<?> fieldType = getFieldType(targetClass, fieldName);
             if (fieldType == null) {
@@ -384,9 +407,7 @@ public class BeanUtils {
     }
 
     private static Object processCollectionForMap(Collection<?> collection) {
-        return collection.stream()
-                .map(BeanUtils::processValueForMap)
-                .collect(Collectors.toList());
+        return collection.stream().map(BeanUtils::processValueForMap).collect(Collectors.toList());
     }
 
     private static Object processMapForMap(Map<?, ?> map) {
@@ -416,7 +437,8 @@ public class BeanUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static Object processCollectionFromMap(Object value, Class<?> targetClass, String fieldName) {
+    private static Object processCollectionFromMap(
+            Object value, Class<?> targetClass, String fieldName) {
         if (!(value instanceof Collection)) {
             return value;
         }
@@ -546,27 +568,27 @@ public class BeanUtils {
 
     private static boolean shouldSkipField(Field field) {
         int modifiers = field.getModifiers();
-        return Modifier.isTransient(modifiers) ||
-                Modifier.isStatic(modifiers) ||
-                Modifier.isFinal(modifiers);
+        return Modifier.isTransient(modifiers)
+                || Modifier.isStatic(modifiers)
+                || Modifier.isFinal(modifiers);
     }
 
     private static boolean isSimpleType(Class<?> clazz) {
-        return SIMPLE_TYPES.contains(clazz) ||
-                clazz.isEnum() ||
-                clazz.isPrimitive() ||
-                isPrimitiveWrapper(clazz);
+        return SIMPLE_TYPES.contains(clazz)
+                || clazz.isEnum()
+                || clazz.isPrimitive()
+                || isPrimitiveWrapper(clazz);
     }
 
     private static boolean isPrimitiveWrapper(Class<?> clazz) {
-        return clazz == Integer.class ||
-                clazz == Long.class ||
-                clazz == Boolean.class ||
-                clazz == Double.class ||
-                clazz == Float.class ||
-                clazz == Byte.class ||
-                clazz == Short.class ||
-                clazz == Character.class;
+        return clazz == Integer.class
+                || clazz == Long.class
+                || clazz == Boolean.class
+                || clazz == Double.class
+                || clazz == Float.class
+                || clazz == Byte.class
+                || clazz == Short.class
+                || clazz == Character.class;
     }
 
     private static boolean isAssignable(Class<?> sourceType, Class<?> targetType) {
@@ -586,14 +608,14 @@ public class BeanUtils {
     }
 
     private static boolean isPrimitiveAssignable(Class<?> primitive, Class<?> wrapper) {
-        return (primitive == int.class && wrapper == Integer.class) ||
-                (primitive == long.class && wrapper == Long.class) ||
-                (primitive == boolean.class && wrapper == Boolean.class) ||
-                (primitive == double.class && wrapper == Double.class) ||
-                (primitive == float.class && wrapper == Float.class) ||
-                (primitive == char.class && wrapper == Character.class) ||
-                (primitive == byte.class && wrapper == Byte.class) ||
-                (primitive == short.class && wrapper == Short.class);
+        return (primitive == int.class && wrapper == Integer.class)
+                || (primitive == long.class && wrapper == Long.class)
+                || (primitive == boolean.class && wrapper == Boolean.class)
+                || (primitive == double.class && wrapper == Double.class)
+                || (primitive == float.class && wrapper == Float.class)
+                || (primitive == char.class && wrapper == Character.class)
+                || (primitive == byte.class && wrapper == Byte.class)
+                || (primitive == short.class && wrapper == Short.class);
     }
 
     // ====== 内部类和接口 ======
@@ -614,8 +636,8 @@ public class BeanUtils {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             ClassPair classPair = (ClassPair) o;
-            return Objects.equals(source, classPair.source) &&
-                    Objects.equals(target, classPair.target);
+            return Objects.equals(source, classPair.source)
+                    && Objects.equals(target, classPair.target);
         }
 
         @Override
@@ -634,9 +656,7 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 属性转换器接口
-     */
+    /** 属性转换器接口 */
     @FunctionalInterface
     public interface PropertyConverter {
         Object convert(Object value, Class<?> targetType);
@@ -654,17 +674,13 @@ public class BeanUtils {
 
     // ====== 缓存管理 ======
 
-    /**
-     * 清空缓存
-     */
+    /** 清空缓存 */
     public static void clearCache() {
         FIELD_MAPPING_CACHE.clear();
         log.info("BeanUtils cache cleared");
     }
 
-    /**
-     * 获取缓存统计
-     */
+    /** 获取缓存统计 */
     public static Map<String, Integer> getCacheStats() {
         Map<String, Integer> stats = new HashMap<>();
         stats.put("fieldMappingCache", FIELD_MAPPING_CACHE.size());

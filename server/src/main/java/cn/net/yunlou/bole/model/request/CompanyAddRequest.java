@@ -7,14 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: CompanyAddRequest
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:47
- * Modified By
- * Modified At
+ * FileName: CompanyAddRequest Description: Created By MR. WANG Created At 2025/11/24 21:47 Modified
+ * By Modified At
  */
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -36,5 +31,4 @@ public class CompanyAddRequest extends BaseQuery {
     private String wechat;
 
     private String bio;
-
 }

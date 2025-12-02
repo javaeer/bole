@@ -1,17 +1,12 @@
 package cn.net.yunlou.bole.model.request;
 
 import jakarta.validation.constraints.NotBlank;
+import java.io.Serializable;
 import lombok.Data;
 
-import java.io.Serializable;
-
 /**
- * FileName: SystemEditRequest
- * Description:
- * Created By laughtiger
- * Created At 2025/11/28 11:59
- * Modified By
- * Modified At
+ * FileName: SystemEditRequest Description: Created By laughtiger Created At 2025/11/28 11:59
+ * Modified By Modified At
  */
 @Data
 public class SystemConfigRequest implements Serializable {

@@ -4,12 +4,7 @@ import cn.net.yunlou.bole.common.IBaseMapper;
 import cn.net.yunlou.bole.entity.SystemBanner;
 
 /**
- * FileName: SystemBannerMapper
- * Description:
- * Created By laughtiger
- * Created At 2025/11/28 13:25
- * Modified By
- * Modified At
+ * FileName: SystemBannerMapper Description: Created By laughtiger Created At 2025/11/28 13:25
+ * Modified By Modified At
  */
-public interface SystemBannerMapper extends IBaseMapper<SystemBanner> {
-}
+public interface SystemBannerMapper extends IBaseMapper<SystemBanner> {}

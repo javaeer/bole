@@ -6,12 +6,8 @@ import cn.net.yunlou.bole.model.dto.SystemBannerDTO;
 import cn.net.yunlou.bole.model.query.SystemBannerQuery;
 
 /**
- * FileName: SystemBannerService
- * Description:
- * Created By laughtiger
- * Created At 2025/11/28 12:09
- * Modified By
- * Modified At
+ * FileName: SystemBannerService Description: Created By laughtiger Created At 2025/11/28 12:09
+ * Modified By Modified At
  */
-public interface SystemBannerService extends IBaseService<SystemBanner, SystemBannerDTO, SystemBannerQuery> {
-}
+public interface SystemBannerService
+        extends IBaseService<SystemBanner, SystemBannerDTO, SystemBannerQuery> {}

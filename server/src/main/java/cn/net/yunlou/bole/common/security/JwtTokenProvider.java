@@ -4,25 +4,27 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
 
     private static final String TOKEN_TYPE_ACCESS = "access";
     private static final String TOKEN_TYPE_REFRESH = "refresh";
+
     @Value("${app.config.security.jwt-secret:mySecretKey}")
     private String jwtSecret;
+
     @Value("${app.config.security.jwt-access-expiration:86400000}")
     private long jwtAccessExpiration;
+
     @Value("${app.config.security.jwt-refresh-expiration:604800000}")
     private long jwtRefreshExpiration;
 
@@ -78,12 +80,14 @@ public class JwtTokenProvider {
      * @return
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    /**
-     * 获取访问令牌剩余时间（毫秒）
-     */
+    /** 获取访问令牌剩余时间（毫秒） */
     public Long getAccessTokenRemainingTime(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -94,9 +98,7 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 获取刷新令牌剩余时间（毫秒）
-     */
+    /** 获取刷新令牌剩余时间（毫秒） */
     public Long getRefreshTokenRemainingTime(String refreshToken) {
         try {
             Claims claims = extractAllClaims(refreshToken);
@@ -117,9 +119,7 @@ public class JwtTokenProvider {
         return extractExpiration(token).before(new Date());
     }
 
-    /**
-     * 检查令牌是否过期
-     */
+    /** 检查令牌是否过期 */
     private boolean isTokenExpired(Claims claims) {
         return claims.getExpiration().before(new Date());
     }
@@ -151,9 +151,7 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 验证访问令牌
-     */
+    /** 验证访问令牌 */
     public boolean validateAccessToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -164,9 +162,7 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 验证刷新令牌
-     */
+    /** 验证刷新令牌 */
     public boolean validateRefreshToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -177,18 +173,12 @@ public class JwtTokenProvider {
         }
     }
 
-
-    /**
-     * 生成访问令牌
-     */
+    /** 生成访问令牌 */
     public String generateAccessToken(String username) {
         return generateToken(username, TOKEN_TYPE_ACCESS, jwtAccessExpiration);
     }
 
-
-    /**
-     * 生成刷新令牌
-     */
+    /** 生成刷新令牌 */
     public String generateRefreshToken(String username) {
         return generateToken(username, TOKEN_TYPE_REFRESH, jwtRefreshExpiration);
     }
@@ -199,7 +189,6 @@ public class JwtTokenProvider {
         claims.put("type", tokenType);
         return createToken(claims, username, expiration);
     }
-
 
     /**
      * 生成token
@@ -217,8 +206,12 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(now).setExpiration(expiryDate).signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
-
-
 }

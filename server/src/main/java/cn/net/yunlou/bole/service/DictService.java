@@ -6,12 +6,7 @@ import cn.net.yunlou.bole.model.dto.DictDTO;
 import cn.net.yunlou.bole.model.query.DictQuery;
 
 /**
- * FileName: DictService
- * Description:
- * Created By laughtiger
- * Created At 2025/11/30 22:03
- * Modified By
+ * FileName: DictService Description: Created By laughtiger Created At 2025/11/30 22:03 Modified By
  * Modified At
  */
-public interface DictService extends IBaseTreeService<Dict, DictDTO, DictQuery> {
-}
+public interface DictService extends IBaseTreeService<Dict, DictDTO, DictQuery> {}

@@ -7,13 +7,8 @@ import cn.net.yunlou.bole.model.query.SkillQuery;
 import org.mapstruct.Mapper;
 
 /**
- * FileName: SkillStructMapper
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/26 19:16
- * Modified By
- * Modified At
+ * FileName: SkillStructMapper Description: Created By MR. WANG Created At 2025/11/26 19:16 Modified
+ * By Modified At
  */
 @Mapper(componentModel = "spring")
-public interface SkillStructMapper extends BaseStructMapper<Skill, SkillDTO, SkillQuery> {
-}
+public interface SkillStructMapper extends BaseStructMapper<Skill, SkillDTO, SkillQuery> {}

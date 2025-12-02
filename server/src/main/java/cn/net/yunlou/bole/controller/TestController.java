@@ -31,10 +31,9 @@ public class TestController {
 
     @GetMapping("secure")
     @Operation(
-        summary = "需要认证的接口", 
-        description = "这个接口需要 JWT Token 认证",
-        security = @SecurityRequirement(name = "bearerAuth")
-    )
+            summary = "需要认证的接口",
+            description = "这个接口需要 JWT Token 认证",
+            security = @SecurityRequirement(name = "bearerAuth"))
     public BusinessResponse<String> secureEndpoint() {
         return BusinessResponse.success("已认证，访问正常！");
     }

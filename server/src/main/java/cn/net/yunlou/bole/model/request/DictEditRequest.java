@@ -5,14 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: DictEditRequest
- * Description:
- * Created By laughtiger
- * Created At 2025/11/30 22:13
- * Modified By
- * Modified At
+ * FileName: DictEditRequest Description: Created By laughtiger Created At 2025/11/30 22:13 Modified
+ * By Modified At
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class DictEditRequest extends BaseQuery {
-}
+public class DictEditRequest extends BaseQuery {}

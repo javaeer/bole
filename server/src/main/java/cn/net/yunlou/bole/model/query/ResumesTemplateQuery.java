@@ -5,14 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: ResumesTemplateQuery
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/26 17:46
- * Modified By
- * Modified At
+ * FileName: ResumesTemplateQuery Description: Created By MR. WANG Created At 2025/11/26 17:46
+ * Modified By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ResumesTemplateQuery extends BaseQuery {
-}
+public class ResumesTemplateQuery extends BaseQuery {}

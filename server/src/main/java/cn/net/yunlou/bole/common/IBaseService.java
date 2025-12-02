@@ -1,24 +1,20 @@
 package cn.net.yunlou.bole.common;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-
 import java.util.List;
 
 /**
  * 自定义基础Service接口
- * <p>
- * IService MybatisPlus 接口
- * IStructService MapStructMapper 接口
+ *
+ * <p>IService MybatisPlus 接口 IStructService MapStructMapper 接口
  *
  * @param <T> 实体类型
  * @param <D> DTO类型
  */
 public interface IBaseService<T, D, Q> extends IService<T>, IStructService<D, Q> {
-
 
     //  ==============针对 MP mapper 定制开始 =================
     boolean exist(T entity);

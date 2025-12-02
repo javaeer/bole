@@ -7,13 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
-* FileName: BaseEditRequest
-* Description: 
-* Created By MR. WANG
-* Created At 2025/11/24 21:50
-* Modified By 
-* Modified At 
-*/
+ * FileName: BaseEditRequest Description: Created By MR. WANG Created At 2025/11/24 21:50 Modified
+ * By Modified At
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "编辑请求基类")

@@ -11,14 +11,11 @@ import cn.net.yunlou.bole.struct.CityStructMapper;
 import org.springframework.stereotype.Service;
 
 /**
- * FileName: CityService
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/25 22:04
- * Modified By
+ * FileName: CityService Description: Created By MR. WANG Created At 2025/11/25 22:04 Modified By
  * Modified At
  */
 @Service
 @TreeServiceConfig(cacheName = "cityTree", keyPrefix = "city")
-public class CityServiceImpl extends BaseTreeService<CityMapper, City, CityDTO, CityQuery, CityStructMapper> implements CityService {
-}
+public class CityServiceImpl
+        extends BaseTreeService<CityMapper, City, CityDTO, CityQuery, CityStructMapper>
+        implements CityService {}

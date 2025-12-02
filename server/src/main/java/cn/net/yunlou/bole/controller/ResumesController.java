@@ -14,20 +14,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
-
 /**
- * FileName: ResumesController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
- * Modified At
+ * FileName: ResumesController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
+ * By Modified At
  */
-
 @RestController
 @RequestMapping("resumes")
 @Tag(name = "07.简历管理", description = "简历相关接口")
@@ -38,8 +32,7 @@ public class ResumesController {
 
     @PostMapping("add")
     @Operation(summary = "新增简历")
-    public BusinessResponse<Boolean> add(
-            @RequestBody ResumesAddRequest request) {
+    public BusinessResponse<Boolean> add(@RequestBody ResumesAddRequest request) {
         Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
         resumes.setUserId(SecurityContextUtils.getCurrentUserId());
         return BusinessResponse.success(resumesService.save(resumes));
@@ -47,8 +40,7 @@ public class ResumesController {
 
     @DeleteMapping("del")
     @Operation(summary = "删除简历")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
 
         Resumes resumes = resumesService.getById(id);
         if (!Objects.equals(SecurityContextUtils.getCurrentUserId(), resumes.getUserId())) {
@@ -58,11 +50,9 @@ public class ResumesController {
         return BusinessResponse.success(resumesService.removeById(id));
     }
 
-
     @PutMapping("edit")
     @Operation(summary = "编辑简历")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody @Valid ResumesEditRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid ResumesEditRequest request) {
         Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
 
         Resumes dbResumes = resumesService.getById(resumes.getId());
@@ -76,11 +66,9 @@ public class ResumesController {
         return BusinessResponse.success(resumesService.updateById(resumes));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取简历信息")
-    public BusinessResponse<Resumes> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<Resumes> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(resumesService.getById(id));
     }
 
@@ -93,5 +81,4 @@ public class ResumesController {
         Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
         return BusinessResponse.success(resumesService.page(page, size, resumes));
     }
-
 }

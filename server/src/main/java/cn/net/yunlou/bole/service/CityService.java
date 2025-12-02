@@ -6,12 +6,7 @@ import cn.net.yunlou.bole.model.dto.CityDTO;
 import cn.net.yunlou.bole.model.query.CityQuery;
 
 /**
- * FileName: CityService
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/26 01:02
- * Modified By
+ * FileName: CityService Description: Created By MR. WANG Created At 2025/11/26 01:02 Modified By
  * Modified At
  */
-public interface CityService extends IBaseTreeService<City, CityDTO, CityQuery> {
-}
+public interface CityService extends IBaseTreeService<City, CityDTO, CityQuery> {}

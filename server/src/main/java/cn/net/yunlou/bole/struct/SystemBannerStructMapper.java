@@ -7,14 +7,9 @@ import cn.net.yunlou.bole.model.query.SystemBannerQuery;
 import org.mapstruct.Mapper;
 
 /**
- * FileName: SystemBannerStructMapper
- * Description:
- * Created By laughtiger
- * Created At 2025/11/28 13:26
- * Modified By
- * Modified At
+ * FileName: SystemBannerStructMapper Description: Created By laughtiger Created At 2025/11/28 13:26
+ * Modified By Modified At
  */
-
 @Mapper(componentModel = "spring")
-public interface SystemBannerStructMapper extends BaseStructMapper<SystemBanner, SystemBannerDTO, SystemBannerQuery> {
-}
+public interface SystemBannerStructMapper
+        extends BaseStructMapper<SystemBanner, SystemBannerDTO, SystemBannerQuery> {}

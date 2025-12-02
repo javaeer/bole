@@ -7,16 +7,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: SkillAddRequest
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/25 00:07
- * Modified By
- * Modified At
+ * FileName: SkillAddRequest Description: Created By MR. WANG Created At 2025/11/25 00:07 Modified
+ * By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(description = "新增技能请求")
-public class SkillAddRequest extends BaseQuery {
-}
+public class SkillAddRequest extends BaseQuery {}

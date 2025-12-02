@@ -6,16 +6,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: CompanyCommentEditRequest
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 23:21
- * Modified By
- * Modified At
+ * FileName: CompanyCommentEditRequest Description: Created By MR. WANG Created At 2025/11/24 23:21
+ * Modified By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(description = "编辑企业评论请求")
-public class CompanyCommentEditRequest extends BaseEditRequest{
-}
+public class CompanyCommentEditRequest extends BaseEditRequest {}

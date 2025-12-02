@@ -18,14 +18,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * FileName: ResumesController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
- * Modified At
+ * FileName: ResumesController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
+ * By Modified At
  */
-
 @RestController
 @RequestMapping("resumes-template")
 @Tag(name = "08.简历模板管理", description = "简历模板相关接口")
@@ -37,8 +32,7 @@ public class ResumesTemplateController {
     @PostMapping("add")
     @Operation(summary = "新增简历模板")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody ResumesTemplateAddRequest request) {
+    public BusinessResponse<Boolean> add(@RequestBody ResumesTemplateAddRequest request) {
         ResumesTemplate resumesTemplate = QueryUtils.modelToBean(request, ResumesTemplate.class);
         return BusinessResponse.success(resumesTemplateService.save(resumesTemplate));
     }
@@ -46,18 +40,15 @@ public class ResumesTemplateController {
     @DeleteMapping("del")
     @Operation(summary = "删除简历模板")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
 
         return BusinessResponse.success(resumesTemplateService.removeById(id));
     }
 
-
     @PutMapping("edit")
     @Operation(summary = "编辑简历模板")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody @Valid ResumesTemplateEditRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid ResumesTemplateEditRequest request) {
         ResumesTemplate resumesTemplate = QueryUtils.modelToBean(request, ResumesTemplate.class);
 
         ResumesTemplate dbResumesTemplate = resumesTemplateService.getById(resumesTemplate.getId());
@@ -68,11 +59,9 @@ public class ResumesTemplateController {
         return BusinessResponse.success(resumesTemplateService.updateById(resumesTemplate));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取简历模板信息")
-    public BusinessResponse<ResumesTemplate> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<ResumesTemplate> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(resumesTemplateService.getById(id));
     }
 
@@ -85,5 +74,4 @@ public class ResumesTemplateController {
         ResumesTemplate resumesTemplate = QueryUtils.modelToBean(request, ResumesTemplate.class);
         return BusinessResponse.success(resumesTemplateService.page(page, size, resumesTemplate));
     }
-
 }

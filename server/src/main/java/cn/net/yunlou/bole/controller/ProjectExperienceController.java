@@ -15,14 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * FileName: ProjectExperienceController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
- * Modified At
+ * FileName: ProjectExperienceController Description: Created By MR. WANG Created At 2025/11/24
+ * 21:27 Modified By Modified At
  */
-
 @RestController
 @RequestMapping("project-experience")
 @Tag(name = "10.项目经历管理", description = "项目经历相关接口")
@@ -34,35 +29,31 @@ public class ProjectExperienceController {
     @PostMapping("add")
     @Operation(summary = "新增项目经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody ProjectExperienceAddRequest request) {
-        ProjectExperience projectExperience = QueryUtils.modelToBean(request, ProjectExperience.class);
+    public BusinessResponse<Boolean> add(@RequestBody ProjectExperienceAddRequest request) {
+        ProjectExperience projectExperience =
+                QueryUtils.modelToBean(request, ProjectExperience.class);
         return BusinessResponse.success(projectExperienceService.save(projectExperience));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除项目经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(projectExperienceService.removeById(id));
     }
-
 
     @PutMapping("edit")
     @Operation(summary = "编辑项目经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody ProjectExperienceEditRequest request) {
-        ProjectExperience projectExperience = QueryUtils.modelToBean(request, ProjectExperience.class);
+    public BusinessResponse<Boolean> edit(@RequestBody ProjectExperienceEditRequest request) {
+        ProjectExperience projectExperience =
+                QueryUtils.modelToBean(request, ProjectExperience.class);
         return BusinessResponse.success(projectExperienceService.updateById(projectExperience));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取项目经历信息")
-    public BusinessResponse<ProjectExperience> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<ProjectExperience> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(projectExperienceService.getById(id));
     }
 
@@ -72,8 +63,9 @@ public class ProjectExperienceController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody ProjectExperienceSearchRequest request) {
-        ProjectExperience projectExperience = QueryUtils.modelToBean(request, ProjectExperience.class);
-        return BusinessResponse.success(projectExperienceService.page(page, size, projectExperience));
+        ProjectExperience projectExperience =
+                QueryUtils.modelToBean(request, ProjectExperience.class);
+        return BusinessResponse.success(
+                projectExperienceService.page(page, size, projectExperience));
     }
-
 }

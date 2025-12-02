@@ -1,15 +1,11 @@
 package cn.net.yunlou.bole.common;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import lombok.Data;
 
 @Data
 public class BaseDTO implements Serializable {
@@ -24,11 +20,9 @@ public class BaseDTO implements Serializable {
 
     private Integer deleted;
 
-    @JsonIgnore
-    private String keyWords;
+    @JsonIgnore private String keyWords;
 
-    @JsonIgnore
-    private String keyField;
+    @JsonIgnore private String keyField;
 
     @JsonIgnore
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

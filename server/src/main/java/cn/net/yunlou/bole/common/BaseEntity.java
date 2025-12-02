@@ -3,19 +3,14 @@ package cn.net.yunlou.bole.common;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * FileName: BaseEntity
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/19 13:45
- * Modified By
+ * FileName: BaseEntity Description: Created By MR. WANG Created At 2025/11/19 13:45 Modified By
  * Modified At
  */
 @Data

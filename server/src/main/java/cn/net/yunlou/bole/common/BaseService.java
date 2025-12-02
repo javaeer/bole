@@ -2,43 +2,35 @@ package cn.net.yunlou.bole.common;
 
 import cn.net.yunlou.bole.common.utils.DateUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * FileName: BaseService
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/19 13:50
- * Modified By
+ * FileName: BaseService Description: Created By MR. WANG Created At 2025/11/19 13:50 Modified By
  * Modified At
  */
 @Slf4j
 @Transactional(readOnly = true)
 public abstract class BaseService<
-        M extends BaseMapper<T>,
-        T extends BaseEntity,
-        D extends BaseDTO,
-        Q extends BaseQuery,
-        S extends BaseStructMapper<T, D, Q>  // 添加具体映射器类型参数
-        > extends ServiceImpl<M, T> implements IBaseService<T, D, Q> {
+                M extends BaseMapper<T>,
+                T extends BaseEntity,
+                D extends BaseDTO,
+                Q extends BaseQuery,
+                S extends BaseStructMapper<T, D, Q> // 添加具体映射器类型参数
+                >
+        extends ServiceImpl<M, T> implements IBaseService<T, D, Q> {
 
-    @Autowired
-    protected S structMapper;
-
+    @Autowired protected S structMapper;
 
     @Override
     public boolean exist(T entity) {
@@ -118,10 +110,11 @@ public abstract class BaseService<
      * 如果存在 关键字 查询 请务必 重写此方法
      *
      * @param queryWrapper 现有 条件
-     * @param entity       实体
+     * @param entity 实体
      * @return 组合条件
      */
-    protected SkipInvalidValueLambdaQueryWrapper<T> getKeyFieldQueryWrapper(SkipInvalidValueLambdaQueryWrapper<T> queryWrapper, T entity) {
+    protected SkipInvalidValueLambdaQueryWrapper<T> getKeyFieldQueryWrapper(
+            SkipInvalidValueLambdaQueryWrapper<T> queryWrapper, T entity) {
         return queryWrapper;
     }
 
@@ -129,19 +122,17 @@ public abstract class BaseService<
      * 如果存在 关键字 查询 请务必 重写此方法
      *
      * @param queryWrapper 现有 条件
-     * @param entity       实体
+     * @param entity 实体
      * @return 组合条件
      */
-    protected SkipInvalidValueQueryWrapper<T> getKeyFieldQueryWrapper(SkipInvalidValueQueryWrapper<T> queryWrapper, T entity) {
+    protected SkipInvalidValueQueryWrapper<T> getKeyFieldQueryWrapper(
+            SkipInvalidValueQueryWrapper<T> queryWrapper, T entity) {
         return queryWrapper;
     }
 
     // =========================MP 封装完成 ================================
 
-
     // ==========================MS 封装开始=================================
-
-
 
     @Override
     public D getDTOById(Serializable id) {

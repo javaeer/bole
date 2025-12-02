@@ -10,13 +10,15 @@ import cn.net.yunlou.bole.struct.SystemBannerStructMapper;
 import org.springframework.stereotype.Service;
 
 /**
- * FileName: SystemBannerServiceImpl
- * Description:
- * Created By laughtiger
- * Created At 2025/11/28 13:24
- * Modified By
- * Modified At
+ * FileName: SystemBannerServiceImpl Description: Created By laughtiger Created At 2025/11/28 13:24
+ * Modified By Modified At
  */
 @Service
-public class SystemBannerServiceImpl extends BaseService<SystemBannerMapper, SystemBanner, SystemBannerDTO, SystemBannerQuery, SystemBannerStructMapper> implements SystemBannerService {
-}
+public class SystemBannerServiceImpl
+        extends BaseService<
+                SystemBannerMapper,
+                SystemBanner,
+                SystemBannerDTO,
+                SystemBannerQuery,
+                SystemBannerStructMapper>
+        implements SystemBannerService {}

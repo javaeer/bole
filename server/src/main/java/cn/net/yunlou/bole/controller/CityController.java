@@ -11,21 +11,15 @@ import cn.net.yunlou.bole.service.CityService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
- * FileName: CityController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
+ * FileName: CityController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified By
  * Modified At
  */
-
 @RestController
 @RequestMapping("city")
 @Tag(name = "18.城市管理", description = "城市相关接口")
@@ -37,8 +31,7 @@ public class CityController {
     @PostMapping("add")
     @Operation(summary = "新增城市")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody CityAddRequest request) {
+    public BusinessResponse<Boolean> add(@RequestBody CityAddRequest request) {
         City city = QueryUtils.modelToBean(request, City.class);
 
         return BusinessResponse.success(cityService.save(city));
@@ -47,26 +40,21 @@ public class CityController {
     @DeleteMapping("del")
     @Operation(summary = "删除城市")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(cityService.removeById(id));
     }
-
 
     @PutMapping("edit")
     @Operation(summary = "编辑城市")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody CityEditRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody CityEditRequest request) {
         City city = QueryUtils.modelToBean(request, City.class);
         return BusinessResponse.success(cityService.updateById(city));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取城市信息")
-    public BusinessResponse<City> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<City> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(cityService.getById(id));
     }
 
@@ -76,8 +64,7 @@ public class CityController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody CityQuery request) {
-        //City city = QueryUtils.modelToBean(request, City.class);
-
+        // City city = QueryUtils.modelToBean(request, City.class);
 
         return BusinessResponse.success(cityService.pageDTOByQuery(page, size, request));
     }
@@ -85,10 +72,8 @@ public class CityController {
     @PostMapping("tree")
     @Operation(summary = "获取城市树形列表")
     public BusinessResponse<List<City>> tree(@RequestBody CityQuery request) {
-        //City city = QueryUtils.modelToBean(request, City.class);
-
+        // City city = QueryUtils.modelToBean(request, City.class);
 
         return BusinessResponse.success(cityService.listAllChildren());
     }
-
 }

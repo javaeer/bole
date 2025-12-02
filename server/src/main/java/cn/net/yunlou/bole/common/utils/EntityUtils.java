@@ -1,14 +1,11 @@
 package cn.net.yunlou.bole.common.utils;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- * 实体业务工具类 - 专注于业务实体操作
- */
+/** 实体业务工具类 - 专注于业务实体操作 */
 @Slf4j
 public class EntityUtils {
 
@@ -16,14 +13,13 @@ public class EntityUtils {
         log.debug("ReflectUtils initialized");
     }
 
-    /**
-     * 过滤实体无效值
-     */
+    /** 过滤实体无效值 */
     public static <T> T filterInvalidValues(T entity) {
         return filterInvalidValues(entity, ValueUtils::isValid);
     }
 
-    public static <T> T filterInvalidValues(T entity, java.util.function.Predicate<Object> validator) {
+    public static <T> T filterInvalidValues(
+            T entity, java.util.function.Predicate<Object> validator) {
         if (entity == null) {
             return null;
         }
@@ -36,7 +32,8 @@ public class EntityUtils {
             List<Field> fields = ReflectUtils.getAllFields(entity.getClass());
 
             for (Field field : fields) {
-                if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())) {
+                if (Modifier.isStatic(field.getModifiers())
+                        || Modifier.isFinal(field.getModifiers())) {
                     continue;
                 }
 

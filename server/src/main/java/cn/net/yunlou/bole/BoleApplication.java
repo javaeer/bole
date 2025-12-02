@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCaching
 @EnableAsync
 @EnableScheduling
-public class ServerApplication {
+public class BoleApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ServerApplication.class, args);
+        SpringApplication.run(BoleApplication.class, args);
     }
 }

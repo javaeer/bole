@@ -15,14 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * FileName: WorkExperienceController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
- * Modified At
+ * FileName: WorkExperienceController Description: Created By MR. WANG Created At 2025/11/24 21:27
+ * Modified By Modified At
  */
-
 @RestController
 @RequestMapping("work-experience")
 @Tag(name = "11.工作经历管理", description = "工作经历相关接口")
@@ -34,8 +29,7 @@ public class WorkExperienceController {
     @PostMapping("add")
     @Operation(summary = "新增工作经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody WorkExperienceAddRequest request) {
+    public BusinessResponse<Boolean> add(@RequestBody WorkExperienceAddRequest request) {
         WorkExperience workExperience = QueryUtils.modelToBean(request, WorkExperience.class);
         return BusinessResponse.success(workExperienceService.save(workExperience));
     }
@@ -43,26 +37,21 @@ public class WorkExperienceController {
     @DeleteMapping("del")
     @Operation(summary = "删除工作经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(workExperienceService.removeById(id));
     }
-
 
     @PutMapping("edit")
     @Operation(summary = "编辑工作经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody WorkExperienceEditRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody WorkExperienceEditRequest request) {
         WorkExperience workExperience = QueryUtils.modelToBean(request, WorkExperience.class);
         return BusinessResponse.success(workExperienceService.updateById(workExperience));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取工作经历信息")
-    public BusinessResponse<WorkExperience> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<WorkExperience> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(workExperienceService.getById(id));
     }
 
@@ -75,5 +64,4 @@ public class WorkExperienceController {
         WorkExperience workExperience = QueryUtils.modelToBean(request, WorkExperience.class);
         return BusinessResponse.success(workExperienceService.page(page, size, workExperience));
     }
-
 }

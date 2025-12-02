@@ -14,11 +14,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("user")
@@ -47,12 +46,11 @@ public class UserController {
 
     @PutMapping("profile")
     @Operation(summary = "更新用户信息")
-    public BusinessResponse<User> updateUser(
-            @Valid @RequestBody UpdateUserRequest request) {
+    public BusinessResponse<User> updateUser(@Valid @RequestBody UpdateUserRequest request) {
         String username = SecurityContextUtils.getCurrentUsername();
         User currentUser = userService.findByUsername(username);
 
-        User user = QueryUtils.modelToBean(request,User.class);
+        User user = QueryUtils.modelToBean(request, User.class);
 
         user.setId(currentUser.getId());
 
@@ -62,22 +60,19 @@ public class UserController {
 
     @PostMapping("page")
     @Operation(summary = "获取用户列表(管理员)")
-    //@PreAuthorize("hasAnyAuthority('read','write')")
+    // @PreAuthorize("hasAnyAuthority('read','write')")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Page<User>> getUserList(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody UserSearchRequest request) {
-        //Page<User> userPage = new Page<>(page, size);
-        User user  = QueryUtils.modelToBean(request,User.class);
+        // Page<User> userPage = new Page<>(page, size);
+        User user = QueryUtils.modelToBean(request, User.class);
 
-        //user.setEmail(request.getEmail();
-        //user.setPhone(request.getPhone();
-        //user.setKeyField(request.getKeyField();
-        //user.setKeyWords(request.getKeyWords();
+        // user.setEmail(request.getEmail();
+        // user.setPhone(request.getPhone();
+        // user.setKeyField(request.getKeyField();
+        // user.setKeyWords(request.getKeyWords();
         return BusinessResponse.success(userService.page(page, size, user));
     }
-
-
-
 }

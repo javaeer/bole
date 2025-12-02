@@ -31,7 +31,9 @@ public class Resumes extends BaseEntity {
 
     // 非数据库字段 - 教育经历
     @TableField(exist = false)
-    private List<EducationExperience> educationExperiences;;
+    private List<EducationExperience> educationExperiences;
+
+    ;
 
     // 非数据库字段 - 工作经历
     @TableField(exist = false)

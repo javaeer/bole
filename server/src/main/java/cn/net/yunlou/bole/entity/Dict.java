@@ -6,11 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: Dict
- * Description:
- * Created By laughtiger
- * Created At 2025/11/30 21:33
- * Modified By
+ * FileName: Dict Description: Created By laughtiger Created At 2025/11/30 21:33 Modified By
  * Modified At
  */
 @Data

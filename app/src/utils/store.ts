@@ -46,6 +46,48 @@ export const clearConfig = (): void => {
 };
 
 
+
+/**
+ * 获取本地存储中的字典数据
+ */
+export const getDict = (): DictData => {
+  try {
+
+    const storedDict = uni.getStorageSync(StoreKey.DICT_KEY);
+    if (storedDict) {
+      console.log("从本地加载字典数据成功");
+      return storedDict ? JSON.parse(storedDict) : {};
+    }
+  } catch (error) {
+    console.error("获取字典缓存失败:", error);
+    return {};
+  }
+};
+
+/**
+ * 设置字典数据到本地存储
+ */
+export const setDict = (dictData: DictData): void => {
+  try {
+    uni.setStorageSync(StoreKey.DICT_KEY, JSON.stringify(dictData));
+  } catch (error) {
+    console.error("设置字典缓存失败:", error);
+  }
+};
+
+/**
+ * 清除字典缓存
+ */
+export const clearDict = (): void => {
+  try {
+    uni.removeStorageSync(StoreKey.DICT_KEY);
+    console.log("字典缓存已清除");
+  } catch (error) {
+    console.error("清除字典缓存失败:", error);
+  }
+};
+
+
 /**
  * 设置令牌信息
  * 如果包含 userInfo 则一起存储，否则只更新令牌
@@ -131,46 +173,13 @@ export const clearUserInfo = (): void => {
   uni.removeStorageSync(StoreKey.USER_INFO_KEY);
 };
 
-/**
- * 获取本地存储中的字典数据
- */
-export const getDict = (): DictData => {
-  try {
 
-    const storedDict = uni.getStorageSync(StoreKey.DICT_KEY);
-    if (storedDict) {
-      console.log("从本地加载字典数据成功");
-      return storedDict ? JSON.parse(storedDict) : {};
-    }
-  } catch (error) {
-    console.error("获取字典缓存失败:", error);
-    return {};
-  }
-};
 
-/**
- * 设置字典数据到本地存储
- */
-export const setDict = (dictData: DictData): void => {
-  try {
-    uni.setStorageSync(StoreKey.DICT_KEY, JSON.stringify(dictData));
-  } catch (error) {
-    console.error("设置字典缓存失败:", error);
-  }
-};
-
-/**
- * 清除字典缓存
- */
-export const clearDict = (): void => {
-  try {
-    uni.removeStorageSync(StoreKey.DICT_KEY);
-    console.log("字典缓存已清除");
-  } catch (error) {
-    console.error("清除字典缓存失败:", error);
-  }
-};
-
+// 清除用户所有缓存信息
+export function clearUserAll() {
+  clearToken();
+  clearUserInfo();
+}
 
 
 // 清除所有缓存信息

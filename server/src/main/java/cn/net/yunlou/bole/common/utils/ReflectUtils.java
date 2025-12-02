@@ -1,7 +1,5 @@
 package cn.net.yunlou.bole.common.utils;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
@@ -9,16 +7,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 精简版反射工具类 - 底层反射操作基础层
- * <p>
- * 职责范围：
- * ✅ 基础字段操作（获取、设置、查找）
- * ✅ 基础方法操作（调用、查找）
- * ✅ 安全对象创建
- * ✅ 基础类型转换
- * ✅ 基础缓存管理
+ *
+ * <p>职责范围： ✅ 基础字段操作（获取、设置、查找） ✅ 基础方法操作（调用、查找） ✅ 安全对象创建 ✅ 基础类型转换 ✅ 基础缓存管理
  *
  * @author YourName
  * @version 3.0.0
@@ -34,37 +28,40 @@ public final class ReflectUtils {
     private static final ConcurrentMap<String, Class<?>> CLASS_CACHE = new ConcurrentHashMap<>(128);
     private static final ConcurrentMap<String, Method> METHOD_CACHE = new ConcurrentHashMap<>(256);
     private static final ConcurrentMap<String, Field> FIELD_CACHE = new ConcurrentHashMap<>(256);
-    private static final ConcurrentMap<String, MethodHandle> METHOD_HANDLE_CACHE = new ConcurrentHashMap<>(128);
+    private static final ConcurrentMap<String, MethodHandle> METHOD_HANDLE_CACHE =
+            new ConcurrentHashMap<>(128);
     // ====== 性能统计 ======
     private static final AtomicLong METHOD_CACHE_HITS = new AtomicLong();
     private static final AtomicLong METHOD_CACHE_MISSES = new AtomicLong();
 
     static {
         // 基础安全配置
-        ALLOWED_PACKAGES.addAll(Arrays.asList(
-                "java.util.", "java.lang.", "cn.net.yunlou.", "org.example."
-        ));
+        ALLOWED_PACKAGES.addAll(
+                Arrays.asList("java.util.", "java.lang.", "cn.net.yunlou.", "org.example."));
 
-        DENIED_METHOD_PATTERNS.addAll(Arrays.asList(
-                "exec", "runtime", "process", "shell", "classloader", "forname",
-                "getclassloader", "defineclass", "unsafe"
-        ));
+        DENIED_METHOD_PATTERNS.addAll(
+                Arrays.asList(
+                        "exec",
+                        "runtime",
+                        "process",
+                        "shell",
+                        "classloader",
+                        "forname",
+                        "getclassloader",
+                        "defineclass",
+                        "unsafe"));
 
         log.debug("ReflectUtils security configuration loaded");
     }
 
-    /**
-     * 私有构造函数
-     */
+    /** 私有构造函数 */
     private ReflectUtils() {
         log.debug("ReflectUtils initialized");
     }
 
     // ====== 类操作 ======
 
-    /**
-     * 安全加载类
-     */
+    /** 安全加载类 */
     public static Class<?> loadClass(String className) {
         if (className == null || className.trim().isEmpty()) {
             throw new ReflectionException("Class name cannot be null or empty");
@@ -75,26 +72,25 @@ public final class ReflectUtils {
             throw new ReflectionException("Invalid class name: " + className);
         }
 
-        return CLASS_CACHE.computeIfAbsent(className, name -> {
-            try {
-                Class<?> clazz = Thread.currentThread()
-                        .getContextClassLoader()
-                        .loadClass(name);
+        return CLASS_CACHE.computeIfAbsent(
+                className,
+                name -> {
+                    try {
+                        Class<?> clazz =
+                                Thread.currentThread().getContextClassLoader().loadClass(name);
 
-                // 基础包安全检查
-                validateClassPackage(clazz);
-                return clazz;
+                        // 基础包安全检查
+                        validateClassPackage(clazz);
+                        return clazz;
 
-            } catch (ClassNotFoundException e) {
-                log.error("Class not found: {}", name, e);
-                throw new ReflectionException("Class not found: " + name, e);
-            }
-        });
+                    } catch (ClassNotFoundException e) {
+                        log.error("Class not found: {}", name, e);
+                        throw new ReflectionException("Class not found: " + name, e);
+                    }
+                });
     }
 
-    /**
-     * 创建对象实例
-     */
+    /** 创建对象实例 */
     @SuppressWarnings("unchecked")
     public static <T> T createInstance(Class<T> clazz, Object... args) {
         try {
@@ -102,9 +98,8 @@ public final class ReflectUtils {
                 return clazz.getDeclaredConstructor().newInstance();
             }
 
-            Class<?>[] paramTypes = Arrays.stream(args)
-                    .map(Object::getClass)
-                    .toArray(Class<?>[]::new);
+            Class<?>[] paramTypes =
+                    Arrays.stream(args).map(Object::getClass).toArray(Class<?>[]::new);
 
             Constructor<T> constructor = (Constructor<T>) findConstructor(clazz, paramTypes);
             return constructor.newInstance(args);
@@ -128,24 +123,22 @@ public final class ReflectUtils {
 
     // ====== 字段操作 ======
 
-    /**
-     * 查找字段
-     */
+    /** 查找字段 */
     public static Field findField(Class<?> clazz, String fieldName) {
         String cacheKey = clazz.getName() + "#" + fieldName;
-        return FIELD_CACHE.computeIfAbsent(cacheKey, key -> {
-            Field field = findFieldInHierarchy(clazz, fieldName);
-            if (field == null) {
-                throw new ReflectionException("Field not found: " + fieldName);
-            }
-            makeAccessible(field);
-            return field;
-        });
+        return FIELD_CACHE.computeIfAbsent(
+                cacheKey,
+                key -> {
+                    Field field = findFieldInHierarchy(clazz, fieldName);
+                    if (field == null) {
+                        throw new ReflectionException("Field not found: " + fieldName);
+                    }
+                    makeAccessible(field);
+                    return field;
+                });
     }
 
-    /**
-     * 获取字段值
-     */
+    /** 获取字段值 */
     @SuppressWarnings("unchecked")
     public static <T> T getFieldValue(Object target, String fieldName) {
         try {
@@ -167,9 +160,7 @@ public final class ReflectUtils {
         }
     }
 
-    /**
-     * 设置字段值
-     */
+    /** 设置字段值 */
     public static void setFieldValue(Object target, String fieldName, Object value) {
         try {
             Field field = findField(target.getClass(), fieldName);
@@ -181,9 +172,7 @@ public final class ReflectUtils {
         }
     }
 
-    /**
-     * 获取所有字段
-     */
+    /** 获取所有字段 */
     public static List<Field> getAllFields(Class<?> clazz) {
         List<Field> fields = new ArrayList<>();
         Class<?> current = clazz;
@@ -212,38 +201,38 @@ public final class ReflectUtils {
 
     // ====== 方法操作 ======
 
-    /**
-     * 查找方法
-     */
+    /** 查找方法 */
     public static Method findMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
         String cacheKey = generateMethodKey(clazz, methodName, paramTypes);
 
-        Method method = METHOD_CACHE.computeIfAbsent(cacheKey, key -> {
-            METHOD_CACHE_MISSES.incrementAndGet();
-            try {
-                Method m = clazz.getDeclaredMethod(methodName, paramTypes);
-                makeAccessible(m);
-                validateMethodAccess(m);
-                return m;
-            } catch (NoSuchMethodException e) {
-                Method m = findMethodInHierarchy(clazz, methodName, paramTypes);
-                if (m != null) {
-                    makeAccessible(m);
-                    validateMethodAccess(m);
-                    return m;
-                }
-                log.error("Method not found: {}.{}", clazz.getName(), methodName, e);
-                throw new ReflectionException("Method not found: " + methodName, e);
-            }
-        });
+        Method method =
+                METHOD_CACHE.computeIfAbsent(
+                        cacheKey,
+                        key -> {
+                            METHOD_CACHE_MISSES.incrementAndGet();
+                            try {
+                                Method m = clazz.getDeclaredMethod(methodName, paramTypes);
+                                makeAccessible(m);
+                                validateMethodAccess(m);
+                                return m;
+                            } catch (NoSuchMethodException e) {
+                                Method m = findMethodInHierarchy(clazz, methodName, paramTypes);
+                                if (m != null) {
+                                    makeAccessible(m);
+                                    validateMethodAccess(m);
+                                    return m;
+                                }
+                                log.error(
+                                        "Method not found: {}.{}", clazz.getName(), methodName, e);
+                                throw new ReflectionException("Method not found: " + methodName, e);
+                            }
+                        });
 
         METHOD_CACHE_HITS.incrementAndGet();
         return method;
     }
 
-    /**
-     * 调用方法
-     */
+    /** 调用方法 */
     @SuppressWarnings("unchecked")
     public static <T> T invokeMethod(Object target, String methodName, Object... args) {
         try {
@@ -254,41 +243,52 @@ public final class ReflectUtils {
             log.error("Method access denied: {}.{}", target.getClass().getName(), methodName, e);
             throw new ReflectionException("Method access denied: " + methodName, e);
         } catch (InvocationTargetException e) {
-            log.error("Method invocation failed: {}.{}", target.getClass().getName(), methodName, e);
-            throw new ReflectionException("Method invocation failed: " + methodName, e.getTargetException());
+            log.error(
+                    "Method invocation failed: {}.{}", target.getClass().getName(), methodName, e);
+            throw new ReflectionException(
+                    "Method invocation failed: " + methodName, e.getTargetException());
         }
     }
 
-    /**
-     * 高性能方法调用（MethodHandle）
-     */
+    /** 高性能方法调用（MethodHandle） */
     @SuppressWarnings("unchecked")
     public static <T> T invokeMethodWithHandle(Object target, String methodName, Object... args) {
         String cacheKey = generateMethodKey(target.getClass(), methodName, getParameterTypes(args));
 
-        MethodHandle handle = METHOD_HANDLE_CACHE.computeIfAbsent(cacheKey, k -> {
-            try {
-                Method method = findMethod(target.getClass(), methodName, getParameterTypes(args));
-                return MethodHandles.lookup().unreflect(method);
-            } catch (IllegalAccessException e) {
-                log.error("Failed to create MethodHandle for: {}.{}",
-                        target.getClass().getName(), methodName, e);
-                throw new ReflectionException("Failed to create MethodHandle", e);
-            }
-        });
+        MethodHandle handle =
+                METHOD_HANDLE_CACHE.computeIfAbsent(
+                        cacheKey,
+                        k -> {
+                            try {
+                                Method method =
+                                        findMethod(
+                                                target.getClass(),
+                                                methodName,
+                                                getParameterTypes(args));
+                                return MethodHandles.lookup().unreflect(method);
+                            } catch (IllegalAccessException e) {
+                                log.error(
+                                        "Failed to create MethodHandle for: {}.{}",
+                                        target.getClass().getName(),
+                                        methodName,
+                                        e);
+                                throw new ReflectionException("Failed to create MethodHandle", e);
+                            }
+                        });
 
         try {
             return (T) handle.invokeWithArguments(prependTarget(target, args));
         } catch (Throwable e) {
-            log.error("MethodHandle invocation failed: {}.{}",
-                    target.getClass().getName(), methodName, e);
+            log.error(
+                    "MethodHandle invocation failed: {}.{}",
+                    target.getClass().getName(),
+                    methodName,
+                    e);
             throw new ReflectionException("MethodHandle invocation failed", e);
         }
     }
 
-    /**
-     * 调用静态方法
-     */
+    /** 调用静态方法 */
     public static <T> T invokeStaticMethod(Class<?> clazz, String methodName, Object... args) {
         try {
             Class<?>[] paramTypes = getParameterTypes(args);
@@ -303,7 +303,8 @@ public final class ReflectUtils {
         }
     }
 
-    private static Method findMethodInHierarchy(Class<?> clazz, String methodName, Class<?>[] paramTypes) {
+    private static Method findMethodInHierarchy(
+            Class<?> clazz, String methodName, Class<?>[] paramTypes) {
         Class<?> current = clazz;
         while (current != null && current != Object.class) {
             try {
@@ -317,9 +318,7 @@ public final class ReflectUtils {
 
     // ====== 类型转换器 ======
 
-    /**
-     * 设置可访问性
-     */
+    /** 设置可访问性 */
     public static void makeAccessible(AccessibleObject accessible) {
         if (!accessible.isAccessible()) {
             accessible.setAccessible(true);
@@ -328,9 +327,7 @@ public final class ReflectUtils {
 
     // ====== 工具方法 ======
 
-    /**
-     * 获取参数类型数组
-     */
+    /** 获取参数类型数组 */
     public static Class<?>[] getParameterTypes(Object[] args) {
         if (args == null) return new Class[0];
         Class<?>[] paramTypes = new Class[args.length];
@@ -342,15 +339,18 @@ public final class ReflectUtils {
 
     private static void validateClassPackage(Class<?> clazz) {
         String packageName = clazz.getPackage() != null ? clazz.getPackage().getName() : "";
-        boolean allowed = ALLOWED_PACKAGES.stream().anyMatch(pattern -> {
-            if (pattern.endsWith(".*")) {
-                String base = pattern.substring(0, pattern.length() - 2);
-                return packageName.startsWith(base);
-            } else if (pattern.endsWith(".")) {
-                return packageName.startsWith(pattern);
-            }
-            return packageName.equals(pattern);
-        });
+        boolean allowed =
+                ALLOWED_PACKAGES.stream()
+                        .anyMatch(
+                                pattern -> {
+                                    if (pattern.endsWith(".*")) {
+                                        String base = pattern.substring(0, pattern.length() - 2);
+                                        return packageName.startsWith(base);
+                                    } else if (pattern.endsWith(".")) {
+                                        return packageName.startsWith(pattern);
+                                    }
+                                    return packageName.equals(pattern);
+                                });
 
         if (!allowed) {
             log.warn("Security policy blocked access to: {}", clazz.getName());
@@ -362,8 +362,8 @@ public final class ReflectUtils {
 
     private static void validateMethodAccess(Method method) {
         String methodName = method.getName().toLowerCase();
-        boolean dangerous = DENIED_METHOD_PATTERNS.stream()
-                .anyMatch(pattern -> methodName.contains(pattern));
+        boolean dangerous =
+                DENIED_METHOD_PATTERNS.stream().anyMatch(pattern -> methodName.contains(pattern));
 
         if (dangerous) {
             log.warn("Dangerous method call detected: {}", method.getName());
@@ -371,7 +371,8 @@ public final class ReflectUtils {
         }
     }
 
-    private static String generateMethodKey(Class<?> clazz, String methodName, Class<?>[] paramTypes) {
+    private static String generateMethodKey(
+            Class<?> clazz, String methodName, Class<?>[] paramTypes) {
         StringBuilder key = new StringBuilder();
         key.append(clazz.getName()).append("#").append(methodName);
         if (paramTypes != null) {
@@ -408,21 +409,19 @@ public final class ReflectUtils {
 
     private static boolean isPrimitiveAssignable(Class<?> primitive, Class<?> actual) {
         if (!actual.isPrimitive()) {
-            return (primitive == int.class && actual == Integer.class) ||
-                    (primitive == long.class && actual == Long.class) ||
-                    (primitive == boolean.class && actual == Boolean.class) ||
-                    (primitive == double.class && actual == Double.class) ||
-                    (primitive == float.class && actual == Float.class) ||
-                    (primitive == char.class && actual == Character.class) ||
-                    (primitive == byte.class && actual == Byte.class) ||
-                    (primitive == short.class && actual == Short.class);
+            return (primitive == int.class && actual == Integer.class)
+                    || (primitive == long.class && actual == Long.class)
+                    || (primitive == boolean.class && actual == Boolean.class)
+                    || (primitive == double.class && actual == Double.class)
+                    || (primitive == float.class && actual == Float.class)
+                    || (primitive == char.class && actual == Character.class)
+                    || (primitive == byte.class && actual == Byte.class)
+                    || (primitive == short.class && actual == Short.class);
         }
         return primitive.equals(actual);
     }
 
-    /**
-     * 获取缓存统计
-     */
+    /** 获取缓存统计 */
     public static Map<String, Integer> getCacheStats() {
         Map<String, Integer> stats = new HashMap<>();
         stats.put("classCache", CLASS_CACHE.size());
@@ -434,9 +433,7 @@ public final class ReflectUtils {
         return stats;
     }
 
-    /**
-     * 清空缓存
-     */
+    /** 清空缓存 */
     public static void clearCache() {
         CLASS_CACHE.clear();
         METHOD_CACHE.clear();
@@ -445,9 +442,7 @@ public final class ReflectUtils {
         log.info("ReflectUtils cache cleared");
     }
 
-    /**
-     * 基础类型转换器
-     */
+    /** 基础类型转换器 */
     public static class TypeConverter {
         private static final Map<Class<?>, Converter<?>> CONVERTERS = new ConcurrentHashMap<>();
 
@@ -466,9 +461,7 @@ public final class ReflectUtils {
             registerConverter(float.class, obj -> Float.parseFloat(obj.toString()));
         }
 
-        /**
-         * 基础类型转换
-         */
+        /** 基础类型转换 */
         @SuppressWarnings("unchecked")
         public static <T> T convert(Object value, Class<T> targetType) {
             if (value == null) return null;
@@ -484,7 +477,10 @@ public final class ReflectUtils {
                 return convertToEnum(value, targetType);
             }
 
-            log.warn("Unsupported type conversion: {} -> {}", value.getClass().getSimpleName(), targetType.getSimpleName());
+            log.warn(
+                    "Unsupported type conversion: {} -> {}",
+                    value.getClass().getSimpleName(),
+                    targetType.getSimpleName());
             return (T) value;
         }
 
@@ -522,7 +518,7 @@ public final class ReflectUtils {
          * 构造反射异常
          *
          * @param message 异常消息
-         * @param cause   根本原因
+         * @param cause 根本原因
          */
         public ReflectionException(String message, Throwable cause) {
             super(message, cause);

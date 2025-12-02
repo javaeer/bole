@@ -16,14 +16,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * FileName: SystemBannerController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
- * Modified At
+ * FileName: SystemBannerController Description: Created By MR. WANG Created At 2025/11/24 21:27
+ * Modified By Modified At
  */
-
 @RestController
 @RequestMapping("system-banner")
 @Tag(name = "20.轮播图管理", description = "轮播图相关接口")
@@ -35,8 +30,7 @@ public class SystemBannerController {
     @PostMapping("add")
     @Operation(summary = "新增轮播图")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody SystemBannerAddRequest request) {
+    public BusinessResponse<Boolean> add(@RequestBody SystemBannerAddRequest request) {
         SystemBanner systemBanner = QueryUtils.modelToBean(request, SystemBanner.class);
 
         return BusinessResponse.success(systemBannerService.save(systemBanner));
@@ -45,26 +39,21 @@ public class SystemBannerController {
     @DeleteMapping("del")
     @Operation(summary = "删除轮播图")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(systemBannerService.removeById(id));
     }
-
 
     @PutMapping("edit")
     @Operation(summary = "编辑轮播图")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody SystemBannerEditRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody SystemBannerEditRequest request) {
         SystemBanner systemBanner = QueryUtils.modelToBean(request, SystemBanner.class);
         return BusinessResponse.success(systemBannerService.updateById(systemBanner));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取轮播图信息")
-    public BusinessResponse<SystemBanner> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<SystemBanner> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(systemBannerService.getById(id));
     }
 
@@ -74,10 +63,8 @@ public class SystemBannerController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody SystemBannerQuery request) {
-        //SystemBanner systemBanner = QueryUtils.modelToBean(request, SystemBanner.class);
-
+        // SystemBanner systemBanner = QueryUtils.modelToBean(request, SystemBanner.class);
 
         return BusinessResponse.success(systemBannerService.pageDTOByQuery(page, size, request));
     }
-
 }

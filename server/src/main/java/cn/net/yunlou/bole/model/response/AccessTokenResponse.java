@@ -2,19 +2,14 @@ package cn.net.yunlou.bole.model.response;
 
 import cn.net.yunlou.bole.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 /**
- * FileName: UserResponse
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/19 13:48
- * Modified By
+ * FileName: UserResponse Description: Created By MR. WANG Created At 2025/11/19 13:48 Modified By
  * Modified At
  */
 @Data

@@ -1,12 +1,11 @@
 package cn.net.yunlou.bole.config;
 
 import jakarta.annotation.PostConstruct;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
 
 @Slf4j
 @Component
@@ -24,7 +23,9 @@ public class StartupConfig {
 
         log.info("=== SpringDoc/Knife4j 配置 ===");
         log.info("SpringDoc API Docs Path: {}", environment.getProperty("springdoc.api-docs.path"));
-        log.info("SpringDoc Swagger UI Enabled: {}", environment.getProperty("springdoc.swagger-ui.enabled"));
+        log.info(
+                "SpringDoc Swagger UI Enabled: {}",
+                environment.getProperty("springdoc.swagger-ui.enabled"));
         log.info("Knife4j Enable: {}", environment.getProperty("knife4j.enable"));
 
         log.info("=== 数据库配置 ===");

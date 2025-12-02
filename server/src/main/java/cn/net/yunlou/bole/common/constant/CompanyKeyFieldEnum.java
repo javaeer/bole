@@ -7,48 +7,49 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * FileName: CompanyKeyFieldEnum
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/23 22:57
- * Modified By
- * Modified At
+ * FileName: CompanyKeyFieldEnum Description: Created By MR. WANG Created At 2025/11/23 22:57
+ * Modified By Modified At
  */
 @SuppressWarnings("unchecked")
 @Getter
 @AllArgsConstructor
 public enum CompanyKeyFieldEnum implements KeyFieldEnum<String> {
-
-    HOLDER("holder","按企业股东查找"){
+    HOLDER("holder", "按企业股东查找") {
         @Override
         public <T> void applyQuery(SkipInvalidValueLambdaQueryWrapper<T> wrapper, String keywords) {
             SkipInvalidValueLambdaQueryWrapper<Company> userWrapper =
                     (SkipInvalidValueLambdaQueryWrapper<Company>) wrapper;
             userWrapper.likeRight(Company::getHolder, keywords);
         }
-    }
-    ,EMAIL("email", "按企业邮箱查找") {
+    },
+    EMAIL("email", "按企业邮箱查找") {
         @Override
         public <T> void applyQuery(SkipInvalidValueLambdaQueryWrapper<T> wrapper, String keywords) {
             SkipInvalidValueLambdaQueryWrapper<Company> userWrapper =
                     (SkipInvalidValueLambdaQueryWrapper<Company>) wrapper;
             userWrapper.likeRight(Company::getEmail, keywords);
         }
-    }, NAME("name", "按企业名称查找") {
+    },
+    NAME("name", "按企业名称查找") {
         @Override
         public <T> void applyQuery(SkipInvalidValueLambdaQueryWrapper<T> wrapper, String keywords) {
             SkipInvalidValueLambdaQueryWrapper<Company> userWrapper =
                     (SkipInvalidValueLambdaQueryWrapper<Company>) wrapper;
             userWrapper.likeRight(Company::getName, keywords);
         }
-    }, ALL("all", "按企业名称、企业邮箱、企业股东查找") {
+    },
+    ALL("all", "按企业名称、企业邮箱、企业股东查找") {
         @Override
         public <T> void applyQuery(SkipInvalidValueLambdaQueryWrapper<T> wrapper, String keywords) {
-            SkipInvalidValueLambdaQueryWrapper<Company> userWrapper = (SkipInvalidValueLambdaQueryWrapper<Company>) wrapper;
-            userWrapper.and(w ->
-                    w.likeRight(Company::getName, keywords)
-                            .or().likeRight(Company::getHolder, keywords)
-                            .or().likeRight(Company::getEmail, keywords));
+            SkipInvalidValueLambdaQueryWrapper<Company> userWrapper =
+                    (SkipInvalidValueLambdaQueryWrapper<Company>) wrapper;
+            userWrapper.and(
+                    w ->
+                            w.likeRight(Company::getName, keywords)
+                                    .or()
+                                    .likeRight(Company::getHolder, keywords)
+                                    .or()
+                                    .likeRight(Company::getEmail, keywords));
         }
     };
 

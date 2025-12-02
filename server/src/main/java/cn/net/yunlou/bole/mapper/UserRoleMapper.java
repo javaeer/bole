@@ -6,7 +6,7 @@ import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.entity.UserRole;
 
 /**
- * FileName: UserRoleMapper Description: Created By MR. WANG Created At 2025/11/19 16:51 Modified
- * By Modified At
+ * FileName: UserRoleMapper Description: Created By MR. WANG Created At 2025/11/19 16:51 Modified By
+ * Modified At
  */
 public interface UserRoleMapper extends IMultiMapper<UserRole, User, Role> {}

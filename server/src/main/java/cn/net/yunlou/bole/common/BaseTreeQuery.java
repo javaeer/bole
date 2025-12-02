@@ -4,16 +4,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: BaseTreeQuery
- * Description:
- * Created By laughtiger
- * Created At 2025/11/30 22:05
- * Modified By
- * Modified At
+ * FileName: BaseTreeQuery Description: Created By laughtiger Created At 2025/11/30 22:05 Modified
+ * By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BaseTreeQuery extends BaseQuery{
+public class BaseTreeQuery extends BaseQuery {
 
     private Long parentId;
 }

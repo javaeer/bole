@@ -6,21 +6,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.*;
-import org.springframework.stereotype.Component;
-
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.*;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class RedisCacheUtils {
 
-    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -37,7 +36,9 @@ public class RedisCacheUtils {
         // 使用JSR310提供的序列化类,里面包含了大量的JDK8时间序列化类
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
         // 启用反序列化所需的类型信息,在属性中添加@class
-        OBJECT_MAPPER.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL,
+        OBJECT_MAPPER.activateDefaultTyping(
+                LaissezFaireSubTypeValidator.instance,
+                ObjectMapper.DefaultTyping.NON_FINAL,
                 JsonTypeInfo.As.PROPERTY);
     }
 
@@ -77,12 +78,12 @@ public class RedisCacheUtils {
         return redisTemplate.getExpire(key, timeUnit);
     }
 
-    //设置到期时长
+    // 设置到期时长
     public Boolean putExpire(String key, Duration duration) {
         return redisTemplate.expire(key, duration);
     }
 
-    //设置到期时长
+    // 设置到期时长
     public Boolean putExpire(String key, long timeout, TimeUnit timeUnit) {
         return redisTemplate.expire(key, timeout, timeUnit);
     }
@@ -310,7 +311,9 @@ public class RedisCacheUtils {
                 String strValue = ((String) value).toLowerCase();
                 if ("true".equals(strValue) || "1".equals(strValue) || "yes".equals(strValue)) {
                     return type.cast(true);
-                } else if ("false".equals(strValue) || "0".equals(strValue) || "no".equals(strValue)) {
+                } else if ("false".equals(strValue)
+                        || "0".equals(strValue)
+                        || "no".equals(strValue)) {
                     return type.cast(false);
                 }
             } else if (value instanceof Number) {
@@ -327,7 +330,6 @@ public class RedisCacheUtils {
 
         // 如果以上都不匹配，尝试直接类型转换
         return type.cast(value);
-
     }
 
     // 获取Hash所有条目

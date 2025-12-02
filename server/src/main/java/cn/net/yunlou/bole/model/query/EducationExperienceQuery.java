@@ -5,14 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: EducationExperienceQuery
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/26 17:43
- * Modified By
- * Modified At
+ * FileName: EducationExperienceQuery Description: Created By MR. WANG Created At 2025/11/26 17:43
+ * Modified By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class EducationExperienceQuery extends BaseQuery {
-}
+public class EducationExperienceQuery extends BaseQuery {}

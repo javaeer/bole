@@ -5,17 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * FileName: ScoreStar
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/25 17:04
- * Modified By
+ * FileName: ScoreStar Description: Created By MR. WANG Created At 2025/11/25 17:04 Modified By
  * Modified At
  */
 @Getter
 @AllArgsConstructor
 public enum ScoreStar implements IEnum<Integer> {
-
     ONE_STAR(1, "一星"),
     TWO_STARS(2, "二星"),
     THREE_STARS(3, "三星"),

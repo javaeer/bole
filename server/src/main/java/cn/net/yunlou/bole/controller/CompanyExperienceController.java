@@ -15,14 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * FileName: CompanyController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
- * Modified At
+ * FileName: CompanyController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
+ * By Modified At
  */
-
 @RestController
 @RequestMapping("company-experience")
 @Tag(name = "13.企业经历管理", description = "企业经历相关接口")
@@ -34,35 +29,31 @@ public class CompanyExperienceController {
     @PostMapping("add")
     @Operation(summary = "新增企业经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody CompanyExperienceAddRequest request) {
-        CompanyExperience companyExperience = QueryUtils.modelToBean(request, CompanyExperience.class);
+    public BusinessResponse<Boolean> add(@RequestBody CompanyExperienceAddRequest request) {
+        CompanyExperience companyExperience =
+                QueryUtils.modelToBean(request, CompanyExperience.class);
         return BusinessResponse.success(companyExperienceService.save(companyExperience));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除企业经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(companyExperienceService.removeById(id));
     }
-
 
     @PutMapping("edit")
     @Operation(summary = "编辑企业经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody CompanyExperienceEditRequest request) {
-        CompanyExperience companyExperience = QueryUtils.modelToBean(request, CompanyExperience.class);
+    public BusinessResponse<Boolean> edit(@RequestBody CompanyExperienceEditRequest request) {
+        CompanyExperience companyExperience =
+                QueryUtils.modelToBean(request, CompanyExperience.class);
         return BusinessResponse.success(companyExperienceService.updateById(companyExperience));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取企业经历信息")
-    public BusinessResponse<CompanyExperience> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<CompanyExperience> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(companyExperienceService.getById(id));
     }
 
@@ -72,8 +63,9 @@ public class CompanyExperienceController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody CompanyExperienceSearchRequest request) {
-        CompanyExperience companyExperience = QueryUtils.modelToBean(request, CompanyExperience.class);
-        return BusinessResponse.success(companyExperienceService.page(page, size, companyExperience));
+        CompanyExperience companyExperience =
+                QueryUtils.modelToBean(request, CompanyExperience.class);
+        return BusinessResponse.success(
+                companyExperienceService.page(page, size, companyExperience));
     }
-
 }

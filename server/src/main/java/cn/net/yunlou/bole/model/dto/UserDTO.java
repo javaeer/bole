@@ -5,14 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: UserDTO
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/26 17:48
- * Modified By
+ * FileName: UserDTO Description: Created By MR. WANG Created At 2025/11/26 17:48 Modified By
  * Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class UserDTO extends BaseDTO {
-}
+public class UserDTO extends BaseDTO {}

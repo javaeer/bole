@@ -6,16 +6,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: ResumesTemplateSearchRequest
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 23:56
- * Modified By
- * Modified At
+ * FileName: ResumesTemplateSearchRequest Description: Created By MR. WANG Created At 2025/11/24
+ * 23:56 Modified By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(description = "查询简历模板请求")
-public class ResumesTemplateSearchRequest extends BaseSearchRequest{
-}
+public class ResumesTemplateSearchRequest extends BaseSearchRequest {}

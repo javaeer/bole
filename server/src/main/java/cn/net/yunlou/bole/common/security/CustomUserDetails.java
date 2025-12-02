@@ -2,11 +2,10 @@ package cn.net.yunlou.bole.common.security;
 
 import cn.net.yunlou.bole.common.constant.UserStatus;
 import cn.net.yunlou.bole.entity.User;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.Objects;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 

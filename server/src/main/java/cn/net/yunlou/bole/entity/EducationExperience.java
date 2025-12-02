@@ -4,19 +4,14 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDate;
-import java.util.List;
-
 /**
- * FileName: EducationExperience
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 20:44
- * Modified By
- * Modified At
+ * FileName: EducationExperience Description: Created By MR. WANG Created At 2025/11/24 20:44
+ * Modified By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -45,5 +40,4 @@ public class EducationExperience extends BaseEntity {
     private List<String> achievements;
 
     private Integer sort;
-
 }

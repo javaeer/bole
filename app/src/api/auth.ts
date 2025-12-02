@@ -1,7 +1,7 @@
 import { get, post } from "@/utils/request";
 import { LoginForm, LoginResult, RegisterForm, ResetPasswordForm, TokenResult } from "@/types/user";
 import { useUserStore } from "@/stores/user";
-import { clearAll, setToken } from "@/utils/store";
+import { clearUserAll, setToken } from "@/utils/store";
 
 const AuthAPI = {
   /**
@@ -32,7 +32,7 @@ const AuthAPI = {
     } catch (error) {
       console.warn("登出请求失败:", error);
     } finally {
-      clearAll();
+      clearUserAll();
     }
   },
 

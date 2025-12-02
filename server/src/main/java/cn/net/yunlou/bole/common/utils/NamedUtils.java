@@ -1,8 +1,6 @@
 package cn.net.yunlou.bole.common.utils;
 
-/**
- * 命名 工具类 - 补充方法
- */
+/** 命名 工具类 - 补充方法 */
 public class NamedUtils {
 
     /**
@@ -21,7 +19,7 @@ public class NamedUtils {
 
         for (int i = 0; i < underscore.length(); i++) {
             char c = underscore.charAt(i);
-            
+
             if (c == '_') {
                 nextUpper = true;
             } else {
@@ -49,10 +47,10 @@ public class NamedUtils {
         }
 
         StringBuilder result = new StringBuilder();
-        
+
         for (int i = 0; i < camelCase.length(); i++) {
             char c = camelCase.charAt(i);
-            
+
             if (Character.isUpperCase(c)) {
                 if (i > 0) {
                     result.append('_');

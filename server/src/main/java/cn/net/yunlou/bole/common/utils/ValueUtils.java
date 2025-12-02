@@ -1,20 +1,17 @@
 package cn.net.yunlou.bole.common.utils;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Predicate;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- * 值验证工具类
- */
+/** 值验证工具类 */
 @Slf4j
 public class ValueUtils {
 
     /**
      * 判断值是否有效
-     * 
+     *
      * @param value 要验证的值
      * @return 是否有效
      */
@@ -35,9 +32,9 @@ public class ValueUtils {
             return isValidMap((Map<?, ?>) value);
         }
 
-        //if (value instanceof Number) {
+        // if (value instanceof Number) {
         //    return isValidNumber((Number) value);
-        //}
+        // }
 
         if (value instanceof Boolean) {
             return (Boolean) value;
@@ -47,30 +44,22 @@ public class ValueUtils {
         return true;
     }
 
-    /**
-     * 判断字符串是否有效（非null、非空、非空白）
-     */
+    /** 判断字符串是否有效（非null、非空、非空白） */
     public static boolean isValidString(CharSequence str) {
         return str != null && !str.toString().trim().isEmpty();
     }
 
-    /**
-     * 判断集合是否有效（非null、非空）
-     */
+    /** 判断集合是否有效（非null、非空） */
     public static boolean isValidCollection(Collection<?> collection) {
         return collection != null && !collection.isEmpty();
     }
 
-    /**
-     * 判断Map是否有效（非null、非空）
-     */
+    /** 判断Map是否有效（非null、非空） */
     public static boolean isValidMap(Map<?, ?> map) {
         return map != null && !map.isEmpty();
     }
 
-    /**
-     * 判断数字是否有效（非null、非零、非NaN）
-     */
+    /** 判断数字是否有效（非null、非零、非NaN） */
     public static boolean isValidNumber(Number number) {
         if (number == null) {
             return false;
@@ -88,23 +77,17 @@ public class ValueUtils {
         return number.doubleValue() != 0.0;
     }
 
-    /**
-     * 使用自定义条件验证值
-     */
+    /** 使用自定义条件验证值 */
     public static boolean isValid(Object value, Predicate<Object> validator) {
         return value != null && validator.test(value);
     }
 
-    /**
-     * 获取有效值或默认值
-     */
+    /** 获取有效值或默认值 */
     public static <T> T getValidOrDefault(T value, T defaultValue) {
         return isValid(value) ? value : defaultValue;
     }
 
-    /**
-     * 批量验证值
-     */
+    /** 批量验证值 */
     public static boolean allValid(Object... values) {
         if (values == null) {
             return false;
@@ -118,9 +101,7 @@ public class ValueUtils {
         return true;
     }
 
-    /**
-     * 至少一个值有效
-     */
+    /** 至少一个值有效 */
     public static boolean anyValid(Object... values) {
         if (values == null) {
             return false;

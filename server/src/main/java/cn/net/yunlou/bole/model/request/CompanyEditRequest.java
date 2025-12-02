@@ -5,12 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: CompanyEditRequest
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:50
- * Modified By
- * Modified At
+ * FileName: CompanyEditRequest Description: Created By MR. WANG Created At 2025/11/24 21:50
+ * Modified By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -18,5 +14,4 @@ import lombok.EqualsAndHashCode;
 public class CompanyEditRequest extends BaseEditRequest {
 
     private String name;
-
 }

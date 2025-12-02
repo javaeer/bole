@@ -11,23 +11,12 @@ public class CityDTO extends BaseDTO {
 
     private String enName;
 
-    /**
-     * 首字母
-     */
+    /** 首字母 */
     private String initial;
 
-    /**
-     * 拼音
-     * 简称的拼音 全拼 小写
-     */
+    /** 拼音 简称的拼音 全拼 小写 */
     private String pinyin;
 
-    /**
-     * 简称
-     * 去掉所包含的以下汉字
-     * 区/新区
-     * 县
-     * *族自治区/县
-     */
+    /** 简称 去掉所包含的以下汉字 区/新区 县 *族自治区/县 */
     private String shortName;
 }

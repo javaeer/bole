@@ -15,14 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * FileName: SkillController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
- * Modified At
+ * FileName: SkillController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
+ * By Modified At
  */
-
 @RestController
 @RequestMapping("skill")
 @Tag(name = "12.职业技能管理", description = "职业技能相关接口")
@@ -34,8 +29,7 @@ public class SkillController {
     @PostMapping("add")
     @Operation(summary = "新增职业技能")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody SkillAddRequest request) {
+    public BusinessResponse<Boolean> add(@RequestBody SkillAddRequest request) {
         Skill skill = QueryUtils.modelToBean(request, Skill.class);
         return BusinessResponse.success(skillService.save(skill));
     }
@@ -43,26 +37,21 @@ public class SkillController {
     @DeleteMapping("del")
     @Operation(summary = "删除职业技能")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(skillService.removeById(id));
     }
-
 
     @PutMapping("edit")
     @Operation(summary = "编辑职业技能")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody SkillEditRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody SkillEditRequest request) {
         Skill skill = QueryUtils.modelToBean(request, Skill.class);
         return BusinessResponse.success(skillService.updateById(skill));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取职业技能信息")
-    public BusinessResponse<Skill> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<Skill> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(skillService.getById(id));
     }
 
@@ -75,5 +64,4 @@ public class SkillController {
         Skill skill = QueryUtils.modelToBean(request, Skill.class);
         return BusinessResponse.success(skillService.page(page, size, skill));
     }
-
 }

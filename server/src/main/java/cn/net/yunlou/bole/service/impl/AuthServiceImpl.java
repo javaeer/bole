@@ -43,9 +43,10 @@ public class AuthServiceImpl implements AuthService {
 
         try {
             // 使用 Spring Security 进行认证
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    request.getUsername(), request.getPassword()));
 
             // 认证成功后，authentication 中已经包含用户信息
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -105,7 +106,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean changePassword( @Valid ChangePasswordRequest request) {
+    public Boolean changePassword(@Valid ChangePasswordRequest request) {
 
         User toBean = QueryUtils.modelToBean(request, User.class);
 
@@ -117,10 +118,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Boolean resetPassword(@Valid ResetPasswordRequest request) {
 
-        //1.验证短信、邮箱验证码
+        // 1.验证短信、邮箱验证码
 
-        //2.重置密码 到用户新密码
-
+        // 2.重置密码 到用户新密码
 
         return null;
     }

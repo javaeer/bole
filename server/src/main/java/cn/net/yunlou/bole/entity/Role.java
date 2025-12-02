@@ -4,15 +4,10 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 
 /**
- * FileName: Role
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/19 14:01
- * Modified By
- * Modified At
+ * FileName: Role Description: Created By MR. WANG Created At 2025/11/19 14:01 Modified By Modified
+ * At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -24,5 +19,4 @@ public class Role extends BaseEntity {
     private String code;
 
     private String description;
-
 }

@@ -7,12 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * FileName: UserKeyFieldEnum
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/23 22:57
- * Modified By
- * Modified At
+ * FileName: UserKeyFieldEnum Description: Created By MR. WANG Created At 2025/11/23 22:57 Modified
+ * By Modified At
  */
 @SuppressWarnings("unchecked")
 @Getter
@@ -25,28 +21,35 @@ public enum UserKeyFieldEnum implements KeyFieldEnum<String> {
                     (SkipInvalidValueLambdaQueryWrapper<User>) wrapper;
             userWrapper.likeRight(User::getEmail, keywords);
         }
-    }, PHONE("phone", "按手机查找") {
+    },
+    PHONE("phone", "按手机查找") {
         @Override
         public <T> void applyQuery(SkipInvalidValueLambdaQueryWrapper<T> wrapper, String keywords) {
             SkipInvalidValueLambdaQueryWrapper<User> userWrapper =
                     (SkipInvalidValueLambdaQueryWrapper<User>) wrapper;
             userWrapper.likeRight(User::getPhone, keywords);
         }
-    }, NAME("name", "按名称查找") {
+    },
+    NAME("name", "按名称查找") {
         @Override
         public <T> void applyQuery(SkipInvalidValueLambdaQueryWrapper<T> wrapper, String keywords) {
             SkipInvalidValueLambdaQueryWrapper<User> userWrapper =
                     (SkipInvalidValueLambdaQueryWrapper<User>) wrapper;
             userWrapper.likeRight(User::getName, keywords);
         }
-    }, ALL("all", "按名称、电话、邮箱查找") {
+    },
+    ALL("all", "按名称、电话、邮箱查找") {
         @Override
         public <T> void applyQuery(SkipInvalidValueLambdaQueryWrapper<T> wrapper, String keywords) {
-            SkipInvalidValueLambdaQueryWrapper<User> userWrapper = (SkipInvalidValueLambdaQueryWrapper<User>) wrapper;
-            userWrapper.and(w ->
-                    w.likeRight(User::getName, keywords)
-                            .or().likeRight(User::getPhone, keywords)
-                            .or().likeRight(User::getEmail, keywords));
+            SkipInvalidValueLambdaQueryWrapper<User> userWrapper =
+                    (SkipInvalidValueLambdaQueryWrapper<User>) wrapper;
+            userWrapper.and(
+                    w ->
+                            w.likeRight(User::getName, keywords)
+                                    .or()
+                                    .likeRight(User::getPhone, keywords)
+                                    .or()
+                                    .likeRight(User::getEmail, keywords));
         }
     };
 

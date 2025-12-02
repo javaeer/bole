@@ -4,12 +4,7 @@ import cn.net.yunlou.bole.common.IBaseMapper;
 import cn.net.yunlou.bole.entity.WorkExperience;
 
 /**
- * FileName: WorkExperienceMapper
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/25 00:06
- * Modified By
- * Modified At
+ * FileName: WorkExperienceMapper Description: Created By MR. WANG Created At 2025/11/25 00:06
+ * Modified By Modified At
  */
-public interface WorkExperienceMapper extends IBaseMapper<WorkExperience> {
-}
+public interface WorkExperienceMapper extends IBaseMapper<WorkExperience> {}

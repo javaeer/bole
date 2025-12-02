@@ -12,6 +12,5 @@ public class CityGrade extends BaseEntity {
 
     private String name;
 
-    private String level; //洲，国，省，市，区/县,乡镇，街道
-
+    private String level; // 洲，国，省，市，区/县,乡镇，街道
 }

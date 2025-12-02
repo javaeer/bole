@@ -9,12 +9,8 @@ import cn.net.yunlou.bole.service.UserRoleService;
 import org.springframework.stereotype.Service;
 
 /**
- * FileName: UserRoleServiceImpl
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/19 16:50
- * Modified By
- * Modified At
+ * FileName: UserRoleServiceImpl Description: Created By MR. WANG Created At 2025/11/19 16:50
+ * Modified By Modified At
  */
 @Service
 public class UserRoleServiceImpl extends MultiService<UserRoleMapper, UserRole, User, Role>

@@ -15,14 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * FileName: CompanyController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
- * Modified At
+ * FileName: CompanyController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
+ * By Modified At
  */
-
 @RestController
 @RequestMapping("company")
 @Tag(name = "04.企业管理", description = "企业相关接口")
@@ -34,8 +29,7 @@ public class CompanyController {
     @PostMapping("add")
     @Operation(summary = "新增企业")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody CompanyAddRequest request) {
+    public BusinessResponse<Boolean> add(@RequestBody CompanyAddRequest request) {
         Company company = QueryUtils.modelToBean(request, Company.class);
         return BusinessResponse.success(companyService.save(company));
     }
@@ -43,26 +37,21 @@ public class CompanyController {
     @DeleteMapping("del")
     @Operation(summary = "删除企业")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(companyService.removeById(id));
     }
-
 
     @PutMapping("edit")
     @Operation(summary = "编辑企业")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody CompanyEditRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody CompanyEditRequest request) {
         Company company = QueryUtils.modelToBean(request, Company.class);
         return BusinessResponse.success(companyService.updateById(company));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取企业信息")
-    public BusinessResponse<Company> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<Company> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(companyService.getById(id));
     }
 
@@ -75,5 +64,4 @@ public class CompanyController {
         Company company = QueryUtils.modelToBean(request, Company.class);
         return BusinessResponse.success(companyService.page(page, size, company));
     }
-
 }

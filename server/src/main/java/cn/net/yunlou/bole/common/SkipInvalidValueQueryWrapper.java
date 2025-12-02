@@ -3,31 +3,23 @@ package cn.net.yunlou.bole.common;
 import cn.net.yunlou.bole.common.utils.EntityUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import java.util.Collection;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
-import java.util.function.Consumer;
-
 /**
- * 忽略无效值的 QueryWrapper
- * 自动过滤 null、空字符串、空集合等无效值，避免无效条件被拼接到SQL中
- * <p>
- * // 基础使用
- * SkipInvalidValueQueryWrapper<User> wrapper = SkipInvalidValueQueryWrapper.of(User.class)
- * .eq(User::getName, "张三")
- * .eq(User::getAge, null)  // 自动跳过
- * .like(User::getEmail, ""); // 自动跳过
- * <p>
- * // 启用严格模式（调试用）
- * SkipInvalidValueQueryWrapper<User> wrapper = SkipInvalidValueQueryWrapper.create()
- * .strictMode()
- * .eq(User::getName, "张三");
- * <p>
- * // 链式操作
- * SkipInvalidValueQueryWrapper<User> wrapper = SkipInvalidValueQueryWrapper.create()
- * .apply(w -> w.eq(User::getStatus, 1))
- * .likeRight(User::getName, "张");
+ * 忽略无效值的 QueryWrapper 自动过滤 null、空字符串、空集合等无效值，避免无效条件被拼接到SQL中
+ *
+ * <p>// 基础使用 SkipInvalidValueQueryWrapper<User> wrapper =
+ * SkipInvalidValueQueryWrapper.of(User.class) .eq(User::getName, "张三") .eq(User::getAge, null) //
+ * 自动跳过 .like(User::getEmail, ""); // 自动跳过
+ *
+ * <p>// 启用严格模式（调试用） SkipInvalidValueQueryWrapper<User> wrapper =
+ * SkipInvalidValueQueryWrapper.create() .strictMode() .eq(User::getName, "张三");
+ *
+ * <p>// 链式操作 SkipInvalidValueQueryWrapper<User> wrapper = SkipInvalidValueQueryWrapper.create()
+ * .apply(w -> w.eq(User::getStatus, 1)) .likeRight(User::getName, "张");
  */
 @Getter
 @Slf4j
@@ -35,6 +27,7 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
 
     private boolean strictMode = false; // 严格模式，如果为true会记录跳过条件的日志
     private boolean allowNullValue = false; // 是否允许null值
+
     public SkipInvalidValueQueryWrapper() {
         super();
     }
@@ -69,17 +62,13 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
 
     // ============ 配置方法 ============
 
-    /**
-     * 启用严格模式，跳过无效条件时会记录日志
-     */
+    /** 启用严格模式，跳过无效条件时会记录日志 */
     public SkipInvalidValueQueryWrapper<T> strictMode() {
         this.strictMode = true;
         return this;
     }
 
-    /**
-     * 禁用严格模式
-     */
+    /** 禁用严格模式 */
     public SkipInvalidValueQueryWrapper<T> lenientMode() {
         this.strictMode = false;
         return this;
@@ -193,9 +182,7 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
 
     // ============ 新增常用方法 ============
 
-    /**
-     * 模糊匹配 - 左模糊
-     */
+    /** 模糊匹配 - 左模糊 */
     @Override
     public SkipInvalidValueQueryWrapper<T> likeLeft(String column, Object val) {
         if (ValueUtils.isValid(val)) {
@@ -206,9 +193,7 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
         return this;
     }
 
-    /**
-     * 模糊匹配 - 右模糊
-     */
+    /** 模糊匹配 - 右模糊 */
     @Override
     public SkipInvalidValueQueryWrapper<T> likeRight(String column, Object val) {
         if (ValueUtils.isValid(val)) {
@@ -219,9 +204,7 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
         return this;
     }
 
-    /**
-     * 不包含
-     */
+    /** 不包含 */
     @Override
     public SkipInvalidValueQueryWrapper<T> notIn(String column, Object... values) {
         if (ValueUtils.isValid(values)) {
@@ -242,9 +225,7 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
         return this;
     }
 
-    /**
-     * BETWEEN 条件
-     */
+    /** BETWEEN 条件 */
     @Override
     public SkipInvalidValueQueryWrapper<T> between(String column, Object val1, Object val2) {
         boolean valid1 = ValueUtils.isValid(val1);
@@ -262,10 +243,9 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
         return this;
     }
 
-    /**
-     * 链式操作支持
-     */
-    public SkipInvalidValueQueryWrapper<T> apply(Consumer<SkipInvalidValueQueryWrapper<T>> consumer) {
+    /** 链式操作支持 */
+    public SkipInvalidValueQueryWrapper<T> apply(
+            Consumer<SkipInvalidValueQueryWrapper<T>> consumer) {
         consumer.accept(this);
         return this;
     }

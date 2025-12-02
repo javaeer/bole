@@ -6,12 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: UpdateUserRequest
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/19 14:14
- * Modified By
- * Modified At
+ * FileName: UpdateUserRequest Description: Created By MR. WANG Created At 2025/11/19 14:14 Modified
+ * By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

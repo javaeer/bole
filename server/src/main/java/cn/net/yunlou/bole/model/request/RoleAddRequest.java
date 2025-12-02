@@ -7,11 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: RoleAddRequest
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/25 00:00
- * Modified By
+ * FileName: RoleAddRequest Description: Created By MR. WANG Created At 2025/11/25 00:00 Modified By
  * Modified At
  */
 @Data
@@ -23,5 +19,4 @@ public class RoleAddRequest extends BaseQuery {
     private String name;
 
     private String code;
-
 }

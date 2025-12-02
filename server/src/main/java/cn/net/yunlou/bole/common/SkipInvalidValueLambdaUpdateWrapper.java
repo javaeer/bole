@@ -4,48 +4,33 @@ import cn.net.yunlou.bole.common.utils.EntityUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import java.util.Collection;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
-import java.util.function.Consumer;
-
 /**
- * 跳过无效值的Lambda更新包装器
- * 自动过滤null、空字符串、空集合等无效值，避免这些值被拼接到SQL更新语句中
+ * 跳过无效值的Lambda更新包装器 自动过滤null、空字符串、空集合等无效值，避免这些值被拼接到SQL更新语句中
  *
+ * <p>// 基础使用 SkipInvalidValueLambdaUpdateWrapper<User> wrapper =
+ * SkipInvalidValueLambdaUpdateWrapper.of(User.class) .set(User::getName, "张三") .set(User::getAge,
+ * 25) .set(User::getEmail, "") // 自动跳过 .eq(User::getId, 1L);
  *
- * // 基础使用
- * SkipInvalidValueLambdaUpdateWrapper<User> wrapper = SkipInvalidValueLambdaUpdateWrapper.of(User.class)
- *     .set(User::getName, "张三")
- *     .set(User::getAge, 25)
- *     .set(User::getEmail, "") // 自动跳过
- *     .eq(User::getId, 1L);
+ * <p>// 启用严格模式 SkipInvalidValueLambdaUpdateWrapper<User> wrapper =
+ * SkipInvalidValueLambdaUpdateWrapper.create() .strictMode() .set(User::getName, "李四")
+ * .eq(User::getStatus, null); // 会记录跳过日志
  *
- * // 启用严格模式
- * SkipInvalidValueLambdaUpdateWrapper<User> wrapper = SkipInvalidValueLambdaUpdateWrapper.create()
- *     .strictMode()
- *     .set(User::getName, "李四")
- *     .eq(User::getStatus, null); // 会记录跳过日志
+ * <p>// 允许null值 SkipInvalidValueLambdaUpdateWrapper<User> wrapper =
+ * SkipInvalidValueLambdaUpdateWrapper.create() .allowNullValue() .set(User::getName, null) //
+ * 允许设置null .eq(User::getId, 1L);
  *
- * // 允许null值
- * SkipInvalidValueLambdaUpdateWrapper<User> wrapper = SkipInvalidValueLambdaUpdateWrapper.create()
- *     .allowNullValue()
- *     .set(User::getName, null) // 允许设置null
- *     .eq(User::getId, 1L);
+ * <p>// 链式设置多个字段 SkipInvalidValueLambdaUpdateWrapper<User> wrapper =
+ * SkipInvalidValueLambdaUpdateWrapper.create() .setMulti(w -> { w.set(User::getName, "王五");
+ * w.set(User::getAge, 30); }) .eq(User::getId, 1L);
  *
- * // 链式设置多个字段
- * SkipInvalidValueLambdaUpdateWrapper<User> wrapper = SkipInvalidValueLambdaUpdateWrapper.create()
- *     .setMulti(w -> {
- *         w.set(User::getName, "王五");
- *         w.set(User::getAge, 30);
- *     })
- *     .eq(User::getId, 1L);
- *
- * // 数值增减操作
- * SkipInvalidValueLambdaUpdateWrapper<User> wrapper = SkipInvalidValueLambdaUpdateWrapper.create()
- *     .setInc(User::getVisitCount, 1) // visit_count = visit_count + 1
- *     .eq(User::getId, 1L);
+ * <p>// 数值增减操作 SkipInvalidValueLambdaUpdateWrapper<User> wrapper =
+ * SkipInvalidValueLambdaUpdateWrapper.create() .setInc(User::getVisitCount, 1) // visit_count =
+ * visit_count + 1 .eq(User::getId, 1L);
  *
  * @param <T> 实体类型
  */
@@ -90,33 +75,25 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     // ============ 配置方法 ============
 
-    /**
-     * 启用严格模式，跳过无效条件时会记录日志
-     */
+    /** 启用严格模式，跳过无效条件时会记录日志 */
     public SkipInvalidValueLambdaUpdateWrapper<T> strictMode() {
         this.strictMode = true;
         return this;
     }
 
-    /**
-     * 禁用严格模式
-     */
+    /** 禁用严格模式 */
     public SkipInvalidValueLambdaUpdateWrapper<T> lenientMode() {
         this.strictMode = false;
         return this;
     }
 
-    /**
-     * 允许设置null值
-     */
+    /** 允许设置null值 */
     public SkipInvalidValueLambdaUpdateWrapper<T> allowNullValue() {
         this.allowNullValue = true;
         return this;
     }
 
-    /**
-     * 禁止设置null值（默认）
-     */
+    /** 禁止设置null值（默认） */
     public SkipInvalidValueLambdaUpdateWrapper<T> disallowNullValue() {
         this.allowNullValue = false;
         return this;
@@ -135,7 +112,10 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     @Override
     public LambdaUpdateWrapper<T> set(boolean condition, SFunction<T, ?> column, Object value) {
-        boolean isValid = allowNullValue ? (value != null || ValueUtils.isValid(value)) : ValueUtils.isValid(value);
+        boolean isValid =
+                allowNullValue
+                        ? (value != null || ValueUtils.isValid(value))
+                        : ValueUtils.isValid(value);
         if (condition && isValid) {
             return super.set(true, column, value);
         } else if (strictMode && condition) {
@@ -146,7 +126,10 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     @Override
     public LambdaUpdateWrapper<T> set(SFunction<T, ?> column, Object value) {
-        boolean isValid = allowNullValue ? (value != null || ValueUtils.isValid(value)) : ValueUtils.isValid(value);
+        boolean isValid =
+                allowNullValue
+                        ? (value != null || ValueUtils.isValid(value))
+                        : ValueUtils.isValid(value);
         if (isValid) {
             return super.set(column, value);
         } else if (strictMode) {
@@ -155,10 +138,9 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
         return this;
     }
 
-    /**
-     * 链式设置多个字段
-     */
-    public SkipInvalidValueLambdaUpdateWrapper<T> setMulti(Consumer<SkipInvalidValueLambdaUpdateWrapper<T>> consumer) {
+    /** 链式设置多个字段 */
+    public SkipInvalidValueLambdaUpdateWrapper<T> setMulti(
+            Consumer<SkipInvalidValueLambdaUpdateWrapper<T>> consumer) {
         consumer.accept(this);
         return this;
     }
@@ -226,7 +208,8 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
     }
 
     @Override
-    public LambdaUpdateWrapper<T> in(boolean condition, SFunction<T, ?> column, Collection<?> values) {
+    public LambdaUpdateWrapper<T> in(
+            boolean condition, SFunction<T, ?> column, Collection<?> values) {
         if (condition && ValueUtils.isValid(values)) {
             return super.in(true, column, values);
         } else if (strictMode && condition) {
@@ -328,7 +311,8 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
     // ============ 新增常用条件方法 ============
 
     @Override
-    public LambdaUpdateWrapper<T> between(boolean condition, SFunction<T, ?> column, Object val1, Object val2) {
+    public LambdaUpdateWrapper<T> between(
+            boolean condition, SFunction<T, ?> column, Object val1, Object val2) {
         boolean valid1 = ValueUtils.isValid(val1);
         boolean valid2 = ValueUtils.isValid(val2);
 
@@ -354,7 +338,8 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
     }
 
     @Override
-    public LambdaUpdateWrapper<T> notIn(boolean condition, SFunction<T, ?> column, Collection<?> values) {
+    public LambdaUpdateWrapper<T> notIn(
+            boolean condition, SFunction<T, ?> column, Collection<?> values) {
         if (condition && ValueUtils.isValid(values)) {
             return super.notIn(true, column, values);
         } else if (strictMode && condition) {
@@ -375,38 +360,28 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     // ============ 特殊set方法 ============
 
-    /**
-     * 强制设置值，即使值为null或无效也设置
-     * 用于需要显式设置为null的场景
-     */
+    /** 强制设置值，即使值为null或无效也设置 用于需要显式设置为null的场景 */
     public LambdaUpdateWrapper<T> setForce(SFunction<T, ?> column, Object value) {
         return super.set(column, value);
     }
 
-    /**
-     * 强制设置值（带条件）
-     */
-    public LambdaUpdateWrapper<T> setForce(boolean condition, SFunction<T, ?> column, Object value) {
+    /** 强制设置值（带条件） */
+    public LambdaUpdateWrapper<T> setForce(
+            boolean condition, SFunction<T, ?> column, Object value) {
         return condition ? super.set(true, column, value) : this;
     }
 
-    /**
-     * 设置值为null（明确设置null值）
-     */
+    /** 设置值为null（明确设置null值） */
     public LambdaUpdateWrapper<T> setNull(SFunction<T, ?> column) {
         return super.set(column, null);
     }
 
-    /**
-     * 设置值为null（带条件）
-     */
+    /** 设置值为null（带条件） */
     public LambdaUpdateWrapper<T> setNull(boolean condition, SFunction<T, ?> column) {
         return condition ? super.set(true, column, null) : this;
     }
 
-    /**
-     * 递增字段值
-     */
+    /** 递增字段值 */
     public SkipInvalidValueLambdaUpdateWrapper<T> setInc(SFunction<T, ?> column, Number value) {
         if (ValueUtils.isValid(value)) {
             String columnName = this.columnToString(column);
@@ -417,9 +392,7 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
         return this;
     }
 
-    /**
-     * 递减字段值
-     */
+    /** 递减字段值 */
     public SkipInvalidValueLambdaUpdateWrapper<T> setDec(SFunction<T, ?> column, Number value) {
         if (ValueUtils.isValid(value)) {
             String columnName = this.columnToString(column);

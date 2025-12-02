@@ -11,14 +11,11 @@ import cn.net.yunlou.bole.struct.DictStructMapper;
 import org.springframework.stereotype.Service;
 
 /**
- * FileName: DictServiceImpl
- * Description:
- * Created By laughtiger
- * Created At 2025/11/30 22:09
- * Modified By
- * Modified At
+ * FileName: DictServiceImpl Description: Created By laughtiger Created At 2025/11/30 22:09 Modified
+ * By Modified At
  */
 @Service
 @TreeServiceConfig(cacheName = "dictTree", keyPrefix = "dict")
-public class DictServiceImpl extends BaseTreeService<DictMapper, Dict, DictDTO, DictQuery, DictStructMapper> implements DictService {
-}
+public class DictServiceImpl
+        extends BaseTreeService<DictMapper, Dict, DictDTO, DictQuery, DictStructMapper>
+        implements DictService {}

@@ -3,17 +3,12 @@ package cn.net.yunlou.bole.entity;
 import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
-
 /**
- * FileName: Company
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:10
- * Modified By
+ * FileName: Company Description: Created By MR. WANG Created At 2025/11/24 21:10 Modified By
  * Modified At
  */
 @Data
@@ -22,9 +17,9 @@ import java.util.List;
 public class Company extends BaseEntity {
 
     private String name;
-    
+
     private String email;
-    
+
     private String holder;
 
     private String location;
@@ -43,10 +38,7 @@ public class Company extends BaseEntity {
 
     private Integer likes;
 
-    /**
-     * 企业内部评论
-     */
+    /** 企业内部评论 */
     @TableField(exist = false)
     private List<CompanyComment> companyComments;
-
 }

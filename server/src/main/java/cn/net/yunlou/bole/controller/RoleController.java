@@ -15,14 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * FileName: RoleController
- * Description:
- * Created By MR. WANG
- * Created At 2025/11/24 21:27
- * Modified By
+ * FileName: RoleController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified By
  * Modified At
  */
-
 @RestController
 @RequestMapping("role")
 @Tag(name = "03.角色管理", description = "角色相关接口")
@@ -34,8 +29,7 @@ public class RoleController {
     @PostMapping("add")
     @Operation(summary = "新增角色")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(
-            @RequestBody RoleAddRequest request) {
+    public BusinessResponse<Boolean> add(@RequestBody RoleAddRequest request) {
         Role role = QueryUtils.modelToBean(request, Role.class);
         return BusinessResponse.success(roleService.save(role));
     }
@@ -43,26 +37,21 @@ public class RoleController {
     @DeleteMapping("del")
     @Operation(summary = "删除角色")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(
-            @RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(roleService.removeById(id));
     }
-
 
     @PutMapping("edit")
     @Operation(summary = "编辑角色")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(
-            @RequestBody RoleEditRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody RoleEditRequest request) {
         Role role = QueryUtils.modelToBean(request, Role.class);
         return BusinessResponse.success(roleService.updateById(role));
     }
 
-
     @GetMapping("{id}")
     @Operation(summary = "获取角色信息")
-    public BusinessResponse<Role> get(
-            @PathVariable(value = "id") Long id) {
+    public BusinessResponse<Role> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(roleService.getById(id));
     }
 
@@ -75,5 +64,4 @@ public class RoleController {
         Role role = QueryUtils.modelToBean(request, Role.class);
         return BusinessResponse.success(roleService.page(page, size, role));
     }
-
 }

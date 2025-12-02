@@ -38,10 +38,9 @@ public class AuthenticationService {
 
     private final RedisCacheUtils redisCacheUtils;
 
-    /**
-     * 根据token获取认证信息
-     */
-    public UsernamePasswordAuthenticationToken getAuthentication(String token, HttpServletRequest request) {
+    /** 根据token获取认证信息 */
+    public UsernamePasswordAuthenticationToken getAuthentication(
+            String token, HttpServletRequest request) {
         try {
             String username = jwtTokenProvider.extractUsername(token);
 
@@ -53,7 +52,8 @@ public class AuthenticationService {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    authentication.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request));
                     return authentication;
                 }
             }
@@ -64,9 +64,7 @@ public class AuthenticationService {
         return null;
     }
 
-    /**
-     * 用户登录处理
-     */
+    /** 用户登录处理 */
     public AccessTokenResponse login(User user) {
 
         // 更新最后登录时间
@@ -77,24 +75,20 @@ public class AuthenticationService {
 
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
 
-
         storeRefreshToken(user.getUsername(), refreshToken);
-
 
         return AccessTokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType(BaseConstant.TOKEN_PREFIX.trim())
                 .expiresIn(jwtTokenProvider.getAccessTokenRemainingTime(accessToken) / 1000)
-                .refreshExpiresIn(jwtTokenProvider.getRefreshTokenRemainingTime(refreshToken) / 1000)
+                .refreshExpiresIn(
+                        jwtTokenProvider.getRefreshTokenRemainingTime(refreshToken) / 1000)
                 .userInfo(user)
                 .build();
-
     }
 
-    /**
-     * 刷新访问令牌
-     */
+    /** 刷新访问令牌 */
     public RefreshTokenResponse refreshToken(String refreshToken) {
         try {
             // 验证刷新令牌
@@ -124,36 +118,33 @@ public class AuthenticationService {
                     .refreshToken(newRefreshToken) // 返回新的刷新令牌
                     .tokenType("Bearer")
                     .expiresIn(jwtTokenProvider.getAccessTokenRemainingTime(newAccessToken) / 1000)
-                    .refreshExpiresIn(jwtTokenProvider.getAccessTokenRemainingTime(newRefreshToken) / 1000)
+                    .refreshExpiresIn(
+                            jwtTokenProvider.getAccessTokenRemainingTime(newRefreshToken) / 1000)
                     .build();
 
         } catch (Exception e) {
             log.error("刷新令牌失败: {}", e.getMessage());
-            throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "刷新令牌失败: " + e.getMessage());
+            throw new BusinessException(
+                    BusinessStatus.REQUEST_PARAM_ILLEGAL, "刷新令牌失败: " + e.getMessage());
         }
     }
 
-    /**
-     * 存储刷新令牌到Redis
-     */
+    /** 存储刷新令牌到Redis */
     private void storeRefreshToken(String username, String refreshToken) {
         String key = REFRESH_TOKEN_PREFIX + username;
         // 存储刷新令牌，设置过期时间与令牌本身一致
-        redisCacheUtils.putObject(key, refreshToken, jwtTokenProvider.getAccessTokenRemainingTime(refreshToken));
+        redisCacheUtils.putObject(
+                key, refreshToken, jwtTokenProvider.getAccessTokenRemainingTime(refreshToken));
     }
 
-    /**
-     * 验证刷新令牌是否有效
-     */
+    /** 验证刷新令牌是否有效 */
     private boolean isRefreshTokenValid(String username, String refreshToken) {
         String key = REFRESH_TOKEN_PREFIX + username;
         String storedToken = redisCacheUtils.getObject(key, String.class);
         return refreshToken.equals(storedToken);
     }
 
-    /**
-     * 撤销令牌（登出时使用）
-     */
+    /** 撤销令牌（登出时使用） */
     public void revokeTokens(String username) {
         // 删除刷新令牌
         String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
@@ -167,7 +158,6 @@ public class AuthenticationService {
         //     redisCacheUtils.putObject(blacklistKey, "revoked",remainingTime);
         // }
     }
-
 
     public void logout() {
         String username = SecurityContextUtils.getCurrentUsername();

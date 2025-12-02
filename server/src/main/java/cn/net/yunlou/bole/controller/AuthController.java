@@ -21,24 +21,26 @@ public class AuthController {
 
     private final AuthService authService;
 
-
     @PostMapping("login")
     @Operation(summary = "用户登录")
-    public BusinessResponse<AccessTokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public BusinessResponse<AccessTokenResponse> login(
+            @Valid @RequestBody LoginRequest loginRequest) {
         AccessTokenResponse accessTokenResponse = authService.login(loginRequest);
         return BusinessResponse.success(accessTokenResponse);
     }
 
     @PostMapping("register")
     @Operation(summary = "用户注册")
-    public BusinessResponse<AccessTokenResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
+    public BusinessResponse<AccessTokenResponse> register(
+            @Valid @RequestBody RegisterRequest registerRequest) {
         AccessTokenResponse accessTokenResponse = authService.register(registerRequest);
         return BusinessResponse.success(accessTokenResponse);
     }
 
     @PostMapping("refresh")
     @Operation(summary = "刷新访问令牌")
-    public BusinessResponse<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+    public BusinessResponse<RefreshTokenResponse> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request) {
         RefreshTokenResponse response = authService.refreshToken(request.getRefreshToken());
         return BusinessResponse.success(response);
     }
@@ -60,14 +62,15 @@ public class AuthController {
 
     @PostMapping("change-password")
     @Operation(summary = "修改密码")
-    public BusinessResponse<Boolean> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+    public BusinessResponse<Boolean> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request) {
         return BusinessResponse.success(authService.changePassword(request));
     }
 
-
     @PostMapping("reset-password")
     @Operation(summary = "重置密码")
-    public BusinessResponse<Boolean> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+    public BusinessResponse<Boolean> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
         return BusinessResponse.success(authService.resetPassword(request));
     }
 
