@@ -2,11 +2,11 @@ version: '3.1'
 services:
   bole-server:
     restart: always
-    image: harbor.yunlou.net.cn/bole/bole-server
+    image: harbor.yunlou.net.cn/bole/bole-server:1.0.0
     container_name: bole-server
     ports:
       - 8080:8080
     volumes:
-      - logs/:/logs/
+      - ./logs/:/logs/
     environment:
       TZ: Asia/Shanghai
