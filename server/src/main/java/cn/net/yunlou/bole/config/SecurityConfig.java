@@ -1,15 +1,13 @@
 package cn.net.yunlou.bole.config;
 
 import cn.net.yunlou.bole.common.security.JwtAuthenticationFilter;
+import cn.net.yunlou.bole.common.security.RequestLoggingFilter;
+import cn.net.yunlou.bole.common.security.YunlouAccessDeniedHandler;
+import cn.net.yunlou.bole.common.security.YunlouAuthenticationEntryPoint;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +18,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +29,12 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Configuration
 @EnableWebSecurity
@@ -38,7 +43,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    private final RequestLoggingFilter requestLoggingFilter;
+
     private final SecurityWhitelistConfig securityWhitelistConfig;
+
+    private final YunlouAccessDeniedHandler yunlouAccessDeniedHandler;
+
+    private final YunlouAuthenticationEntryPoint yunlouAuthenticationEntryPoint;
 
     @Value("${app.config.cors.allowed-origins:http://localhost:8080,http://localhost:3000}")
     private String allowedOrigins;
@@ -62,21 +74,34 @@ public class SecurityConfig {
 
         log.info("跳过验证的路径: {}", Arrays.toString(whiteList));
 
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http
+                // 1. 配置CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // 2. 禁用CSRF（API项目通常禁用）
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        authz ->
-                                authz.requestMatchers(whiteList)
-                                        .permitAll()
-                                        .anyRequest()
-                                        .authenticated())
-                // 添加请求日志过滤器
-                .addFilterBefore(
-                        new RequestLoggingFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(
-                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                // 3. 使用无状态Session（JWT场景）
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 4. 配置请求授权
+                .authorizeHttpRequests(registry -> registry
+                        .requestMatchers(whiteList).permitAll()  // 白名单放行
+                        .anyRequest().authenticated()              // 其他需要认证
+                )
+
+                // 5. 配置异常处理器
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint(yunlouAuthenticationEntryPoint)  // 401处理
+                        .accessDeniedHandler(yunlouAccessDeniedHandler)           // 403处理
+                )
+
+                // 6. 添加自定义过滤器
+                .addFilterBefore(requestLoggingFilter,
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -142,29 +167,5 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    // 请求日志过滤器
-    private static class RequestLoggingFilter extends OncePerRequestFilter {
-        @Override
-        protected void doFilterInternal(
-                HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-                throws ServletException, IOException {
-            String requestURI = request.getRequestURI();
-            log.debug("请求路径: {} - 方法: {}", requestURI, request.getMethod());
-
-            // 如果是 Knife4j 相关路径，记录详细信息
-            if (requestURI.contains("doc.html")
-                    || requestURI.contains("api-docs")
-                    || requestURI.contains("swagger")) {
-                log.info(
-                        "Knife4j 请求: {} {}?{}",
-                        request.getMethod(),
-                        requestURI,
-                        request.getQueryString());
-            }
-
-            filterChain.doFilter(request, response);
-        }
     }
 }

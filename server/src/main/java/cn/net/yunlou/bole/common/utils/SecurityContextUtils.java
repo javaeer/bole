@@ -9,18 +9,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+@Slf4j
+@Component
 /** Spring Security 上下文工具类 提供当前用户信息、权限验证等便捷方法 */
 public class SecurityContextUtils {
 
     private SecurityContextUtils() {
-        throw new UnsupportedOperationException("工具类不允许实例化");
+        log.debug("SecurityContextUtils initialized");
     }
 
     /** 🔐 获取安全上下文 */
@@ -185,24 +190,6 @@ public class SecurityContextUtils {
                         () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
-    /**
-     * 获取当前用户 token
-     *
-     * @return
-     * @throws BusinessException 如果用户未登录或身份信息无效
-     */
-    public static String getCurrentToken() {
-
-        HttpServletRequest request = RequestContextUtils.getRequestAttributes().getRequest();
-
-        String bearerToken = request.getHeader(BaseConstant.TOKEN_HEADER);
-
-        if (bearerToken != null && bearerToken.startsWith(BaseConstant.TOKEN_PREFIX)) {
-            return bearerToken.substring(7);
-        }
-
-        throw new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED);
-    }
 
     public static User getCurrentUser() {
         return getCurrentUserDetails()

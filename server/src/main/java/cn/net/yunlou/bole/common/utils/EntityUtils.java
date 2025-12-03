@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /** 实体业务工具类 - 专注于业务实体操作 */
 @Slf4j
+@Component
 public class EntityUtils {
 
     public EntityUtils() {

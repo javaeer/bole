@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.entity.SystemBanner;
+import cn.net.yunlou.bole.entity.Banner;
 import cn.net.yunlou.bole.model.dto.SystemBannerDTO;
 import cn.net.yunlou.bole.model.query.SystemBannerQuery;
 import org.mapstruct.Mapper;
@@ -12,4 +12,4 @@ import org.mapstruct.Mapper;
  */
 @Mapper(componentModel = "spring")
 public interface SystemBannerStructMapper
-        extends BaseStructMapper<SystemBanner, SystemBannerDTO, SystemBannerQuery> {}
+        extends BaseStructMapper<Banner, SystemBannerDTO, SystemBannerQuery> {}

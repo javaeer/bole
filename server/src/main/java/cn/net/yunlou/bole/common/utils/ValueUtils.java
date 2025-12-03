@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /** 值验证工具类 */
 @Slf4j
+@Component
 public class ValueUtils {
 
     /**

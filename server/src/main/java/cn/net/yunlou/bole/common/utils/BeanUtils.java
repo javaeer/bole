@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * 增强版Bean工具类 - 整合反射和Bean操作功能
@@ -15,6 +16,7 @@ import org.springframework.beans.PropertyAccessorFactory;
  * <p>核心特性： ✅ 基于BeanWrapper的高性能拷贝 ✅ 集成ReflectUtils的安全反射操作 ✅ 统一的缓存和异常处理 ✅ 支持复杂类型转换 ✅ Map与Bean智能互转
  */
 @Slf4j
+@Component
 public class BeanUtils {
 
     // ====== 缓存配置 ======

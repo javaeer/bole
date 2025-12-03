@@ -1,6 +1,9 @@
 package cn.net.yunlou.bole.common.utils;
 
+import org.springframework.stereotype.Component;
+
 /** 命名 工具类 - 补充方法 */
+@Component
 public class NamedUtils {
 
     /**

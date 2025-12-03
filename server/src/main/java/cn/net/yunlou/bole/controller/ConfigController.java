@@ -2,9 +2,9 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.SystemConfig;
+import cn.net.yunlou.bole.entity.Config;
 import cn.net.yunlou.bole.model.request.SystemConfigRequest;
-import cn.net.yunlou.bole.service.SystemConfigService;
+import cn.net.yunlou.bole.service.ConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -20,16 +20,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("system-config")
 @Tag(name = "19.系统配置管理", description = "系统配置相关接口")
 @RequiredArgsConstructor
-public class SystemConfigController {
+public class ConfigController {
 
-    private final SystemConfigService systemConfigService;
+    private final ConfigService configService;
 
     @PutMapping("edit")
     @Operation(summary = "编辑系统配置")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> edit(@RequestBody SystemConfigRequest request) {
-        SystemConfig entity =
-                SystemConfig.builder()
+        Config entity =
+                Config.builder()
                         .configKey(request.getConfigKey())
                         .configValue(request.getConfigValue())
                         .configDesc(request.getConfigDesc())
@@ -37,13 +37,13 @@ public class SystemConfigController {
                         .updatedById(SecurityContextUtils.getCurrentUserId())
                         .build();
 
-        return BusinessResponse.success(systemConfigService.saveOrUpdate(entity));
+        return BusinessResponse.success(configService.saveOrUpdate(entity));
     }
 
     @GetMapping
     @Operation(summary = "获取系统配置列表")
-    public BusinessResponse<List<SystemConfig>> getAllConfigs() {
-        return BusinessResponse.success(systemConfigService.list());
+    public BusinessResponse<List<Config>> getAllConfigs() {
+        return BusinessResponse.success(configService.list());
     }
 
     /*@GetMapping("grouped")

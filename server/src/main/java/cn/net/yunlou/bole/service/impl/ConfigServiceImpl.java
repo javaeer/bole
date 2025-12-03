@@ -1,8 +1,8 @@
 package cn.net.yunlou.bole.service.impl;
 
-import cn.net.yunlou.bole.entity.SystemConfig;
-import cn.net.yunlou.bole.mapper.SystemMapper;
-import cn.net.yunlou.bole.service.SystemConfigService;
+import cn.net.yunlou.bole.entity.Config;
+import cn.net.yunlou.bole.mapper.ConfigMapper;
+import cn.net.yunlou.bole.service.ConfigService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -11,5 +11,5 @@ import org.springframework.stereotype.Service;
  * Modified By Modified At
  */
 @Service
-public class SystemConfigServiceImpl extends ServiceImpl<SystemMapper, SystemConfig>
-        implements SystemConfigService {}
+public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config>
+        implements ConfigService {}

@@ -5,6 +5,8 @@ import cn.net.yunlou.bole.common.BaseTreeEntity;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -29,6 +31,7 @@ import org.springframework.util.CollectionUtils;
  *
  * <p>return TreeBuildUtils.buildTree(allDepartments, BaseTreeEntity.ROOT_ID, comparator); }
  */
+@Component
 public class TreeBuildUtils {
 
     private TreeBuildUtils() {

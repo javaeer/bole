@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * 模型工具类 - 专注于BaseQuery及其子类的特殊处理
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2019/9/10
  */
 @Slf4j
+@Component
 public class QueryUtils {
 
     // ====== 简单类型判断 ======
