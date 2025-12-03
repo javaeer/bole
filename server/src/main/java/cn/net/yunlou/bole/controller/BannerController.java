@@ -2,12 +2,12 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.utils.QueryUtils;
-import cn.net.yunlou.bole.entity.SystemBanner;
+import cn.net.yunlou.bole.entity.Banner;
 import cn.net.yunlou.bole.model.dto.SystemBannerDTO;
 import cn.net.yunlou.bole.model.query.SystemBannerQuery;
 import cn.net.yunlou.bole.model.request.SystemBannerAddRequest;
 import cn.net.yunlou.bole.model.request.SystemBannerEditRequest;
-import cn.net.yunlou.bole.service.SystemBannerService;
+import cn.net.yunlou.bole.service.BannerService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,41 +20,41 @@ import org.springframework.web.bind.annotation.*;
  * Modified By Modified At
  */
 @RestController
-@RequestMapping("system-banner")
+@RequestMapping("banner")
 @Tag(name = "20.轮播图管理", description = "轮播图相关接口")
 @RequiredArgsConstructor
-public class SystemBannerController {
+public class BannerController {
 
-    private final SystemBannerService systemBannerService;
+    private final BannerService bannerService;
 
     @PostMapping("add")
     @Operation(summary = "新增轮播图")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> add(@RequestBody SystemBannerAddRequest request) {
-        SystemBanner systemBanner = QueryUtils.modelToBean(request, SystemBanner.class);
+        Banner banner = QueryUtils.modelToBean(request, Banner.class);
 
-        return BusinessResponse.success(systemBannerService.save(systemBanner));
+        return BusinessResponse.success(bannerService.save(banner));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除轮播图")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
-        return BusinessResponse.success(systemBannerService.removeById(id));
+        return BusinessResponse.success(bannerService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑轮播图")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> edit(@RequestBody SystemBannerEditRequest request) {
-        SystemBanner systemBanner = QueryUtils.modelToBean(request, SystemBanner.class);
-        return BusinessResponse.success(systemBannerService.updateById(systemBanner));
+        Banner banner = QueryUtils.modelToBean(request, Banner.class);
+        return BusinessResponse.success(bannerService.updateById(banner));
     }
 
     @GetMapping("{id}")
     @Operation(summary = "获取轮播图信息")
-    public BusinessResponse<SystemBanner> get(@PathVariable(value = "id") Long id) {
-        return BusinessResponse.success(systemBannerService.getById(id));
+    public BusinessResponse<Banner> get(@PathVariable(value = "id") Long id) {
+        return BusinessResponse.success(bannerService.getById(id));
     }
 
     @PostMapping("page")
@@ -65,6 +65,6 @@ public class SystemBannerController {
             @RequestBody SystemBannerQuery request) {
         // SystemBanner systemBanner = QueryUtils.modelToBean(request, SystemBanner.class);
 
-        return BusinessResponse.success(systemBannerService.pageDTOByQuery(page, size, request));
+        return BusinessResponse.success(bannerService.pageDTOByQuery(page, size, request));
     }
 }

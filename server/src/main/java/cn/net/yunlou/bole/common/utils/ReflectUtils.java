@@ -8,16 +8,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * 精简版反射工具类 - 底层反射操作基础层
  *
  * <p>职责范围： ✅ 基础字段操作（获取、设置、查找） ✅ 基础方法操作（调用、查找） ✅ 安全对象创建 ✅ 基础类型转换 ✅ 基础缓存管理
  *
- * @author YourName
+ * @author Mr.Wang
  * @version 3.0.0
  * @since 2024
  */
+@Component
 @Slf4j
 public final class ReflectUtils {
 

@@ -11,11 +11,11 @@ import lombok.*;
  * Modified At
  */
 @Data
-@TableName(value = "t_system_config", resultMap = "systemConfigResultMap")
+@TableName(value = "t_config")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SystemConfig implements Serializable {
+public class Config implements Serializable {
 
     @TableId(type = IdType.INPUT)
     private String configKey;

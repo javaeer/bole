@@ -1,11 +1,11 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
-import cn.net.yunlou.bole.entity.SystemBanner;
+import cn.net.yunlou.bole.entity.Banner;
 import cn.net.yunlou.bole.mapper.SystemBannerMapper;
 import cn.net.yunlou.bole.model.dto.SystemBannerDTO;
 import cn.net.yunlou.bole.model.query.SystemBannerQuery;
-import cn.net.yunlou.bole.service.SystemBannerService;
+import cn.net.yunlou.bole.service.BannerService;
 import cn.net.yunlou.bole.struct.SystemBannerStructMapper;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
  * Modified By Modified At
  */
 @Service
-public class SystemBannerServiceImpl
+public class BannerServiceImpl
         extends BaseService<
                 SystemBannerMapper,
-                SystemBanner,
+        Banner,
                 SystemBannerDTO,
                 SystemBannerQuery,
                 SystemBannerStructMapper>
-        implements SystemBannerService {}
+        implements BannerService {}

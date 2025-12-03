@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("t_system_banner")
-public class SystemBanner extends BaseEntity {
+public class Banner extends BaseEntity {
 
     private String name;
 
