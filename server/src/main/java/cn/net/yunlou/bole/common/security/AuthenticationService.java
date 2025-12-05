@@ -6,8 +6,8 @@ import cn.net.yunlou.bole.common.constant.BaseConstant;
 import cn.net.yunlou.bole.common.utils.RedisCacheUtils;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.model.response.AccessTokenResponse;
-import cn.net.yunlou.bole.model.response.RefreshTokenResponse;
+import cn.net.yunlou.bole.model.AccessTokenDTO;
+import cn.net.yunlou.bole.model.RefreshTokenViewDTO;
 import cn.net.yunlou.bole.service.UserRoleService;
 import cn.net.yunlou.bole.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,7 +65,7 @@ public class AuthenticationService {
     }
 
     /** 用户登录处理 */
-    public AccessTokenResponse login(User user) {
+    public AccessTokenDTO login(User user) {
 
         // 更新最后登录时间
         userService.updateLastLoginTime(user.getId());
@@ -77,7 +77,7 @@ public class AuthenticationService {
 
         storeRefreshToken(user.getUsername(), refreshToken);
 
-        return AccessTokenResponse.builder()
+        return AccessTokenDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType(BaseConstant.TOKEN_PREFIX.trim())
@@ -89,7 +89,7 @@ public class AuthenticationService {
     }
 
     /** 刷新访问令牌 */
-    public RefreshTokenResponse refreshToken(String refreshToken) {
+    public RefreshTokenViewDTO refreshToken(String refreshToken) {
         try {
             // 验证刷新令牌
             if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
@@ -113,7 +113,7 @@ public class AuthenticationService {
             String newRefreshToken = jwtTokenProvider.generateRefreshToken(username);
             storeRefreshToken(username, newRefreshToken);
 
-            return RefreshTokenResponse.builder()
+            return RefreshTokenViewDTO.builder()
                     .accessToken(newAccessToken)
                     .refreshToken(newRefreshToken) // 返回新的刷新令牌
                     .tokenType("Bearer")

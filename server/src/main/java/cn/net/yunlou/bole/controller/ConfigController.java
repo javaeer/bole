@@ -3,10 +3,11 @@ package cn.net.yunlou.bole.controller;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.Config;
-import cn.net.yunlou.bole.model.request.SystemConfigRequest;
+import cn.net.yunlou.bole.model.ConfigQuery;
 import cn.net.yunlou.bole.service.ConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * By Modified At
  */
 @RestController
-@RequestMapping("system-config")
+@RequestMapping("config")
 @Tag(name = "19.系统配置管理", description = "系统配置相关接口")
 @RequiredArgsConstructor
 public class ConfigController {
@@ -27,7 +28,7 @@ public class ConfigController {
     @PutMapping("edit")
     @Operation(summary = "编辑系统配置")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody SystemConfigRequest request) {
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid ConfigQuery request) {
         Config entity =
                 Config.builder()
                         .configKey(request.getConfigKey())

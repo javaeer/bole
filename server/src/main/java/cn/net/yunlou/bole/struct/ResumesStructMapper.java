@@ -2,8 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.Resumes;
-import cn.net.yunlou.bole.model.dto.ResumesDTO;
-import cn.net.yunlou.bole.model.query.ResumesQuery;
+import cn.net.yunlou.bole.model.ResumesCreate;
+import cn.net.yunlou.bole.model.ResumesEdit;
+import cn.net.yunlou.bole.model.ResumesQuery;
+import cn.net.yunlou.bole.model.ResumesView;
 import org.mapstruct.Mapper;
 
 /**
@@ -11,4 +13,5 @@ import org.mapstruct.Mapper;
  * Modified By Modified At
  */
 @Mapper(componentModel = "spring")
-public interface ResumesStructMapper extends BaseStructMapper<Resumes, ResumesDTO, ResumesQuery> {}
+public interface ResumesStructMapper
+        extends BaseStructMapper<Resumes, ResumesCreate, ResumesView, ResumesEdit, ResumesQuery> {}

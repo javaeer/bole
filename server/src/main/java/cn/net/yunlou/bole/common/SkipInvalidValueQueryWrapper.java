@@ -1,12 +1,13 @@
 package cn.net.yunlou.bole.common;
 
-import cn.net.yunlou.bole.common.utils.EntityUtils;
+import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import java.util.Collection;
-import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * 忽略无效值的 QueryWrapper 自动过滤 null、空字符串、空集合等无效值，避免无效条件被拼接到SQL中
@@ -34,7 +35,7 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
 
     public SkipInvalidValueQueryWrapper(T entity) {
         super();
-        T filteredEntity = EntityUtils.filterInvalidValues(entity);
+        T filteredEntity = BeanUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
     }
 
@@ -83,7 +84,7 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
 
     @Override
     public QueryWrapper<T> setEntity(T entity) {
-        T filteredEntity = EntityUtils.filterInvalidValues(entity);
+        T filteredEntity = BeanUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
         return this;
     }

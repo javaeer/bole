@@ -2,11 +2,13 @@ package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName(value = "t_city_grade")
 public class CityGrade extends BaseEntity {
 

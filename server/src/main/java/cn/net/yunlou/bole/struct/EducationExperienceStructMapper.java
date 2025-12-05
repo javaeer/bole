@@ -2,8 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.EducationExperience;
-import cn.net.yunlou.bole.model.dto.EducationExperienceDTO;
-import cn.net.yunlou.bole.model.query.EducationExperienceQuery;
+import cn.net.yunlou.bole.model.EducationExperienceCreate;
+import cn.net.yunlou.bole.model.EducationExperienceEdit;
+import cn.net.yunlou.bole.model.EducationExperienceQuery;
+import cn.net.yunlou.bole.model.EducationExperienceView;
 import org.mapstruct.Mapper;
 
 /**
@@ -13,4 +15,8 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface EducationExperienceStructMapper
         extends BaseStructMapper<
-                EducationExperience, EducationExperienceDTO, EducationExperienceQuery> {}
+                EducationExperience,
+                EducationExperienceCreate,
+                EducationExperienceView,
+                EducationExperienceEdit,
+                EducationExperienceQuery> {}

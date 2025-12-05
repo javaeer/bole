@@ -14,7 +14,7 @@ echo "插入bole数据库示例数据..."
 psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 插入系统配置测试数据
-    INSERT INTO bole_app.t_system_config (config_key, config_value, config_desc, created_by_id, updated_by_id) VALUES
+    INSERT INTO bole_app.t_config (config_key, config_value, config_desc, created_by_id, updated_by_id) VALUES
     ('system.name', '伯乐简历', '系统名称', 1, 1),
     ('system.version', '2.1.0', '系统版本号', 1, 1),
     ('system.copyright', 'Copyright © 2025 云楼科技 All Rights Reserved.', '系统版权信息', 1, 1),
@@ -233,7 +233,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
 
     -- 更新序列值，确保后续插入的主键不会冲突
-    SELECT setval('bole_app.t_system_banner_id_seq', (SELECT MAX(id) FROM bole_app.t_system_banner));
+    SELECT setval('bole_app.t_banner_id_seq', (SELECT MAX(id) FROM bole_app.t_banner));
     SELECT setval('bole_app.t_dict_id_seq', (SELECT MAX(id) FROM bole_app.t_dict));
     SELECT setval('bole_app.t_user_id_seq', (SELECT MAX(id) FROM bole_app.t_user));
     SELECT setval('bole_app.t_company_id_seq', (SELECT MAX(id) FROM bole_app.t_company));

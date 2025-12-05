@@ -1,20 +1,21 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.entity.Dict;
-import cn.net.yunlou.bole.model.dto.DictDTO;
-import cn.net.yunlou.bole.model.query.DictQuery;
-import cn.net.yunlou.bole.model.request.DictAddRequest;
-import cn.net.yunlou.bole.model.request.DictEditRequest;
+import cn.net.yunlou.bole.model.DictCreate;
+import cn.net.yunlou.bole.model.DictEdit;
+import cn.net.yunlou.bole.model.DictQuery;
+import cn.net.yunlou.bole.model.DictView;
 import cn.net.yunlou.bole.service.DictService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * FileName: DictController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified By
@@ -31,10 +32,9 @@ public class DictController {
     @PostMapping("add")
     @Operation(summary = "新增字典")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(@RequestBody DictAddRequest request) {
-        Dict dict = QueryUtils.modelToBean(request, Dict.class);
+    public BusinessResponse<Boolean> add(@RequestBody DictCreate request) {
 
-        return BusinessResponse.success(dictService.save(dict));
+        return BusinessResponse.success(dictService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
@@ -47,9 +47,8 @@ public class DictController {
     @PutMapping("edit")
     @Operation(summary = "编辑字典")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody DictEditRequest request) {
-        Dict dict = QueryUtils.modelToBean(request, Dict.class);
-        return BusinessResponse.success(dictService.updateById(dict));
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid DictEdit request) {
+        return BusinessResponse.success(dictService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
@@ -72,26 +71,24 @@ public class DictController {
 
     @PostMapping("list")
     @Operation(summary = "获取字典列表")
-    public BusinessResponse<List<DictDTO>> list(@RequestBody(required = false) DictQuery request) {
+    public BusinessResponse<List<DictView>> list(@RequestBody(required = false) DictQuery request) {
         // Dict dict = QueryUtils.modelToBean(request, Dict.class);
-        return BusinessResponse.success(dictService.listDTOByQuery(request));
+        return BusinessResponse.success(dictService.listViewByQuery(request));
     }
 
     @PostMapping("tree")
     @Operation(summary = "获取字典树形列表")
-    public BusinessResponse<List<Dict>> tree(@RequestBody(required = false) DictQuery request) {
-        Dict dict = QueryUtils.modelToBean(request, Dict.class);
-        return BusinessResponse.success(dictService.listAllChildren(dict));
+    public BusinessResponse<List<Dict>> tree() {
+        return BusinessResponse.success(dictService.listAllChildren());
     }
 
     @PostMapping("page")
     @Operation(summary = "分页获取字典列表")
-    public BusinessResponse<Page<DictDTO>> page(
+    public BusinessResponse<Page<DictView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody(required = false) DictQuery request) {
-        // Dict dict = QueryUtils.modelToBean(request, Dict.class);
 
-        return BusinessResponse.success(dictService.pageDTOByQuery(page, size, request));
+        return BusinessResponse.success(dictService.pageViewByQuery(page, size, request));
     }
 }

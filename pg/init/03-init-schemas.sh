@@ -28,7 +28,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
 
     -- 系统配置表
-    CREATE TABLE IF NOT EXISTS bole_app.t_system_config (
+    CREATE TABLE IF NOT EXISTS bole_app.t_config (
         -- 主键字段（使用字符串作为主键）
         config_key VARCHAR(255) PRIMARY KEY,
         config_value TEXT,
@@ -42,23 +42,23 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     );
 
     -- 创建索引
-    CREATE INDEX IF NOT EXISTS idx_system_config_created_at ON bole_app.t_system_config(created_at);
-    CREATE INDEX IF NOT EXISTS idx_system_config_updated_at ON bole_app.t_system_config(updated_at);
-    CREATE INDEX IF NOT EXISTS idx_system_config_created_by_id ON bole_app.t_system_config(created_by_id);
-    CREATE INDEX IF NOT EXISTS idx_system_config_updated_by_id ON bole_app.t_system_config(updated_by_id);
+    CREATE INDEX IF NOT EXISTS idx_system_config_created_at ON bole_app.t_config(created_at);
+    CREATE INDEX IF NOT EXISTS idx_system_config_updated_at ON bole_app.t_config(updated_at);
+    CREATE INDEX IF NOT EXISTS idx_system_config_created_by_id ON bole_app.t_config(created_by_id);
+    CREATE INDEX IF NOT EXISTS idx_system_config_updated_by_id ON bole_app.t_config(updated_by_id);
 
     -- 表注释和字段注释
-    COMMENT ON TABLE bole_app.t_system_config IS '系统配置表';
-    COMMENT ON COLUMN bole_app.t_system_config.config_key IS '配置键（主键）';
-    COMMENT ON COLUMN bole_app.t_system_config.config_value IS '配置值';
-    COMMENT ON COLUMN bole_app.t_system_config.config_desc IS '配置描述';
-    COMMENT ON COLUMN bole_app.t_system_config.created_by_id IS '创建人ID';
-    COMMENT ON COLUMN bole_app.t_system_config.created_at IS '创建时间';
-    COMMENT ON COLUMN bole_app.t_system_config.updated_by_id IS '更新人ID';
-    COMMENT ON COLUMN bole_app.t_system_config.updated_at IS '更新时间';
+    COMMENT ON TABLE bole_app.t_config IS '系统配置表';
+    COMMENT ON COLUMN bole_app.t_config.config_key IS '配置键（主键）';
+    COMMENT ON COLUMN bole_app.t_config.config_value IS '配置值';
+    COMMENT ON COLUMN bole_app.t_config.config_desc IS '配置描述';
+    COMMENT ON COLUMN bole_app.t_config.created_by_id IS '创建人ID';
+    COMMENT ON COLUMN bole_app.t_config.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_config.updated_by_id IS '更新人ID';
+    COMMENT ON COLUMN bole_app.t_config.updated_at IS '更新时间';
 
     -- 系统横幅表
-    CREATE TABLE IF NOT EXISTS bole_app.t_system_banner (
+    CREATE TABLE IF NOT EXISTS bole_app.t_banner (
         -- 主键字段
         id BIGSERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -75,20 +75,20 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     );
 
     -- 创建索引
-    CREATE INDEX IF NOT EXISTS idx_system_banner_sort ON bole_app.t_system_banner(sort);
-    CREATE INDEX IF NOT EXISTS idx_system_banner_created_at ON bole_app.t_system_banner(created_at);
-    CREATE INDEX IF NOT EXISTS idx_system_banner_deleted ON bole_app.t_system_banner(deleted);
+    CREATE INDEX IF NOT EXISTS idx_system_banner_sort ON bole_app.t_banner(sort);
+    CREATE INDEX IF NOT EXISTS idx_system_banner_created_at ON bole_app.t_banner(created_at);
+    CREATE INDEX IF NOT EXISTS idx_system_banner_deleted ON bole_app.t_banner(deleted);
 
     -- 表注释和字段注释
-    COMMENT ON TABLE bole_app.t_system_banner IS '系统横幅表';
-    COMMENT ON COLUMN bole_app.t_system_banner.id IS '主键ID';
-    COMMENT ON COLUMN bole_app.t_system_banner.name IS '横幅名称';
-    COMMENT ON COLUMN bole_app.t_system_banner.image IS '图片路径/URL';
-    COMMENT ON COLUMN bole_app.t_system_banner.path IS '跳转路径';
-    COMMENT ON COLUMN bole_app.t_system_banner.sort IS '排序号（数字越小越靠前）';
-    COMMENT ON COLUMN bole_app.t_system_banner.created_at IS '创建时间';
-    COMMENT ON COLUMN bole_app.t_system_banner.updated_at IS '更新时间';
-    COMMENT ON COLUMN bole_app.t_system_banner.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
+    COMMENT ON TABLE bole_app.t_banner IS '系统横幅表';
+    COMMENT ON COLUMN bole_app.t_banner.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_banner.name IS '横幅名称';
+    COMMENT ON COLUMN bole_app.t_banner.image IS '图片路径/URL';
+    COMMENT ON COLUMN bole_app.t_banner.path IS '跳转路径';
+    COMMENT ON COLUMN bole_app.t_banner.sort IS '排序号（数字越小越靠前）';
+    COMMENT ON COLUMN bole_app.t_banner.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_banner.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_banner.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
 -- 字典表
     CREATE TABLE IF NOT EXISTS bole_app.t_dict (
@@ -1041,6 +1041,56 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_city.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
 
+    -- 文件表
+    CREATE TABLE IF NOT EXISTS bole_app.t_file (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        file_key VARCHAR(64) NOT NULL,
+        file_size VARCHAR(50),
+        file_size_bytes BIGINT,
+        original_filename VARCHAR(500),
+        storage_path VARCHAR(1000),
+        storage_type VARCHAR(20) NOT NULL,
+        content_type VARCHAR(100),
+        last_access_time TIMESTAMP,
+        access_url VARCHAR(1000),
+        
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_file_file_key ON bole_app.t_file(file_key);
+    CREATE INDEX IF NOT EXISTS idx_file_storage_type ON bole_app.t_file(storage_type);
+    CREATE INDEX IF NOT EXISTS idx_file_content_type ON bole_app.t_file(content_type);
+    CREATE INDEX IF NOT EXISTS idx_file_last_access_time ON bole_app.t_file(last_access_time);
+    CREATE INDEX IF NOT EXISTS idx_file_created_at ON bole_app.t_file(created_at);
+    CREATE INDEX IF NOT EXISTS idx_file_deleted ON bole_app.t_file(deleted);
+
+    -- 添加唯一约束（确保file_key唯一）
+    CREATE UNIQUE INDEX IF NOT EXISTS uk_file_file_key ON bole_app.t_file(file_key) WHERE deleted = 0;
+
+    -- 表注释和字段注释
+    COMMENT ON TABLE bole_app.t_file IS '文件表';
+    COMMENT ON COLUMN bole_app.t_file.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_file.file_key IS '文件全局唯一标识（MD5/SHA256）';
+    COMMENT ON COLUMN bole_app.t_file.file_size IS '文件大小（带单位）';
+    COMMENT ON COLUMN bole_app.t_file.file_size_bytes IS '文件大小（字节）';
+    COMMENT ON COLUMN bole_app.t_file.original_filename IS '原始文件名';
+    COMMENT ON COLUMN bole_app.t_file.storage_path IS '存储路径（相对路径）';
+    COMMENT ON COLUMN bole_app.t_file.storage_type IS '存储类型：LOCAL, MINIO';
+    COMMENT ON COLUMN bole_app.t_file.content_type IS '文件类型';
+    COMMENT ON COLUMN bole_app.t_file.last_access_time IS '最后访问时间';
+    COMMENT ON COLUMN bole_app.t_file.access_url IS '可访问的URL';
+    COMMENT ON COLUMN bole_app.t_file.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_file.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_file.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
+
+
     -- 审计日志表
     CREATE TABLE IF NOT EXISTS bole_audit.audit_logs (
         id BIGSERIAL PRIMARY KEY,
@@ -1076,13 +1126,13 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             FROM information_schema.tables 
             WHERE table_schema = 'bole_app' 
             AND table_name IN (
-                't_system_config', 't_system_banner','t_dict',
+                't_config', 't_banner','t_dict',
                 't_user', 't_company', 't_role', 't_company_comment', 
                 't_company_experiences', 't_work_experiences', 
                 't_education_experience', 't_project_experience',
                 't_resumes', 't_resumes_template', 't_component_library',
                 't_resumes_template_component','t_skill',
-                't_city_grade','t_city'
+                't_city_grade','t_city','t_file'
             )
         LOOP
             EXECUTE format('

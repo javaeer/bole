@@ -3,8 +3,10 @@ package cn.net.yunlou.bole.service.impl;
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.entity.WorkExperience;
 import cn.net.yunlou.bole.mapper.WorkExperienceMapper;
-import cn.net.yunlou.bole.model.dto.WorkExperienceDTO;
-import cn.net.yunlou.bole.model.query.WorkExperienceQuery;
+import cn.net.yunlou.bole.model.WorkExperienceCreate;
+import cn.net.yunlou.bole.model.WorkExperienceEdit;
+import cn.net.yunlou.bole.model.WorkExperienceQuery;
+import cn.net.yunlou.bole.model.WorkExperienceView;
 import cn.net.yunlou.bole.service.WorkExperienceService;
 import cn.net.yunlou.bole.struct.WorkExperienceStructMapper;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,9 @@ public class WorkExperienceServiceImpl
         extends BaseService<
                 WorkExperienceMapper,
                 WorkExperience,
-                WorkExperienceDTO,
+                WorkExperienceCreate,
+                WorkExperienceView,
+                WorkExperienceEdit,
                 WorkExperienceQuery,
                 WorkExperienceStructMapper>
         implements WorkExperienceService {}

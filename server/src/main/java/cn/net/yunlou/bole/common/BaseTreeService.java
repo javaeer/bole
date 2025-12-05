@@ -2,6 +2,7 @@ package cn.net.yunlou.bole.common;
 
 import static cn.net.yunlou.bole.common.BaseTreeEntity.ROOT_ID;
 
+import cn.net.yunlou.bole.common.annotation.TreeServiceConfig;
 import cn.net.yunlou.bole.common.utils.TreeBuildUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -27,10 +28,12 @@ import org.springframework.util.Assert;
 public abstract class BaseTreeService<
                 M extends BaseMapper<T>,
                 T extends BaseTreeEntity<T>,
-                D extends BaseDTO,
-                Q extends BaseQuery,
-                S extends BaseStructMapper<T, D, Q>>
-        extends BaseService<M, T, D, Q, S> implements IBaseTreeService<T, D, Q> {
+                C extends BaseTreeCreate,
+                V extends BaseTreeView<V>,
+                E extends BaseTreeEdit,
+                Q extends BaseTreeQuery,
+                S extends BaseStructMapper<T, C, V, E, Q>>
+        extends BaseService<M, T, C, V, E, Q, S> implements IBaseTreeService<T, C, V, E, Q> {
 
     // ============ 缓存配置方法 ============
 

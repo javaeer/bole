@@ -3,9 +3,9 @@ package cn.net.yunlou.bole.controller;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.model.request.*;
-import cn.net.yunlou.bole.model.response.AccessTokenResponse;
-import cn.net.yunlou.bole.model.response.RefreshTokenResponse;
+import cn.net.yunlou.bole.model.*;
+import cn.net.yunlou.bole.model.AccessTokenDTO;
+import cn.net.yunlou.bole.model.RefreshTokenViewDTO;
 import cn.net.yunlou.bole.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,26 +23,21 @@ public class AuthController {
 
     @PostMapping("login")
     @Operation(summary = "用户登录")
-    public BusinessResponse<AccessTokenResponse> login(
-            @Valid @RequestBody LoginRequest loginRequest) {
-        AccessTokenResponse accessTokenResponse = authService.login(loginRequest);
-        return BusinessResponse.success(accessTokenResponse);
+    public BusinessResponse<AccessTokenDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+        return BusinessResponse.success(authService.login(loginDTO));
     }
 
     @PostMapping("register")
     @Operation(summary = "用户注册")
-    public BusinessResponse<AccessTokenResponse> register(
-            @Valid @RequestBody RegisterRequest registerRequest) {
-        AccessTokenResponse accessTokenResponse = authService.register(registerRequest);
-        return BusinessResponse.success(accessTokenResponse);
+    public BusinessResponse<AccessTokenDTO> register(@Valid @RequestBody RegisterDTO dto) {
+        return BusinessResponse.success(authService.register(dto));
     }
 
     @PostMapping("refresh")
     @Operation(summary = "刷新访问令牌")
-    public BusinessResponse<RefreshTokenResponse> refreshToken(
-            @Valid @RequestBody RefreshTokenRequest request) {
-        RefreshTokenResponse response = authService.refreshToken(request.getRefreshToken());
-        return BusinessResponse.success(response);
+    public BusinessResponse<RefreshTokenViewDTO> refreshToken(
+            @Valid @RequestBody RefreshTokenDTO dto) {
+        return BusinessResponse.success(authService.refreshToken(dto.getRefreshToken()));
     }
 
     @GetMapping("verify")
@@ -54,23 +49,18 @@ public class AuthController {
     @GetMapping("current")
     @Operation(summary = "获取当前用户信息")
     public BusinessResponse<User> getCurrent() {
-
-        User user = SecurityContextUtils.getCurrentUser();
-
-        return BusinessResponse.success(user);
+        return BusinessResponse.success(SecurityContextUtils.getCurrentUser());
     }
 
     @PostMapping("change-password")
     @Operation(summary = "修改密码")
-    public BusinessResponse<Boolean> changePassword(
-            @Valid @RequestBody ChangePasswordRequest request) {
-        return BusinessResponse.success(authService.changePassword(request));
+    public BusinessResponse<Boolean> changePassword(@Valid @RequestBody ChangePasswordDTO dto) {
+        return BusinessResponse.success(authService.changePassword(dto));
     }
 
     @PostMapping("reset-password")
     @Operation(summary = "重置密码")
-    public BusinessResponse<Boolean> resetPassword(
-            @Valid @RequestBody ResetPasswordRequest request) {
+    public BusinessResponse<Boolean> resetPassword(@Valid @RequestBody ResetPasswordDTO request) {
         return BusinessResponse.success(authService.resetPassword(request));
     }
 

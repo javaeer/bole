@@ -2,8 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.CompanyComment;
-import cn.net.yunlou.bole.model.dto.CompanyCommentDTO;
-import cn.net.yunlou.bole.model.query.CompanyCommentQuery;
+import cn.net.yunlou.bole.model.CompanyCommentCreate;
+import cn.net.yunlou.bole.model.CompanyCommentEdit;
+import cn.net.yunlou.bole.model.CompanyCommentQuery;
+import cn.net.yunlou.bole.model.CompanyCommentView;
 import org.mapstruct.Mapper;
 
 /**
@@ -12,4 +14,9 @@ import org.mapstruct.Mapper;
  */
 @Mapper(componentModel = "spring")
 public interface CompanyCommentStructMapper
-        extends BaseStructMapper<CompanyComment, CompanyCommentDTO, CompanyCommentQuery> {}
+        extends BaseStructMapper<
+                CompanyComment,
+                CompanyCommentCreate,
+                CompanyCommentView,
+                CompanyCommentEdit,
+                CompanyCommentQuery> {}

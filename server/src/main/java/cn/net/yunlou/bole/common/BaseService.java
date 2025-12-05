@@ -1,19 +1,19 @@
 package cn.net.yunlou.bole.common;
 
 import cn.net.yunlou.bole.common.utils.DateUtils;
-import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * FileName: BaseService Description: Created By MR. WANG Created At 2025/11/19 13:50 Modified By
@@ -22,15 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional(readOnly = true)
 public abstract class BaseService<
-                M extends BaseMapper<T>,
-                T extends BaseEntity,
-                D extends BaseDTO,
-                Q extends BaseQuery,
-                S extends BaseStructMapper<T, D, Q> // 添加具体映射器类型参数
-                >
-        extends ServiceImpl<M, T> implements IBaseService<T, D, Q> {
+        M extends BaseMapper<T>,
+        T extends BaseEntity,
+        C extends BaseCreate,
+        V extends BaseView,
+        E extends BaseEdit,
+        Q extends BaseQuery,
+        S extends BaseStructMapper<T, C, V, E, Q> // 添加具体映射器类型参数
+        >
+        extends ServiceImpl<M, T> implements IBaseService<T, C, V, E, Q> {
 
-    @Autowired protected S structMapper;
+    @Autowired
+    protected S structMapper;
 
     @Override
     public boolean exist(T entity) {
@@ -94,11 +97,7 @@ public abstract class BaseService<
 
     @Override
     public QueryWrapper<T> getBaseQueryWrapper(T entity) {
-        SkipInvalidValueQueryWrapper<T> queryWrapper = SkipInvalidValueWrappers.query(entity);
-        if (ValueUtils.isValid(entity.getKeyWords())) {
-            queryWrapper = getKeyFieldQueryWrapper(queryWrapper, entity);
-        }
-        return queryWrapper;
+        return SkipInvalidValueWrappers.query(entity);
     }
 
     @Override
@@ -110,23 +109,10 @@ public abstract class BaseService<
      * 如果存在 关键字 查询 请务必 重写此方法
      *
      * @param queryWrapper 现有 条件
-     * @param entity 实体
+     * @param entity       实体
      * @return 组合条件
      */
-    protected SkipInvalidValueLambdaQueryWrapper<T> getKeyFieldQueryWrapper(
-            SkipInvalidValueLambdaQueryWrapper<T> queryWrapper, T entity) {
-        return queryWrapper;
-    }
-
-    /**
-     * 如果存在 关键字 查询 请务必 重写此方法
-     *
-     * @param queryWrapper 现有 条件
-     * @param entity 实体
-     * @return 组合条件
-     */
-    protected SkipInvalidValueQueryWrapper<T> getKeyFieldQueryWrapper(
-            SkipInvalidValueQueryWrapper<T> queryWrapper, T entity) {
+    protected QueryWrapper<T> getKeyFieldQueryWrapper(QueryWrapper<T> queryWrapper, T entity) {
         return queryWrapper;
     }
 
@@ -135,38 +121,38 @@ public abstract class BaseService<
     // ==========================MS 封装开始=================================
 
     @Override
-    public D getDTOById(Serializable id) {
+    public V getViewById(Serializable id) {
         T entity = getById(id);
-        return structMapper.toDTO(entity);
+        return structMapper.toView(entity);
     }
 
     @Override
-    public boolean saveByDTO(D dto) {
-        T entity = structMapper.toEntity(dto);
+    public boolean saveByCreate(C dto) {
+        T entity = structMapper.createToEntity(dto);
         return save(entity);
     }
 
     @Override
-    public boolean updateDTO(D dto) {
-        T entity = structMapper.toEntity(dto);
+    public boolean updateByEdit(E dto) {
+        T entity = structMapper.editToEntity(dto);
         return update(entity);
     }
 
     @Override
-    public boolean removeDTO(D dto) {
-        T entity = structMapper.toEntity(dto);
+    public boolean removeByQuery(Q dto) {
+        T entity = structMapper.queryToEntity(dto);
         return remove(entity);
     }
 
     @Override
-    public Page<D> pageDTOByQuery(long pageNum, long pageSize, Q query) {
+    public Page<V> pageViewByQuery(long pageNum, long pageSize, Q query) {
         T entity = structMapper.queryToEntity(query);
-        return structMapper.toDTOPage(page(pageNum, pageSize, entity));
+        return structMapper.toViewPage(page(pageNum, pageSize, entity));
     }
 
     @Override
-    public List<D> listDTOByQuery(Q query) {
+    public List<V> listViewByQuery(Q query) {
         T entity = structMapper.queryToEntity(query);
-        return structMapper.toDTOList(list(entity));
+        return structMapper.toViews(list(entity));
     }
 }

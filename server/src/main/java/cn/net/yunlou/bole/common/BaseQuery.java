@@ -1,8 +1,32 @@
 package cn.net.yunlou.bole.common;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
+import java.util.Date;
 import lombok.Data;
 
-/** 前端请求参数祖类 是处理参数的基石 @Author javaeer(javaeer @ aliyun.com) @Date 2020/3/30 12:06 @Version 1.0 */
+/**
+ * FileName: BaseSearchRequest Description: Created By MR. WANG Created At 2025/11/23 10:54 Modified
+ * By Modified At
+ */
 @Data
-public class BaseQuery implements Serializable {}
+@Schema(description = "查询实体")
+public class BaseQuery implements Serializable {
+
+    @Schema(description = "查询开始于", requiredMode = Schema.RequiredMode.AUTO)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:MM:SS", timezone = "GMT+8")
+    protected Date queryStartAt;
+
+    @Schema(description = "查询止于", requiredMode = Schema.RequiredMode.AUTO)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:MM:SS", timezone = "GMT+8")
+    protected Date queryStopAt;
+
+    /** 关键字 */
+    @Schema(description = "关键字", requiredMode = Schema.RequiredMode.AUTO)
+    protected String keyWords;
+
+    /** 查询 字段 */
+    @Schema(description = "查询行", requiredMode = Schema.RequiredMode.AUTO)
+    protected String keyField = "name";
+}

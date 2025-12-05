@@ -12,9 +12,18 @@ import java.util.List;
  * <p>IService MybatisPlus 接口 IStructService MapStructMapper 接口
  *
  * @param <T> 实体类型
- * @param <D> DTO类型
+ * @param <C> 新增类型
+ * @param <V> 视图类型
+ * @param <E> 编辑类型
+ * @param <Q> 查询类型
  */
-public interface IBaseService<T, D, Q> extends IService<T>, IStructService<D, Q> {
+public interface IBaseService<
+                T extends BaseEntity,
+                C extends BaseCreate,
+                V extends BaseView,
+                E extends BaseEdit,
+                Q extends BaseQuery>
+        extends IService<T>, IStructService<C, V, E, Q> {
 
     //  ==============针对 MP mapper 定制开始 =================
     boolean exist(T entity);

@@ -1,15 +1,16 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.entity.EducationExperience;
-import cn.net.yunlou.bole.model.request.EducationExperienceAddRequest;
-import cn.net.yunlou.bole.model.request.EducationExperienceEditRequest;
-import cn.net.yunlou.bole.model.request.EducationExperienceSearchRequest;
+import cn.net.yunlou.bole.model.EducationExperienceCreate;
+import cn.net.yunlou.bole.model.EducationExperienceEdit;
+import cn.net.yunlou.bole.model.EducationExperienceQuery;
+import cn.net.yunlou.bole.model.EducationExperienceView;
 import cn.net.yunlou.bole.service.EducationExperienceService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +30,8 @@ public class EducationExperienceController {
     @PostMapping("add")
     @Operation(summary = "新增教育经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(@RequestBody EducationExperienceAddRequest request) {
-        EducationExperience educationExperience =
-                QueryUtils.modelToBean(request, EducationExperience.class);
-        return BusinessResponse.success(educationExperienceService.save(educationExperience));
+    public BusinessResponse<Boolean> add(@RequestBody EducationExperienceCreate request) {
+        return BusinessResponse.success(educationExperienceService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
@@ -45,10 +44,8 @@ public class EducationExperienceController {
     @PutMapping("edit")
     @Operation(summary = "编辑教育经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody EducationExperienceEditRequest request) {
-        EducationExperience educationExperience =
-                QueryUtils.modelToBean(request, EducationExperience.class);
-        return BusinessResponse.success(educationExperienceService.updateById(educationExperience));
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid EducationExperienceEdit request) {
+        return BusinessResponse.success(educationExperienceService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
@@ -59,13 +56,11 @@ public class EducationExperienceController {
 
     @PostMapping("page")
     @Operation(summary = "获取教育经历列表")
-    public BusinessResponse<Page<EducationExperience>> page(
+    public BusinessResponse<Page<EducationExperienceView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody EducationExperienceSearchRequest request) {
-        EducationExperience educationExperience =
-                QueryUtils.modelToBean(request, EducationExperience.class);
+            @RequestBody EducationExperienceQuery request) {
         return BusinessResponse.success(
-                educationExperienceService.page(page, size, educationExperience));
+                educationExperienceService.pageViewByQuery(page, size, request));
     }
 }

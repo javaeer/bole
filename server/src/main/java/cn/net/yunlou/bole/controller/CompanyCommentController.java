@@ -1,15 +1,16 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.entity.CompanyComment;
-import cn.net.yunlou.bole.model.request.CompanyCommentAddRequest;
-import cn.net.yunlou.bole.model.request.CompanyCommentEditRequest;
-import cn.net.yunlou.bole.model.request.CompanyCommentSearchRequest;
+import cn.net.yunlou.bole.model.CompanyCommentCreate;
+import cn.net.yunlou.bole.model.CompanyCommentEdit;
+import cn.net.yunlou.bole.model.CompanyCommentQuery;
+import cn.net.yunlou.bole.model.CompanyCommentView;
 import cn.net.yunlou.bole.service.CompanyCommentService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +30,8 @@ public class CompanyCommentController {
     @PostMapping("add")
     @Operation(summary = "新增企业评价")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(@RequestBody CompanyCommentAddRequest request) {
-        CompanyComment companyComment = QueryUtils.modelToBean(request, CompanyComment.class);
-        return BusinessResponse.success(companyCommentService.save(companyComment));
+    public BusinessResponse<Boolean> add(@RequestBody CompanyCommentCreate request) {
+        return BusinessResponse.success(companyCommentService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
@@ -44,9 +44,8 @@ public class CompanyCommentController {
     @PutMapping("edit")
     @Operation(summary = "编辑企业评价")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody CompanyCommentEditRequest request) {
-        CompanyComment companyComment = QueryUtils.modelToBean(request, CompanyComment.class);
-        return BusinessResponse.success(companyCommentService.updateById(companyComment));
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid CompanyCommentEdit request) {
+        return BusinessResponse.success(companyCommentService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
@@ -57,11 +56,10 @@ public class CompanyCommentController {
 
     @PostMapping("page")
     @Operation(summary = "获取企业评价列表")
-    public BusinessResponse<Page<CompanyComment>> page(
+    public BusinessResponse<Page<CompanyCommentView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody CompanyCommentSearchRequest request) {
-        CompanyComment companyComment = QueryUtils.modelToBean(request, CompanyComment.class);
-        return BusinessResponse.success(companyCommentService.page(page, size, companyComment));
+            @RequestBody CompanyCommentQuery request) {
+        return BusinessResponse.success(companyCommentService.pageViewByQuery(page, size, request));
     }
 }

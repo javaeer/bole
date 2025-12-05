@@ -5,15 +5,9 @@ import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.UserStatus;
 import cn.net.yunlou.bole.common.security.AuthenticationService;
 import cn.net.yunlou.bole.common.security.CustomUserDetails;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.model.request.ChangePasswordRequest;
-import cn.net.yunlou.bole.model.request.LoginRequest;
-import cn.net.yunlou.bole.model.request.RegisterRequest;
-import cn.net.yunlou.bole.model.request.ResetPasswordRequest;
-import cn.net.yunlou.bole.model.response.AccessTokenResponse;
-import cn.net.yunlou.bole.model.response.RefreshTokenResponse;
+import cn.net.yunlou.bole.model.*;
 import cn.net.yunlou.bole.service.AuthService;
 import cn.net.yunlou.bole.service.UserService;
 import jakarta.validation.Valid;
@@ -39,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public AccessTokenResponse login(@Valid LoginRequest request) {
+    public AccessTokenDTO login(@Valid LoginDTO request) {
 
         try {
             // 使用 Spring Security 进行认证
@@ -65,23 +59,23 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AccessTokenResponse register(@Valid RegisterRequest registerRequest) {
+    public AccessTokenDTO register(@Valid RegisterDTO registerDTO) {
         // 检查用户名是否已存在
-        if (userService.existsByUsername(registerRequest.getUsername())) {
+        if (userService.existsByUsername(registerDTO.getUsername())) {
             throw new BusinessException(BusinessStatus.ALREADY_EXISTS, "用户名已存在");
         }
 
         // 检查邮箱是否已存在
-        if (userService.existsByEmail(registerRequest.getEmail())) {
+        if (userService.existsByEmail(registerDTO.getEmail())) {
             throw new BusinessException(BusinessStatus.ALREADY_EXISTS, "邮箱已存在");
         }
 
         // 创建用户
         User user = new User();
-        user.setUsername(registerRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setEmail(registerRequest.getEmail());
-        user.setPhone(registerRequest.getPhone());
+        user.setUsername(registerDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setEmail(registerDTO.getEmail());
+        user.setPhone(registerDTO.getPhone());
         user.setStatus(UserStatus.ACTIVE.getValue());
         user.setFollowers(0);
         user.setFans(0);
@@ -95,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RefreshTokenResponse refreshToken(String refreshToken) {
+    public RefreshTokenViewDTO refreshToken(String refreshToken) {
         return authenticationService.refreshToken(refreshToken);
     }
 
@@ -106,17 +100,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean changePassword(@Valid ChangePasswordRequest request) {
+    public Boolean changePassword(@Valid ChangePasswordDTO request) {
 
-        User toBean = QueryUtils.modelToBean(request, User.class);
+         //(SecurityContextUtils.getCurrentUserId()).build();
 
-        toBean.setId(SecurityContextUtils.getCurrentUserId());
-
-        return userService.updateById(toBean);
+        return false;
     }
 
     @Override
-    public Boolean resetPassword(@Valid ResetPasswordRequest request) {
+    public Boolean resetPassword(@Valid ResetPasswordDTO request) {
 
         // 1.验证短信、邮箱验证码
 

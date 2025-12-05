@@ -74,10 +74,10 @@ public class RedisConfig {
 
         // 示例：为不同的缓存设置不同的TTL
         /*cacheConfigurations.put("userCache", defaultConfig.entryTtl(Duration.ofMinutes(30)));
-        cacheConfigurations.put("productCache", defaultConfig.entryTtl(Duration.ofHours(2)));
-        cacheConfigurations.put("configCache", defaultConfig.entryTtl(Duration.ofDays(1)));
-        cacheConfigurations.put("sessionCache", defaultConfig.entryTtl(Duration.ofMinutes(10)));
-*/
+                cacheConfigurations.put("productCache", defaultConfig.entryTtl(Duration.ofHours(2)));
+                cacheConfigurations.put("configCache", defaultConfig.entryTtl(Duration.ofDays(1)));
+                cacheConfigurations.put("sessionCache", defaultConfig.entryTtl(Duration.ofMinutes(10)));
+        */
         return RedisCacheManager.builder(
                         RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory))
                 .cacheDefaults(defaultConfig)

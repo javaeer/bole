@@ -3,8 +3,7 @@ package cn.net.yunlou.bole.service.impl;
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.entity.EducationExperience;
 import cn.net.yunlou.bole.mapper.EducationExperienceMapper;
-import cn.net.yunlou.bole.model.dto.EducationExperienceDTO;
-import cn.net.yunlou.bole.model.query.EducationExperienceQuery;
+import cn.net.yunlou.bole.model.*;
 import cn.net.yunlou.bole.service.EducationExperienceService;
 import cn.net.yunlou.bole.struct.EducationExperienceStructMapper;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,9 @@ public class EducationExperienceServiceImpl
         extends BaseService<
                 EducationExperienceMapper,
                 EducationExperience,
-                EducationExperienceDTO,
+                EducationExperienceCreate,
+                EducationExperienceView,
+                EducationExperienceEdit,
                 EducationExperienceQuery,
                 EducationExperienceStructMapper>
         implements EducationExperienceService {}

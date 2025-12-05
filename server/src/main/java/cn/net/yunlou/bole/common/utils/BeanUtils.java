@@ -1,14 +1,17 @@
 package cn.net.yunlou.bole.common.utils;
 
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * 增强版Bean工具类 - 整合反射和Bean操作功能
@@ -18,652 +21,424 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class BeanUtils {
+    // 简单类型集合
+    private static final Set<Class<?>> SIMPLE_TYPES = Set.of(
+            String.class, Integer.class, int.class, Long.class, long.class,
+            Double.class, double.class, Float.class, float.class, Boolean.class, boolean.class,
+            Byte.class, byte.class, Short.class, short.class, Character.class, char.class,
+            Date.class, java.time.LocalDate.class, java.time.LocalDateTime.class,
+            java.math.BigDecimal.class, java.math.BigInteger.class
+    );
 
-    // ====== 缓存配置 ======
-    private static final ConcurrentMap<ClassPair, List<FieldMapping>> FIELD_MAPPING_CACHE =
-            new ConcurrentHashMap<>(256);
-
-    // ====== 简单类型判断 ======
-    private static final Set<Class<?>> SIMPLE_TYPES =
-            Set.of(
-                    int.class,
-                    Integer.class,
-                    boolean.class,
-                    Boolean.class,
-                    float.class,
-                    Float.class,
-                    double.class,
-                    Double.class,
-                    long.class,
-                    Long.class,
-                    byte.class,
-                    Byte.class,
-                    short.class,
-                    Short.class,
-                    java.math.BigInteger.class,
-                    java.math.BigDecimal.class,
-                    char.class,
-                    String.class,
-                    Date.class,
-                    java.time.LocalDate.class,
-                    java.time.LocalDateTime.class,
-                    java.time.LocalTime.class);
-
-    private BeanUtils() {
-        log.debug("BeanUtils initialized with BeanWrapper");
-    }
-
-    // ====== Bean拷贝核心方法 ======
-
-    /** 基于反射的Bean属性拷贝 */
-    public static <T> T copyProperties(Object source, Class<T> targetClass) {
-        return copyProperties(source, targetClass, null);
-    }
-
-    public static <T> T copyProperties(
-            Object source, Class<T> targetClass, PropertyConverter converter) {
-        if (Objects.isNull(source)) {
-            return null;
-        }
-
+    /**
+     * 创建实例（自动检测builder()静态方法）
+     */
+    public static <T> T createInstance(Class<T> clazz) {
         try {
-            T targetInstance = createInstance(targetClass);
-            copyProperties(source, targetInstance, converter);
-            return targetInstance;
+            // 1. 尝试使用@Builder模式
+            T builderInstance = tryCreateWithBuilder(clazz);
+            if (builderInstance != null) {
+                return builderInstance;
+            }
+
+            // 2. 尝试无参构造
+            try {
+                return clazz.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                // 3. 尝试全参构造（使用默认值）
+                return createWithDefaultValues(clazz);
+            }
         } catch (Exception e) {
-            log.error(
-                    "Bean copy failed from {} to {}",
-                    source.getClass().getSimpleName(),
-                    targetClass.getSimpleName(),
-                    e);
-            throw new BeanOperationException("Bean copy failed", e);
+            log.error("Failed to create instance of {}", clazz.getSimpleName(), e);
+            throw new BeanOperationException("Create instance failed", e);
         }
     }
 
-    /** 对象到对象的属性拷贝 */
-    public static void copyProperties(Object source, Object target) {
-        copyProperties(source, target, null);
-    }
-
-    public static void copyProperties(Object source, Object target, PropertyConverter converter) {
-        if (Objects.isNull(source) || Objects.isNull(target)) {
-            return;
-        }
-
+    /**
+     * 尝试使用@Builder模式创建实例
+     */
+    private static <T> T tryCreateWithBuilder(Class<T> clazz) {
         try {
-            List<FieldMapping> fieldMappings =
-                    getFieldMappings(source.getClass(), target.getClass());
+            // 查找builder()方法
+            Method builderMethod = findBuilderMethod(clazz);
+            if (builderMethod != null) {
+                Object builder = builderMethod.invoke(null);
 
-            for (FieldMapping mapping : fieldMappings) {
-                try {
-                    Object sourceValue = ReflectUtils.getFieldValue(source, mapping.sourceField);
-                    Object targetValue =
-                            convertValue(sourceValue, mapping.targetField.getType(), converter);
-
-                    if (targetValue != null || mapping.targetField.getType().isPrimitive()) {
-                        ReflectUtils.setFieldValue(
-                                target, mapping.targetField.getName(), targetValue);
-                    }
-                } catch (Exception e) {
-                    log.debug(
-                            "Failed to copy field {} to {}, skipping",
-                            mapping.sourceField.getName(),
-                            mapping.targetField.getName(),
-                            e);
+                // 查找build()方法
+                Method buildMethod = findBuildMethod(builder.getClass());
+                if (buildMethod != null) {
+                    return clazz.cast(buildMethod.invoke(builder));
                 }
             }
         } catch (Exception e) {
-            log.error(
-                    "Bean copy failed from {} to {}",
-                    source.getClass().getSimpleName(),
-                    target.getClass().getSimpleName(),
-                    e);
-            throw new BeanOperationException("Bean copy failed", e);
+            log.debug("Builder pattern not available for {}", clazz.getSimpleName());
+        }
+        return null;
+    }
+
+    /**
+     * 查找builder()静态方法
+     */
+    private static Method findBuilderMethod(Class<?> clazz) {
+        try {
+            return clazz.getMethod("builder");
+        } catch (NoSuchMethodException e) {
+            return null;
         }
     }
 
-    /** 批量Bean拷贝 */
-    public static <T> List<T> copyList(List<?> sources, Class<T> targetClass) {
-        return copyList(sources, targetClass, null);
+    /**
+     * 查找build()方法
+     */
+    private static Method findBuildMethod(Class<?> builderClass) {
+        try {
+            return builderClass.getMethod("build");
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
     }
 
-    public static <T> List<T> copyList(
-            List<?> sources, Class<T> targetClass, PropertyConverter converter) {
-        if (Objects.isNull(sources) || sources.isEmpty()) {
+    /**
+     * 使用默认值创建实例（用于无默认构造的情况）
+     */
+    private static <T> T createWithDefaultValues(Class<T> clazz) throws Exception {
+        // 查找所有构造器，选择参数最多的一个
+        Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+        Constructor<?> maxParamConstructor = Arrays.stream(constructors)
+                .max(Comparator.comparingInt(Constructor::getParameterCount))
+                .orElseThrow(() -> new NoSuchMethodException("No constructor found"));
+
+        maxParamConstructor.setAccessible(true);
+        Class<?>[] paramTypes = maxParamConstructor.getParameterTypes();
+        Object[] defaultParams = Arrays.stream(paramTypes)
+                .map(BeanUtils::getDefaultValue)
+                .toArray();
+
+        return clazz.cast(maxParamConstructor.newInstance(defaultParams));
+    }
+
+    /**
+     * 获取类型的默认值
+     */
+    private static Object getDefaultValue(Class<?> type) {
+        if (!type.isPrimitive()) return null;
+
+        if (type == int.class) return 0;
+        if (type == long.class) return 0L;
+        if (type == boolean.class) return false;
+        if (type == double.class) return 0.0;
+        if (type == float.class) return 0.0f;
+        if (type == byte.class) return (byte) 0;
+        if (type == short.class) return (short) 0;
+        if (type == char.class) return '\0';
+        return null;
+    }
+
+    /**
+     * 属性拷贝（支持@Builder对象）
+     */
+    public static <T> T copyProperties(Object source, Class<T> targetClass) {
+        if (source == null) return null;
+
+        try {
+            T target = createInstance(targetClass);
+            copyProperties(source, target);
+            return target;
+        } catch (Exception e) {
+            log.error("Copy properties failed", e);
+            throw new BeanOperationException("Copy properties failed", e);
+        }
+    }
+
+    /**
+     * 对象到对象的属性拷贝
+     */
+    public static void copyProperties(Object source, Object target) {
+        if (source == null || target == null) return;
+
+        try {
+            org.springframework.beans.BeanUtils.copyProperties(source, target);
+        } catch (Exception e) {
+            log.warn("Spring BeanUtils copy failed, fallback to reflection", e);
+            // 降级处理：使用反射
+            copyPropertiesByReflection(source, target);
+        }
+    }
+
+    /**
+     * 反射方式拷贝属性
+     */
+    private static void copyPropertiesByReflection(Object source, Object target) {
+        Class<?> sourceClass = source.getClass();
+        Class<?> targetClass = target.getClass();
+
+        // 获取所有字段
+        Map<String, Field> sourceFields = getAllFieldsMap(sourceClass);
+        Map<String, Field> targetFields = getAllFieldsMap(targetClass);
+
+        // 拷贝匹配的字段
+        for (Map.Entry<String, Field> entry : sourceFields.entrySet()) {
+            String fieldName = entry.getKey();
+            Field sourceField = entry.getValue();
+
+            Field targetField = targetFields.get(fieldName);
+            if (targetField != null && isAssignable(sourceField.getType(), targetField.getType())) {
+                try {
+                    sourceField.setAccessible(true);
+                    targetField.setAccessible(true);
+
+                    Object value = sourceField.get(source);
+                    if (value != null) {
+                        targetField.set(target, value);
+                    }
+                } catch (Exception e) {
+                    log.debug("Copy field {} failed, skip", fieldName, e);
+                }
+            }
+        }
+    }
+
+    /**
+     * 批量拷贝
+     */
+    public static <T> List<T> copyList(List<?> sources, Class<T> targetClass) {
+        if (sources == null || sources.isEmpty()) {
             return Collections.emptyList();
         }
 
         return sources.stream()
                 .filter(Objects::nonNull)
-                .map(source -> copyProperties(source, targetClass, converter))
+                .map(source -> copyProperties(source, targetClass))
                 .collect(Collectors.toList());
     }
 
-    // ====== Map与Bean互转 ======
+    /**
+     * Bean转Map
+     */
+    public static Map<String, Object> toMap(Object bean) {
+        if (bean == null) return Collections.emptyMap();
 
-    /** Bean转Map（基于反射） */
-    public static Map<String, Object> toMap(Object source) {
-        return toMap(source, false);
-    }
+        Map<String, Object> result = new HashMap<>();
+        Map<String, Field> fields = getAllFieldsMap(bean.getClass());
 
-    public static Map<String, Object> toMap(Object source, boolean includeNulls) {
-        if (Objects.isNull(source)) {
-            return Collections.emptyMap();
-        }
+        for (Map.Entry<String, Field> entry : fields.entrySet()) {
+            try {
+                Field field = entry.getValue();
+                field.setAccessible(true);
+                Object value = field.get(bean);
 
-        try {
-            Map<String, Object> result = new HashMap<>();
-            List<Field> fields = ReflectUtils.getAllFields(source.getClass());
-
-            for (Field field : fields) {
-                if (shouldSkipField(field)) {
-                    continue;
+                if (value != null) {
+                    result.put(field.getName(), convertForMap(value));
                 }
-
-                try {
-                    Object value = ReflectUtils.getFieldValue(source, field.getName());
-                    if (includeNulls || Objects.nonNull(value)) {
-                        Object processedValue = processValueForMap(value);
-                        result.put(field.getName(), processedValue);
-                    }
-                } catch (Exception e) {
-                    log.debug(
-                            "Failed to get field {} from {}, skipping",
-                            field.getName(),
-                            source.getClass().getSimpleName(),
-                            e);
-                }
+            } catch (Exception e) {
+                log.debug("Get field {} failed", entry.getKey(), e);
             }
-
-            return result;
-        } catch (Exception e) {
-            log.error("Bean to map conversion failed: {}", source.getClass().getSimpleName(), e);
-            throw new BeanOperationException("Bean to map conversion failed", e);
         }
+
+        return result;
     }
 
-    /** Map转Bean（基于Spring BeanWrapper） */
+    /**
+     * Map转Bean（支持@Builder）
+     */
     public static <T> T fromMap(Map<String, Object> map, Class<T> targetClass) {
-        if (Objects.isNull(map) || map.isEmpty()) {
+        if (map == null || map.isEmpty()) {
             return createInstance(targetClass);
         }
 
         try {
+            // 尝试使用@Builder模式
+            T builderInstance = tryCreateWithBuilderAndMap(map, targetClass);
+            if (builderInstance != null) {
+                return builderInstance;
+            }
+
+            // 使用BeanWrapper
             T instance = createInstance(targetClass);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(instance);
 
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String key = entry.getKey();
-                Object value = entry.getValue();
-
-                if (Objects.nonNull(value) && wrapper.isWritableProperty(key)) {
+                if (wrapper.isWritableProperty(key)) {
                     try {
-                        Object processedValue = processValueFromMap(value, targetClass, key);
-                        wrapper.setPropertyValue(key, processedValue);
+                        wrapper.setPropertyValue(key, entry.getValue());
                     } catch (Exception e) {
-                        log.debug(
-                                "Failed to set property {} on {}, skipping",
-                                key,
-                                targetClass.getSimpleName(),
-                                e);
+                        log.debug("Set property {} failed", key, e);
                     }
                 }
             }
 
             return instance;
         } catch (Exception e) {
-            log.error("Map to bean conversion failed: {}", targetClass.getSimpleName(), e);
+            log.error("Map to bean conversion failed", e);
             throw new BeanOperationException("Map to bean conversion failed", e);
         }
     }
 
-    // ====== 属性访问器 ======
-
-    public static Object getProperty(Object bean, String propertyName) {
-        return ReflectUtils.getFieldValue(bean, propertyName);
+    /**
+     * 过滤实体无效值
+     */
+    public static <T> T filterInvalidValues(T entity) {
+        return filterInvalidValues(entity, ValueUtils::isValid);
     }
 
-    public static void setProperty(Object bean, String propertyName, Object value) {
-        ReflectUtils.setFieldValue(bean, propertyName, value);
-    }
+    /**
+     * 使用自定义验证器过滤无效值
+     */
+    public static <T> T filterInvalidValues(T entity, Predicate<Object> validator) {
+        if (entity == null) return null;
 
-    public static void setProperties(Object bean, Map<String, Object> properties) {
-        if (Objects.isNull(bean) || Objects.isNull(properties)) {
-            return;
-        }
-
-        properties.forEach(
-                (key, value) -> {
-                    try {
-                        setProperty(bean, key, value);
-                    } catch (Exception e) {
-                        log.warn(
-                                "Failed to set property {} on {}, skipping",
-                                key,
-                                bean.getClass().getSimpleName(),
-                                e);
-                    }
-                });
-    }
-
-    // ====== 高级功能 ======
-
-    /** 获取Bean的所有属性名 */
-    public static List<String> getPropertyNames(Class<?> clazz) {
-        return ReflectUtils.getAllFields(clazz).stream()
-                .filter(field -> !shouldSkipField(field))
-                .map(Field::getName)
-                .collect(Collectors.toList());
-    }
-
-    /** 获取Bean的属性类型 */
-    public static Class<?> getPropertyType(Class<?> clazz, String propertyName) {
         try {
-            Field field = ReflectUtils.findField(clazz, propertyName);
-            return field.getType();
-        } catch (Exception e) {
-            log.debug(
-                    "Failed to get property type for {} in {}",
-                    propertyName,
-                    clazz.getSimpleName(),
-                    e);
-            return null;
-        }
-    }
+            // 创建新实例
+            @SuppressWarnings("unchecked")
+            T newEntity = copyProperties(entity, (Class<T>) entity.getClass());
 
-    /** 判断Bean是否包含指定属性 */
-    public static boolean hasProperty(Class<?> clazz, String propertyName) {
-        try {
-            ReflectUtils.findField(clazz, propertyName);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    // ====== 私有方法 ======
-
-    private static <T> T createInstance(Class<T> clazz) {
-        return ReflectUtils.createInstance(clazz);
-    }
-
-    /** 获取字段映射关系 */
-    private static List<FieldMapping> getFieldMappings(Class<?> sourceClass, Class<?> targetClass) {
-        ClassPair key = new ClassPair(sourceClass, targetClass);
-        return FIELD_MAPPING_CACHE.computeIfAbsent(
-                key,
-                k -> {
-                    List<FieldMapping> mappings = new ArrayList<>();
-                    List<Field> sourceFields = ReflectUtils.getAllFields(sourceClass);
-                    List<Field> targetFields = ReflectUtils.getAllFields(targetClass);
-
-                    Map<String, Field> targetFieldMap =
-                            targetFields.stream()
-                                    .filter(field -> !shouldSkipField(field))
-                                    .collect(Collectors.toMap(Field::getName, field -> field));
-
-                    for (Field sourceField : sourceFields) {
-                        if (shouldSkipField(sourceField)) {
-                            continue;
-                        }
-
-                        Field targetField = targetFieldMap.get(sourceField.getName());
-                        if (targetField != null
-                                && isAssignable(sourceField.getType(), targetField.getType())) {
-                            mappings.add(new FieldMapping(sourceField, targetField));
-                        }
-                    }
-
-                    return Collections.unmodifiableList(mappings);
-                });
-    }
-
-    /** 值转换 */
-    private static Object convertValue(
-            Object value, Class<?> targetType, PropertyConverter converter) {
-        if (value == null) {
-            return null;
-        }
-
-        // 使用自定义转换器
-        if (converter != null) {
-            Object converted = converter.convert(value, targetType);
-            if (converted != null) {
-                return converted;
+            // 过滤无效字段
+            List<Field> fields = ReflectUtils.getAllFields(entity.getClass());
+            for (Field field : fields) {
+                Object value = ReflectUtils.getFieldValue(entity, field.getName());
+                if (!validator.test(value)) {
+                    ReflectUtils.setFieldValue(newEntity, field.getName(), null);
+                }
             }
-        }
 
-        // 使用内置类型转换器
-        return ReflectUtils.TypeConverter.convert(value, targetType);
+            return newEntity;
+        } catch (Exception e) {
+            log.warn("Filter invalid values failed", e);
+            return entity;
+        }
     }
 
-    /** 处理Map值转换 */
-    @SuppressWarnings("unchecked")
-    private static Object processValueForMap(Object value) {
+
+    /**
+     * 使用@Builder模式从Map创建对象
+     */
+    private static <T> T tryCreateWithBuilderAndMap(Map<String, Object> map, Class<T> targetClass) {
+        try {
+            Method builderMethod = findBuilderMethod(targetClass);
+            if (builderMethod == null) return null;
+
+            Object builder = builderMethod.invoke(null);
+            Class<?> builderClass = builder.getClass();
+
+            // 为Builder设置属性
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                String fieldName = entry.getKey();
+                try {
+                    // Builder的setter方法格式：fieldName(value)
+                    String setterName = fieldName;
+                    Method setter = builderClass.getMethod(setterName, entry.getValue().getClass());
+                    setter.invoke(builder, entry.getValue());
+                } catch (NoSuchMethodException e) {
+                    // 尝试兼容类型
+                    log.debug("Builder setter {} not found", fieldName);
+                } catch (Exception e) {
+                    log.debug("Set builder property {} failed", fieldName, e);
+                }
+            }
+
+            // 调用build()方法
+            Method buildMethod = findBuildMethod(builderClass);
+            return targetClass.cast(buildMethod.invoke(builder));
+
+        } catch (Exception e) {
+            log.debug("Create with builder and map failed, fallback to normal method", e);
+            return null;
+        }
+    }
+
+    /**
+     * 为Map转换处理值
+     */
+    private static Object convertForMap(Object value) {
         if (value == null) return null;
 
-        if (isSimpleType(value.getClass())) {
+        Class<?> clazz = value.getClass();
+        if (isSimpleType(clazz) || clazz.isEnum()) {
             return value;
-        }
-
-        if (value.getClass().isArray()) {
-            return processArrayForMap(value);
         }
 
         if (value instanceof Collection) {
-            return processCollectionForMap((Collection<?>) value);
+            return ((Collection<?>) value).stream()
+                    .map(BeanUtils::convertForMap)
+                    .collect(Collectors.toList());
         }
 
         if (value instanceof Map) {
-            return processMapForMap((Map<?, ?>) value);
+            Map<?, ?> map = (Map<?, ?>) value;
+            Map<String, Object> result = new HashMap<>();
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                result.put(String.valueOf(entry.getKey()), convertForMap(entry.getValue()));
+            }
+            return result;
         }
 
+        // 其他对象转换为Map
         return toMap(value);
     }
 
-    /** 从Map值转换处理 */
-    private static Object processValueFromMap(
-            Object value, Class<?> targetClass, String fieldName) {
-        try {
-            Class<?> fieldType = getFieldType(targetClass, fieldName);
-            if (fieldType == null) {
-                return value;
-            }
-
-            if (isSimpleType(fieldType)) {
-                return ReflectUtils.TypeConverter.convert(value, fieldType);
-            }
-
-            if (fieldType.isArray()) {
-                return processArrayFromMap(value, fieldType);
-            }
-
-            if (Collection.class.isAssignableFrom(fieldType)) {
-                return processCollectionFromMap(value, targetClass, fieldName);
-            }
-
-            if (Map.class.isAssignableFrom(fieldType)) {
-                return processMapFromMap(value, targetClass, fieldName);
-            }
-
-            if (value instanceof Map) {
-                return fromMap((Map<String, Object>) value, fieldType);
-            }
-
-            return value;
-        } catch (Exception e) {
-            log.debug("Value processing failed for field {}: {}", fieldName, e.getMessage());
-            return value;
-        }
-    }
-
-    // ====== 类型处理辅助方法 ======
-
-    private static Object processArrayForMap(Object array) {
-        int length = Array.getLength(array);
-        List<Object> result = new ArrayList<>(length);
-        for (int i = 0; i < length; i++) {
-            result.add(processValueForMap(Array.get(array, i)));
-        }
-        return result;
-    }
-
-    private static Object processCollectionForMap(Collection<?> collection) {
-        return collection.stream().map(BeanUtils::processValueForMap).collect(Collectors.toList());
-    }
-
-    private static Object processMapForMap(Map<?, ?> map) {
-        Map<String, Object> result = new HashMap<>();
-        for (Map.Entry<?, ?> entry : map.entrySet()) {
-            result.put(String.valueOf(entry.getKey()), processValueForMap(entry.getValue()));
-        }
-        return result;
-    }
-
-    private static Object processArrayFromMap(Object value, Class<?> arrayType) {
-        if (!(value instanceof Collection)) {
-            return value;
-        }
-
-        Collection<?> collection = (Collection<?>) value;
-        Class<?> componentType = arrayType.getComponentType();
-        Object array = Array.newInstance(componentType, collection.size());
-
-        int i = 0;
-        for (Object element : collection) {
-            Object processedElement = processSingleElementFromMap(element, componentType);
-            Array.set(array, i++, processedElement);
-        }
-
-        return array;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Object processCollectionFromMap(
-            Object value, Class<?> targetClass, String fieldName) {
-        if (!(value instanceof Collection)) {
-            return value;
-        }
-
-        try {
-            Field field = targetClass.getDeclaredField(fieldName);
-            Type genericType = field.getGenericType();
-
-            if (!(genericType instanceof ParameterizedType)) {
-                return value;
-            }
-
-            ParameterizedType pt = (ParameterizedType) genericType;
-            Type elementType = pt.getActualTypeArguments()[0];
-            Class<?> elementClass = getClassFromType(elementType);
-
-            Collection<Object> result = createCollectionInstance(field.getType());
-            for (Object element : (Collection<?>) value) {
-                result.add(processSingleElementFromMap(element, elementClass));
-            }
-
-            return result;
-        } catch (Exception e) {
-            log.debug("Failed to process collection for field {}, using original value", fieldName);
-            return value;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Object processMapFromMap(Object value, Class<?> targetClass, String fieldName) {
-        if (!(value instanceof Map)) {
-            return value;
-        }
-
-        try {
-            Field field = targetClass.getDeclaredField(fieldName);
-            Type genericType = field.getGenericType();
-
-            if (!(genericType instanceof ParameterizedType)) {
-                return value;
-            }
-
-            ParameterizedType pt = (ParameterizedType) genericType;
-            Type valueType = pt.getActualTypeArguments()[1];
-            Class<?> valueClass = getClassFromType(valueType);
-
-            Map<String, Object> result = new HashMap<>();
-            for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-                String key = String.valueOf(entry.getKey());
-                Object processedValue = processSingleElementFromMap(entry.getValue(), valueClass);
-                result.put(key, processedValue);
-            }
-
-            return result;
-        } catch (Exception e) {
-            log.debug("Failed to process map for field {}, using original value", fieldName);
-            return value;
-        }
-    }
-
-    private static Object processSingleElementFromMap(Object element, Class<?> targetClass) {
-        if (element == null) {
-            return null;
-        }
-
-        if (isSimpleType(targetClass)) {
-            return ReflectUtils.TypeConverter.convert(element, targetClass);
-        }
-
-        if (element instanceof Map) {
-            return fromMap((Map<String, Object>) element, targetClass);
-        }
-
-        return element;
-    }
-
-    private static Class<?> getFieldType(Class<?> clazz, String fieldName) {
-        try {
-            Field field = clazz.getDeclaredField(fieldName);
-            return field.getType();
-        } catch (NoSuchFieldException e) {
-            return findFieldTypeInHierarchy(clazz, fieldName);
-        }
-    }
-
-    private static Class<?> findFieldTypeInHierarchy(Class<?> clazz, String fieldName) {
+    /**
+     * 获取类的所有字段（包含父类）
+     */
+    private static Map<String, Field> getAllFieldsMap(Class<?> clazz) {
+        Map<String, Field> fields = new HashMap<>();
         Class<?> current = clazz;
+
         while (current != null && current != Object.class) {
-            try {
-                Field field = current.getDeclaredField(fieldName);
-                return field.getType();
-            } catch (NoSuchFieldException e) {
-                current = current.getSuperclass();
+            for (Field field : current.getDeclaredFields()) {
+                // 跳过静态和final字段
+                int modifiers = field.getModifiers();
+                if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
+                    continue;
+                }
+                fields.putIfAbsent(field.getName(), field);
             }
-        }
-        return null;
-    }
-
-    private static Class<?> getClassFromType(Type type) {
-        if (type instanceof Class) {
-            return (Class<?>) type;
-        } else if (type instanceof ParameterizedType) {
-            return (Class<?>) ((ParameterizedType) type).getRawType();
-        } else {
-            return Object.class;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Collection<Object> createCollectionInstance(Class<?> collectionType) {
-        if (collectionType.isInterface()) {
-            if (List.class.isAssignableFrom(collectionType)) {
-                return new ArrayList<>();
-            } else if (Set.class.isAssignableFrom(collectionType)) {
-                return new HashSet<>();
-            } else {
-                return new ArrayList<>();
-            }
+            current = current.getSuperclass();
         }
 
-        try {
-            return (Collection<Object>) collectionType.newInstance();
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
+        return fields;
     }
 
-    private static boolean shouldSkipField(Field field) {
-        int modifiers = field.getModifiers();
-        return Modifier.isTransient(modifiers)
-                || Modifier.isStatic(modifiers)
-                || Modifier.isFinal(modifiers);
-    }
-
+    /**
+     * 判断是否是简单类型
+     */
     private static boolean isSimpleType(Class<?> clazz) {
-        return SIMPLE_TYPES.contains(clazz)
-                || clazz.isEnum()
-                || clazz.isPrimitive()
-                || isPrimitiveWrapper(clazz);
+        return SIMPLE_TYPES.contains(clazz) || clazz.isPrimitive();
     }
 
-    private static boolean isPrimitiveWrapper(Class<?> clazz) {
-        return clazz == Integer.class
-                || clazz == Long.class
-                || clazz == Boolean.class
-                || clazz == Double.class
-                || clazz == Float.class
-                || clazz == Byte.class
-                || clazz == Short.class
-                || clazz == Character.class;
-    }
-
+    /**
+     * 类型是否可赋值
+     */
     private static boolean isAssignable(Class<?> sourceType, Class<?> targetType) {
-        if (sourceType.equals(targetType)) {
-            return true;
-        }
+        if (sourceType.equals(targetType)) return true;
 
+        // 包装类型处理
         if (sourceType.isPrimitive()) {
-            return isPrimitiveAssignable(sourceType, targetType);
+            return isPrimitiveWrapper(sourceType, targetType);
         }
 
         if (targetType.isPrimitive()) {
-            return isPrimitiveAssignable(targetType, sourceType);
+            return isPrimitiveWrapper(targetType, sourceType);
         }
 
         return targetType.isAssignableFrom(sourceType);
     }
 
-    private static boolean isPrimitiveAssignable(Class<?> primitive, Class<?> wrapper) {
-        return (primitive == int.class && wrapper == Integer.class)
-                || (primitive == long.class && wrapper == Long.class)
-                || (primitive == boolean.class && wrapper == Boolean.class)
-                || (primitive == double.class && wrapper == Double.class)
-                || (primitive == float.class && wrapper == Float.class)
-                || (primitive == char.class && wrapper == Character.class)
-                || (primitive == byte.class && wrapper == Byte.class)
-                || (primitive == short.class && wrapper == Short.class);
+    /**
+     * 判断基本类型和包装类型是否匹配
+     */
+    private static boolean isPrimitiveWrapper(Class<?> primitive, Class<?> wrapper) {
+        return (primitive == int.class && wrapper == Integer.class) ||
+                (primitive == long.class && wrapper == Long.class) ||
+                (primitive == boolean.class && wrapper == Boolean.class) ||
+                (primitive == double.class && wrapper == Double.class) ||
+                (primitive == float.class && wrapper == Float.class) ||
+                (primitive == char.class && wrapper == Character.class) ||
+                (primitive == byte.class && wrapper == Byte.class) ||
+                (primitive == short.class && wrapper == Short.class);
     }
 
-    // ====== 内部类和接口 ======
-
-    private static class ClassPair {
-        private final Class<?> source;
-        private final Class<?> target;
-        private final int hashCode;
-
-        ClassPair(Class<?> source, Class<?> target) {
-            this.source = source;
-            this.target = target;
-            this.hashCode = Objects.hash(source, target);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ClassPair classPair = (ClassPair) o;
-            return Objects.equals(source, classPair.source)
-                    && Objects.equals(target, classPair.target);
-        }
-
-        @Override
-        public int hashCode() {
-            return hashCode;
-        }
-    }
-
-    private static class FieldMapping {
-        final Field sourceField;
-        final Field targetField;
-
-        FieldMapping(Field sourceField, Field targetField) {
-            this.sourceField = sourceField;
-            this.targetField = targetField;
-        }
-    }
-
-    /** 属性转换器接口 */
-    @FunctionalInterface
-    public interface PropertyConverter {
-        Object convert(Object value, Class<?> targetType);
-    }
-
+    // 异常类
     public static class BeanOperationException extends RuntimeException {
         public BeanOperationException(String message) {
             super(message);
@@ -672,20 +447,5 @@ public class BeanUtils {
         public BeanOperationException(String message, Throwable cause) {
             super(message, cause);
         }
-    }
-
-    // ====== 缓存管理 ======
-
-    /** 清空缓存 */
-    public static void clearCache() {
-        FIELD_MAPPING_CACHE.clear();
-        log.info("BeanUtils cache cleared");
-    }
-
-    /** 获取缓存统计 */
-    public static Map<String, Integer> getCacheStats() {
-        Map<String, Integer> stats = new HashMap<>();
-        stats.put("fieldMappingCache", FIELD_MAPPING_CACHE.size());
-        return stats;
     }
 }

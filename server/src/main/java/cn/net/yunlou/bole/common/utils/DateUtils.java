@@ -1,7 +1,5 @@
 package cn.net.yunlou.bole.common.utils;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,8 +8,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     // 时间格式常量
@@ -83,7 +84,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     private DateUtils() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+        log.debug("DateUtils initialized");
     }
 
     /**

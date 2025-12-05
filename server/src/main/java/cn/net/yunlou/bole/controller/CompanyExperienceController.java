@@ -1,15 +1,16 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.entity.CompanyExperience;
-import cn.net.yunlou.bole.model.request.CompanyExperienceAddRequest;
-import cn.net.yunlou.bole.model.request.CompanyExperienceEditRequest;
-import cn.net.yunlou.bole.model.request.CompanyExperienceSearchRequest;
+import cn.net.yunlou.bole.model.CompanyExperienceCreate;
+import cn.net.yunlou.bole.model.CompanyExperienceEdit;
+import cn.net.yunlou.bole.model.CompanyExperienceQuery;
+import cn.net.yunlou.bole.model.CompanyExperienceView;
 import cn.net.yunlou.bole.service.CompanyExperienceService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +30,8 @@ public class CompanyExperienceController {
     @PostMapping("add")
     @Operation(summary = "新增企业经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(@RequestBody CompanyExperienceAddRequest request) {
-        CompanyExperience companyExperience =
-                QueryUtils.modelToBean(request, CompanyExperience.class);
-        return BusinessResponse.success(companyExperienceService.save(companyExperience));
+    public BusinessResponse<Boolean> add(@RequestBody CompanyExperienceCreate request) {
+        return BusinessResponse.success(companyExperienceService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
@@ -45,10 +44,8 @@ public class CompanyExperienceController {
     @PutMapping("edit")
     @Operation(summary = "编辑企业经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody CompanyExperienceEditRequest request) {
-        CompanyExperience companyExperience =
-                QueryUtils.modelToBean(request, CompanyExperience.class);
-        return BusinessResponse.success(companyExperienceService.updateById(companyExperience));
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid CompanyExperienceEdit request) {
+        return BusinessResponse.success(companyExperienceService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
@@ -59,13 +56,11 @@ public class CompanyExperienceController {
 
     @PostMapping("page")
     @Operation(summary = "获取企业经历列表")
-    public BusinessResponse<Page<CompanyExperience>> page(
+    public BusinessResponse<Page<CompanyExperienceView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody CompanyExperienceSearchRequest request) {
-        CompanyExperience companyExperience =
-                QueryUtils.modelToBean(request, CompanyExperience.class);
+            @RequestBody CompanyExperienceQuery request) {
         return BusinessResponse.success(
-                companyExperienceService.page(page, size, companyExperience));
+                companyExperienceService.pageViewByQuery(page, size, request));
     }
 }

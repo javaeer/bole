@@ -2,11 +2,12 @@ package cn.net.yunlou.bole.common.security;
 
 import cn.net.yunlou.bole.common.constant.BaseConstant;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.config.SecurityWhitelistConfig;
+import cn.net.yunlou.bole.config.AppConfigProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,8 +16,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
 
 @Slf4j
 @Component
@@ -27,14 +26,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthenticationService authenticationService;
 
-    private final SecurityWhitelistConfig securityWhitelistConfig;
+    private final AppConfigProperties appConfigProperties;
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
-        return securityWhitelistConfig.getWhiteList().stream()
+        return appConfigProperties.getSecurity().getWhiteList().stream()
                 .anyMatch(pattern -> pathMatcher.match(pattern, requestURI));
     }
 

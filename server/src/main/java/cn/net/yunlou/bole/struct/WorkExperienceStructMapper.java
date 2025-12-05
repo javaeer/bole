@@ -2,8 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.WorkExperience;
-import cn.net.yunlou.bole.model.dto.WorkExperienceDTO;
-import cn.net.yunlou.bole.model.query.WorkExperienceQuery;
+import cn.net.yunlou.bole.model.WorkExperienceCreate;
+import cn.net.yunlou.bole.model.WorkExperienceEdit;
+import cn.net.yunlou.bole.model.WorkExperienceQuery;
+import cn.net.yunlou.bole.model.WorkExperienceView;
 import org.mapstruct.Mapper;
 
 /**
@@ -12,4 +14,9 @@ import org.mapstruct.Mapper;
  */
 @Mapper(componentModel = "spring")
 public interface WorkExperienceStructMapper
-        extends BaseStructMapper<WorkExperience, WorkExperienceDTO, WorkExperienceQuery> {}
+        extends BaseStructMapper<
+                WorkExperience,
+                WorkExperienceCreate,
+                WorkExperienceView,
+                WorkExperienceEdit,
+                WorkExperienceQuery> {}

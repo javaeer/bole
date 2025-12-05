@@ -2,15 +2,17 @@ package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * FileName: ComponentLibrary Description: Created By MR. WANG Created At 2025/11/25 18:34 Modified
  * By Modified At
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_component_library")
 public class ComponentLibrary extends BaseEntity {
     private String componentType;

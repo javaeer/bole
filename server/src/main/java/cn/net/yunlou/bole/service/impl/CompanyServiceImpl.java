@@ -2,15 +2,17 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.common.IEnum;
-import cn.net.yunlou.bole.common.SkipInvalidValueLambdaQueryWrapper;
-import cn.net.yunlou.bole.common.constant.CompanyKeyFieldEnum;
+import cn.net.yunlou.bole.common.constant.CompanyKeyField;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import cn.net.yunlou.bole.entity.Company;
 import cn.net.yunlou.bole.mapper.CompanyMapper;
-import cn.net.yunlou.bole.model.dto.CompanyDTO;
-import cn.net.yunlou.bole.model.query.CompanyQuery;
+import cn.net.yunlou.bole.model.CompanyCreate;
+import cn.net.yunlou.bole.model.CompanyEdit;
+import cn.net.yunlou.bole.model.CompanyQuery;
+import cn.net.yunlou.bole.model.CompanyView;
 import cn.net.yunlou.bole.service.CompanyService;
 import cn.net.yunlou.bole.struct.CompanyStructMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,21 +23,28 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class CompanyServiceImpl
-        extends BaseService<CompanyMapper, Company, CompanyDTO, CompanyQuery, CompanyStructMapper>
+        extends BaseService<
+                CompanyMapper,
+                Company,
+                CompanyCreate,
+                CompanyView,
+                CompanyEdit,
+                CompanyQuery,
+                CompanyStructMapper>
         implements CompanyService {
 
     @Override
-    protected SkipInvalidValueLambdaQueryWrapper<Company> getKeyFieldQueryWrapper(
-            SkipInvalidValueLambdaQueryWrapper<Company> queryWrapper, Company entity) {
+    protected QueryWrapper<Company> getKeyFieldQueryWrapper(
+            QueryWrapper<Company> queryWrapper, Company entity) {
 
-        CompanyKeyFieldEnum ckfe =
+        CompanyKeyField ckfe =
                 ValueUtils.isValid(entity.getKeyField())
-                        ? IEnum.getEnumByValue(entity.getKeyField(), CompanyKeyFieldEnum.class)
-                        : CompanyKeyFieldEnum.ALL;
+                        ? IEnum.getEnumByValue(entity.getKeyField(), CompanyKeyField.class)
+                        : CompanyKeyField.ALL;
 
         if (ckfe == null) {
             log.warn("Unknown key field: {}, using default ALL search", entity.getKeyField());
-            ckfe = CompanyKeyFieldEnum.ALL;
+            ckfe = CompanyKeyField.ALL;
         }
 
         ckfe.applyQuery(queryWrapper, entity.getKeyWords());

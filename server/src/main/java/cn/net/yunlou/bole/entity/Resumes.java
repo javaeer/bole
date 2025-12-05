@@ -3,11 +3,13 @@ package cn.net.yunlou.bole.entity;
 import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import java.util.List;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_resumes")
 public class Resumes extends BaseEntity {
 
@@ -32,8 +34,6 @@ public class Resumes extends BaseEntity {
     // 非数据库字段 - 教育经历
     @TableField(exist = false)
     private List<EducationExperience> educationExperiences;
-
-    ;
 
     // 非数据库字段 - 工作经历
     @TableField(exist = false)

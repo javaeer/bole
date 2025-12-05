@@ -1,16 +1,16 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.entity.City;
-import cn.net.yunlou.bole.model.dto.CityDTO;
-import cn.net.yunlou.bole.model.query.CityQuery;
-import cn.net.yunlou.bole.model.request.CityAddRequest;
-import cn.net.yunlou.bole.model.request.CityEditRequest;
+import cn.net.yunlou.bole.model.CityCreate;
+import cn.net.yunlou.bole.model.CityEdit;
+import cn.net.yunlou.bole.model.CityQuery;
+import cn.net.yunlou.bole.model.CityView;
 import cn.net.yunlou.bole.service.CityService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,10 +31,9 @@ public class CityController {
     @PostMapping("add")
     @Operation(summary = "新增城市")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(@RequestBody CityAddRequest request) {
-        City city = QueryUtils.modelToBean(request, City.class);
+    public BusinessResponse<Boolean> add(@RequestBody @Valid CityCreate create) {
 
-        return BusinessResponse.success(cityService.save(city));
+        return BusinessResponse.success(cityService.saveByCreate(create));
     }
 
     @DeleteMapping("del")
@@ -47,9 +46,8 @@ public class CityController {
     @PutMapping("edit")
     @Operation(summary = "编辑城市")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody CityEditRequest request) {
-        City city = QueryUtils.modelToBean(request, City.class);
-        return BusinessResponse.success(cityService.updateById(city));
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid CityEdit request) {
+        return BusinessResponse.success(cityService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
@@ -60,20 +58,16 @@ public class CityController {
 
     @PostMapping("page")
     @Operation(summary = "获取城市列表")
-    public BusinessResponse<Page<CityDTO>> page(
+    public BusinessResponse<Page<CityView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody CityQuery request) {
-        // City city = QueryUtils.modelToBean(request, City.class);
-
-        return BusinessResponse.success(cityService.pageDTOByQuery(page, size, request));
+        return BusinessResponse.success(cityService.pageViewByQuery(page, size, request));
     }
 
     @PostMapping("tree")
     @Operation(summary = "获取城市树形列表")
-    public BusinessResponse<List<City>> tree(@RequestBody CityQuery request) {
-        // City city = QueryUtils.modelToBean(request, City.class);
-
+    public BusinessResponse<List<City>> tree() {
         return BusinessResponse.success(cityService.listAllChildren());
     }
 }

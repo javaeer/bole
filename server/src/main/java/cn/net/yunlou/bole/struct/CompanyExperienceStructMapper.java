@@ -2,8 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.CompanyExperience;
-import cn.net.yunlou.bole.model.dto.CompanyExperienceDTO;
-import cn.net.yunlou.bole.model.query.CompanyExperienceQuery;
+import cn.net.yunlou.bole.model.CompanyExperienceCreate;
+import cn.net.yunlou.bole.model.CompanyExperienceEdit;
+import cn.net.yunlou.bole.model.CompanyExperienceQuery;
+import cn.net.yunlou.bole.model.CompanyExperienceView;
 import org.mapstruct.Mapper;
 
 /**
@@ -12,4 +14,9 @@ import org.mapstruct.Mapper;
  */
 @Mapper(componentModel = "spring")
 public interface CompanyExperienceStructMapper
-        extends BaseStructMapper<CompanyExperience, CompanyExperienceDTO, CompanyExperienceQuery> {}
+        extends BaseStructMapper<
+                CompanyExperience,
+                CompanyExperienceCreate,
+                CompanyExperienceView,
+                CompanyExperienceEdit,
+                CompanyExperienceQuery> {}

@@ -5,11 +5,9 @@ import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.BaseConstant;
 import cn.net.yunlou.bole.common.security.CustomUserDetails;
 import cn.net.yunlou.bole.entity.User;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -189,7 +187,6 @@ public class SecurityContextUtils {
                 .orElseThrow(
                         () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
-
 
     public static User getCurrentUser() {
         return getCurrentUserDetails()

@@ -1,15 +1,16 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.entity.WorkExperience;
-import cn.net.yunlou.bole.model.request.WorkExperienceAddRequest;
-import cn.net.yunlou.bole.model.request.WorkExperienceEditRequest;
-import cn.net.yunlou.bole.model.request.WorkExperienceSearchRequest;
+import cn.net.yunlou.bole.model.WorkExperienceCreate;
+import cn.net.yunlou.bole.model.WorkExperienceEdit;
+import cn.net.yunlou.bole.model.WorkExperienceQuery;
+import cn.net.yunlou.bole.model.WorkExperienceView;
 import cn.net.yunlou.bole.service.WorkExperienceService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +30,8 @@ public class WorkExperienceController {
     @PostMapping("add")
     @Operation(summary = "新增工作经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(@RequestBody WorkExperienceAddRequest request) {
-        WorkExperience workExperience = QueryUtils.modelToBean(request, WorkExperience.class);
-        return BusinessResponse.success(workExperienceService.save(workExperience));
+    public BusinessResponse<Boolean> add(@RequestBody WorkExperienceCreate request) {
+        return BusinessResponse.success(workExperienceService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
@@ -44,9 +44,8 @@ public class WorkExperienceController {
     @PutMapping("edit")
     @Operation(summary = "编辑工作经历")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody WorkExperienceEditRequest request) {
-        WorkExperience workExperience = QueryUtils.modelToBean(request, WorkExperience.class);
-        return BusinessResponse.success(workExperienceService.updateById(workExperience));
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid WorkExperienceEdit request) {
+        return BusinessResponse.success(workExperienceService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
@@ -57,11 +56,10 @@ public class WorkExperienceController {
 
     @PostMapping("page")
     @Operation(summary = "获取工作经历列表")
-    public BusinessResponse<Page<WorkExperience>> page(
+    public BusinessResponse<Page<WorkExperienceView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody WorkExperienceSearchRequest request) {
-        WorkExperience workExperience = QueryUtils.modelToBean(request, WorkExperience.class);
-        return BusinessResponse.success(workExperienceService.page(page, size, workExperience));
+            @RequestBody WorkExperienceQuery request) {
+        return BusinessResponse.success(workExperienceService.pageViewByQuery(page, size, request));
     }
 }

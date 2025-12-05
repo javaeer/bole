@@ -3,8 +3,7 @@ package cn.net.yunlou.bole.entity;
 import cn.net.yunlou.bole.common.MultiEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * FileName: UserRole Description: Created By MR. WANG Created At 2025/11/19 13:32
@@ -12,7 +11,10 @@ import lombok.EqualsAndHashCode;
  * <p>Modified By Modified At
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_user_role")
 public class UserRole extends MultiEntity<User, Role> {
 

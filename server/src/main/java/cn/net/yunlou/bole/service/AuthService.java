@@ -1,11 +1,11 @@
 package cn.net.yunlou.bole.service;
 
-import cn.net.yunlou.bole.model.request.ChangePasswordRequest;
-import cn.net.yunlou.bole.model.request.LoginRequest;
-import cn.net.yunlou.bole.model.request.RegisterRequest;
-import cn.net.yunlou.bole.model.request.ResetPasswordRequest;
-import cn.net.yunlou.bole.model.response.AccessTokenResponse;
-import cn.net.yunlou.bole.model.response.RefreshTokenResponse;
+import cn.net.yunlou.bole.model.AccessTokenDTO;
+import cn.net.yunlou.bole.model.ChangePasswordDTO;
+import cn.net.yunlou.bole.model.LoginDTO;
+import cn.net.yunlou.bole.model.RefreshTokenViewDTO;
+import cn.net.yunlou.bole.model.RegisterDTO;
+import cn.net.yunlou.bole.model.ResetPasswordDTO;
 import jakarta.validation.Valid;
 
 /**
@@ -14,15 +14,15 @@ import jakarta.validation.Valid;
  */
 public interface AuthService {
 
-    AccessTokenResponse login(@Valid LoginRequest loginRequest);
+    AccessTokenDTO login(@Valid LoginDTO loginDTO);
 
-    AccessTokenResponse register(@Valid RegisterRequest registerRequest);
+    AccessTokenDTO register(@Valid RegisterDTO registerDTO);
 
-    RefreshTokenResponse refreshToken(@Valid String refreshToken);
+    RefreshTokenViewDTO refreshToken(@Valid String refreshToken);
 
     void logout();
 
-    Boolean changePassword(@Valid ChangePasswordRequest request);
+    Boolean changePassword(@Valid ChangePasswordDTO request);
 
-    Boolean resetPassword(@Valid ResetPasswordRequest request);
+    Boolean resetPassword(@Valid ResetPasswordDTO request);
 }

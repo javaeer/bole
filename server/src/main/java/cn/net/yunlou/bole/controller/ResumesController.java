@@ -3,12 +3,12 @@ package cn.net.yunlou.bole.controller;
 import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.Resumes;
-import cn.net.yunlou.bole.model.request.ResumesAddRequest;
-import cn.net.yunlou.bole.model.request.ResumesEditRequest;
-import cn.net.yunlou.bole.model.request.ResumesSearchRequest;
+import cn.net.yunlou.bole.model.ResumesCreate;
+import cn.net.yunlou.bole.model.ResumesEdit;
+import cn.net.yunlou.bole.model.ResumesQuery;
+import cn.net.yunlou.bole.model.ResumesView;
 import cn.net.yunlou.bole.service.ResumesService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,10 +32,8 @@ public class ResumesController {
 
     @PostMapping("add")
     @Operation(summary = "新增简历")
-    public BusinessResponse<Boolean> add(@RequestBody ResumesAddRequest request) {
-        Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
-        resumes.setUserId(SecurityContextUtils.getCurrentUserId());
-        return BusinessResponse.success(resumesService.save(resumes));
+    public BusinessResponse<Boolean> add(@RequestBody ResumesCreate request) {
+        return BusinessResponse.success(resumesService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
@@ -52,10 +50,9 @@ public class ResumesController {
 
     @PutMapping("edit")
     @Operation(summary = "编辑简历")
-    public BusinessResponse<Boolean> edit(@RequestBody @Valid ResumesEditRequest request) {
-        Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid ResumesEdit request) {
 
-        Resumes dbResumes = resumesService.getById(resumes.getId());
+        Resumes dbResumes = resumesService.getById(request.getId());
         if (dbResumes == null) {
             throw new BusinessException(BusinessStatus.NOT_FOUND_RECORD);
         }
@@ -63,7 +60,7 @@ public class ResumesController {
             throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL);
         }
 
-        return BusinessResponse.success(resumesService.updateById(resumes));
+        return BusinessResponse.success(resumesService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
@@ -74,11 +71,10 @@ public class ResumesController {
 
     @PostMapping("page")
     @Operation(summary = "获取简历列表")
-    public BusinessResponse<Page<Resumes>> page(
+    public BusinessResponse<Page<ResumesView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody ResumesSearchRequest request) {
-        Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
-        return BusinessResponse.success(resumesService.page(page, size, resumes));
+            @RequestBody ResumesQuery request) {
+        return BusinessResponse.success(resumesService.pageViewByQuery(page, size, request));
     }
 }

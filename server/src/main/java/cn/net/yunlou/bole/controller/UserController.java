@@ -3,12 +3,12 @@ package cn.net.yunlou.bole.controller;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.EnumDTO;
 import cn.net.yunlou.bole.common.IEnum;
-import cn.net.yunlou.bole.common.constant.UserKeyFieldEnum;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
+import cn.net.yunlou.bole.common.constant.UserKeyField;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.model.request.UpdateUserRequest;
-import cn.net.yunlou.bole.model.request.UserSearchRequest;
+import cn.net.yunlou.bole.model.UserEdit;
+import cn.net.yunlou.bole.model.UserQuery;
+import cn.net.yunlou.bole.model.UserView;
 import cn.net.yunlou.bole.service.UserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,21 +40,17 @@ public class UserController {
     @Operation(summary = "获取查询关键字")
     public BusinessResponse<List<EnumDTO>> getKeyField() {
         // 从 SecurityContext 获取当前用户
-        List<EnumDTO> enumDTOS = IEnum.toDTOList(UserKeyFieldEnum.class);
+        List<EnumDTO> enumDTOS = IEnum.toDTOList(UserKeyField.class);
         return BusinessResponse.success(enumDTOS);
     }
 
     @PutMapping("profile")
     @Operation(summary = "更新用户信息")
-    public BusinessResponse<User> updateUser(@Valid @RequestBody UpdateUserRequest request) {
+    public BusinessResponse<User> updateUser(@Valid @RequestBody UserEdit request) {
         String username = SecurityContextUtils.getCurrentUsername();
         User currentUser = userService.findByUsername(username);
 
-        User user = QueryUtils.modelToBean(request, User.class);
-
-        user.setId(currentUser.getId());
-
-        userService.updateById(user);
+        userService.updateByEdit(request);
         return BusinessResponse.success(userService.getById(currentUser.getId()));
     }
 
@@ -62,17 +58,11 @@ public class UserController {
     @Operation(summary = "获取用户列表(管理员)")
     // @PreAuthorize("hasAnyAuthority('read','write')")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Page<User>> getUserList(
+    public BusinessResponse<Page<UserView>> getUserList(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody UserSearchRequest request) {
-        // Page<User> userPage = new Page<>(page, size);
-        User user = QueryUtils.modelToBean(request, User.class);
+            @RequestBody UserQuery request) {
 
-        // user.setEmail(request.getEmail();
-        // user.setPhone(request.getPhone();
-        // user.setKeyField(request.getKeyField();
-        // user.setKeyWords(request.getKeyWords();
-        return BusinessResponse.success(userService.page(page, size, user));
+        return BusinessResponse.success(userService.pageViewByQuery(page, size, request));
     }
 }

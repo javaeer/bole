@@ -4,7 +4,13 @@ import java.io.Serializable;
 import java.util.List;
 
 /** 树形服务接口 */
-public interface IBaseTreeService<T, D, Q> extends IBaseService<T, D, Q> {
+public interface IBaseTreeService<
+                T extends BaseTreeEntity<T>,
+                C extends BaseTreeCreate,
+                V extends BaseTreeView<V>,
+                E extends BaseTreeEdit,
+                Q extends BaseTreeQuery>
+        extends IBaseService<T, C, V, E, Q> {
 
     // 获取直接子节点（带children）
     T getChildren(Serializable id);

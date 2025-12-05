@@ -2,20 +2,23 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.common.IEnum;
-import cn.net.yunlou.bole.common.SkipInvalidValueLambdaQueryWrapper;
-import cn.net.yunlou.bole.common.constant.UserKeyFieldEnum;
+import cn.net.yunlou.bole.common.constant.UserKeyField;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.mapper.UserMapper;
-import cn.net.yunlou.bole.model.dto.UserDTO;
-import cn.net.yunlou.bole.model.query.UserQuery;
+import cn.net.yunlou.bole.model.UserCreate;
+import cn.net.yunlou.bole.model.UserEdit;
+import cn.net.yunlou.bole.model.UserQuery;
+import cn.net.yunlou.bole.model.UserView;
 import cn.net.yunlou.bole.service.UserService;
 import cn.net.yunlou.bole.struct.UserStructMapper;
-import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 /**
  * FileName: UserServiceImpl Description: Created By MR. WANG Created At 2025/11/19 13:49 Modified
@@ -25,7 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl
-        extends BaseService<UserMapper, User, UserDTO, UserQuery, UserStructMapper>
+        extends BaseService<
+        UserMapper,
+        User,
+        UserCreate,
+        UserView,
+        UserEdit,
+        UserQuery,
+        UserStructMapper>
         implements UserService {
 
     @Override
@@ -66,17 +76,17 @@ public class UserServiceImpl
     }
 
     @Override
-    protected SkipInvalidValueLambdaQueryWrapper<User> getKeyFieldQueryWrapper(
-            SkipInvalidValueLambdaQueryWrapper<User> queryWrapper, User entity) {
+    protected QueryWrapper<User> getKeyFieldQueryWrapper(
+            QueryWrapper<User> queryWrapper, User entity) {
 
-        UserKeyFieldEnum ukfe =
+        UserKeyField ukfe =
                 ValueUtils.isValid(entity.getKeyField())
-                        ? IEnum.getEnumByValue(entity.getKeyField(), UserKeyFieldEnum.class)
-                        : UserKeyFieldEnum.ALL;
+                        ? IEnum.getEnumByValue(entity.getKeyField(), UserKeyField.class)
+                        : UserKeyField.ALL;
 
         if (ukfe == null) {
             log.warn("Unknown key field: {}, using default ALL search", entity.getKeyField());
-            ukfe = UserKeyFieldEnum.ALL;
+            ukfe = UserKeyField.ALL;
         }
 
         ukfe.applyQuery(queryWrapper, entity.getKeyWords());

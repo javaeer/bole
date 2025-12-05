@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
 
 /**
- * FileName: BaseEntity Description: Created By MR. WANG Created At 2025/11/19 13:45 Modified By
- * Modified At
+ * FileName: BaseEntity Description: 实体对象 数据库表结构 一致 Created By MR. WANG Created At 2025/11/19 13:45
+ * Modified By Modified At
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

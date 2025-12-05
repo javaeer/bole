@@ -2,8 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.Dict;
-import cn.net.yunlou.bole.model.dto.DictDTO;
-import cn.net.yunlou.bole.model.query.DictQuery;
+import cn.net.yunlou.bole.model.DictCreate;
+import cn.net.yunlou.bole.model.DictEdit;
+import cn.net.yunlou.bole.model.DictQuery;
+import cn.net.yunlou.bole.model.DictView;
 import org.mapstruct.Mapper;
 
 /**
@@ -11,4 +13,5 @@ import org.mapstruct.Mapper;
  * Modified By Modified At
  */
 @Mapper(componentModel = "spring")
-public interface DictStructMapper extends BaseStructMapper<Dict, DictDTO, DictQuery> {}
+public interface DictStructMapper
+        extends BaseStructMapper<Dict, DictCreate, DictView, DictEdit, DictQuery> {}

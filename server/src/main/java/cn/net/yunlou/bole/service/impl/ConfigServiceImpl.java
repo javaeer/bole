@@ -11,5 +11,4 @@ import org.springframework.stereotype.Service;
  * Modified By Modified At
  */
 @Service
-public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config>
-        implements ConfigService {}
+public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> implements ConfigService {}

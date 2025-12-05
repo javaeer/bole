@@ -2,15 +2,17 @@ package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * FileName: Banner Description: Created By laughtiger Created At 2025/11/28 11:10 Modified By
  * Modified At
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_system_banner")
 public class Banner extends BaseEntity {
 

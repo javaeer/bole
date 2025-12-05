@@ -4,15 +4,15 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
 
 /**
  * FileName: BaseTreeEntity Description: 树形结构基础实体类 Created By MR. WANG Created At 2025/11/25 17:00
  * Modified By Modified At
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 public class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEntity {
 
     public static final Long ROOT_ID = 0L;

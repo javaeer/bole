@@ -3,8 +3,10 @@ package cn.net.yunlou.bole.service.impl;
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.entity.Skill;
 import cn.net.yunlou.bole.mapper.SkillMapper;
-import cn.net.yunlou.bole.model.dto.SkillDTO;
-import cn.net.yunlou.bole.model.query.SkillQuery;
+import cn.net.yunlou.bole.model.SkillCreate;
+import cn.net.yunlou.bole.model.SkillEdit;
+import cn.net.yunlou.bole.model.SkillQuery;
+import cn.net.yunlou.bole.model.SkillView;
 import cn.net.yunlou.bole.service.SkillService;
 import cn.net.yunlou.bole.struct.SkillStructMapper;
 import org.springframework.stereotype.Service;
@@ -15,5 +17,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SkillServiceImpl
-        extends BaseService<SkillMapper, Skill, SkillDTO, SkillQuery, SkillStructMapper>
+        extends BaseService<
+                SkillMapper,
+                Skill,
+                SkillCreate,
+                SkillView,
+                SkillEdit,
+                SkillQuery,
+                SkillStructMapper>
         implements SkillService {}

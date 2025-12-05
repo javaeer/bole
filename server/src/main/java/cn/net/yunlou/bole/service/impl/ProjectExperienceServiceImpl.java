@@ -3,8 +3,10 @@ package cn.net.yunlou.bole.service.impl;
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.entity.ProjectExperience;
 import cn.net.yunlou.bole.mapper.ProjectExperienceMapper;
-import cn.net.yunlou.bole.model.dto.ProjectExperienceDTO;
-import cn.net.yunlou.bole.model.query.ProjectExperienceQuery;
+import cn.net.yunlou.bole.model.ProjectExperienceCreate;
+import cn.net.yunlou.bole.model.ProjectExperienceEdit;
+import cn.net.yunlou.bole.model.ProjectExperienceQuery;
+import cn.net.yunlou.bole.model.ProjectExperienceView;
 import cn.net.yunlou.bole.service.ProjectExperienceService;
 import cn.net.yunlou.bole.struct.ProjectExperienceStructMapper;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProjectExperienceServiceImpl
         extends BaseService<
-                ProjectExperienceMapper,
-                ProjectExperience,
-                ProjectExperienceDTO,
-                ProjectExperienceQuery,
-                ProjectExperienceStructMapper>
-        implements ProjectExperienceService {}
+        ProjectExperienceMapper,
+        ProjectExperience,
+        ProjectExperienceCreate,
+        ProjectExperienceView,
+        ProjectExperienceEdit,
+        ProjectExperienceQuery,
+        ProjectExperienceStructMapper>
+        implements ProjectExperienceService {
+}

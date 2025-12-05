@@ -2,8 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.Role;
-import cn.net.yunlou.bole.model.dto.RoleDTO;
-import cn.net.yunlou.bole.model.query.RoleQuery;
+import cn.net.yunlou.bole.model.RoleCreate;
+import cn.net.yunlou.bole.model.RoleEdit;
+import cn.net.yunlou.bole.model.RoleQuery;
+import cn.net.yunlou.bole.model.RoleView;
 import org.mapstruct.Mapper;
 
 /**
@@ -11,4 +13,5 @@ import org.mapstruct.Mapper;
  * By Modified At
  */
 @Mapper(componentModel = "spring")
-public interface RoleStructMapper extends BaseStructMapper<Role, RoleDTO, RoleQuery> {}
+public interface RoleStructMapper
+        extends BaseStructMapper<Role, RoleCreate, RoleView, RoleEdit, RoleQuery> {}

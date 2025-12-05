@@ -2,11 +2,15 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.entity.Banner;
-import cn.net.yunlou.bole.mapper.SystemBannerMapper;
-import cn.net.yunlou.bole.model.dto.SystemBannerDTO;
-import cn.net.yunlou.bole.model.query.SystemBannerQuery;
+import cn.net.yunlou.bole.mapper.BannerMapper;
+import cn.net.yunlou.bole.model.BannerCreate;
+import cn.net.yunlou.bole.model.BannerEdit;
+import cn.net.yunlou.bole.model.BannerQuery;
+import cn.net.yunlou.bole.model.BannerView;
 import cn.net.yunlou.bole.service.BannerService;
-import cn.net.yunlou.bole.struct.SystemBannerStructMapper;
+import cn.net.yunlou.bole.struct.BannerStructMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,9 +20,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class BannerServiceImpl
         extends BaseService<
-                SystemBannerMapper,
-        Banner,
-                SystemBannerDTO,
-                SystemBannerQuery,
-                SystemBannerStructMapper>
-        implements BannerService {}
+                BannerMapper,
+                Banner,
+                BannerCreate,
+                BannerView,
+                BannerEdit,
+                BannerQuery,
+                BannerStructMapper>
+        implements BannerService {
+    @Override
+    public QueryWrapper<Banner> getBaseQueryWrapper(Banner entity) {
+        QueryWrapper<Banner> queryWrapper = super.getBaseQueryWrapper(entity);
+        if (ObjectUtils.isNotEmpty(entity.getName())) {
+            queryWrapper.lambda().like(Banner::getName, entity.getName());
+        }
+        return queryWrapper;
+    }
+}

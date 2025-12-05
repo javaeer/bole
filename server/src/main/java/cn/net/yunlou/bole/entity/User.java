@@ -6,12 +6,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_user")
 public class User extends BaseEntity {
 
@@ -61,6 +63,6 @@ public class User extends BaseEntity {
     @TableField(exist = false)
     private List<GrantedAuthority> authorities;
 
-    @TableField(exist = false)
-    private Company company;
+    //@TableField(exist = false)
+    //private Company company;
 }

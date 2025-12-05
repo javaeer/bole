@@ -2,8 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.Skill;
-import cn.net.yunlou.bole.model.dto.SkillDTO;
-import cn.net.yunlou.bole.model.query.SkillQuery;
+import cn.net.yunlou.bole.model.SkillCreate;
+import cn.net.yunlou.bole.model.SkillEdit;
+import cn.net.yunlou.bole.model.SkillQuery;
+import cn.net.yunlou.bole.model.SkillView;
 import org.mapstruct.Mapper;
 
 /**
@@ -11,4 +13,5 @@ import org.mapstruct.Mapper;
  * By Modified At
  */
 @Mapper(componentModel = "spring")
-public interface SkillStructMapper extends BaseStructMapper<Skill, SkillDTO, SkillQuery> {}
+public interface SkillStructMapper
+        extends BaseStructMapper<Skill, SkillCreate, SkillView, SkillEdit, SkillQuery> {}
