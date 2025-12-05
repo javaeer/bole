@@ -1,4 +1,4 @@
-import { clearAll, clearToken, clearUserAll, hasRefreshToken, isTokenExpiring } from "@/utils/store";
+import { clearUserAll, hasRefreshToken, isTokenExpiring } from "@/utils/store";
 import { ResultCode } from "@/constants/result-code";
 import { buildUrl } from "@/utils/url";
 import AuthAPI from "@/api/auth";

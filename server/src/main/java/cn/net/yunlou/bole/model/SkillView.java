@@ -1,10 +1,9 @@
 package cn.net.yunlou.bole.model;
 
 import cn.net.yunlou.bole.common.BaseView;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.*;
 
 /**
  * FileName: SkillDTO Description: Created By MR. WANG Created At 2025/11/26 17:47 Modified By

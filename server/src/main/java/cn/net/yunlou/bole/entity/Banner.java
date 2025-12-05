@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_system_banner")
+@TableName("t_banner")
 public class Banner extends BaseEntity {
 
     private String name;

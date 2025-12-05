@@ -11,13 +11,6 @@
       </view>
       <view 
         class="tab-item" 
-        :class="{ active: currentTab === 'hr' }"
-        @click="switchTab('hr')"
-      >
-        <text>关注HR</text>
-      </view>
-      <view 
-        class="tab-item" 
         :class="{ active: currentTab === 'template' }"
         @click="switchTab('template')"
       >
@@ -46,27 +39,6 @@
         <text class="empty-icon">🏢</text>
         <text class="empty-text">还没有关注任何企业</text>
         <button class="btn-explore" @click="handleExploreCompanies">去发现企业</button>
-      </view>
-    </view>
-
-    <!-- 关注HR -->
-    <view v-if="currentTab === 'hr'" class="content">
-      <view class="hr-list">
-        <view class="hr-item" v-for="hr in hrList" :key="hr.id">
-          <image :src="hr.avatar" class="hr-avatar" mode="aspectFit" />
-          <view class="hr-info">
-            <text class="hr-name">{{ hr.name }}</text>
-            <text class="hr-position">{{ hr.position }} · {{ hr.company }}</text>
-            <text class="hr-tag">{{ hr.tag }}</text>
-          </view>
-          <button class="btn-chat" @click="handleChatWithHR(hr.id)">发消息</button>
-        </view>
-      </view>
-      
-      <view v-if="hrList.length === 0" class="empty-state">
-        <text class="empty-icon">👔</text>
-        <text class="empty-text">还没有关注任何HR</text>
-        <button class="btn-explore" @click="handleExploreHRs">去发现HR</button>
       </view>
     </view>
 
@@ -178,7 +150,7 @@ const handleUnfollowCompany = (id: number) => {
 
 const handleViewCompany = (id: number) => {
   uni.navigateTo({
-    url: `/pages/company/detail?id=${id}`
+    url: `/pages/company/company?id=${id}`
   })
 }
 
@@ -225,186 +197,286 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .page-container {
-  background-color: #f8f8f8;
+  background-color: $background-color;
   min-height: 100vh;
 }
 
 .tabs {
   display: flex;
-  background: white;
-  border-bottom: 1rpx solid #f0f0f0;
+  background: $background-color-white;
+  border-bottom: 1rpx solid $border-color-light;
 }
 
 .tab-item {
   flex: 1;
   text-align: center;
-  padding: 30rpx 0;
-  font-size: 28rpx;
-  color: #666;
+  padding: $padding-base 0;
+  font-size: $font-size-base;
+  color: $text-secondary;
   position: relative;
+  transition: color $transition-fast;
+
+  &.active {
+    color: $primary-color;
+    font-weight: $font-weight-bold;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80rpx;
+      height: 4rpx;
+      background: $primary-color;
+      border-radius: 2rpx;
+      animation: slideIn $transition-duration $transition-timing-function;
+    }
+  }
 }
 
-.tab-item.active {
-  color: #d4af37;
-  font-weight: bold;
-}
-
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80rpx;
-  height: 4rpx;
-  background: #d4af37;
-  border-radius: 2rpx;
+@keyframes slideIn {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 80rpx;
+    opacity: 1;
+  }
 }
 
 .content {
-  padding: 30rpx;
+  padding: $padding-base;
 }
 
 .company-list, .hr-list {
   display: flex;
   flex-direction: column;
-  gap: 30rpx;
+  gap: $margin-base;
 }
 
 .company-item, .hr-item {
-  background: white;
-  border-radius: 15rpx;
-  padding: 30rpx;
+  background: $background-color-white;
+  border-radius: $border-radius;
+  padding: $padding-base;
   display: flex;
   align-items: center;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+  box-shadow: $box-shadow;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:active {
+    transform: translateY(2rpx);
+    box-shadow: $box-shadow-light;
+  }
 }
 
-.company-logo, .hr-avatar {
+.company-logo {
   width: 100rpx;
   height: 100rpx;
-  border-radius: 15rpx;
+  border-radius: $border-radius;
   margin-right: 25rpx;
+  background: $background-color;
+  object-fit: cover;
+
+  &.placeholder {
+    @extend .flex-center;
+    background: linear-gradient(135deg, $primary-light 0%, transparent 100%);
+    font-size: $font-size-large;
+  }
 }
 
 .hr-avatar {
-  border-radius: 50%;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $border-radius-round;
+  margin-right: 25rpx;
+  background: $background-color;
+  object-fit: cover;
+
+  &.placeholder {
+    @extend .flex-center;
+    background: linear-gradient(135deg, $primary-light 0%, transparent 100%);
+    font-size: $font-size-large;
+  }
 }
 
 .company-info, .hr-info {
   flex: 1;
+  overflow: hidden;
 }
 
 .company-name, .hr-name {
   display: block;
-  font-size: 32rpx;
-  font-weight: bold;
-  margin-bottom: 10rpx;
+  font-size: $font-size-medium;
+  font-weight: $font-weight-bold;
+  margin-bottom: calc($margin-mini / 2);
+  color: $text-primary;
+  @extend .text-ellipsis;
 }
 
 .company-industry, .hr-position {
   display: block;
-  font-size: 26rpx;
-  color: #666;
-  margin-bottom: 8rpx;
+  font-size: $font-size-small;
+  color: $text-regular;
+  margin-bottom: calc($margin-mini / 2);
+  @extend .text-ellipsis;
 }
 
 .company-desc {
   display: block;
-  font-size: 24rpx;
-  color: #999;
+  font-size: $font-size-extra-small;
+  color: $text-secondary;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .hr-tag {
   display: inline-block;
-  background: #e8f4ff;
-  color: #1890ff;
-  font-size: 22rpx;
-  padding: 4rpx 12rpx;
+  background: rgba($primary-color, 0.1);
+  color: $primary-color;
+  font-size: $font-size-extra-small;
+  padding: 4rpx $padding-small;
   border-radius: 20rpx;
+  font-weight: $font-weight-medium;
 }
 
 .company-actions {
   display: flex;
   flex-direction: column;
-  gap: 15rpx;
+  gap: $margin-small;
+  min-width: 120rpx;
 }
 
 .btn-unfollow, .btn-view, .btn-chat {
-  padding: 12rpx 24rpx;
-  font-size: 24rpx;
-  border-radius: 20rpx;
+  padding: $padding-mini $padding-small;
+  font-size: $font-size-small;
+  border-radius: $border-radius-round;
   border: none;
+  transition: all $transition-fast;
+  cursor: pointer;
+  font-weight: $font-weight-medium;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .btn-unfollow {
-  background: #f8f8f8;
-  color: #666;
+  background: $background-color;
+  color: $text-regular;
+
+  &:active {
+    background: color.adjust($background-color, $lightness:  - 5%);
+  }
 }
 
 .btn-view, .btn-chat {
-  background: #d4af37;
-  color: white;
+  background: $primary-color;
+  color: $background-color-white;
+
+  &:active {
+    background: color.adjust($primary-color, $lightness:  -10%);
+  }
 }
 
+/* 模板样式 */
 .template-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 30rpx;
+  gap: $margin-base;
 }
 
 .template-item {
-  background: white;
-  border-radius: 15rpx;
+  background: $background-color-white;
+  border-radius: $border-radius-small;
   overflow: hidden;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+  box-shadow: $box-shadow;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:active {
+    transform: translateY(2rpx);
+    box-shadow: $box-shadow-light;
+  }
 }
 
 .template-cover {
   width: 100%;
   height: 200rpx;
+  background: $background-color;
+  object-fit: cover;
+
+  &.placeholder {
+    @extend .flex-center;
+    background: linear-gradient(135deg, $primary-light 0%, transparent 100%);
+    font-size: $font-size-extra-large;
+  }
 }
 
 .template-info {
-  padding: 20rpx;
+  padding: $padding-small;
 }
 
 .template-name {
   display: block;
-  font-size: 28rpx;
-  font-weight: bold;
-  margin-bottom: 8rpx;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  margin-bottom: calc($margin-mini / 2);
+  color: $text-primary;
+  @extend .text-ellipsis;
 }
 
 .template-type {
   display: block;
-  font-size: 24rpx;
-  color: #666;
+  font-size: $font-size-small;
+  color: $text-regular;
+  @extend .text-ellipsis;
 }
 
 .template-actions {
-  padding: 0 20rpx 20rpx;
+  padding: 0 $padding-small $padding-small;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .icon-favorite {
-  font-size: 32rpx;
+  font-size: $font-size-medium;
+  color: $text-placeholder;
   cursor: pointer;
+  transition: color $transition-fast;
+
+  &.active {
+    color: $danger-color;
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
 }
 
 .btn-use {
-  background: #d4af37;
-  color: white;
+  background: $primary-color;
+  color: $background-color-white;
   border: none;
-  padding: 12rpx 24rpx;
-  border-radius: 20rpx;
-  font-size: 24rpx;
+  padding: $padding-mini $padding-small;
+  border-radius: $border-radius-round;
+  font-size: $font-size-small;
+  font-weight: $font-weight-medium;
+  transition: background-color $transition-fast;
+
+  &:active {
+    background: color.adjust($primary-color, $lightness:  -10%);
+  }
 }
 
+/* 空状态 */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -414,21 +486,46 @@ onMounted(() => {
 
 .empty-icon {
   font-size: 120rpx;
-  margin-bottom: 30rpx;
+  color: $text-placeholder;
+  margin-bottom: $margin-base;
+  opacity: 0.6;
 }
 
 .empty-text {
-  font-size: 28rpx;
-  color: #999;
-  margin-bottom: 40rpx;
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin-bottom: $margin-base * 2;
+  text-align: center;
 }
 
 .btn-explore {
-  background: #d4af37;
-  color: white;
+  background: $primary-color;
+  color: $background-color-white;
   border: none;
-  padding: 20rpx 40rpx;
-  border-radius: 25rpx;
-  font-size: 28rpx;
+  padding: $padding-small $padding-base;
+  border-radius: $border-radius-round;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.98);
+    background: color.adjust($primary-color, $lightness:  -10%);
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 375px) {
+  .content {
+    padding: $padding-small;
+  }
+
+  .template-grid {
+    gap: $margin-small;
+  }
+
+  .company-item, .hr-item {
+    padding: $padding-small;
+  }
 }
 </style>

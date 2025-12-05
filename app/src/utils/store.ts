@@ -1,4 +1,4 @@
-import { DictData, DictResult } from "@/types/dict";
+import { DictData } from "@/types/dict";
 import { StoreKey } from "@/constants/store-key";
 import { LoginResult, UserInfo } from "@/types/user";
 import { ConfigResult } from "@/types/config";

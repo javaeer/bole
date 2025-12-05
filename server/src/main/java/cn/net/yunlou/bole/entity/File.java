@@ -32,7 +32,7 @@ public class File extends BaseEntity {
 
     private String storageType; // 存储类型：LOCAL, MINIO
 
-     private String contentType; //类型
+    private String contentType; // 类型
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastAccessTime; // 最后访问时间

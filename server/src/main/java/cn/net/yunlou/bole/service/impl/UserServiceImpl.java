@@ -13,12 +13,11 @@ import cn.net.yunlou.bole.model.UserView;
 import cn.net.yunlou.bole.service.UserService;
 import cn.net.yunlou.bole.struct.UserStructMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 /**
  * FileName: UserServiceImpl Description: Created By MR. WANG Created At 2025/11/19 13:49 Modified
@@ -29,13 +28,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserServiceImpl
         extends BaseService<
-        UserMapper,
-        User,
-        UserCreate,
-        UserView,
-        UserEdit,
-        UserQuery,
-        UserStructMapper>
+                UserMapper, User, UserCreate, UserView, UserEdit, UserQuery, UserStructMapper>
         implements UserService {
 
     @Override

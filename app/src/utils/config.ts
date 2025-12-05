@@ -1,5 +1,4 @@
 import { useConfigStore } from "@/stores/config";
-import { DictItem } from "@/types/dict";
 
 export class Config {
   private configStore: ReturnType<typeof useConfigStore> | null = null;

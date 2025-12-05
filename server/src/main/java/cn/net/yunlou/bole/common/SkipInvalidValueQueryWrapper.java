@@ -3,11 +3,10 @@ package cn.net.yunlou.bole.common;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Collection;
 import java.util.function.Consumer;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 忽略无效值的 QueryWrapper 自动过滤 null、空字符串、空集合等无效值，避免无效条件被拼接到SQL中

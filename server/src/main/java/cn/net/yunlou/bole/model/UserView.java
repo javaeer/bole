@@ -2,9 +2,8 @@ package cn.net.yunlou.bole.model;
 
 import cn.net.yunlou.bole.common.BaseView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-
 import java.time.LocalDateTime;
+import lombok.*;
 
 /**
  * FileName: UserDTO Description: Created By MR. WANG Created At 2025/11/26 17:48 Modified By
@@ -19,8 +18,7 @@ public class UserView extends BaseView {
 
     private String username;
 
-    @JsonIgnore
-    private String password;
+    @JsonIgnore private String password;
 
     private String email;
 

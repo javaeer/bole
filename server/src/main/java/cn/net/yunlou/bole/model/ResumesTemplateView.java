@@ -3,9 +3,8 @@ package cn.net.yunlou.bole.model;
 import cn.net.yunlou.bole.common.BaseView;
 import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
 import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.*;
-
 import java.util.List;
+import lombok.*;
 
 /**
  * FileName: ResumesTemplateDTO Description: Created By MR. WANG Created At 2025/11/26 17:46

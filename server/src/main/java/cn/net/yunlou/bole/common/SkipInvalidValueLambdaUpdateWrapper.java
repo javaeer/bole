@@ -4,11 +4,10 @@ import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Collection;
 import java.util.function.Consumer;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 跳过无效值的Lambda更新包装器 自动过滤null、空字符串、空集合等无效值，避免这些值被拼接到SQL更新语句中

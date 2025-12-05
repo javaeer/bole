@@ -1,17 +1,14 @@
 package cn.net.yunlou.bole.common;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
-
-/**
- * 树形服务缓存解析器
- */
+/** 树形服务缓存解析器 */
 public class TreeCacheResolver implements CacheResolver {
 
     private final CacheManager cacheManager;
@@ -27,7 +24,8 @@ public class TreeCacheResolver implements CacheResolver {
 
         // 如果是BaseTreeService，动态获取缓存名称
         if (target instanceof BaseTreeService) {
-            BaseTreeService<?, ?, ?, ?, ?, ?, ?> service = (BaseTreeService<?, ?, ?, ?, ?, ?, ?>) target;
+            BaseTreeService<?, ?, ?, ?, ?, ?, ?> service =
+                    (BaseTreeService<?, ?, ?, ?, ?, ?, ?>) target;
             String cacheName = service.getCacheName();
 
             Cache cache = cacheManager.getCache(cacheName);

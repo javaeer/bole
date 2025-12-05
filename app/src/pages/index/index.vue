@@ -6,7 +6,7 @@
 				<image src="/static/logo.png" class="logo" mode="aspectFit" />
 				<text class="brand-name">{{ systemName }} 版本: {{ systemVersion }}</text>
 			</view>
-			<view class="search-box" @click="handleSearch">
+			<view class="search-btn" @click="handleSearch">
 				<text class="icon-search">🔍</text>
 				<text class="search-text">搜索简历模板</text>
 			</view>
@@ -82,9 +82,6 @@
 
 	import { useConfigStore } from '@/stores/config';
 
-	// import LogAPI, { VisitStatsVO } from "@/api/log";
-
-
 	const configStore = useConfigStore();
 
 	// 使用计算属性获取配置值
@@ -119,8 +116,8 @@
 	const functionList = ref([
 		{ id: 1, name: '创建简历', icon: '📝', path: '/pages/resume/create' },
 		{ id: 2, name: '模板中心', icon: '🎨', path: '/pages/template/list' },
-		{ id: 3, name: '简历分析', icon: '📊', path: '/pages/analysis/index' },
-		{ id: 4, name: '求职指南', icon: '📚', path: '/pages/guide/list' }
+		{ id: 3, name: '简历分析', icon: '📊', path: '/pages/analysis/analysis' },
+		{ id: 4, name: '求职指南', icon: '📚', path: '/pages/guide/guide' }
 	])
 
 	// 模板列表
@@ -166,17 +163,17 @@
 			description: '一键生成专业简历，支持多种格式导出'
 		},
 		{
-			title: '投递求职',
-			description: '将您的简历投递给心仪的企业'
+			title: '分享导出',
+			description: '将您的简历分享或导出'
 		}
 	])
 
 	// 事件处理
 	const handleSearch = () => {
 		uni.navigateTo({
-			url: '/pages/search/search'
-		})
-	}
+			url: '/pages/search/search' // 你的搜索页面路径
+		});
+	};
 
 	const handleBannerClick = (item : any) => {
 		uni.navigateTo({
@@ -207,18 +204,18 @@
 	})
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 	.page-container {
-		background-color: #f8f8f8;
+		background-color: $background-color;
 		min-height: 100vh;
 	}
 
 	.brand-header {
-		padding: 20rpx 30rpx;
-		background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 100%);
+		padding: $padding-small $padding-base;
+		background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
 		display: flex;
-		align-items: center;
 		justify-content: space-between;
+		align-items: center;
 	}
 
 	.brand-info {
@@ -229,42 +226,51 @@
 	.logo {
 		width: 60rpx;
 		height: 60rpx;
-		margin-right: 20rpx;
+		margin-right: $margin-small;
+		border-radius: $border-radius-small;
 	}
 
 	.brand-name {
-		font-size: 36rpx;
-		font-weight: bold;
-		color: #8b0000;
-		font-family: 'SimSun', serif;
+		font-size: $font-size-large;
+		font-weight: $font-weight-bold;
+		color: $background-color-white;
 	}
 
 	.search-box {
 		flex: 1;
 		max-width: 400rpx;
-		background: rgba(255, 255, 255, 0.9);
-		border-radius: 50rpx;
-		padding: 15rpx 25rpx;
+		background: rgba($background-color-white, 0.9);
+		border-radius: $border-radius-small;
+		padding: $padding-mini $padding-small;
 		display: flex;
 		align-items: center;
-		margin-left: 30rpx;
+		margin-left: $margin-base;
 	}
 
 	.icon-search {
-		margin-right: 15rpx;
-		font-size: 28rpx;
+		margin-right: $margin-mini;
+		font-size: $font-size-base;
+		color: $text-secondary;
 	}
 
 	.search-text {
-		color: #999;
-		font-size: 28rpx;
+		color: $text-placeholder;
+		font-size: $font-size-base;
+	}
+
+	.loading {
+		text-align: center;
+		padding: $padding-base;
+		color: $text-secondary;
+		font-size: $font-size-base;
 	}
 
 	.banner-swiper {
 		height: 300rpx;
-		margin: 20rpx 30rpx;
-		border-radius: 20rpx;
+		margin: $margin-small $margin-base;
+		border-radius: $border-radius * 1.5;
 		overflow: hidden;
+		box-shadow: $box-shadow;
 	}
 
 	.banner-image {
@@ -275,11 +281,12 @@
 	.function-grid {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		padding: 40rpx 30rpx;
-		background: white;
-		margin: 20rpx 30rpx;
-		border-radius: 20rpx;
-		box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+		padding: $padding-base $margin-base;
+		background: $background-color-white;
+		margin: $margin-small $margin-base;
+		border-radius: $border-radius * 1.5;
+		box-shadow: $box-shadow;
+		gap: $margin-base;
 	}
 
 	.grid-item {
@@ -291,47 +298,52 @@
 	.grid-icon {
 		width: 80rpx;
 		height: 80rpx;
-		background: #f8f8f8;
-		border-radius: 50%;
+		background: $background-color;
+		border-radius: $border-radius-round;
 		display: flex;
-		align-items: center;
 		justify-content: center;
-		margin-bottom: 15rpx;
+		align-items: center;
+		margin-bottom: $margin-mini;
 	}
 
 	.grid-icon .icon {
-		font-size: 40rpx;
+		font-size: $font-size-medium;
 	}
 
 	.grid-text {
-		font-size: 24rpx;
-		color: #333;
+		font-size: $font-size-small;
+		color: $text-regular;
+		text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-width: 100%;
 	}
 
 	.section {
-		background: white;
-		margin: 30rpx;
-		border-radius: 20rpx;
-		padding: 30rpx;
-		box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+		background: $background-color-white;
+		margin: $margin-base;
+		border-radius: $border-radius * 1.5;
+		padding: $padding-base;
+		box-shadow: $box-shadow;
 	}
 
 	.section-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 30rpx;
+		margin-bottom: $margin-base;
 	}
 
 	.section-title {
-		font-size: 32rpx;
-		font-weight: bold;
-		color: #333;
+		font-size: $font-size-medium;
+		font-weight: $font-weight-bold;
+		color: $text-primary;
 	}
 
 	.section-more {
-		font-size: 26rpx;
-		color: #d4af37;
+		font-size: $font-size-small;
+		color: $primary-color;
 	}
 
 	.template-scroll {
@@ -344,10 +356,11 @@
 
 	.template-item {
 		width: 300rpx;
-		margin-right: 20rpx;
-		background: #f8f8f8;
-		border-radius: 15rpx;
+		margin-right: $margin-small;
+		background: $background-color;
+		border-radius: $border-radius;
 		overflow: hidden;
+		flex-shrink: 0;
 	}
 
 	.template-cover {
@@ -356,21 +369,25 @@
 	}
 
 	.template-info {
-		padding: 20rpx;
+		padding: $padding-small;
 	}
 
 	.template-name {
 		display: block;
-		font-size: 28rpx;
-		font-weight: bold;
-		margin-bottom: 10rpx;
+		font-size: $font-size-base;
+		font-weight: $font-weight-bold;
+		margin-bottom: 5rpx;
+		color: $text-primary;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.template-desc {
 		display: block;
-		font-size: 24rpx;
-		color: #666;
-		margin-bottom: 15rpx;
+		font-size: $font-size-small;
+		color: $text-secondary;
+		margin-bottom: $margin-mini;
 	}
 
 	.template-meta {
@@ -380,18 +397,20 @@
 	}
 
 	.template-price {
-		color: #ff6b6b;
-		font-weight: bold;
+		color: $danger-color;
+		font-weight: $font-weight-bold;
+		font-size: $font-size-base;
 	}
 
 	.template-free {
-		color: #d4af37;
-		font-weight: bold;
+		color: $primary-color;
+		font-weight: $font-weight-bold;
+		font-size: $font-size-base;
 	}
 
 	.template-users {
-		font-size: 22rpx;
-		color: #999;
+		font-size: $font-size-extra-small;
+		color: $text-placeholder;
 	}
 
 	.guide-list {
@@ -402,8 +421,8 @@
 	.guide-item {
 		display: flex;
 		align-items: flex-start;
-		padding: 25rpx 0;
-		border-bottom: 1rpx solid #f0f0f0;
+		padding: $padding-small 0;
+		border-bottom: 1rpx solid $border-color-extra-light;
 	}
 
 	.guide-item:last-child {
@@ -413,14 +432,14 @@
 	.guide-number {
 		width: 50rpx;
 		height: 50rpx;
-		background: #d4af37;
-		color: white;
-		border-radius: 50%;
+		background: $primary-color;
+		color: $background-color-white;
+		border-radius: $border-radius-round;
 		display: flex;
-		align-items: center;
 		justify-content: center;
-		font-size: 24rpx;
-		margin-right: 25rpx;
+		align-items: center;
+		font-size: $font-size-small;
+		margin-right: $padding-small;
 		flex-shrink: 0;
 	}
 
@@ -430,15 +449,15 @@
 
 	.guide-title {
 		display: block;
-		font-size: 28rpx;
-		font-weight: bold;
-		margin-bottom: 10rpx;
+		font-size: $font-size-base;
+		font-weight: $font-weight-bold;
+		margin-bottom: 5rpx;
+		color: $text-primary;
 	}
 
 	.guide-desc {
 		display: block;
-		font-size: 24rpx;
-		color: #666;
-		line-height: 1.5;
+		font-size: $font-size-small;
+		color: $text-secondary;
 	}
 </style>

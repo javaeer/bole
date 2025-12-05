@@ -42,10 +42,10 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     );
 
     -- 创建索引
-    CREATE INDEX IF NOT EXISTS idx_system_config_created_at ON bole_app.t_config(created_at);
-    CREATE INDEX IF NOT EXISTS idx_system_config_updated_at ON bole_app.t_config(updated_at);
-    CREATE INDEX IF NOT EXISTS idx_system_config_created_by_id ON bole_app.t_config(created_by_id);
-    CREATE INDEX IF NOT EXISTS idx_system_config_updated_by_id ON bole_app.t_config(updated_by_id);
+    CREATE INDEX IF NOT EXISTS idx_config_created_at ON bole_app.t_config(created_at);
+    CREATE INDEX IF NOT EXISTS idx_config_updated_at ON bole_app.t_config(updated_at);
+    CREATE INDEX IF NOT EXISTS idx_config_created_by_id ON bole_app.t_config(created_by_id);
+    CREATE INDEX IF NOT EXISTS idx_config_updated_by_id ON bole_app.t_config(updated_by_id);
 
     -- 表注释和字段注释
     COMMENT ON TABLE bole_app.t_config IS '系统配置表';
@@ -75,9 +75,9 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     );
 
     -- 创建索引
-    CREATE INDEX IF NOT EXISTS idx_system_banner_sort ON bole_app.t_banner(sort);
-    CREATE INDEX IF NOT EXISTS idx_system_banner_created_at ON bole_app.t_banner(created_at);
-    CREATE INDEX IF NOT EXISTS idx_system_banner_deleted ON bole_app.t_banner(deleted);
+    CREATE INDEX IF NOT EXISTS idx_banner_sort ON bole_app.t_banner(sort);
+    CREATE INDEX IF NOT EXISTS idx_banner_created_at ON bole_app.t_banner(created_at);
+    CREATE INDEX IF NOT EXISTS idx_banner_deleted ON bole_app.t_banner(deleted);
 
     -- 表注释和字段注释
     COMMENT ON TABLE bole_app.t_banner IS '系统横幅表';

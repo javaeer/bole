@@ -16,16 +16,15 @@ import cn.net.yunlou.bole.service.FileService;
 import cn.net.yunlou.bole.service.StorageService;
 import cn.net.yunlou.bole.struct.FileStructMapper;
 import com.google.common.collect.Lists;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * FileName: FileServiceImpl Description: Created By laughtiger Created At 2025/12/4 01:27 Modified
@@ -35,7 +34,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl
-        extends BaseService<FileMapper, File, FileCreate, FileView, FileEdit, FileQuery, FileStructMapper>
+        extends BaseService<
+                FileMapper, File, FileCreate, FileView, FileEdit, FileQuery, FileStructMapper>
         implements FileService {
 
     private final StorageService storageService;
@@ -143,8 +143,7 @@ public class FileServiceImpl
     }
 
     @Override
-    public void switchStorageType(String newStorageType) {
-    }
+    public void switchStorageType(String newStorageType) {}
 
     @Override
     public List<StorageType> getAvailableStorageTypes() {
@@ -153,8 +152,7 @@ public class FileServiceImpl
 
     @Override
     public File getByFileKey(String fileKey) {
-        File entity =
-                File.builder().fileKey(fileKey).build();
+        File entity = File.builder().fileKey(fileKey).build();
         /*File entity = new File();
         entity.setFileKey(fileKey);*/
         return baseMapper.selectOne(getBaseQueryWrapper(entity));

@@ -6,14 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * FileName: BaseService Description: Created By MR. WANG Created At 2025/11/19 13:50 Modified By
@@ -22,18 +21,17 @@ import java.util.List;
 @Slf4j
 @Transactional(readOnly = true)
 public abstract class BaseService<
-        M extends BaseMapper<T>,
-        T extends BaseEntity,
-        C extends BaseCreate,
-        V extends BaseView,
-        E extends BaseEdit,
-        Q extends BaseQuery,
-        S extends BaseStructMapper<T, C, V, E, Q> // 添加具体映射器类型参数
-        >
+                M extends BaseMapper<T>,
+                T extends BaseEntity,
+                C extends BaseCreate,
+                V extends BaseView,
+                E extends BaseEdit,
+                Q extends BaseQuery,
+                S extends BaseStructMapper<T, C, V, E, Q> // 添加具体映射器类型参数
+                >
         extends ServiceImpl<M, T> implements IBaseService<T, C, V, E, Q> {
 
-    @Autowired
-    protected S structMapper;
+    @Autowired protected S structMapper;
 
     @Override
     public boolean exist(T entity) {
@@ -109,7 +107,7 @@ public abstract class BaseService<
      * 如果存在 关键字 查询 请务必 重写此方法
      *
      * @param queryWrapper 现有 条件
-     * @param entity       实体
+     * @param entity 实体
      * @return 组合条件
      */
     protected QueryWrapper<T> getKeyFieldQueryWrapper(QueryWrapper<T> queryWrapper, T entity) {

@@ -63,6 +63,6 @@ public class User extends BaseEntity {
     @TableField(exist = false)
     private List<GrantedAuthority> authorities;
 
-    //@TableField(exist = false)
-    //private Company company;
+    // @TableField(exist = false)
+    // private Company company;
 }

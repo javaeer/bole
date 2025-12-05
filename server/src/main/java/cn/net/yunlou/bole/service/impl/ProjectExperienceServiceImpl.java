@@ -18,12 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProjectExperienceServiceImpl
         extends BaseService<
-        ProjectExperienceMapper,
-        ProjectExperience,
-        ProjectExperienceCreate,
-        ProjectExperienceView,
-        ProjectExperienceEdit,
-        ProjectExperienceQuery,
-        ProjectExperienceStructMapper>
-        implements ProjectExperienceService {
-}
+                ProjectExperienceMapper,
+                ProjectExperience,
+                ProjectExperienceCreate,
+                ProjectExperienceView,
+                ProjectExperienceEdit,
+                ProjectExperienceQuery,
+                ProjectExperienceStructMapper>
+        implements ProjectExperienceService {}

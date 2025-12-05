@@ -10,8 +10,6 @@ import cn.net.yunlou.bole.model.DictQuery;
 import cn.net.yunlou.bole.model.DictView;
 import cn.net.yunlou.bole.service.DictService;
 import cn.net.yunlou.bole.struct.DictStructMapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,6 +21,4 @@ import org.springframework.stereotype.Service;
 public class DictServiceImpl
         extends BaseTreeService<
                 DictMapper, Dict, DictCreate, DictView, DictEdit, DictQuery, DictStructMapper>
-        implements DictService {
-
-}
+        implements DictService {}

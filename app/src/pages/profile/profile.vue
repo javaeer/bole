@@ -68,13 +68,6 @@
 		<!-- 设置入口 -->
 		<view class="section">
 			<view class="menu-list">
-				<view class="menu-item" @click="handleSettings">
-					<view class="menu-left">
-						<text class="menu-icon">⚙️</text>
-						<text class="menu-text">设置</text>
-					</view>
-					<text class="menu-arrow">›</text>
-				</view>
 				<view class="menu-item" @click="handleFeedback">
 					<view class="menu-left">
 						<text class="menu-icon">💬</text>
@@ -95,9 +88,9 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted } from 'vue'
+import { onMounted, ref } from "vue";
 
-	// 用户信息
+// 用户信息
 	const userInfo = ref({
 		name: '伯乐用户',
 		title: '前端开发工程师',
@@ -116,12 +109,9 @@
 
 	// 菜单列表
 	const menuList = ref([
-		{ id: 1, name: '我的收藏', icon: '❤️', path: '/pages/favorite/list' },
-		{ id: 2, name: '浏览记录', icon: '👀', path: '/pages/history/list' },
-		{ id: 3, name: '我的投递', icon: '📤', path: '/pages/application/list' },
-		{ id: 4, name: '面试邀请', icon: '📅', path: '/pages/interview/list' },
-		{ id: 5, name: '会员中心', icon: '👑', path: '/pages/vip/index' },
-		{ id: 6, name: '我的钱包', icon: '💰', path: '/pages/wallet/index' }
+    { id: 1, name: '模板发布', icon: '📤', path: '/pages/template/release' },
+    { id: 2, name: '浏览记录', icon: '👀', path: '/pages/history/history' },
+		{ id: 3, name: '申请管理', icon: '📅', path: '/pages/application/list' },
 	])
 
 	// 事件处理
@@ -143,7 +133,7 @@
 
 	const handleEditProfile = () => {
 		uni.navigateTo({
-			url: '/pages/profile/edit'
+			url: '/pages/profile/setting'
 		})
 	}
 
@@ -183,21 +173,15 @@
 		})
 	}
 
-	const handleSettings = () => {
-		uni.navigateTo({
-			url: '/pages/settings/index'
-		})
-	}
-
 	const handleFeedback = () => {
 		uni.navigateTo({
-			url: '/pages/feedback/index'
+			url: '/pages/feedback/feedback'
 		})
 	}
 
 	const handleAbout = () => {
 		uni.navigateTo({
-			url: '/pages/about/index'
+			url: '/pages/about/about'
 		})
 	}
 
@@ -206,187 +190,187 @@
 	})
 </script>
 
-<style scoped>
-	.page-container {
-		background-color: #f8f8f8;
-		min-height: 100vh;
-		padding-bottom: 50rpx;
-	}
+<style scoped lang="scss">
+.page-container {
+  background-color: $background-color;
+  min-height: 100vh;
+  padding-bottom: 50rpx;
+}
 
-	.user-header {
-		background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 100%);
-		padding: 60rpx 30rpx 40rpx;
-		color: white;
-		position: relative;
-	}
+.user-header {
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  padding: 60rpx $padding-base 40rpx;
+  color: $background-color-white;
+  position: relative;
+}
 
-	.user-avatar-section {
-		display: flex;
-		align-items: center;
-		margin-bottom: 30rpx;
-	}
+.user-avatar-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: $margin-base;
+}
 
-	.user-avatar {
-		width: 120rpx;
-		height: 120rpx;
-		border-radius: 50%;
-		border: 4rpx solid white;
-		margin-right: 30rpx;
-	}
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: $border-radius-round;
+  border: 4rpx solid $background-color-white;
+  margin-right: $margin-base;
+}
 
-	.user-info {
-		flex: 1;
-	}
+.user-info {
+  flex: 1;
+}
 
-	.user-name {
-		display: block;
-		font-size: 36rpx;
-		font-weight: bold;
-		margin-bottom: 10rpx;
-	}
+.user-name {
+  display: block;
+  font-size: $font-size-large;
+  font-weight: $font-weight-bold;
+  margin-bottom: 10rpx;
+}
 
-	.user-title {
-		display: block;
-		font-size: 26rpx;
-		opacity: 0.9;
-		margin-bottom: 20rpx;
-	}
+.user-title {
+  display: block;
+  font-size: 26rpx;
+  opacity: 0.9;
+  margin-bottom: 20rpx;
+}
 
-	.user-stats {
-		display: flex;
-		gap: 40rpx;
-	}
+.user-stats {
+  display: flex;
+  gap: 40rpx;
+}
 
-	.stat-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-	.stat-number {
-		font-size: 28rpx;
-		font-weight: bold;
-		margin-bottom: 5rpx;
-	}
+.stat-number {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  margin-bottom: 5rpx;
+}
 
-	.stat-label {
-		font-size: 22rpx;
-		opacity: 0.8;
-	}
+.stat-label {
+  font-size: 22rpx;
+  opacity: 0.8;
+}
 
-	.btn-edit {
-		position: absolute;
-		top: 60rpx;
-		right: 30rpx;
-		background: rgba(255, 255, 255, 0.2);
-		color: white;
-		border: 2rpx solid white;
-		border-radius: 25rpx;
-		padding: 12rpx 30rpx;
-		font-size: 24rpx;
-	}
+.btn-edit {
+  position: absolute;
+  top: 60rpx;
+  right: $padding-base;
+  background: rgba($background-color-white, 0.2);
+  color: $background-color-white;
+  border: 2rpx solid $background-color-white;
+  border-radius: 25rpx;
+  padding: 12rpx $margin-base;
+  font-size: $font-size-extra-small;
+}
 
-	.section {
-		background: white;
-		margin: 30rpx;
-		border-radius: 15rpx;
-		padding: 30rpx;
-		box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
-	}
+.section {
+  background: $background-color-white;
+  margin: $margin-base;
+  border-radius: $border-radius;
+  padding: $padding-base;
+  box-shadow: $box-shadow;
+}
 
-	.section-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 30rpx;
-	}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $margin-base;
+}
 
-	.section-title {
-		font-size: 32rpx;
-		font-weight: bold;
-		color: #333;
-	}
+.section-title {
+  font-size: $font-size-medium;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+}
 
-	.section-more {
-		font-size: 26rpx;
-		color: #d4af37;
-	}
+.section-more {
+  font-size: 26rpx;
+  color: $primary-color;
+}
 
-	.resume-stats {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 20rpx;
-	}
+.resume-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $margin-small;
+}
 
-	.stat-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 30rpx 20rpx;
-		background: #f8f8f8;
-		border-radius: 15rpx;
-		transition: all 0.3s;
-	}
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $padding-base $margin-small;
+  background: $background-color;
+  border-radius: $border-radius;
+  transition: all $transition-duration;
+}
 
-	.stat-card:active {
-		background: #e8e8e8;
-		transform: scale(0.95);
-	}
+.stat-card:active {
+  background: color.adjust($background-color, $lightness:  - 5%);
+  transform: scale(0.95);
+}
 
-	.stat-icon,
-	.stat-number {
-		font-size: 36rpx;
-		font-weight: bold;
-		margin-bottom: 15rpx;
-		color: #d4af37;
-	}
+.stat-icon,
+.stat-number {
+  font-size: $font-size-medium;
+  font-weight: $font-weight-bold;
+  margin-bottom: $margin-mini;
+  color: $primary-color;
+}
 
-	.stat-title {
-		font-size: 24rpx;
-		color: #666;
-	}
+.stat-title {
+  font-size: $font-size-extra-small;
+  color: $text-secondary;
+}
 
-	.menu-list {
-		display: flex;
-		flex-direction: column;
-	}
+.menu-list {
+  display: flex;
+  flex-direction: column;
+}
 
-	.menu-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 30rpx 0;
-		border-bottom: 1rpx solid #f0f0f0;
-		transition: all 0.3s;
-	}
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $padding-base 0;
+  border-bottom: 1rpx solid $border-color-extra-light;
+  transition: all $transition-duration;
+}
 
-	.menu-item:active {
-		background: #f8f8f8;
-	}
+.menu-item:active {
+  background: $background-color;
+}
 
-	.menu-item:last-child {
-		border-bottom: none;
-	}
+.menu-item:last-child {
+  border-bottom: none;
+}
 
-	.menu-left {
-		display: flex;
-		align-items: center;
-	}
+.menu-left {
+  display: flex;
+  align-items: center;
+}
 
-	.menu-icon {
-		font-size: 36rpx;
-		margin-right: 25rpx;
-		width: 40rpx;
-		text-align: center;
-	}
+.menu-icon {
+  font-size: $font-size-medium;
+  margin-right: 25rpx;
+  width: 40rpx;
+  text-align: center;
+}
 
-	.menu-text {
-		font-size: 28rpx;
-		color: #333;
-	}
+.menu-text {
+  font-size: $font-size-base;
+  color: $text-primary;
+}
 
-	.menu-arrow {
-		font-size: 36rpx;
-		color: #999;
-	}
+.menu-arrow {
+  font-size: $font-size-medium;
+  color: $text-placeholder;
+}
 </style>

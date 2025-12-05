@@ -8,7 +8,6 @@ import cn.net.yunlou.bole.config.StorageMinioProperties;
 import cn.net.yunlou.bole.entity.File;
 import io.minio.*;
 import io.minio.http.Method;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
@@ -20,7 +19,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -111,9 +109,7 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 获取对象存储路径
-     */
+    /** 获取对象存储路径 */
     private String getObjectPath(String fileName) {
         // 可以根据日期等生成路径，例如: 2024/01/15/uuid.ext
         String datePath = new java.text.SimpleDateFormat("yyyy/MM/dd").format(new Date());
@@ -123,10 +119,11 @@ public class MinioStorage implements IStorage {
     @Override
     public boolean delete(String filePath) {
         try {
-            minioClient.removeObject(RemoveObjectArgs.builder()
-                    .bucket(properties.getBucketName())
-                    .object(filePath)
-                    .build());
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(properties.getBucketName())
+                            .object(filePath)
+                            .build());
             log.info("文件删除成功: {}", filePath);
             return true;
         } catch (Exception e) {
@@ -152,9 +149,7 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 获取访问URL（可自定义过期时间）
-     */
+    /** 获取访问URL（可自定义过期时间） */
     public String getAccessUrl(String filePath, int duration, TimeUnit timeUnit) {
         try {
             return minioClient.getPresignedObjectUrl(
@@ -173,22 +168,21 @@ public class MinioStorage implements IStorage {
     @Override
     public InputStream download(String filePath) {
         try {
-            return minioClient.getObject(GetObjectArgs.builder()
-                    .bucket(properties.getBucketName())
-                    .object(filePath)
-                    .build());
+            return minioClient.getObject(
+                    GetObjectArgs.builder()
+                            .bucket(properties.getBucketName())
+                            .object(filePath)
+                            .build());
         } catch (Exception e) {
             log.error("下载文件失败: {}", filePath, e);
             throw new BusinessException(BusinessStatus.NOT_FOUND_RECORD, "文件下载失败");
         }
     }
 
-    /**
-     * 下载文件为字节数组
-     */
+    /** 下载文件为字节数组 */
     public ResponseEntity<byte[]> downloadAsBytes(String filePath) {
         try (InputStream inputStream = download(filePath);
-             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
             IOUtils.copy(inputStream, outputStream);
             byte[] bytes = outputStream.toByteArray();
@@ -197,8 +191,11 @@ public class MinioStorage implements IStorage {
             String originalFilename = StringUtils.substringAfterLast(filePath, "/");
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition",
-                    "attachment; filename=\"" + URLEncoder.encode(originalFilename, StandardCharsets.UTF_8.name()) + "\"");
+            headers.add(
+                    "Content-Disposition",
+                    "attachment; filename=\""
+                            + URLEncoder.encode(originalFilename, StandardCharsets.UTF_8.name())
+                            + "\"");
             headers.setContentLength(bytes.length);
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setAccessControlExposeHeaders(List.of("*"));
@@ -214,10 +211,11 @@ public class MinioStorage implements IStorage {
     @Override
     public boolean exists(String filePath) {
         try {
-            minioClient.statObject(StatObjectArgs.builder()
-                    .bucket(properties.getBucketName())
-                    .object(filePath)
-                    .build());
+            minioClient.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(properties.getBucketName())
+                            .object(filePath)
+                            .build());
             return true;
         } catch (ErrorResponseException e) {
             // 文件不存在
@@ -231,17 +229,19 @@ public class MinioStorage implements IStorage {
     @Override
     public FileInfo getFileInfo(String filePath) {
         try {
-            StatObjectResponse statObject = minioClient.statObject(StatObjectArgs.builder()
-                    .bucket(properties.getBucketName())
-                    .object(filePath)
-                    .build());
+            StatObjectResponse statObject =
+                    minioClient.statObject(
+                            StatObjectArgs.builder()
+                                    .bucket(properties.getBucketName())
+                                    .object(filePath)
+                                    .build());
 
             return FileInfo.builder()
                     .fileName(StringUtils.substringAfterLast(filePath, "/"))
                     .filePath(filePath)
                     .fileSize(statObject.size())
                     .contentType(statObject.contentType())
-                    //.lastModified(statObject.lastModified())
+                    // .lastModified(statObject.lastModified())
                     .etag(statObject.etag())
                     .build();
         } catch (Exception e) {
@@ -250,19 +250,14 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 检查bucket是否存在，不存在则创建
-     */
+    /** 检查bucket是否存在，不存在则创建 */
     public boolean ensureBucketExists(String bucketName) {
         try {
-            boolean exists = minioClient.bucketExists(BucketExistsArgs.builder()
-                    .bucket(bucketName)
-                    .build());
+            boolean exists =
+                    minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
 
             if (!exists) {
-                minioClient.makeBucket(MakeBucketArgs.builder()
-                        .bucket(bucketName)
-                        .build());
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
                 log.info("Bucket '{}' 创建成功", bucketName);
             }
             return true;
@@ -272,14 +267,10 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 创建存储bucket
-     */
+    /** 创建存储bucket */
     public boolean createBucket(String bucketName) {
         try {
-            minioClient.makeBucket(MakeBucketArgs.builder()
-                    .bucket(bucketName)
-                    .build());
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             log.info("Bucket '{}' 创建成功", bucketName);
             return true;
         } catch (Exception e) {
@@ -288,14 +279,10 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 删除存储bucket
-     */
+    /** 删除存储bucket */
     public boolean deleteBucket(String bucketName) {
         try {
-            minioClient.removeBucket(RemoveBucketArgs.builder()
-                    .bucket(bucketName)
-                    .build());
+            minioClient.removeBucket(RemoveBucketArgs.builder().bucket(bucketName).build());
             log.info("Bucket '{}' 删除成功", bucketName);
             return true;
         } catch (Exception e) {
@@ -304,10 +291,9 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 获取上传临时签名（用于前端直传）
-     */
-    public Map<String, String> generatePresignedPostFormData(String fileName, ZonedDateTime expirationTime) {
+    /** 获取上传临时签名（用于前端直传） */
+    public Map<String, String> generatePresignedPostFormData(
+            String fileName, ZonedDateTime expirationTime) {
         try {
             PostPolicy postPolicy = new PostPolicy(properties.getBucketName(), expirationTime);
             postPolicy.addEqualsCondition("key", fileName);
@@ -315,11 +301,12 @@ public class MinioStorage implements IStorage {
             Map<String, String> formData = minioClient.getPresignedPostFormData(postPolicy);
 
             // 转换key格式并添加host
-            Map<String, String> result = formData.entrySet().stream()
-                    .collect(Collectors.toMap(
-                            entry -> entry.getKey().replace("-", ""),
-                            Map.Entry::getValue
-                    ));
+            Map<String, String> result =
+                    formData.entrySet().stream()
+                            .collect(
+                                    Collectors.toMap(
+                                            entry -> entry.getKey().replace("-", ""),
+                                            Map.Entry::getValue));
 
             result.put("host", properties.getEndpoint() + "/" + properties.getBucketName());
             return result;
@@ -329,10 +316,9 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 生成预签名URL（用于上传或下载）
-     */
-    public String generatePresignedUrl(String filePath, Method method, int duration, TimeUnit timeUnit) {
+    /** 生成预签名URL（用于上传或下载） */
+    public String generatePresignedUrl(
+            String filePath, Method method, int duration, TimeUnit timeUnit) {
         try {
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
@@ -347,17 +333,16 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 上传文件（直接上传方式）
-     */
+    /** 上传文件（直接上传方式） */
     public boolean uploadFile(MultipartFile file, String filePath) {
         try {
-            minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(properties.getBucketName())
-                    .object(filePath)
-                    .stream(file.getInputStream(), file.getSize(), -1)
-                    .contentType(file.getContentType())
-                    .build());
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(properties.getBucketName())
+                            .object(filePath)
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build());
 
             log.info("文件上传成功: {} -> {}", file.getOriginalFilename(), filePath);
             return true;
@@ -367,21 +352,21 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 复制文件
-     */
+    /** 复制文件 */
     public boolean copyFile(String sourceFilePath, String targetFilePath) {
         try {
-            CopySource source = CopySource.builder()
-                    .bucket(properties.getBucketName())
-                    .object(sourceFilePath)
-                    .build();
+            CopySource source =
+                    CopySource.builder()
+                            .bucket(properties.getBucketName())
+                            .object(sourceFilePath)
+                            .build();
 
-            minioClient.copyObject(CopyObjectArgs.builder()
-                    .bucket(properties.getBucketName())
-                    .object(targetFilePath)
-                    .source(source)
-                    .build());
+            minioClient.copyObject(
+                    CopyObjectArgs.builder()
+                            .bucket(properties.getBucketName())
+                            .object(targetFilePath)
+                            .source(source)
+                            .build());
 
             log.info("文件复制成功: {} -> {}", sourceFilePath, targetFilePath);
             return true;
@@ -391,18 +376,15 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /**
-     * 获取默认bucket名称
-     */
+    /** 获取默认bucket名称 */
     public String getBucketName() {
         return properties.getBucketName();
     }
 
-    /**
-     * 获取文件的永久访问URL（需要bucket为公开访问）
-     */
+    /** 获取文件的永久访问URL（需要bucket为公开访问） */
     public String getPermanentUrl(String filePath) {
-        return String.format("%s/%s/%s",
+        return String.format(
+                "%s/%s/%s",
                 properties.getEndpoint().replaceAll("/$", ""),
                 properties.getBucketName(),
                 filePath);

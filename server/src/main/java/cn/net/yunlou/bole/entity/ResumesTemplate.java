@@ -4,7 +4,6 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.List;
-
 import lombok.*;
 
 /**

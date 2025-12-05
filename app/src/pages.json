@@ -29,21 +29,33 @@
 			}
 		},
 		{
-			"path": "pages/login/login",
+			"path": "pages/profile/setting",
+			"style": {
+				"navigationBarTitleText": "设置"
+			}
+		},
+		{
+			"path": "pages/auth/auth",
 			"style": {
 				"navigationBarTitleText": "登录"
 			}
 		},
 		{
-			"path": "pages/agreement/user-agreement",
+			"path": "pages/agreement/user",
 			"style": {
 				"navigationBarTitleText": "用户协议"
 			}
 		},
 		{
-			"path": "pages/agreement/privacy-agreement",
+			"path": "pages/agreement/privacy",
 			"style": {
 				"navigationBarTitleText": "隐私协议"
+			}
+		},
+		{
+			"path": "pages/test/dict",
+			"style": {
+				"navigationBarTitleText": "字典测试"
 			}
 		},
 		{
@@ -55,31 +67,79 @@
 		{
 			"path": "pages/template/template",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "模板"
 			}
 		},
 		{
 			"path": "pages/template/list",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "模板列表"
 			}
 		},
 		{
 			"path": "pages/template/detail",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "模板详情"
 			}
 		},
 		{
 			"path": "pages/company/company",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "公司"
 			}
 		},
 		{
-			"path": "pages/test/dict",
+			"path": "pages/about/about",
 			"style": {
-				"navigationBarTitleText": "字典测试"
+				"navigationBarTitleText": "关于我们"
+			}
+		},
+		{
+			"path": "pages/feedback/feedback",
+			"style": {
+				"navigationBarTitleText": "意见反馈"
+			}
+		},
+		{
+			"path": "pages/history/history",
+			"style": {
+				"navigationBarTitleText": "浏览历史"
+			}
+		},
+		{
+			"path": "pages/application/application",
+			"style": {
+				"navigationBarTitleText": "申请审核"
+			}
+		},
+		{
+			"path": "pages/application/list",
+			"style": {
+				"navigationBarTitleText": "申请列表"
+			}
+		},
+		{
+			"path": "pages/analysis/analysis",
+			"style": {
+				"navigationBarTitleText": "简历分析"
+			}
+		},
+		{
+			"path": "pages/guide/guide",
+			"style": {
+				"navigationBarTitleText": "求职指南"
+			}
+		},
+		{
+			"path": "pages/chat/chat",
+			"style": {
+				"navigationBarTitleText": "聊天"
+			}
+		},
+		{
+			"path": "pages/notify/notify",
+			"style": {
+				"navigationBarTitleText": "系统通知"
 			}
 		}
 ],

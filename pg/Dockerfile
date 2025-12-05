@@ -1,5 +1,5 @@
 # 使用官方 PostgreSQL 镜像
-FROM postgres:15-alpine
+FROM harbor.yunlou.net.cn/library/postgres:14-alpine
 
 # 设置中国时区
 RUN apk add --no-cache tzdata && \

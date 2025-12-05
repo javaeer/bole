@@ -1,23 +1,99 @@
+@use "sass:color";
+@use "sass:math";
+
 /* 颜色变量 */
-$primary-color: #d4af37;
+/* 行为相关颜色 (官方基础变量) */
+$uni-color-primary: #007aff;
+$uni-color-success: #4cd964;
+$uni-color-warning: #f0ad4e;
+$uni-color-error: #dd524d;
+
+/* 文字基本颜色 (官方基础变量) */
+$uni-text-color:#333;//基本色
+$uni-text-color-inverse:#fff;//反色
+$uni-text-color-grey:#999;//辅助灰色，如加载更多的提示信息
+$uni-text-color-placeholder: #808080;
+$uni-text-color-disable:#c0c0c0;
+
+/* 背景颜色 (官方基础变量) */
+$uni-bg-color:#ffffff;
+$uni-bg-color-grey:#f8f8f8;
+$uni-bg-color-hover:#f1f1f1;//点击状态颜色
+$uni-bg-color-mask:rgba(0, 0, 0, 0.4);//遮罩颜色
+
+/* 边框颜色 (官方基础变量) */
+$uni-border-color:#c8c7cc;
+
+/* 尺寸变量 */
+/* 文字尺寸 (官方基础变量) */
+$uni-font-size-sm:24rpx;
+$uni-font-size-base:28rpx;
+$uni-font-size-lg:32rpx;
+
+/* 图片尺寸 (官方基础变量) */
+$uni-img-size-sm:40rpx;
+$uni-img-size-base:52rpx;
+$uni-img-size-lg:80rpx;
+
+/* Border Radius (官方基础变量) */
+$uni-border-radius-sm: 4rpx;
+$uni-border-radius-base: 6rpx;
+$uni-border-radius-lg: 12rpx;
+$uni-border-radius-circle: 50%;
+
+/* 水平间距 (官方基础变量) */
+$uni-spacing-row-sm: 10px;
+$uni-spacing-row-base: 20rpx;
+$uni-spacing-row-lg: 30rpx;
+
+/* 垂直间距 (官方基础变量) */
+$uni-spacing-col-sm: 8rpx;
+$uni-spacing-col-base: 16rpx;
+$uni-spacing-col-lg: 24rpx;
+
+/* 透明度 (官方基础变量) */
+$uni-opacity-disabled: 0.3; // 组件禁用态的透明度
+
+/* 文章场景相关 (官方基础变量) */
+$uni-color-title: #2C405A; // 文章标题颜色
+$uni-font-size-title:40rpx;
+$uni-color-subtitle: #555555; // 二级标题颜色
+$uni-font-size-subtitle:36rpx;
+$uni-color-paragraph: #3F536E; // 文章段落颜色
+$uni-font-size-paragraph:30rpx;
+
+/* ==================== 项目扩展变量 ==================== */
+/* 主色与功能色 */
+$primary-color: #d4af37; /* 核心品牌色 */
 $secondary-color: #f7ef8a;
 $success-color: #67c23a;
 $warning-color: #e6a23c;
 $danger-color: #f56c6c;
 $info-color: #909399;
 
+/* 主色衍生色 */
+$primary-light: #f9f3e3;
+$primary-lighter: #fef9ed;
+
+/* 文本色系 */
 $text-primary: #303133;
 $text-regular: #606266;
 $text-secondary: #909399;
 $text-placeholder: #c0c4cc;
 
+/* 边框色系 */
 $border-color: #dcdfe6;
 $border-color-light: #e4e7ed;
 $border-color-lighter: #ebeef5;
 $border-color-extra-light: #f2f6fc;
 
+/* 背景色系 */
 $background-color: #f8f8f8;
 $background-color-white: #ffffff;
+
+/* 功能色衍生 */
+$danger-light: #fee;
+$warning-light: #fef6ec;
 
 /* 尺寸变量 */
 $border-radius: 15rpx;
@@ -39,6 +115,12 @@ $font-size-medium: 32rpx;
 $font-size-base: 28rpx;
 $font-size-small: 24rpx;
 $font-size-extra-small: 20rpx;
+
+/* 字体粗细 */
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 500;
+$font-weight-bold: 600;
 
 /* 平台特定变量 */
 // #ifdef MP-WEIXIN
@@ -64,3 +146,265 @@ $box-shadow-dark: 0 8rpx 40rpx rgba(0, 0, 0, 0.08);
 /* 动画 */
 $transition-duration: 0.3s;
 $transition-timing-function: ease-in-out;
+$transition-fast: 0.2s;
+$transition-normal: 0.3s;
+$transition-slow: 0.5s;
+
+/* 组件变量 - 登录/注册页 */
+$button-height: 80rpx;
+$input-height: 80rpx;
+$input-border-radius: 12rpx;
+
+/* 状态颜色 */
+$focus-border-color: $primary-color;
+$error-border-color: $danger-color;
+$success-border-color: $success-color;
+
+/* 阴影扩展 */
+$input-focus-shadow: 0 0 0 2rpx rgba($primary-color, 0.2);
+$input-error-shadow: 0 0 0 2rpx rgba($danger-color, 0.2);
+$button-active-shadow: 0 4rpx 12rpx rgba($primary-color, 0.3);
+$button-disabled-opacity: 0.6;
+
+/* 组件变量 - 消息页 */
+$message-bg-color: $background-color-white;
+$message-border-radius: $border-radius;
+$message-padding: $padding-base;
+$message-margin-bottom: $margin-small;
+
+/* 标签页变量 */
+$tab-item-height: 80rpx;
+$tab-item-font-size: $font-size-base;
+$tab-active-color: $primary-color;
+$tab-inactive-color: $text-secondary;
+$tab-indicator-height: 4rpx;
+$tab-indicator-width: 80rpx;
+
+/* 徽章变量 */
+$badge-bg-color: $danger-color;
+$badge-text-color: $background-color-white;
+$badge-font-size: $font-size-extra-small;
+$badge-padding: 4rpx 12rpx;
+$badge-min-width: 30rpx;
+$badge-border-radius: 20rpx;
+
+/* 头像变量 */
+$avatar-size: 80rpx;
+$avatar-border-radius: $border-radius-round;
+$avatar-bg-color: $background-color;
+
+/* 状态指示器 */
+$unread-dot-size: 20rpx;
+$unread-dot-color: $danger-color;
+
+/* 消息类型颜色 */
+$message-system-color: $warning-color;
+$message-notice-color: $info-color;
+$message-interact-color: $success-color;
+
+/* 按钮变量扩展 */
+$button-small-height: 50rpx;
+$button-small-font-size: $font-size-small;
+$button-small-border-radius: $border-radius-small;
+
+/* 空状态 */
+$empty-icon-size: 120rpx;
+$empty-text-color: $text-placeholder;
+$empty-text-font-size: $font-size-base;
+
+/* 阴影扩展 */
+$message-item-shadow: $box-shadow-light;
+$message-item-hover-shadow: $box-shadow;
+
+/* 层级 */
+$z-index-base: 1;
+$z-index-dropdown: 1000;
+$z-index-modal: 2000;
+$z-index-toast: 3000;
+
+/* 响应式断点 */
+$breakpoint-xs: 320px;
+$breakpoint-sm: 375px;
+$breakpoint-md: 414px;
+$breakpoint-lg: 768px;
+
+/* === 布局相关扩展 === */
+
+/* 间距扩展（基于已有变量的倍数） */
+$padding-large: $padding-base * 1.5;  // 45rpx
+$margin-large: $margin-base * 1.5;    // 45rpx
+
+/* 高度扩展 */
+$button-height: 80rpx;
+$input-height: 80rpx;
+$card-height: 120rpx;
+
+/* === 组件特定变量 === */
+
+/* 卡片相关 */
+$card-border-radius: $border-radius * 1.5;  // 22.5rpx
+$card-padding: $padding-base;
+$card-shadow: $box-shadow;
+$card-hover-shadow: $box-shadow-dark;
+
+/* 按钮相关 */
+$button-border-radius: $border-radius;
+$button-primary-bg: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
+$button-disabled-bg: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness: -10%) 100%);
+
+/* 输入框相关 */
+$input-border-radius: $border-radius-small;
+$input-focus-shadow: 0 0 0 2rpx rgba($primary-color, 0.2);
+$input-error-border: $danger-color;
+$input-success-border: $success-color;
+
+/* === 功能色扩展 === */
+
+/* 状态背景色 */
+$success-bg: rgba($success-color, 0.1);
+$warning-bg: rgba($warning-color, 0.1);
+$danger-bg: rgba($danger-color, 0.1);
+$info-bg: rgba($info-color, 0.1);
+
+/* 状态边框色 */
+$success-border: rgba($success-color, 0.3);
+$warning-border: rgba($warning-color, 0.3);
+$danger-border: rgba($danger-color, 0.3);
+$info-border: rgba($info-color, 0.3);
+
+/* === 动画扩展 === */
+
+/* 动画时间 */
+$transition-fast: 0.2s;
+$transition-normal: 0.3s;
+$transition-slow: 0.5s;
+
+/* 缓动函数 */
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+/* === 响应式断点 === */
+
+/* 屏幕断点（基于rpx） */
+$screen-sm: 640rpx;   // 小屏幕
+$screen-md: 768rpx;   // 中等屏幕
+$screen-lg: 1024rpx;  // 大屏幕
+$screen-xl: 1280rpx;  // 超大屏幕
+
+/* === 实用类扩展 === */
+
+/* 文本类 */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-multi-truncate {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 状态文本色 */
+.status-text {
+  &.success { color: $success-color; }
+  &.warning { color: $warning-color; }
+  &.danger { color: $danger-color; }
+  &.info { color: $info-color; }
+}
+
+/* 状态背景 */
+.status-bg {
+  &.success { background: $success-bg; border-color: $success-border; }
+  &.warning { background: $warning-bg; border-color: $warning-border; }
+  &.danger { background: $danger-bg; border-color: $danger-border; }
+  &.info { background: $info-bg; border-color: $info-border; }
+}
+
+/* 禁用状态 */
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* 加载状态 */
+.loading {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20rpx;
+    height: 20rpx;
+    border: 2rpx solid rgba($text-primary, 0.2);
+    border-top-color: $primary-color;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==================== 通用样式类 ==================== */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 文本颜色类 */
+.text-primary { color: $primary-color; }
+.text-danger { color: $danger-color; }
+.text-success { color: $success-color; }
+.text-warning { color: $warning-color; }
+
+/* 消息类型类 */
+.message-type-system { color: $message-system-color; }
+.message-type-notice { color: $message-notice-color; }
+.message-type-interact { color: $message-interact-color; }
+
+/* 消息状态类 */
+.status-unread {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba($primary-light, 0.1);
+    border-radius: $message-border-radius;
+    pointer-events: none;
+  }
+}
+
+/* 通用卡片类 */
+.message-card {
+  background: $message-bg-color;
+  border-radius: $message-border-radius;
+  padding: $message-padding;
+  margin-bottom: $message-margin-bottom;
+  box-shadow: $message-item-shadow;
+  transition: all $transition-fast;
+  &:hover { box-shadow: $message-item-hover-shadow; }
+}

@@ -1,10 +1,5 @@
 package cn.net.yunlou.bole.common.utils;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.stereotype.Component;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -12,6 +7,10 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * 增强版Bean工具类 - 整合反射和Bean操作功能
@@ -22,17 +21,32 @@ import java.util.stream.Collectors;
 @Component
 public class BeanUtils {
     // 简单类型集合
-    private static final Set<Class<?>> SIMPLE_TYPES = Set.of(
-            String.class, Integer.class, int.class, Long.class, long.class,
-            Double.class, double.class, Float.class, float.class, Boolean.class, boolean.class,
-            Byte.class, byte.class, Short.class, short.class, Character.class, char.class,
-            Date.class, java.time.LocalDate.class, java.time.LocalDateTime.class,
-            java.math.BigDecimal.class, java.math.BigInteger.class
-    );
+    private static final Set<Class<?>> SIMPLE_TYPES =
+            Set.of(
+                    String.class,
+                    Integer.class,
+                    int.class,
+                    Long.class,
+                    long.class,
+                    Double.class,
+                    double.class,
+                    Float.class,
+                    float.class,
+                    Boolean.class,
+                    boolean.class,
+                    Byte.class,
+                    byte.class,
+                    Short.class,
+                    short.class,
+                    Character.class,
+                    char.class,
+                    Date.class,
+                    java.time.LocalDate.class,
+                    java.time.LocalDateTime.class,
+                    java.math.BigDecimal.class,
+                    java.math.BigInteger.class);
 
-    /**
-     * 创建实例（自动检测builder()静态方法）
-     */
+    /** 创建实例（自动检测builder()静态方法） */
     public static <T> T createInstance(Class<T> clazz) {
         try {
             // 1. 尝试使用@Builder模式
@@ -54,9 +68,7 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 尝试使用@Builder模式创建实例
-     */
+    /** 尝试使用@Builder模式创建实例 */
     private static <T> T tryCreateWithBuilder(Class<T> clazz) {
         try {
             // 查找builder()方法
@@ -76,9 +88,7 @@ public class BeanUtils {
         return null;
     }
 
-    /**
-     * 查找builder()静态方法
-     */
+    /** 查找builder()静态方法 */
     private static Method findBuilderMethod(Class<?> clazz) {
         try {
             return clazz.getMethod("builder");
@@ -87,9 +97,7 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 查找build()方法
-     */
+    /** 查找build()方法 */
     private static Method findBuildMethod(Class<?> builderClass) {
         try {
             return builderClass.getMethod("build");
@@ -98,28 +106,24 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 使用默认值创建实例（用于无默认构造的情况）
-     */
+    /** 使用默认值创建实例（用于无默认构造的情况） */
     private static <T> T createWithDefaultValues(Class<T> clazz) throws Exception {
         // 查找所有构造器，选择参数最多的一个
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-        Constructor<?> maxParamConstructor = Arrays.stream(constructors)
-                .max(Comparator.comparingInt(Constructor::getParameterCount))
-                .orElseThrow(() -> new NoSuchMethodException("No constructor found"));
+        Constructor<?> maxParamConstructor =
+                Arrays.stream(constructors)
+                        .max(Comparator.comparingInt(Constructor::getParameterCount))
+                        .orElseThrow(() -> new NoSuchMethodException("No constructor found"));
 
         maxParamConstructor.setAccessible(true);
         Class<?>[] paramTypes = maxParamConstructor.getParameterTypes();
-        Object[] defaultParams = Arrays.stream(paramTypes)
-                .map(BeanUtils::getDefaultValue)
-                .toArray();
+        Object[] defaultParams =
+                Arrays.stream(paramTypes).map(BeanUtils::getDefaultValue).toArray();
 
         return clazz.cast(maxParamConstructor.newInstance(defaultParams));
     }
 
-    /**
-     * 获取类型的默认值
-     */
+    /** 获取类型的默认值 */
     private static Object getDefaultValue(Class<?> type) {
         if (!type.isPrimitive()) return null;
 
@@ -134,9 +138,7 @@ public class BeanUtils {
         return null;
     }
 
-    /**
-     * 属性拷贝（支持@Builder对象）
-     */
+    /** 属性拷贝（支持@Builder对象） */
     public static <T> T copyProperties(Object source, Class<T> targetClass) {
         if (source == null) return null;
 
@@ -150,9 +152,7 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 对象到对象的属性拷贝
-     */
+    /** 对象到对象的属性拷贝 */
     public static void copyProperties(Object source, Object target) {
         if (source == null || target == null) return;
 
@@ -165,9 +165,7 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 反射方式拷贝属性
-     */
+    /** 反射方式拷贝属性 */
     private static void copyPropertiesByReflection(Object source, Object target) {
         Class<?> sourceClass = source.getClass();
         Class<?> targetClass = target.getClass();
@@ -198,9 +196,7 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 批量拷贝
-     */
+    /** 批量拷贝 */
     public static <T> List<T> copyList(List<?> sources, Class<T> targetClass) {
         if (sources == null || sources.isEmpty()) {
             return Collections.emptyList();
@@ -212,9 +208,7 @@ public class BeanUtils {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Bean转Map
-     */
+    /** Bean转Map */
     public static Map<String, Object> toMap(Object bean) {
         if (bean == null) return Collections.emptyMap();
 
@@ -238,9 +232,7 @@ public class BeanUtils {
         return result;
     }
 
-    /**
-     * Map转Bean（支持@Builder）
-     */
+    /** Map转Bean（支持@Builder） */
     public static <T> T fromMap(Map<String, Object> map, Class<T> targetClass) {
         if (map == null || map.isEmpty()) {
             return createInstance(targetClass);
@@ -275,16 +267,12 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 过滤实体无效值
-     */
+    /** 过滤实体无效值 */
     public static <T> T filterInvalidValues(T entity) {
         return filterInvalidValues(entity, ValueUtils::isValid);
     }
 
-    /**
-     * 使用自定义验证器过滤无效值
-     */
+    /** 使用自定义验证器过滤无效值 */
     public static <T> T filterInvalidValues(T entity, Predicate<Object> validator) {
         if (entity == null) return null;
 
@@ -309,10 +297,7 @@ public class BeanUtils {
         }
     }
 
-
-    /**
-     * 使用@Builder模式从Map创建对象
-     */
+    /** 使用@Builder模式从Map创建对象 */
     private static <T> T tryCreateWithBuilderAndMap(Map<String, Object> map, Class<T> targetClass) {
         try {
             Method builderMethod = findBuilderMethod(targetClass);
@@ -347,9 +332,7 @@ public class BeanUtils {
         }
     }
 
-    /**
-     * 为Map转换处理值
-     */
+    /** 为Map转换处理值 */
     private static Object convertForMap(Object value) {
         if (value == null) return null;
 
@@ -359,9 +342,8 @@ public class BeanUtils {
         }
 
         if (value instanceof Collection) {
-            return ((Collection<?>) value).stream()
-                    .map(BeanUtils::convertForMap)
-                    .collect(Collectors.toList());
+            return ((Collection<?>) value)
+                    .stream().map(BeanUtils::convertForMap).collect(Collectors.toList());
         }
 
         if (value instanceof Map) {
@@ -377,9 +359,7 @@ public class BeanUtils {
         return toMap(value);
     }
 
-    /**
-     * 获取类的所有字段（包含父类）
-     */
+    /** 获取类的所有字段（包含父类） */
     private static Map<String, Field> getAllFieldsMap(Class<?> clazz) {
         Map<String, Field> fields = new HashMap<>();
         Class<?> current = clazz;
@@ -399,16 +379,12 @@ public class BeanUtils {
         return fields;
     }
 
-    /**
-     * 判断是否是简单类型
-     */
+    /** 判断是否是简单类型 */
     private static boolean isSimpleType(Class<?> clazz) {
         return SIMPLE_TYPES.contains(clazz) || clazz.isPrimitive();
     }
 
-    /**
-     * 类型是否可赋值
-     */
+    /** 类型是否可赋值 */
     private static boolean isAssignable(Class<?> sourceType, Class<?> targetType) {
         if (sourceType.equals(targetType)) return true;
 
@@ -424,18 +400,16 @@ public class BeanUtils {
         return targetType.isAssignableFrom(sourceType);
     }
 
-    /**
-     * 判断基本类型和包装类型是否匹配
-     */
+    /** 判断基本类型和包装类型是否匹配 */
     private static boolean isPrimitiveWrapper(Class<?> primitive, Class<?> wrapper) {
-        return (primitive == int.class && wrapper == Integer.class) ||
-                (primitive == long.class && wrapper == Long.class) ||
-                (primitive == boolean.class && wrapper == Boolean.class) ||
-                (primitive == double.class && wrapper == Double.class) ||
-                (primitive == float.class && wrapper == Float.class) ||
-                (primitive == char.class && wrapper == Character.class) ||
-                (primitive == byte.class && wrapper == Byte.class) ||
-                (primitive == short.class && wrapper == Short.class);
+        return (primitive == int.class && wrapper == Integer.class)
+                || (primitive == long.class && wrapper == Long.class)
+                || (primitive == boolean.class && wrapper == Boolean.class)
+                || (primitive == double.class && wrapper == Double.class)
+                || (primitive == float.class && wrapper == Float.class)
+                || (primitive == char.class && wrapper == Character.class)
+                || (primitive == byte.class && wrapper == Byte.class)
+                || (primitive == short.class && wrapper == Short.class);
     }
 
     // 异常类
