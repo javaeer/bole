@@ -13,14 +13,11 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,32 +34,30 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 @Slf4j
 @ConditionalOnClass(name = "io.minio.MinioClient")
-@ConditionalOnProperty(
-        prefix = "storage",
-        name = "type",
-        havingValue = "minio",
-        matchIfMissing = false)
+@ConditionalOnProperty(prefix = "storage", name = "type", havingValue = "minio")
 public class MinioStorage implements IStorage {
 
-    private final StorageMinioProperties properties;
+    private final StorageMinioProperties storageMinioProperties;
+
     private final MinioClient minioClient;
 
     @Autowired
-    public MinioStorage(StorageMinioProperties properties) {
-        this.properties = properties;
+    public MinioStorage(StorageMinioProperties storageMinioProperties) {
+        this.storageMinioProperties = storageMinioProperties;
 
         // 创建MinIO客户端
         this.minioClient =
                 MinioClient.builder()
-                        .endpoint(properties.getEndpoint())
-                        .credentials(properties.getAccessKey(), properties.getSecretKey())
-                        .region(properties.getRegion())
+                        .endpoint(storageMinioProperties.getEndpoint())
+                        .credentials(
+                                storageMinioProperties.getAccessKey(),
+                                storageMinioProperties.getSecretKey())
+                        .region(storageMinioProperties.getRegion())
                         .build();
 
-        log.info("MinIO存储策略初始化完成，endpoint: {}", properties.getEndpoint());
-
+        log.info("MinIO存储策略初始化完成，endpoint: {}", storageMinioProperties.getEndpoint());
         // 初始化时确保bucket存在
-        ensureBucketExists(properties.getBucketName());
+        ensureBucketExists(storageMinioProperties.getBucketName());
     }
 
     @Override
@@ -73,34 +68,37 @@ public class MinioStorage implements IStorage {
     @Override
     public File store(MultipartFile multipartFile) {
         try {
+            // 计算文件 唯一标识
+            String fileKey = FileHashUtils.calculateFileHash(multipartFile);
+
             // 生成唯一文件名
             String originalFilename = multipartFile.getOriginalFilename();
-            String extension = FilenameUtils.getExtension(originalFilename);
-            String fileName = UUID.randomUUID().toString() + "." + extension;
-            String objectName = getObjectPath(fileName);
 
-            String fileKey = FileHashUtils.calculateFileHash(multipartFile);
+            String uniqueFilename = generateUniqueFilename(originalFilename);
+
+            // 生成路径+文件名
+            String datePathFileName = generateDatePathFileName(uniqueFilename);
 
             // 上传到MinIO
             minioClient.putObject(
                     PutObjectArgs.builder()
-                            .bucket(properties.getBucketName())
-                            .object(objectName)
+                            .bucket(storageMinioProperties.getBucketName())
+                            .object(datePathFileName)
                             .stream(multipartFile.getInputStream(), multipartFile.getSize(), -1)
                             .contentType(multipartFile.getContentType())
                             .build());
 
-            log.info("文件上传成功: {} -> {}", originalFilename, objectName);
+            log.info("文件上传成功: {} -> {}", originalFilename, datePathFileName);
 
             return File.builder()
-                    .fileName(fileName)
+                    .fileName(uniqueFilename)
                     .fileKey(fileKey)
                     .originalFilename(originalFilename)
-                    .storagePath(objectName)
+                    .storagePath(datePathFileName)
                     .fileSizeBytes(multipartFile.getSize())
                     .contentType(multipartFile.getContentType())
                     .storageType(StorageType.MINIO.getValue())
-                    .accessUrl(getAccessUrl(objectName))
+                    .accessUrl(getAccessUrl(datePathFileName))
                     .build();
 
         } catch (Exception e) {
@@ -109,19 +107,12 @@ public class MinioStorage implements IStorage {
         }
     }
 
-    /** 获取对象存储路径 */
-    private String getObjectPath(String fileName) {
-        // 可以根据日期等生成路径，例如: 2024/01/15/uuid.ext
-        String datePath = new java.text.SimpleDateFormat("yyyy/MM/dd").format(new Date());
-        return String.format("%s/%s", datePath, fileName);
-    }
-
     @Override
     public boolean delete(String filePath) {
         try {
             minioClient.removeObject(
                     RemoveObjectArgs.builder()
-                            .bucket(properties.getBucketName())
+                            .bucket(storageMinioProperties.getBucketName())
                             .object(filePath)
                             .build());
             log.info("文件删除成功: {}", filePath);
@@ -139,7 +130,7 @@ public class MinioStorage implements IStorage {
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET)
-                            .bucket(properties.getBucketName())
+                            .bucket(storageMinioProperties.getBucketName())
                             .object(filePath)
                             .expiry(7 * 24 * 60 * 60) // 7天
                             .build());
@@ -155,7 +146,7 @@ public class MinioStorage implements IStorage {
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET)
-                            .bucket(properties.getBucketName())
+                            .bucket(storageMinioProperties.getBucketName())
                             .object(filePath)
                             .expiry(duration, timeUnit)
                             .build());
@@ -170,7 +161,7 @@ public class MinioStorage implements IStorage {
         try {
             return minioClient.getObject(
                     GetObjectArgs.builder()
-                            .bucket(properties.getBucketName())
+                            .bucket(storageMinioProperties.getBucketName())
                             .object(filePath)
                             .build());
         } catch (Exception e) {
@@ -213,7 +204,7 @@ public class MinioStorage implements IStorage {
         try {
             minioClient.statObject(
                     StatObjectArgs.builder()
-                            .bucket(properties.getBucketName())
+                            .bucket(storageMinioProperties.getBucketName())
                             .object(filePath)
                             .build());
             return true;
@@ -223,30 +214,6 @@ public class MinioStorage implements IStorage {
         } catch (Exception e) {
             log.error("检查文件是否存在失败: {}", filePath, e);
             return false;
-        }
-    }
-
-    @Override
-    public FileInfo getFileInfo(String filePath) {
-        try {
-            StatObjectResponse statObject =
-                    minioClient.statObject(
-                            StatObjectArgs.builder()
-                                    .bucket(properties.getBucketName())
-                                    .object(filePath)
-                                    .build());
-
-            return FileInfo.builder()
-                    .fileName(StringUtils.substringAfterLast(filePath, "/"))
-                    .filePath(filePath)
-                    .fileSize(statObject.size())
-                    .contentType(statObject.contentType())
-                    // .lastModified(statObject.lastModified())
-                    .etag(statObject.etag())
-                    .build();
-        } catch (Exception e) {
-            log.error("获取文件信息失败: {}", filePath, e);
-            throw new BusinessException(BusinessStatus.NOT_FOUND_RECORD, "文件不存在");
         }
     }
 
@@ -295,7 +262,8 @@ public class MinioStorage implements IStorage {
     public Map<String, String> generatePresignedPostFormData(
             String fileName, ZonedDateTime expirationTime) {
         try {
-            PostPolicy postPolicy = new PostPolicy(properties.getBucketName(), expirationTime);
+            PostPolicy postPolicy =
+                    new PostPolicy(storageMinioProperties.getBucketName(), expirationTime);
             postPolicy.addEqualsCondition("key", fileName);
 
             Map<String, String> formData = minioClient.getPresignedPostFormData(postPolicy);
@@ -308,7 +276,11 @@ public class MinioStorage implements IStorage {
                                             entry -> entry.getKey().replace("-", ""),
                                             Map.Entry::getValue));
 
-            result.put("host", properties.getEndpoint() + "/" + properties.getBucketName());
+            result.put(
+                    "host",
+                    storageMinioProperties.getEndpoint()
+                            + "/"
+                            + storageMinioProperties.getBucketName());
             return result;
         } catch (Exception e) {
             log.error("生成上传临时签名失败: {}", fileName, e);
@@ -323,7 +295,7 @@ public class MinioStorage implements IStorage {
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(method)
-                            .bucket(properties.getBucketName())
+                            .bucket(storageMinioProperties.getBucketName())
                             .object(filePath)
                             .expiry(duration, timeUnit)
                             .build());
@@ -338,7 +310,7 @@ public class MinioStorage implements IStorage {
         try {
             minioClient.putObject(
                     PutObjectArgs.builder()
-                            .bucket(properties.getBucketName())
+                            .bucket(storageMinioProperties.getBucketName())
                             .object(filePath)
                             .stream(file.getInputStream(), file.getSize(), -1)
                             .contentType(file.getContentType())
@@ -357,13 +329,13 @@ public class MinioStorage implements IStorage {
         try {
             CopySource source =
                     CopySource.builder()
-                            .bucket(properties.getBucketName())
+                            .bucket(storageMinioProperties.getBucketName())
                             .object(sourceFilePath)
                             .build();
 
             minioClient.copyObject(
                     CopyObjectArgs.builder()
-                            .bucket(properties.getBucketName())
+                            .bucket(storageMinioProperties.getBucketName())
                             .object(targetFilePath)
                             .source(source)
                             .build());
@@ -378,15 +350,15 @@ public class MinioStorage implements IStorage {
 
     /** 获取默认bucket名称 */
     public String getBucketName() {
-        return properties.getBucketName();
+        return storageMinioProperties.getBucketName();
     }
 
     /** 获取文件的永久访问URL（需要bucket为公开访问） */
     public String getPermanentUrl(String filePath) {
         return String.format(
                 "%s/%s/%s",
-                properties.getEndpoint().replaceAll("/$", ""),
-                properties.getBucketName(),
+                storageMinioProperties.getEndpoint().replaceAll("/$", ""),
+                storageMinioProperties.getBucketName(),
                 filePath);
     }
 }

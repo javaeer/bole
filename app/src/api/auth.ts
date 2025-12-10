@@ -1,4 +1,4 @@
-import { get, post } from "@/utils/request";
+import { request } from "@/utils/request";
 import { LoginForm, LoginResult, RegisterForm, ResetPasswordForm, TokenResult } from "@/types/user";
 import { useUserStore } from "@/stores/user";
 import { clearUserAll, setToken } from "@/utils/store";
@@ -9,7 +9,7 @@ const AuthAPI = {
    */
   async login(data: LoginForm): Promise<LoginResult> {
     console.log("登录请求数据:", data);
-    const response = await post<LoginResult>("/auth/login", data, { skipAuth: true });
+    const response = await request.post<LoginResult>("/auth/login", data, { skipAuth: true });
     setToken(response);
     return response;
   },
@@ -18,7 +18,7 @@ const AuthAPI = {
    * 微信登录接口
    */
   async wechatLogin(code: string): Promise<LoginResult> {
-    const response = await post<LoginResult>("/auth/wechat-login", { code }, { skipAuth: true });
+    const response = await request.post<LoginResult>("/auth/wechat-login", { code }, { skipAuth: true });
     setToken(response);
     return response;
   },
@@ -28,7 +28,7 @@ const AuthAPI = {
    */
   async logout(): Promise<void> {
     try {
-      await post("/auth/logout", {}, { skipAuth: true });
+      await request.post("/auth/logout", {});
     } catch (error) {
       console.warn("登出请求失败:", error);
     } finally {
@@ -57,7 +57,7 @@ const AuthAPI = {
       }
 
       // 调用刷新令牌接口
-      const response = await post<TokenResult>(
+      const response = await request.post<TokenResult>(
         "/auth/refresh",
         { refreshToken },
         { skipAuth: true },
@@ -93,7 +93,7 @@ const AuthAPI = {
    * 注册接口
    */
   async register(data: RegisterForm): Promise<LoginResult> {
-    const response = await post<LoginResult>("/auth/register", data, { skipAuth: true });
+    const response = await request.post<LoginResult>("/auth/register", data, { skipAuth: true });
 
     // 使用设置用户数据
     setToken(response);
@@ -105,21 +105,21 @@ const AuthAPI = {
    * 发送重置密码邮件
    */
   sendResetPasswordEmail(email: string): Promise<void> {
-    return post<void>("/auth/send-reset-email", { email }, { skipAuth: true });
+    return request.post<void>("/auth/send-reset-email", { email }, { skipAuth: true });
   },
 
   /**
    * 重置密码
    */
   resetPassword(data: ResetPasswordForm): Promise<void> {
-    return post<void>("/auth/reset-password", data, { skipAuth: true });
+    return request.post<void>("/auth/reset-password", data, { skipAuth: true });
   },
 
   /**
    * 验证令牌是否有效
    */
   verifyToken(): Promise<{ valid: boolean }> {
-    return get<{ valid: boolean }>("/auth/verify");
+    return request.get<{ valid: boolean }>("/auth/verify");
   },
 };
 

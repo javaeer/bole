@@ -1,4 +1,3 @@
-// types/dict.ts
 /**
  * 基础字典节点（接口返回的每个元素）
  */
@@ -19,7 +18,6 @@ export interface DictNode {
   label: string;
   state: number;
 }
-
 
 
 /**

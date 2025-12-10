@@ -8,7 +8,6 @@
 			</view>
 			<view class="search-btn" @click="handleSearch">
 				<text class="icon-search">🔍</text>
-				<text class="search-text">搜索简历模板</text>
 			</view>
 		</view>
 

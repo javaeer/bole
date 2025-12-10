@@ -69,6 +69,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useAuthGuard } from "@/composables/useAuthGaurd";
+
+const auth = useAuthGuard();
 
 const currentTab = ref('company')
 
@@ -87,26 +90,6 @@ const companyList = ref([
     industry: '互联网',
     logo: '/static/company/tencent.jpg',
     description: '以技术丰富互联网用户的生活'
-  }
-])
-
-// 关注HR数据
-const hrList = ref([
-  {
-    id: 1,
-    name: '张经理',
-    position: '招聘经理',
-    company: '阿里巴巴',
-    avatar: '/static/avatar/hr1.jpg',
-    tag: '活跃'
-  },
-  {
-    id: 2,
-    name: '李总监',
-    position: '人力资源总监', 
-    company: '腾讯科技',
-    avatar: '/static/avatar/hr2.jpg',
-    tag: '在线'
   }
 ])
 
@@ -154,12 +137,6 @@ const handleViewCompany = (id: number) => {
   })
 }
 
-const handleChatWithHR = (id: number) => {
-  uni.navigateTo({
-    url: `/pages/message/chat?hrId=${id}`
-  })
-}
-
 const handleUnfavoriteTemplate = (id: number) => {
   templateList.value = templateList.value.filter(template => template.id !== id)
   uni.showToast({
@@ -177,12 +154,6 @@ const handleUseTemplate = (id: number) => {
 const handleExploreCompanies = () => {
   uni.navigateTo({
     url: '/pages/company/list'
-  })
-}
-
-const handleExploreHRs = () => {
-  uni.navigateTo({
-    url: '/pages/hr/list'
   })
 }
 

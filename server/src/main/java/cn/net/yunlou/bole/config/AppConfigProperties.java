@@ -18,11 +18,18 @@ public class AppConfigProperties {
 
     private String environment;
 
+    private Server server = new Server();
+
     private Team team = new Team();
 
     private Security security = new Security();
 
     private Cors cors = new Cors();
+
+    @Data
+    public static class Server {
+        private String domain;
+    }
 
     @Data
     public static class Team {

@@ -125,18 +125,21 @@ public abstract class BaseService<
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean saveByCreate(C dto) {
         T entity = structMapper.createToEntity(dto);
         return save(entity);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateByEdit(E dto) {
         T entity = structMapper.editToEntity(dto);
         return update(entity);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean removeByQuery(Q dto) {
         T entity = structMapper.queryToEntity(dto);
         return remove(entity);

@@ -1,4 +1,4 @@
-import { del, get, page, post, put } from "@/utils/request";
+import { request } from "@/utils/request";
 import { DictForm, DictPageResult, DictQuery, DictResult } from "@/types/dict";
 
 const DICT_BASE_URL = "/dict";
@@ -11,7 +11,7 @@ const DictAPI = {
    * @returns 字典分页结果
    */
   getPage(pageQuery: PageQuery, queryParams: DictQuery) {
-    return page<DictPageResult>(`${DICT_BASE_URL}/page`, pageQuery, queryParams);
+    return request.page<DictPageResult>(`${DICT_BASE_URL}/page`, pageQuery, queryParams);
   },
 
   /**
@@ -21,7 +21,7 @@ const DictAPI = {
    * @returns 字典表单数据
    */
   getFormData(id: number) {
-    return get<DictForm>(`${DICT_BASE_URL}/${id}/form`);
+    return request.get<DictForm>(`${DICT_BASE_URL}/${id}/form`);
   },
 
   /**
@@ -30,7 +30,7 @@ const DictAPI = {
    * @param data 字典表单数据
    */
   add(data: DictForm) {
-    return post(`${DICT_BASE_URL}`, data);
+    return request.post(`${DICT_BASE_URL}`, data);
   },
 
   /**
@@ -40,7 +40,7 @@ const DictAPI = {
    * @param data 字典表单数据
    */
   update(id: number, data: DictForm) {
-    return put(`${DICT_BASE_URL}/${id}`, data);
+    return request.put(`${DICT_BASE_URL}/${id}`, data);
   },
 
   /**
@@ -49,7 +49,7 @@ const DictAPI = {
    * @param ids 字典ID，多个以英文逗号(,)分隔
    */
   deleteByIds(ids: string) {
-    return del(`${DICT_BASE_URL}`, ids);
+    return request.delete(`${DICT_BASE_URL}`, ids);
   },
 
   /**
@@ -58,14 +58,14 @@ const DictAPI = {
    * @returns 字典列表
    */
   postList(queryParams: DictQuery) {
-    return post<DictResult>(`${DICT_BASE_URL}/list`,queryParams);
+    return request.post<DictResult>(`${DICT_BASE_URL}/list`,queryParams);
   },
 
   /**
    * 获取整个字典树结构
    */
   getWholeTree(){
-    return get<DictResult>(`${DICT_BASE_URL}/children`);
+    return request.get<DictResult>(`${DICT_BASE_URL}/children`);
   },
 };
 

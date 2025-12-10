@@ -1,6 +1,5 @@
-import {get} from "@/utils/request"
+import { request } from "@/utils/request";
 import { ConfigResult } from "@/types/config";
-
 
 
 const ConfigAPI = {
@@ -8,7 +7,7 @@ const ConfigAPI = {
 	 * 获取系统配置
 	 */
 	getConfig() {
-		return get<ConfigResult>("/config");
+		return request.get<ConfigResult>("/config");
 	}
 };
 

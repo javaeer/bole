@@ -1,4 +1,3 @@
-import request from "@/utils/request";
 import {
   EmailBindingForm, MobileBindingForm,
   PasswordChangeForm,
@@ -9,6 +8,7 @@ import {
   UserProfileForm,
   UserProfileVO,
 } from "@/types/user";
+import { request } from "@/utils/request";
 
 const USER_BASE_URL = "/user";
 
@@ -19,9 +19,8 @@ const UserAPI = {
    * @returns 登录用户昵称、头像信息，包括角色和权限
    */
   getUserInfo(): Promise<UserInfo> {
-    return request<UserInfo>({
+    return request.get<UserInfo>({
       url: `${USER_BASE_URL}/me`,
-      method: "GET",
     });
   },
 
@@ -31,9 +30,8 @@ const UserAPI = {
    * @param queryParams 查询参数
    */
   getPage(queryParams: UserPageQuery) {
-    return request<PageResult<UserPageVO[]>>({
+    return request.get<PageResult<UserPageVO[]>>({
       url: `${USER_BASE_URL}/page`,
-      method: "GET",
       data: queryParams,
     });
   },
@@ -43,9 +41,8 @@ const UserAPI = {
    * @param data 用户表单数据
    */
   add(data: UserForm) {
-    return request({
+    return request.post({
       url: `${USER_BASE_URL}`,
-      method: "POST",
       data: data,
     });
   },
@@ -57,9 +54,8 @@ const UserAPI = {
    * @returns 用户表单详情
    */
   getFormData(userId: number) {
-    return request<UserForm>({
+    return request.get<UserForm>({
       url: `${USER_BASE_URL}/${userId}/form`,
-      method: "GET",
     });
   },
 
@@ -70,35 +66,31 @@ const UserAPI = {
    * @param data 用户表单数据
    */
   update(id: number, data: UserForm) {
-    return request({
+    return request.put({
       url: `${USER_BASE_URL}/${id}`,
-      method: "PUT",
       data: data,
     });
   },
 
   /** 获取个人中心用户信息 */
   getProfile() {
-    return request<UserProfileVO>({
+    return request.get<UserProfileVO>({
       url: `${USER_BASE_URL}/profile`,
-      method: "GET",
     });
   },
 
   /** 修改个人中心用户信息 */
   updateProfile(data: UserProfileForm) {
-    return request({
+    return request.put({
       url: `${USER_BASE_URL}/profile`,
-      method: "PUT",
       data: data,
     });
   },
 
   /** 修改个人中心用户密码 */
   changePassword(data: PasswordChangeForm) {
-    return request({
+    return request.put({
       url: `${USER_BASE_URL}/password`,
-      method: "PUT",
       data: data,
     });
   },
@@ -110,26 +102,23 @@ const UserAPI = {
    * @param contactType 联系方式类型 MOBILE:手机;EMAIL:邮箱
    */
   sendVerificationCode(contact: string, contactType: string) {
-    return request({
+    return request.post({
       url: `${USER_BASE_URL}/send-verification-code?contact=${contact}&contactType=${contactType}`,
-      method: "POST",
     });
   },
 
   /** 绑定个人中心用户手机 */
   bindMobile(data: MobileBindingForm) {
-    return request({
+    return request.put({
       url: `${USER_BASE_URL}/mobile`,
-      method: "PUT",
       data: data,
     });
   },
 
   /** 绑定个人中心用户邮箱 */
   bindEmail(data: EmailBindingForm) {
-    return request({
+    return request.put({
       url: `${USER_BASE_URL}/email`,
-      method: "PUT",
       data: data,
     });
   },
@@ -140,9 +129,8 @@ const UserAPI = {
    * @param ids 用户ID字符串，多个以英文逗号(,)分割
    */
   deleteByIds(ids: string) {
-    return request({
+    return request.delete({
       url: `${USER_BASE_URL}/${ids}`,
-      method: "DELETE",
     });
   },
 };

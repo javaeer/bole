@@ -1,13 +1,12 @@
-import request from "@/utils/request";
+import { request } from "@/utils/request";
 
 const NOTICE_BASE_URL = "/notices";
 
 const NoticeAPI = {
   /** 获取通知公告分页数据 */
   getPage(queryParams?: NoticePageQuery) {
-    return request<PageResult<NoticePageVO[]>>({
+    return request.get<PageResult<NoticePageVO[]>>({
       url: `${NOTICE_BASE_URL}/page`,
-      method: "GET",
       data: queryParams,
     });
   },
@@ -19,9 +18,8 @@ const NoticeAPI = {
    * @returns Notice表单数据
    */
   getFormData(id: number) {
-    return request<NoticeForm>({
+    return request.get<NoticeForm>({
       url: `${NOTICE_BASE_URL}/${id}/form`,
-      method: "GET",
     });
   },
 
@@ -32,9 +30,8 @@ const NoticeAPI = {
    * @returns
    */
   add(data: NoticeForm) {
-    return request({
+    return request.post({
       url: `${NOTICE_BASE_URL}`,
-      method: "POST",
       data: data,
     });
   },
@@ -46,9 +43,8 @@ const NoticeAPI = {
    * @param data Notice表单数据
    */
   update(id: number, data: NoticeForm) {
-    return request({
+    return request.put({
       url: `${NOTICE_BASE_URL}/${id}`,
-      method: "PUT",
       data: data,
     });
   },
@@ -59,9 +55,8 @@ const NoticeAPI = {
    * @param ids 通知公告ID字符串，多个以英文逗号(,)分割
    */
   deleteByIds(ids: string) {
-    return request({
+    return request.delete({
       url: `${NOTICE_BASE_URL}/${ids}`,
-      method: "DELETE",
     });
   },
 
@@ -72,9 +67,8 @@ const NoticeAPI = {
    * @returns
    */
   publish(id: number) {
-    return request({
+    return request.put({
       url: `${NOTICE_BASE_URL}/${id}/publish`,
-      method: "PUT",
     });
   },
 
@@ -85,9 +79,8 @@ const NoticeAPI = {
    * @returns
    */
   revoke(id: number) {
-    return request({
+    return request.put({
       url: `${NOTICE_BASE_URL}/${id}/revoke`,
-      method: "PUT",
     });
   },
   /**
@@ -96,26 +89,25 @@ const NoticeAPI = {
    * @param id
    */
   getDetail(id: string) {
-    return request<NoticeDetailVO>({
+    return request.get<NoticeDetailVO>({
       url: `${NOTICE_BASE_URL}/${id}/detail`,
-      method: "GET",
     });
   },
 
   /* 全部已读 */
   readAll() {
-    return request({
+    return request.put({
       url: `${NOTICE_BASE_URL}/read-all`,
       method: "PUT",
     });
   },
 
   /** 获取我的通知分页列表 */
-  getMyNoticePage(queryParams?: NoticePageQuery) {
-    return request<PageResult<NoticePageVO[]>>({
+  getMyNoticePage(queryParams?: PageQuery, queryData?: any) {
+    return request.page<PageResult<NoticePageVO[]>>({
       url: `${NOTICE_BASE_URL}/my-page`,
-      method: "GET",
-      data: queryParams,
+      data: queryData,
+      params: queryParams,
     });
   },
 };

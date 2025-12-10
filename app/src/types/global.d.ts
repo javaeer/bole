@@ -1,7 +1,7 @@
 declare global {
 
   /**
-   * 响应数据
+   * 通用响应数据
    */
   interface ResponseResult<T = any> {
     code: number;
@@ -10,6 +10,9 @@ declare global {
     timestamp: number;
   }
 
+  /**
+   * Token 相关响应数据
+   */
   interface TokenResult {
     accessToken: string;
     refreshToken: string;
@@ -52,20 +55,10 @@ declare global {
   }
 
 
-  /**
-   * 请求配置
-   */
-  interface RequestConfig extends UniApp.RequestOptions {
-    loading?: boolean;
-    showError?: boolean;
-    skipAuth?: boolean;
-  }
-
   // 自定义错误类
   class RequestError extends Error {
     code: number;
     data?: any;
-
     constructor(message: string, code: number, data?: any) {
       super(message);
       this.name = "RequestError";

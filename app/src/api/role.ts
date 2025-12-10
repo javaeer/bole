@@ -1,22 +1,20 @@
-import request from "@/utils/request";
+import { request } from "@/utils/request";
 
 const ROLE_BASE_URL = "/roles";
 
 const RoleAPI = {
   /** 获取角色分页数据 */
   getPage(queryParams?: RolePageQuery) {
-    return request<PageResult<RolePageVO[]>>({
+    return request.get<PageResult<RolePageVO[]>>({
       url: `${ROLE_BASE_URL}/page`,
-      method: "GET",
       data: queryParams,
     });
   },
 
   /** 获取角色下拉数据源 */
   getOptions() {
-    return request<OptionType[]>({
+    return request.get<OptionType[]>({
       url: `${ROLE_BASE_URL}/options`,
-      method: "GET",
     });
   },
   /**
@@ -26,9 +24,8 @@ const RoleAPI = {
    * @returns 角色的菜单ID集合
    */
   getRoleMenuIds(roleId: number) {
-    return request<number[]>({
+    return request.get<number[]>({
       url: `${ROLE_BASE_URL}/${roleId}/menuIds`,
-      method: "GET",
     });
   },
 
@@ -39,9 +36,8 @@ const RoleAPI = {
    * @param data 菜单ID集合
    */
   updateRoleMenus(roleId: number, data: number[]) {
-    return request({
+    return request.put({
       url: `${ROLE_BASE_URL}/${roleId}/menus`,
-      method: "PUT",
       data: data,
     });
   },
@@ -53,17 +49,15 @@ const RoleAPI = {
    * @returns 角色表单数据
    */
   getFormData(id: number) {
-    return request<RoleForm>({
+    return request.get<RoleForm>({
       url: `${ROLE_BASE_URL}/${id}/form`,
-      method: "GET",
     });
   },
 
   /** 添加角色 */
   add(data: RoleForm) {
-    return request({
+    return request.post({
       url: `${ROLE_BASE_URL}`,
-      method: "POST",
       data: data,
     });
   },
@@ -75,9 +69,8 @@ const RoleAPI = {
    * @param data 角色表单数据
    */
   update(id: number, data: RoleForm) {
-    return request({
+    return request.put({
       url: `${ROLE_BASE_URL}/${id}`,
-      method: "PUT",
       data: data,
     });
   },
@@ -88,9 +81,8 @@ const RoleAPI = {
    * @param ids 角色ID字符串，多个以英文逗号(,)分割
    */
   deleteByIds(ids: string) {
-    return request({
+    return request.delete({
       url: `${ROLE_BASE_URL}/${ids}`,
-      method: "DELETE",
     });
   },
 };

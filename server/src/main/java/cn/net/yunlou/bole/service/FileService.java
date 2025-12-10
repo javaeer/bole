@@ -29,5 +29,5 @@ public interface FileService extends IBaseService<File, FileCreate, FileView, Fi
 
     List<StorageType> getAvailableStorageTypes();
 
-    cn.net.yunlou.bole.entity.File getByFileKey(String fileKey);
+    File getByFileKey(String fileKey);
 }
