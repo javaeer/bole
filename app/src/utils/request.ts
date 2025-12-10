@@ -18,13 +18,15 @@ class Request {
         // 构建完整 URL（包含查询参数）
         const url = buildUrl(`${finalConfig.baseURL}${finalConfig.url}`, finalConfig.params);
 
+        console.log("请求地址：" + url);
+
         const requestTask = uni.request({
           ...finalConfig,
           url: url,
           success: (response) => {
-            console.log("请求成功:", response);
+            console.log("[原始数据]请求成功:", response);
             try {
-              const data = interceptors.responseInterceptor<T>(response, finalConfig);
+              const data = interceptors.responseInterceptor<T, RequestConfig>(response, finalConfig);
               resolve(data);
             } catch (error) {
               reject(error);
@@ -56,7 +58,7 @@ class Request {
           };
 
           if (signal.addEventListener) {
-            signal.addEventListener('abort', abortHandler);
+            signal.addEventListener("abort", abortHandler);
           } else if (signal.onabort !== undefined) {
             // 保存原始 onabort 处理函数
             const originalOnAbort = signal.onabort;
@@ -75,46 +77,46 @@ class Request {
 
 
   // 便捷方法 - 支持查询参数
-  get<T = any>(url: string, params?: any, config?: Partial<RequestConfig>): Promise<ResponseResult<T>> {
+  get<T = any>(url: string, params?: any, config?: Partial<RequestConfig>): Promise<T> {
     return this.request<T>({
-      url,
-      params,
+      url: url,
+      params: params,
       method: "GET",
       ...config,
     });
   };
 
-  post<T = any>(url: string, data?: any, config?: Partial<RequestConfig>): Promise<ResponseResult<T>> {
+  post<T = any>(url: string, data?: any, config?: Partial<RequestConfig>): Promise<T> {
     return this.request<T>({
-      url,
-      data,
+      url: url,
+      data: data,
       method: "POST",
       ...config,
     });
   };
 
-  put<T = any>(url: string, data?: any, config?: Partial<RequestConfig>): Promise<ResponseResult<T>> {
+  put<T = any>(url: string, data?: any, config?: Partial<RequestConfig>): Promise<T> {
     return this.request<T>({
-      url,
-      data,
+      url: url,
+      data: data,
       method: "PUT",
       ...config,
     });
   };
 
-  delete<T = any>(url: string, params?: any, config?: Partial<RequestConfig>): Promise<ResponseResult<T>> {
+  delete<T = any>(url: string, params?: any, config?: Partial<RequestConfig>): Promise<T> {
     return this.request<T>({
-      url,
-      params,
+      url: url,
+      params: params,
       method: "DELETE",
       ...config,
     });
   };
 
 // 分页查询专用方法
-  page<T = any>(url: string, params: PageQuery, data?: any, config?: Partial<RequestConfig>): Promise<ResponseResult<T>> {
+  page<T = any>(url: string, params: PageQuery, data?: any, config?: Partial<RequestConfig>): Promise<T> {
     return this.request<T>({
-      url,
+      url: url,
       data: data, // 查询条件放在 body
       params: params, // 分页参数放在 query
       method: "POST",

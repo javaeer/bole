@@ -26,8 +26,6 @@ public class AuthenticationService {
 
     private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
 
-    private static final String BLACKLIST_TOKEN_PREFIX = "blacklist:";
-
     private final UserService userService;
 
     private final UserRoleService userRoleService;

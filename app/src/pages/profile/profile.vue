@@ -1,193 +1,249 @@
 <template>
-	<view class="page-container">
-		<!-- 用户信息头部 -->
-		<view class="user-header">
-			<view class="user-avatar-section">
-				<image :src="userInfo.avatar" class="user-avatar" mode="aspectFit" @click="handleEditAvatar" />
-				<view class="user-info">
-					<text class="user-name">{{ userInfo.name }}</text>
-					<text class="user-title">{{ userInfo.title }}</text>
-					<view class="user-stats">
-						<view class="stat-item">
-							<text class="stat-number">{{ userInfo.followers }}</text>
-							<text class="stat-label">关注</text>
-						</view>
-						<view class="stat-item">
-							<text class="stat-number">{{ userInfo.fans }}</text>
-							<text class="stat-label">粉丝</text>
-						</view>
-						<view class="stat-item">
-							<text class="stat-number">{{ userInfo.likes }}</text>
-							<text class="stat-label">获赞</text>
-						</view>
-					</view>
-				</view>
-			</view>
-			<button class="btn-edit" @click="handleEditProfile">编辑资料</button>
-		</view>
+  <view class="page-container">
+    <!-- 用户信息头部 -->
+    <view class="user-header">
+      <view class="user-avatar-section">
+        <image :src="userInfo.avatar" class="user-avatar" mode="aspectFit" @click="handleEditAvatar" />
+        <view class="user-info">
+          <text class="user-name">{{ userInfo.name }}</text>
+          <text class="user-title">{{ userInfo.title }}</text>
+          <view class="user-stats">
+            <view class="stat-item">
+              <text class="stat-number">{{ userInfo.followers }}</text>
+              <text class="stat-label">关注</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-number">{{ userInfo.fans }}</text>
+              <text class="stat-label">粉丝</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-number">{{ userInfo.likes }}</text>
+              <text class="stat-label">获赞</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <button class="btn-edit" @click="handleEditProfile">编辑资料</button>
+    </view>
 
-		<!-- 简历管理 -->
-		<view class="section">
-			<view class="section-header">
-				<text class="section-title">简历管理</text>
-				<text class="section-more" @click="handleViewAllResumes">查看全部</text>
-			</view>
-			<view class="resume-stats">
-				<view class="stat-card" @click="handleCreateResume">
-					<text class="stat-icon">📝</text>
-					<text class="stat-title">创建简历</text>
-				</view>
-				<view class="stat-card" @click="handleMyResumes">
-					<text class="stat-number">{{ resumeStats.total }}</text>
-					<text class="stat-title">我的简历</text>
-				</view>
-				<view class="stat-card" @click="handleViewedResumes">
-					<text class="stat-number">{{ resumeStats.viewed }}</text>
-					<text class="stat-title">被查看</text>
-				</view>
-				<view class="stat-card" @click="handleDownloadResumes">
-					<text class="stat-number">{{ resumeStats.downloaded }}</text>
-					<text class="stat-title">已下载</text>
-				</view>
-			</view>
-		</view>
+    <!-- 简历管理 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">简历管理</text>
+        <text class="section-more" @click="handleViewAllResumes">查看全部</text>
+      </view>
+      <view class="resume-stats">
+        <view class="stat-card" @click="handleCreateResume">
+          <text class="stat-icon">📝</text>
+          <text class="stat-title">创建简历</text>
+        </view>
+        <view class="stat-card" @click="handleMyResumes">
+          <text class="stat-number">{{ resumeStats.total }}</text>
+          <text class="stat-title">我的简历</text>
+        </view>
+        <view class="stat-card" @click="handleViewedResumes">
+          <text class="stat-number">{{ resumeStats.viewed }}</text>
+          <text class="stat-title">被查看</text>
+        </view>
+        <view class="stat-card" @click="handleDownloadResumes">
+          <text class="stat-number">{{ resumeStats.downloaded }}</text>
+          <text class="stat-title">已下载</text>
+        </view>
+      </view>
+    </view>
 
-		<!-- 功能菜单 -->
-		<view class="section">
-			<view class="menu-list">
-				<view class="menu-item" v-for="item in menuList" :key="item.id" @click="handleMenuClick(item)">
-					<view class="menu-left">
-						<text class="menu-icon">{{ item.icon }}</text>
-						<text class="menu-text">{{ item.name }}</text>
-					</view>
-					<text class="menu-arrow">›</text>
-				</view>
-			</view>
-		</view>
+    <!-- 功能菜单 -->
+    <view class="section">
+      <view class="menu-list">
+        <view class="menu-item" v-for="item in menuList" :key="item.id" @click="handleMenuClick(item)">
+          <view class="menu-left">
+            <text class="menu-icon">{{ item.icon }}</text>
+            <text class="menu-text">{{ item.name }}</text>
+          </view>
+          <text class="menu-arrow">›</text>
+        </view>
+      </view>
+    </view>
 
-		<!-- 设置入口 -->
-		<view class="section">
-			<view class="menu-list">
-				<view class="menu-item" @click="handleFeedback">
-					<view class="menu-left">
-						<text class="menu-icon">💬</text>
-						<text class="menu-text">意见反馈</text>
-					</view>
-					<text class="menu-arrow">›</text>
-				</view>
-				<view class="menu-item" @click="handleAbout">
-					<view class="menu-left">
-						<text class="menu-icon">ℹ️</text>
-						<text class="menu-text">关于我们</text>
-					</view>
-					<text class="menu-arrow">›</text>
-				</view>
-			</view>
-		</view>
-	</view>
+    <!-- 设置入口 -->
+    <view class="section">
+      <view class="menu-list">
+        <view class="menu-item" @click="handleFeedback">
+          <view class="menu-left">
+            <text class="menu-icon">💬</text>
+            <text class="menu-text">意见反馈</text>
+          </view>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="handleAbout">
+          <view class="menu-left">
+            <text class="menu-icon">ℹ️</text>
+            <text class="menu-text">关于我们</text>
+          </view>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="handleLogout">
+          <view class="menu-left">
+            <text class="menu-icon">ℹ️</text>
+            <text class="menu-text">退出登录</text>
+          </view>
+          <text class="menu-arrow">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import { useUserStore } from "@/stores/user";
+import { getUserInfo } from "@/utils/store";
+import AuthAPI from "@/api/auth";
+import FileAPI from "@/api/file";
+
+const userStore = useUserStore();
+
+const info = getUserInfo();
 
 // 用户信息
-	const userInfo = ref({
-		name: '伯乐用户',
-		title: '前端开发工程师',
-		avatar: '/static/avatar/default-avatar.jpg',
-		followers: 24,
-		fans: 18,
-		likes: 156
-	})
+const userInfo = ref({
+  name: info.name,
+  title: info.title,
+  avatar: "/static/avatar/default-avatar.jpg",
+  followers: 24,
+  fans: 18,
+  likes: 156,
+});
 
-	// 简历统计
-	const resumeStats = ref({
-		total: 3,
-		viewed: 12,
-		downloaded: 5
-	})
+// 简历统计
+const resumeStats = ref({
+  total: 3,
+  viewed: 12,
+  downloaded: 5,
+});
 
-	// 菜单列表
-	const menuList = ref([
-    { id: 1, name: '模板发布', icon: '📤', path: '/pages/template/release' },
-    { id: 2, name: '浏览记录', icon: '👀', path: '/pages/history/history' },
-		{ id: 3, name: '申请管理', icon: '📅', path: '/pages/application/list' },
-	])
+// 菜单列表
+const menuList = ref([
+  { id: 1, name: "模板发布", icon: "📤", path: "/pages/template/release" },
+  { id: 2, name: "浏览记录", icon: "👀", path: "/pages/history/history" },
+  { id: 3, name: "申请管理", icon: "📅", path: "/pages/application/list" },
+]);
 
-	// 事件处理
-	const handleEditAvatar = () => {
-		uni.chooseImage({
-			count: 1,
-			sizeType: ['compressed'],
-			sourceType: ['album', 'camera'],
-			success: (res) => {
-				const tempFilePaths = res.tempFilePaths
-				userInfo.value.avatar = tempFilePaths[0]
-				uni.showToast({
-					title: '头像更新成功',
-					icon: 'success'
-				})
-			}
-		})
-	}
+// 事件处理
+const handleEditAvatar = async () => {
+  try {
+    // 1. 调用系统接口选择图片
+    const chooseRes = await uni.chooseImage({
+      count: 1, // 最多选择数量，默认9
+      sizeType: ["compressed"], // 指定为压缩图，可选['original', 'compressed']
+      sourceType: ["album", "camera"], // 来源：相册和相机
+    });
 
-	const handleEditProfile = () => {
-		uni.navigateTo({
-			url: '/pages/profile/setting'
-		})
-	}
+    const tempFilePath = chooseRes.tempFilePaths[0]; // 获取临时路径
 
-	const handleCreateResume = () => {
-		uni.navigateTo({
-			url: '/pages/resume/create'
-		})
-	}
+    // 2. 调用上传接口
+    const uploadResult = await FileAPI.upload({
+      filePath: tempFilePath,
+      formData: { userId: info.id }, // 额外的表单数据
+      onProgress: (progress) => {
+        console.log("上传进度:", progress);
+      },
+    });
 
-	const handleMyResumes = () => {
-		uni.navigateTo({
-			url: '/pages/resume/list'
-		})
-	}
+    console.log("上传成功，服务器返回:", uploadResult);
 
-	const handleViewedResumes = () => {
-		uni.navigateTo({
-			url: '/pages/resume/viewed'
-		})
-	}
+    userInfo.value.avatar = uploadResult.accessUrl;
+    uni.showToast({
+      title: "头像更新成功",
+      icon: "success",
+    });
 
-	const handleDownloadResumes = () => {
-		uni.navigateTo({
-			url: '/pages/resume/downloaded'
-		})
-	}
+  } catch (error) {
+    console.error("操作失败:", error);
+    uni.showToast({ title: "上传失败", icon: "none" });
+  }
+};
 
-	const handleViewAllResumes = () => {
-		uni.navigateTo({
-			url: '/pages/resume/list'
-		})
-	}
+const handleEditProfile = () => {
+  uni.navigateTo({
+    url: "/pages/profile/setting",
+  });
+};
 
-	const handleMenuClick = (item : any) => {
-		uni.navigateTo({
-			url: item.path
-		})
-	}
+const handleCreateResume = () => {
+  uni.navigateTo({
+    url: "/pages/resume/create",
+  });
+};
 
-	const handleFeedback = () => {
-		uni.navigateTo({
-			url: '/pages/feedback/feedback'
-		})
-	}
+const handleMyResumes = () => {
+  uni.navigateTo({
+    url: "/pages/resume/list",
+  });
+};
 
-	const handleAbout = () => {
-		uni.navigateTo({
-			url: '/pages/about/about'
-		})
-	}
+const handleViewedResumes = () => {
+  uni.navigateTo({
+    url: "/pages/resume/viewed",
+  });
+};
 
-	onMounted(() => {
-		console.log('我的页面加载完成')
-	})
+const handleDownloadResumes = () => {
+  uni.navigateTo({
+    url: "/pages/resume/downloaded",
+  });
+};
+
+const handleViewAllResumes = () => {
+  uni.navigateTo({
+    url: "/pages/resume/list",
+  });
+};
+
+const handleMenuClick = (item: any) => {
+  uni.navigateTo({
+    url: item.path,
+  });
+};
+
+const handleFeedback = () => {
+  uni.navigateTo({
+    url: "/pages/feedback/feedback",
+  });
+};
+
+const handleAbout = () => {
+  uni.navigateTo({
+    url: "/pages/about/about",
+  });
+};
+
+// 退出登录
+const handleLogout = () => {
+  uni.showModal({
+    title: "确认退出",
+    content: "确定要退出当前账号吗？",
+    success: (res) => {
+      if (res.confirm) {
+        uni.showToast({
+          title: "退出成功",
+          icon: "success",
+        });
+        // 实际应用中这里应该清理用户状态并跳转到登录页
+        AuthAPI.logout();
+        setTimeout(() => {
+          uni.reLaunch({
+            url: "/pages/index/index",
+          });
+        }, 1500);
+      }
+    },
+  });
+};
+
+onMounted(() => {
+  console.log("我的页面加载完成");
+});
 </script>
 
 <style scoped lang="scss">
@@ -313,7 +369,7 @@ import { onMounted, ref } from "vue";
 }
 
 .stat-card:active {
-  background: color.adjust($background-color, $lightness:  - 5%);
+  background: color.adjust($background-color, $lightness: - 5%);
   transform: scale(0.95);
 }
 

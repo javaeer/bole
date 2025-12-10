@@ -19,7 +19,7 @@ export const createDefaultConfig = (): RequestConfig => ({
   showError: true,
   skipAuth: false,
   responseType: "json",
-  headers: {
+  header: {
     "Content-Type": CONTENT_TYPES.JSON,
   },
 });
@@ -34,9 +34,6 @@ export const createDefaultUploadConfig = (): UploadConfig => ({
   skipAuth: false,
   responseType: "json",
   isFormData: true,
-  headers: {
-    "Content-Type": CONTENT_TYPES.MULTIPART,
-  },
 });
 
 // 通用的合并配置函数
@@ -92,9 +89,9 @@ export const mergeConfigSimple = (config: Partial<RequestConfig>): RequestConfig
   return {
     ...defaultConfig,
     ...config,
-    headers: {
-      ...defaultConfig.headers,
-      ...config.headers,
+    header: {
+      ...defaultConfig.header,
+      ...config.header,
     },
   };
 };
@@ -104,9 +101,9 @@ export const mergeUploadConfigSimple = (config: Partial<UploadConfig>): UploadCo
   return {
     ...defaultConfig,
     ...config,
-    headers: {
-      ...defaultConfig.headers,
-      ...config.headers,
+    header: {
+      ...defaultConfig.header,
+      ...config.header,
     },
   };
 };

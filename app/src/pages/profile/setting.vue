@@ -137,7 +137,7 @@
           >
             <view class="picker-input">
               <text :class="['picker-text', { 'placeholder': !formData.region.length }]">
-                {{ formData.region.length ? formData.region.join(' ') : '请选择省市区' }}
+                {{ formData.region.length ? formData.region.join(" ") : "请选择省市区" }}
               </text>
               <text class="picker-arrow">›</text>
             </view>
@@ -177,12 +177,6 @@
       <!-- 危险操作区 -->
       <view class="form-section danger-section">
         <text class="section-label danger-label">危险操作</text>
-
-        <view class="danger-item" @click="handleAccountLogout">
-          <text class="danger-text">退出登录</text>
-          <text class="danger-arrow">›</text>
-        </view>
-
         <view class="danger-item" @click="handleAccountDelete">
           <text class="danger-text danger-delete">注销账号</text>
           <text class="danger-arrow">›</text>
@@ -196,192 +190,154 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref } from "vue";
+import AuthAPI from "@/api/auth";
 
-const pageTitle = ref('编辑资料')
-const saving = ref(false)
+const pageTitle = ref("编辑资料");
+const saving = ref(false);
 
 // 表单数据
 const originalData = {
-  avatar: '/static/default-avatar.png',
-  name: '张三',
-  title: '前端开发工程师',
-  bio: '专注前端开发5年，精通Vue/React技术栈',
-  phone: '13800138000',
-  email: 'zhangsan@example.com',
-  region: ['广东省', '深圳市', '南山区'],
+  avatar: "/static/default-avatar.png",
+  name: "张三",
+  title: "前端开发工程师",
+  bio: "专注前端开发5年，精通Vue/React技术栈",
+  phone: "13800138000",
+  email: "zhangsan@example.com",
+  region: ["广东省", "深圳市", "南山区"],
   resumePublic: true,
-  receiveJobRecommend: true
-}
+  receiveJobRecommend: true,
+};
 
-const formData = reactive({ ...originalData })
+const formData = reactive({ ...originalData });
 
 // 表单错误
 const formError = reactive({
-  name: '',
-  title: '',
-  phone: '',
-  email: ''
-})
+  name: "",
+  title: "",
+  phone: "",
+  email: "",
+});
 
 // 表单是否修改
 const isFormChanged = computed(() => {
-  return JSON.stringify(formData) !== JSON.stringify(originalData)
-})
+  return JSON.stringify(formData) !== JSON.stringify(originalData);
+});
 
 // 输入变化处理
 const handleInputChange = (field: string) => {
   // 清除该字段的错误信息
   if (formError[field]) {
-    formError[field] = ''
+    formError[field] = "";
   }
 
   // 验证手机号
-  if (field === 'phone' && formData.phone) {
+  if (field === "phone" && formData.phone) {
     if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
-      formError.phone = '请输入正确的手机号'
+      formError.phone = "请输入正确的手机号";
     }
   }
 
   // 验证邮箱
-  if (field === 'email' && formData.email) {
+  if (field === "email" && formData.email) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      formError.email = '请输入正确的邮箱地址'
+      formError.email = "请输入正确的邮箱地址";
     }
   }
 
   // 验证姓名
-  if (field === 'name' && formData.name) {
+  if (field === "name" && formData.name) {
     if (formData.name.length < 2) {
-      formError.name = '姓名至少2个字符'
+      formError.name = "姓名至少2个字符";
     }
   }
-}
+};
 
 // 地区选择
 const handleRegionChange = (event: any) => {
-  const value = event.detail.value
-  formData.region = value
-}
+  const value = event.detail.value;
+  formData.region = value;
+};
 
 // 开关切换
 const handleSwitchChange = (field: string, event: any) => {
-  formData[field] = event.detail.value
-}
+  formData[field] = event.detail.value;
+};
 
 // 头像上传
 const handleAvatarUpload = () => {
   uni.chooseImage({
     count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['album', 'camera'],
+    sizeType: ["compressed"],
+    sourceType: ["album", "camera"],
     success: (res) => {
-      const tempFilePath = res.tempFilePaths[0]
+      const tempFilePath = res.tempFilePaths[0];
       // 这里应该上传到服务器，这里只是本地预览
-      formData.avatar = tempFilePath
-    }
-  })
-}
+      formData.avatar = tempFilePath;
+    },
+  });
+};
 
 // 保存数据
 const handleSave = async () => {
   // 验证表单
-  const hasError = Object.values(formError).some(error => error)
+  const hasError = Object.values(formError).some(error => error);
   if (hasError) {
     uni.showToast({
-      title: '请修正表单错误',
-      icon: 'none'
-    })
-    return
+      title: "请修正表单错误",
+      icon: "none",
+    });
+    return;
   }
 
-  saving.value = true
+  saving.value = true;
 
   // 模拟保存请求
   setTimeout(() => {
-    saving.value = false
+    saving.value = false;
     uni.showToast({
-      title: '保存成功',
-      icon: 'success'
-    })
+      title: "保存成功",
+      icon: "success",
+    });
 
     // 更新原始数据
-    Object.assign(originalData, { ...formData })
-  }, 1500)
-}
-
-// 返回
-const handleBack = () => {
-  if (isFormChanged.value) {
-    uni.showModal({
-      title: '提示',
-      content: '您有未保存的更改，确定要返回吗？',
-      success: (res) => {
-        if (res.confirm) {
-          uni.navigateBack()
-        }
-      }
-    })
-  } else {
-    uni.navigateBack()
-  }
-}
-
-// 退出登录
-const handleAccountLogout = () => {
-  uni.showModal({
-    title: '确认退出',
-    content: '确定要退出当前账号吗？',
-    success: (res) => {
-      if (res.confirm) {
-        uni.showToast({
-          title: '退出成功',
-          icon: 'success'
-        })
-        // 实际应用中这里应该清理用户状态并跳转到登录页
-        setTimeout(() => {
-          uni.reLaunch({
-            url: '/pages/auth/login'
-          })
-        }, 1500)
-      }
-    }
-  })
-}
+    Object.assign(originalData, { ...formData });
+  }, 1500);
+};
 
 // 注销账号
 const handleAccountDelete = () => {
   uni.showModal({
-    title: '危险操作',
-    content: '账号注销后将无法恢复，所有数据将被永久删除，确定继续吗？',
-    confirmColor: '$danger-color',
+    title: "危险操作",
+    content: "账号注销后将无法恢复，所有数据将被永久删除，确定继续吗？",
+    confirmColor: "$danger-color",
     success: (res) => {
       if (res.confirm) {
         uni.showLoading({
-          title: '注销中...'
-        })
+          title: "注销中...",
+        });
         // 模拟注销请求
         setTimeout(() => {
-          uni.hideLoading()
+          uni.hideLoading();
           uni.showToast({
-            title: '账号已注销',
-            icon: 'success'
-          })
+            title: "账号已注销",
+            icon: "success",
+          });
           // 跳转到登录页
           setTimeout(() => {
             uni.reLaunch({
-              url: '/pages/auth/login'
-            })
-          }, 1500)
-        }, 2000)
+              url: "/pages/auth/auth",
+            });
+          }, 1500);
+        }, 2000);
       }
-    }
-  })
-}
+    },
+  });
+};
 
 onMounted(() => {
   // 可以在这里加载用户数据
-})
+});
 </script>
 
 

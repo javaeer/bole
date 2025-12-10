@@ -1,6 +1,5 @@
 package cn.net.yunlou.bole.config;
 
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +7,8 @@ import org.springframework.http.CacheControl;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * FileName: WebConfig Description: Created By laughtiger Created At 2025/12/8 17:25 Modified By
@@ -27,7 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 公共资源（文件上传）
         registry.addResourceHandler(storageLocalProperties.getUrlPrefix() + "/**")
-                .addResourceLocations("file:" + storageLocalProperties.getBasePath())
+                .addResourceLocations("file:" + storageLocalProperties.getBasePath()+"/")
                 .setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS));
 
         // Swagger/Knife4j资源

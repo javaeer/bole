@@ -90,13 +90,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 
-const appName = '简历大师'
-const version = 'V2.1.0'
-const updateTime = '2024-01-15'
-const developer = 'CareerTech Team'
-const companyName = 'CareerTech 职业科技'
+import { useConfigStore } from "@/stores/config";
+
+const configStore = useConfigStore();
+
+const appName = configStore.getConfigValue("system.name")
+const version = configStore.getConfigValue("system.version")
+const updateTime = configStore.getConfigValue("system.update-at")
+const developer = 'YunlouNet Team'
+const companyName = '云楼网络科技'
 
 const currentYear = new Date().getFullYear()
 

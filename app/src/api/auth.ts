@@ -8,7 +8,7 @@ const AuthAPI = {
    * 登录接口
    */
   async login(data: LoginForm): Promise<LoginResult> {
-    console.log("登录请求数据:", data);
+    console.log("登录请求数据:", JSON.stringify(data));
     const response = await request.post<LoginResult>("/auth/login", data, { skipAuth: true });
     setToken(response);
     return response;

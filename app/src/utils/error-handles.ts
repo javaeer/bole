@@ -1,6 +1,5 @@
 import { clearUserAll } from "@/utils/store";
 import { RequestConfig } from "@/types/request";
-import { ResultCode } from "@/constants/result-code";
 
 class ErrorHandles {
 
@@ -60,52 +59,14 @@ class ErrorHandles {
   // 业务错误处理
   handleBusinessError<T>(result: ResponseResult<T>, config: RequestConfig) {
 
+    console.log("进入业务错误处理，判断是否显示错误信息：" + config.showError + result.message);
     if (config.showError !== false) {
-      let status = result.code;
-      let message = "";
-
-      switch (status) {
-        case ResultCode.UNAUTHORIZED:
-          message = "未授权，请重新登录";
-          break;
-        case ResultCode.FORBIDDEN:
-          message = "拒绝访问";
-          break;
-        case ResultCode.NOT_FOUND:
-          message = `请求地址出错: ${config.url}`;
-          break;
-        case ResultCode.REQUEST_TIMEOUT:
-          message = "请求超时";
-          break;
-        case ResultCode.INTERNAL_SERVER_ERROR:
-          message = "服务器内部错误";
-          break;
-        case ResultCode.BAD_GATEWAY:
-          message = "网关错误";
-          break;
-        case ResultCode.SERVICE_UNAVAILABLE:
-          message = "服务不可用";
-          break;
-        case ResultCode.GATEWAY_TIMEOUT:
-          message = "网关超时";
-          break;
-        default:
-          message = `连接错误${status}`;
-      }
-
-
       uni.showToast({
-        title: message || "请求失败",
+        title: result.message || "请求失败",
         icon: "none",
         duration: 3000,
       });
     }
-
-    return new RequestError(
-      result.msg || "请求失败",
-      result.code,
-      result.data,
-    );
   }
 
 }

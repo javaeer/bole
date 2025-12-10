@@ -6,7 +6,7 @@ declare global {
   interface ResponseResult<T = any> {
     code: number;
     data: T;
-    msg: string;
+    message: string;
     timestamp: number;
   }
 

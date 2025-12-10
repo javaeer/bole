@@ -18,16 +18,16 @@
     <view class="form-card">
       <!-- 切换选项卡 -->
       <view class="auth-tabs">
-        <view 
-          class="tab-item" 
+        <view
+          class="tab-item"
           :class="{ active: activeTab === 'login' }"
           @click="switchTab('login')"
         >
           <text class="tab-text">登录</text>
           <view v-if="activeTab === 'login'" class="tab-indicator"></view>
         </view>
-        <view 
-          class="tab-item" 
+        <view
+          class="tab-item"
           :class="{ active: activeTab === 'register' }"
           @click="switchTab('register')"
         >
@@ -41,18 +41,18 @@
         <view class="form-group">
           <text class="form-label">手机号/邮箱</text>
           <view class="input-wrapper">
-            <input 
-              v-model="loginForm.account"
+            <input
+              v-model="loginForm.username"
               class="form-input"
               type="text"
               placeholder="请输入手机号或邮箱"
               placeholder-class="placeholder"
-              @focus="handleInputFocus('account')"
-              @blur="handleInputBlur('account')"
+              @focus="handleInputFocus('username')"
+              @blur="handleInputBlur('username')"
             />
           </view>
-          <view v-if="loginError.account" class="error-message">
-            {{ loginError.account }}
+          <view v-if="loginError.username" class="error-message">
+            {{ loginError.username }}
           </view>
         </view>
 
@@ -62,7 +62,7 @@
             <text class="forgot-password" @click="handleForgotPassword">忘记密码？</text>
           </view>
           <view class="input-wrapper">
-            <input 
+            <input
               v-model="loginForm.password"
               class="form-input"
               :type="showLoginPassword ? 'text' : 'password'"
@@ -72,7 +72,7 @@
               @blur="handleInputBlur('password')"
             />
             <view class="password-toggle" @click="showLoginPassword = !showLoginPassword">
-              <text class="toggle-icon">{{ showLoginPassword ? '👁️' : '👁️‍🗨️' }}</text>
+              <text class="toggle-icon">{{ showLoginPassword ? "👁️" : "👁️‍🗨️" }}</text>
             </view>
           </view>
           <view v-if="loginError.password" class="error-message">
@@ -80,8 +80,8 @@
           </view>
         </view>
 
-        <button 
-          class="btn-auth" 
+        <button
+          class="btn-auth"
           :class="{ 'btn-auth--loading': loginLoading }"
           :disabled="loginLoading"
           @click="handleLogin"
@@ -113,7 +113,7 @@
         <view class="form-group">
           <text class="form-label">手机号</text>
           <view class="input-wrapper">
-            <input 
+            <input
               v-model="registerForm.phone"
               class="form-input"
               type="number"
@@ -133,7 +133,7 @@
           <text class="form-label">验证码</text>
           <view class="code-input-wrapper">
             <view class="input-wrapper code-input">
-              <input 
+              <input
                 v-model="registerForm.code"
                 class="form-input"
                 type="number"
@@ -144,12 +144,12 @@
                 @blur="handleInputBlur('code')"
               />
             </view>
-            <button 
-              class="btn-code" 
+            <button
+              class="btn-code"
               :disabled="codeCountdown > 0"
               @click="handleSendCode"
             >
-              {{ codeCountdown > 0 ? `${codeCountdown}s后重发` : '获取验证码' }}
+              {{ codeCountdown > 0 ? `${codeCountdown}s后重发` : "获取验证码" }}
             </button>
           </view>
           <view v-if="registerError.code" class="error-message">
@@ -160,7 +160,7 @@
         <view class="form-group">
           <text class="form-label">设置密码</text>
           <view class="input-wrapper">
-            <input 
+            <input
               v-model="registerForm.password"
               class="form-input"
               :type="showRegisterPassword ? 'text' : 'password'"
@@ -170,7 +170,7 @@
               @blur="handleInputBlur('password')"
             />
             <view class="password-toggle" @click="showRegisterPassword = !showRegisterPassword">
-              <text class="toggle-icon">{{ showRegisterPassword ? '👁️' : '👁️‍🗨️' }}</text>
+              <text class="toggle-icon">{{ showRegisterPassword ? "👁️" : "👁️‍🗨️" }}</text>
             </view>
           </view>
           <view class="password-strength" :class="strengthClass">
@@ -185,7 +185,7 @@
         <view class="form-group">
           <text class="form-label">确认密码</text>
           <view class="input-wrapper">
-            <input 
+            <input
               v-model="registerForm.confirmPassword"
               class="form-input"
               :type="showConfirmPassword ? 'text' : 'password'"
@@ -195,7 +195,7 @@
               @blur="handleInputBlur('confirmPassword')"
             />
             <view class="password-toggle" @click="showConfirmPassword = !showConfirmPassword">
-              <text class="toggle-icon">{{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}</text>
+              <text class="toggle-icon">{{ showConfirmPassword ? "👁️" : "👁️‍🗨️" }}</text>
             </view>
           </view>
           <view v-if="registerError.confirmPassword" class="error-message">
@@ -215,8 +215,8 @@
           </text>
         </view>
 
-        <button 
-          class="btn-auth" 
+        <button
+          class="btn-auth"
           :class="{ 'btn-auth--loading': registerLoading }"
           :disabled="registerLoading || !agreed"
           @click="handleRegister"
@@ -242,312 +242,325 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+import { useConfigStore } from "@/stores/config";
+import AuthAPI from "@/api/auth";
+import { LoginForm, RegisterForm } from "@/types/user";
 
-const activeTab = ref('login')
-const systemName = '简历大师'
+//初始配置
+const configStore = useConfigStore();
+const activeTab = ref("login");
+const systemName = configStore.getConfigValue("system.name");
 
 // 登录表单
-const loginForm = reactive({
-  account: '',
-  password: ''
+const loginForm = reactive<LoginForm>({
+  username: "",
+  password: "",
 })
 
 const loginError = reactive({
-  account: '',
-  password: ''
-})
+  username: "",
+  password: "",
+});
 
-const showLoginPassword = ref(false)
-const loginLoading = ref(false)
+const showLoginPassword = ref(false);
+const loginLoading = ref(false);
 
 // 注册表单
-const registerForm = reactive({
-  phone: '',
-  code: '',
-  password: '',
-  confirmPassword: ''
+const registerForm = reactive<RegisterForm>({
+  phone: "",
+  code: "",
+  password: "",
+  confirmPassword: "",
 })
 
 const registerError = reactive({
-  phone: '',
-  code: '',
-  password: '',
-  confirmPassword: ''
-})
+  phone: "",
+  code: "",
+  password: "",
+  confirmPassword: "",
+});
 
-const showRegisterPassword = ref(false)
-const showConfirmPassword = ref(false)
-const registerLoading = ref(false)
+const showRegisterPassword = ref(false);
+const showConfirmPassword = ref(false);
+const registerLoading = ref(false);
 
 // 验证码倒计时
-const codeCountdown = ref(0)
-let codeTimer: any = null
+const codeCountdown = ref(0);
+let codeTimer: any = null;
 
 // 协议同意
-const agreed = ref(false)
+const agreed = ref(false);
 
 // 密码强度计算
 const passwordStrength = computed(() => {
-  const password = registerForm.password
-  if (!password) return 0
-  
-  let strength = 0
-  if (password.length >= 6) strength++
-  if (/[a-z]/.test(password)) strength++
-  if (/[A-Z]/.test(password)) strength++
-  if (/[0-9]/.test(password)) strength++
-  if (/[^a-zA-Z0-9]/.test(password)) strength++
-  
-  return Math.min(strength, 5)
-})
+  const password = registerForm.password;
+  if (!password) return 0;
+
+  let strength = 0;
+  if (password.length >= 6) strength++;
+  if (/[a-z]/.test(password)) strength++;
+  if (/[A-Z]/.test(password)) strength++;
+  if (/[0-9]/.test(password)) strength++;
+  if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+  return Math.min(strength, 5);
+});
 
 const strengthWidth = computed(() => {
-  return `${passwordStrength.value * 20}%`
-})
+  return `${passwordStrength.value * 20}%`;
+});
 
 const strengthText = computed(() => {
-  const strength = passwordStrength.value
-  if (strength === 0) return '请设置密码'
-  if (strength <= 2) return '弱'
-  if (strength <= 3) return '中'
-  return '强'
-})
+  const strength = passwordStrength.value;
+  if (strength === 0) return "请设置密码";
+  if (strength <= 2) return "弱";
+  if (strength <= 3) return "中";
+  return "强";
+});
 
 const strengthClass = computed(() => {
-  const strength = passwordStrength.value
-  if (strength <= 2) return 'strength-weak'
-  if (strength <= 3) return 'strength-medium'
-  return 'strength-strong'
-})
+  const strength = passwordStrength.value;
+  if (strength <= 2) return "strength-weak";
+  if (strength <= 3) return "strength-medium";
+  return "strength-strong";
+});
 
 // 切换选项卡
 const switchTab = (tab: string) => {
-  activeTab.value = tab
-  clearFormErrors()
-}
+  activeTab.value = tab;
+  clearFormErrors();
+};
 
 // 清除表单错误
 const clearFormErrors = () => {
-  if (activeTab.value === 'login') {
-    loginError.account = ''
-    loginError.password = ''
+  if (activeTab.value === "login") {
+    loginError.username = "";
+    loginError.password = "";
   } else {
-    registerError.phone = ''
-    registerError.code = ''
-    registerError.password = ''
-    registerError.confirmPassword = ''
+    registerError.phone = "";
+    registerError.code = "";
+    registerError.password = "";
+    registerError.confirmPassword = "";
   }
-}
+};
 
 // 输入框聚焦/失焦处理
 const handleInputFocus = (field: string) => {
-  clearFormErrors()
-}
+  clearFormErrors();
+};
 
 const handleInputBlur = (field: string) => {
-  validateField(field)
-}
+  validateField(field);
+};
 
 // 字段验证
 const validateField = (field: string) => {
-  if (activeTab.value === 'login') {
+  if (activeTab.value === "login") {
     switch (field) {
-      case 'account':
-        if (!loginForm.account.trim()) {
-          loginError.account = '请输入手机号或邮箱'
-        } else if (!/^1[3-9]\d{9}$/.test(loginForm.account) && 
-                   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginForm.account)) {
-          loginError.account = '请输入正确的手机号或邮箱'
+      case "username":
+        if (!loginForm.username.trim()) {
+          loginError.username = "请输入手机号或邮箱";
+        // } else if (!/^1[3-9]\d{9}$/.test(loginForm.username) &&
+        //   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginForm.username)) {
+        //   loginError.username = "请输入正确的手机号或邮箱";
         }
-        break
-      case 'password':
+        break;
+      case "password":
         if (!loginForm.password) {
-          loginError.password = '请输入密码'
+          loginError.password = "请输入密码";
         } else if (loginForm.password.length < 6) {
-          loginError.password = '密码长度不能少于6位'
+          loginError.password = "密码长度不能少于6位";
         }
-        break
+        break;
     }
   } else {
     switch (field) {
-      case 'phone':
+      case "phone":
         if (!registerForm.phone) {
-          registerError.phone = '请输入手机号'
+          registerError.phone = "请输入手机号";
         } else if (!/^1[3-9]\d{9}$/.test(registerForm.phone)) {
-          registerError.phone = '请输入正确的手机号'
+          registerError.phone = "请输入正确的手机号";
         }
-        break
-      case 'code':
+        break;
+      case "code":
         if (!registerForm.code) {
-          registerError.code = '请输入验证码'
+          registerError.code = "请输入验证码";
         } else if (!/^\d{6}$/.test(registerForm.code)) {
-          registerError.code = '验证码为6位数字'
+          registerError.code = "验证码为6位数字";
         }
-        break
-      case 'password':
+        break;
+      case "password":
         if (!registerForm.password) {
-          registerError.password = '请输入密码'
+          registerError.password = "请输入密码";
         } else if (registerForm.password.length < 6) {
-          registerError.password = '密码长度不能少于6位'
+          registerError.password = "密码长度不能少于6位";
         }
-        break
-      case 'confirmPassword':
+        break;
+      case "confirmPassword":
         if (!registerForm.confirmPassword) {
-          registerError.confirmPassword = '请确认密码'
+          registerError.confirmPassword = "请确认密码";
         } else if (registerForm.password !== registerForm.confirmPassword) {
-          registerError.confirmPassword = '两次输入的密码不一致'
+          registerError.confirmPassword = "两次输入的密码不一致";
         }
-        break
+        break;
     }
   }
-}
+};
 
 // 登录
-const handleLogin = () => {
+// 登录处理函数 - 完善版
+const handleLogin = async () => {
   // 验证所有字段
-  validateField('account')
-  validateField('password')
-  
+  validateField("username");
+  validateField("password");
+
   // 如果有错误，不提交
-  if (loginError.account || loginError.password) {
-    return
-  }
-  
-  loginLoading.value = true
-  
-  // 模拟登录请求
-  setTimeout(() => {
-    loginLoading.value = false
+  if (loginError.username || loginError.password) {
     uni.showToast({
-      title: '登录成功',
-      icon: 'success'
-    })
-    
+      title: "请填写正确的登录信息",
+      icon: "none",
+    });
+    return;
+  }
+
+  loginLoading.value = true;
+
+  try {
+    // 调用登录API
+    const result = await AuthAPI.login(loginForm);
+    console.log(result)
+    uni.showToast({
+      title: "登录成功",
+      icon: "success",
+    });
+
     // 跳转到首页
     setTimeout(() => {
       uni.switchTab({
-        url: '/pages/index/index'
-      })
-    }, 1500)
-  }, 2000)
-}
+        url: "/pages/index/index",
+      });
+    }, 1500);
+  } finally {
+    loginLoading.value = false;
+  }
+};
 
 // 注册
 const handleRegister = () => {
   // 验证所有字段
-  validateField('phone')
-  validateField('code')
-  validateField('password')
-  validateField('confirmPassword')
-  
+  validateField("phone");
+  validateField("code");
+  validateField("password");
+  validateField("confirmPassword");
+
   // 检查协议
   if (!agreed.value) {
     uni.showToast({
-      title: '请阅读并同意用户协议',
-      icon: 'none'
-    })
-    return
+      title: "请阅读并同意用户协议",
+      icon: "none",
+    });
+    return;
   }
-  
+
   // 如果有错误，不提交
-  if (registerError.phone || registerError.code || 
-      registerError.password || registerError.confirmPassword) {
-    return
+  if (registerError.phone || registerError.code ||
+    registerError.password || registerError.confirmPassword) {
+    return;
   }
-  
-  registerLoading.value = true
-  
+
+  registerLoading.value = true;
+
   // 模拟注册请求
   setTimeout(() => {
-    registerLoading.value = false
+    registerLoading.value = false;
     uni.showToast({
-      title: '注册成功',
-      icon: 'success'
-    })
-    
+      title: "注册成功",
+      icon: "success",
+    });
+
     // 切换到登录页
     setTimeout(() => {
-      activeTab.value = 'login'
+      activeTab.value = "login";
       // 清空注册表单
-      registerForm.phone = ''
-      registerForm.code = ''
-      registerForm.password = ''
-      registerForm.confirmPassword = ''
-    }, 1500)
-  }, 2000)
-}
+      registerForm.phone = "";
+      registerForm.code = "";
+      registerForm.password = "";
+      registerForm.confirmPassword = "";
+    }, 1500);
+  }, 2000);
+};
 
 // 发送验证码
 const handleSendCode = () => {
   if (!registerForm.phone || registerError.phone) {
-    validateField('phone')
-    if (registerError.phone) return
+    validateField("phone");
+    if (registerError.phone) return;
   }
-  
+
   // 开始倒计时
-  codeCountdown.value = 60
+  codeCountdown.value = 60;
   uni.showToast({
-    title: '验证码已发送',
-    icon: 'success'
-  })
-  
+    title: "验证码已发送",
+    icon: "success",
+  });
+
   codeTimer = setInterval(() => {
     if (codeCountdown.value > 0) {
-      codeCountdown.value--
+      codeCountdown.value--;
     } else {
-      clearInterval(codeTimer)
+      clearInterval(codeTimer);
     }
-  }, 1000)
-}
+  }, 1000);
+};
 
 // 忘记密码
 const handleForgotPassword = () => {
   uni.navigateTo({
-    url: '/pages/auth/forgot'
-  })
-}
+    url: "/pages/auth/forgot",
+  });
+};
 
 // 微信登录
 const handleWechatLogin = () => {
   uni.showToast({
-    title: '微信登录开发中',
-    icon: 'none'
-  })
-}
+    title: "微信登录开发中",
+    icon: "none",
+  });
+};
 
 // 短信登录
 const handleSmsLogin = () => {
   uni.showToast({
-    title: '短信验证登录开发中',
-    icon: 'none'
-  })
-}
+    title: "短信验证登录开发中",
+    icon: "none",
+  });
+};
 
 // 用户协议
 const handleUserAgreement = () => {
   uni.navigateTo({
-    url: '/pages/agreement/user'
-  })
-}
+    url: "/pages/agreement/user",
+  });
+};
 
 // 隐私政策
 const handlePrivacyPolicy = () => {
   uni.navigateTo({
-    url: '/pages/agreement/privacy'
-  })
-}
+    url: "/pages/agreement/privacy",
+  });
+};
 
 onMounted(() => {
-  console.log('登录注册页面加载完成')
-})
+  console.log("登录注册页面加载完成");
+});
 
 // 组件卸载时清理定时器
 onBeforeUnmount(() => {
   if (codeTimer) {
-    clearInterval(codeTimer)
+    clearInterval(codeTimer);
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -838,7 +851,7 @@ onBeforeUnmount(() => {
 .btn-auth {
   width: 100%;
   height: $button-height;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness:  -10%) 100%);
+  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
   color: $background-color-white;
   border: none;
   border-radius: $border-radius;
