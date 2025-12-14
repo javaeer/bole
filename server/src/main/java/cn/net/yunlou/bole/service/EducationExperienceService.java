@@ -2,10 +2,10 @@ package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
 import cn.net.yunlou.bole.entity.EducationExperience;
-import cn.net.yunlou.bole.model.EducationExperienceCreate;
-import cn.net.yunlou.bole.model.EducationExperienceEdit;
-import cn.net.yunlou.bole.model.EducationExperienceQuery;
-import cn.net.yunlou.bole.model.EducationExperienceView;
+import cn.net.yunlou.bole.model.create.EducationExperienceCreate;
+import cn.net.yunlou.bole.model.edit.EducationExperienceEdit;
+import cn.net.yunlou.bole.model.query.EducationExperienceQuery;
+import cn.net.yunlou.bole.model.view.EducationExperienceView;
 
 /**
  * FileName: EducationExperienceService Description: Created By MR. WANG Created At 2025/11/24 23:40

@@ -2,10 +2,10 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.WorkExperience;
-import cn.net.yunlou.bole.model.WorkExperienceCreate;
-import cn.net.yunlou.bole.model.WorkExperienceEdit;
-import cn.net.yunlou.bole.model.WorkExperienceQuery;
-import cn.net.yunlou.bole.model.WorkExperienceView;
+import cn.net.yunlou.bole.model.create.WorkExperienceCreate;
+import cn.net.yunlou.bole.model.edit.WorkExperienceEdit;
+import cn.net.yunlou.bole.model.query.WorkExperienceQuery;
+import cn.net.yunlou.bole.model.view.WorkExperienceView;
 import cn.net.yunlou.bole.service.WorkExperienceService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;

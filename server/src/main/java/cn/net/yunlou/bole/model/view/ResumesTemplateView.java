@@ -1,0 +1,41 @@
+package cn.net.yunlou.bole.model.view;
+
+import cn.net.yunlou.bole.common.BaseView;
+import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
+import java.util.List;
+import java.util.Map;
+import lombok.*;
+
+/**
+ * FileName: ResumesTemplateDTO Description: Created By MR. WANG Created At 2025/11/26 17:46
+ * Modified By Modified At
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+public class ResumesTemplateView extends BaseView {
+    /** 模板名称 */
+    private String name;
+
+    /** 模板编码 */
+    private String code;
+
+    /** 描述 */
+    private String description;
+
+    /** 预览图 */
+    private String previewImage;
+
+    /** 是否激活 */
+    private Boolean isActive;
+
+    /** 版本号 */
+    private String version;
+
+    /** 样式配置 */
+    private Map<String, Object> globalStyle;
+
+    /** 布局配置 */
+    private Map<String, Object> layout;
+
+    private List<ResumesTemplateComponent> components;
+}

@@ -2,10 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.WorkExperience;
-import cn.net.yunlou.bole.model.WorkExperienceCreate;
-import cn.net.yunlou.bole.model.WorkExperienceEdit;
-import cn.net.yunlou.bole.model.WorkExperienceQuery;
-import cn.net.yunlou.bole.model.WorkExperienceView;
+import cn.net.yunlou.bole.model.create.WorkExperienceCreate;
+import cn.net.yunlou.bole.model.edit.WorkExperienceEdit;
+import cn.net.yunlou.bole.model.query.WorkExperienceQuery;
+import cn.net.yunlou.bole.model.view.WorkExperienceView;
 import org.mapstruct.Mapper;
 
 /**

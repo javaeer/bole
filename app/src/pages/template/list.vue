@@ -6,7 +6,7 @@
         <text class="search-icon">🔍</text>
         <input
           class="search-input"
-          placeholder="搜索简历名称、职位或技能"
+          placeholder="搜索简历模板名称、职位或技能"
           placeholder-class="search-placeholder"
           v-model="searchKeyword"
           @input="handleSearch"
@@ -63,7 +63,7 @@
           :class="{ active: sortField === 'matchScore' }"
           @click="changeSort('matchScore')"
         >
-          <text class="sort-text">匹配度</text>
+          <text class="sort-text">热度</text>
           <view v-if="sortField === 'matchScore'" class="sort-arrow">
             <text>{{ sortOrder === 'desc' ? '↓' : '↑' }}</text>
           </view>
@@ -93,74 +93,71 @@
       <text class="loading-text">加载中...</text>
     </view>
 
-    <view v-else-if="resumes.length === 0" class="empty-state">
+    <view v-else-if="templates.length === 0" class="empty-state">
       <text class="empty-icon">📄</text>
-      <text class="empty-text">暂无简历</text>
-      <text class="empty-subtext">创建你的第一份简历开始吧</text>
-      <button class="btn-create" @click="handleCreateResume">
-        <text class="create-text">+ 新建简历</text>
+      <text class="empty-text">暂无简历模板</text>
+      <text class="empty-subtext">创建你的第一份简历模板开始吧</text>
+      <button class="btn-create" @click="handleCreateTemplate">
+        <text class="create-text">+ 简历模板</text>
       </button>
     </view>
 
-    <view v-else class="resume-list" :class="viewMode">
+    <view v-else class="templates-list" :class="viewMode">
       <!-- 列表视图 -->
       <view v-if="viewMode === 'list'" class="list-view">
         <view
-          class="resume-item"
-          v-for="resume in resumes"
-          :key="resume.id"
-          @click="handleViewResume(resume)"
+          class="templates-item"
+          v-for="templates in templates"
+          :key="templates.id"
+          @click="handleViewTemplate(templates)"
         >
-          <view class="resume-item-header">
-            <view class="resume-avatar">
-              <text class="avatar-text">{{ resume.name.charAt(0) }}</text>
+          <view class="templates-item-header">
+            <view class="templates-avatar">
+              <text class="avatar-text">{{ templates.name.charAt(0) }}</text>
             </view>
-            <view class="resume-main-info">
-              <text class="resume-name">{{ resume.name }}</text>
-              <text class="resume-title">{{ resume.title }}</text>
+            <view class="templates-main-info">
+              <text class="templates-name">{{ templates.name }}</text>
+              <text class="templates-title">{{ templates.title }}</text>
             </view>
-            <view class="resume-status">
-              <view class="status-badge" :class="resume.status">
-                <text class="status-text">{{ getStatusText(resume.status) }}</text>
+            <view class="templates-status">
+              <view class="status-badge" :class="templates.status">
+                <text class="status-text">{{ getStatusText(templates.status) }}</text>
               </view>
             </view>
           </view>
 
-          <view class="resume-item-content">
-            <view class="resume-meta">
+          <view class="templates-item-content">
+            <view class="templates-meta">
               <view class="meta-item">
                 <text class="meta-icon">📅</text>
-                <text class="meta-text">更新: {{ formatDate(resume.updateTime) }}</text>
+                <text class="meta-text">更新: {{ formatDate(templates.updateTime) }}</text>
               </view>
               <view class="meta-item">
                 <text class="meta-icon">👁️</text>
-                <text class="meta-text">{{ resume.viewCount }} 浏览</text>
+                <text class="meta-text">{{ templates.viewCount }} 浏览</text>
               </view>
             </view>
 
-            <view class="resume-skills">
+            <view class="templates-skills">
               <text
                 class="skill-tag"
-                v-for="(skill, index) in resume.skills.slice(0, 3)"
+                v-for="(skill, index) in templates.skills.slice(0, 3)"
                 :key="index"
               >
                 {{ skill }}
               </text>
-              <text v-if="resume.skills.length > 3" class="more-skills">
-                +{{ resume.skills.length - 3 }}
+              <text v-if="templates.skills.length > 3" class="more-skills">
+                +{{ templates.skills.length - 3 }}
               </text>
             </view>
           </view>
 
-          <view class="resume-item-actions">
-            <button class="btn-action" @click.stop="handleEdit(resume)">
-              <text class="action-text">编辑</text>
+          <view class="templates-item-actions">
+            <button class="btn-action" @click.stop="handleSelected(templates)">
+              <text class="action-text">选择模板</text>
             </button>
-            <button class="btn-action" @click.stop="handleShare(resume)">
+            <button class="btn-action" @click.stop="handleShare(templates)">
               <text class="action-text">分享</text>
-            </button>
-            <button class="btn-action" @click.stop="handleDuplicate(resume)">
-              <text class="action-text">复制</text>
             </button>
           </view>
         </view>
@@ -169,31 +166,31 @@
       <!-- 网格视图 -->
       <view v-if="viewMode === 'grid'" class="grid-view">
         <view
-          class="resume-card"
-          v-for="resume in resumes"
-          :key="resume.id"
-          @click="handleViewResume(resume)"
+          class="templates-card"
+          v-for="templates in templates"
+          :key="templates.id"
+          @click="handleViewTemplate(templates)"
         >
           <view class="card-header">
             <view class="card-avatar">
-              <text class="avatar-text">{{ resume.name.charAt(0) }}</text>
+              <text class="avatar-text">{{ templates.name.charAt(0) }}</text>
             </view>
             <view class="card-title">
-              <text class="card-name">{{ resume.name }}</text>
-              <text class="card-job">{{ resume.title }}</text>
+              <text class="card-name">{{ templates.name }}</text>
+              <text class="card-job">{{ templates.title }}</text>
             </view>
           </view>
 
           <view class="card-status">
-            <view class="status-badge" :class="resume.status">
-              <text class="status-text">{{ getStatusText(resume.status) }}</text>
+            <view class="status-badge" :class="templates.status">
+              <text class="status-text">{{ getStatusText(templates.status) }}</text>
             </view>
           </view>
 
           <view class="card-skills">
             <text
               class="skill-chip"
-              v-for="(skill, index) in resume.skills.slice(0, 2)"
+              v-for="(skill, index) in templates.skills.slice(0, 2)"
               :key="index"
             >
               {{ skill }}
@@ -201,10 +198,10 @@
           </view>
 
           <view class="card-footer">
-            <text class="update-time">更新于 {{ formatRelativeTime(resume.updateTime) }}</text>
+            <text class="update-time">更新于 {{ formatRelativeTime(templates.updateTime) }}</text>
             <view class="card-actions">
-              <text class="card-action" @click.stop="handleEdit(resume)">✏️</text>
-              <text class="card-action" @click.stop="handleShare(resume)">↗️</text>
+              <text class="card-action" @click.stop="handleSelected(templates)">✏️</text>
+              <text class="card-action" @click.stop="handleShare(templates)">↗️</text>
             </view>
           </view>
         </view>
@@ -218,7 +215,7 @@
 
     <!-- 创建按钮 -->
     <view class="floating-action">
-      <button class="btn-fab" @click="handleCreateResume">
+      <button class="btn-fab" @click="handleCreateTemplate">
         <text class="fab-text">+</text>
       </button>
     </view>
@@ -226,7 +223,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { onMounted, ref } from "vue";
 
 // 搜索和筛选状态
 const searchKeyword = ref('')
@@ -238,10 +235,10 @@ const showFilter = ref(false)
 
 // 数据状态
 const loading = ref(false)
-const resumes = ref<any[]>([
+const templates = ref<any[]>([
   {
     id: 1,
-    name: '高级前端工程师简历',
+    name: '高级前端工程师简历模板',
     title: '高级前端开发工程师',
     status: 'published',
     updateTime: '2024-01-15',
@@ -250,7 +247,7 @@ const resumes = ref<any[]>([
   },
   {
     id: 2,
-    name: '全栈开发工程师简历',
+    name: '全栈开发工程师简历模板',
     title: '全栈开发工程师',
     status: 'draft',
     updateTime: '2024-01-14',
@@ -268,7 +265,7 @@ const resumes = ref<any[]>([
   },
   {
     id: 4,
-    name: '产品经理简历',
+    name: '产品经理简历模板',
     title: '高级产品经理',
     status: 'archived',
     updateTime: '2024-01-10',
@@ -311,35 +308,29 @@ const changeSort = (field: string) => {
 }
 
 // 操作处理
-const handleViewResume = (resume: any) => {
+const handleViewTemplate = (templates: any) => {
   uni.navigateTo({
-    url: `/pages/resume/detail?id=${resume.id}`
+    url: `/pages/template/detail?id=${templates.id}`
   })
 }
 
-const handleEdit = (resume: any) => {
+const handleSelected = (templates: any) => {
   uni.navigateTo({
-    url: `/pages/resume/edit?id=${resume.id}`
+    url: `/pages/resumes/create?id=${templates.id}`
   })
 }
 
-const handleShare = (resume: any) => {
+const handleShare = (templates: any) => {
   uni.showToast({
     title: '分享功能开发中',
     icon: 'none'
   })
 }
 
-const handleDuplicate = (resume: any) => {
-  uni.showToast({
-    title: '已复制简历',
-    icon: 'success'
-  })
-}
 
-const handleCreateResume = () => {
+const handleCreateTemplate = () => {
   uni.navigateTo({
-    url: '/pages/resume/create'
+    url: '/pages/template/create'
   })
 }
 
@@ -349,8 +340,8 @@ const loadMore = () => {
   setTimeout(() => {
     const newResumes = [
       {
-        id: resumes.value.length + 1,
-        name: `新增简历 ${resumes.value.length + 1}`,
+        id: templates.value.length + 1,
+        name: `新增简历模板 ${templates.value.length + 1}`,
         title: '软件工程师',
         status: 'published',
         updateTime: '2024-01-08',
@@ -358,8 +349,8 @@ const loadMore = () => {
         skills: ['Java', 'Spring Boot', 'MySQL']
       }
     ]
-    resumes.value.push(...newResumes)
-    hasMore.value = resumes.value.length < 10
+    templates.value.push(...newResumes)
+    hasMore.value = templates.value.length < 10
     loading.value = false
   }, 1000)
 }
@@ -658,8 +649,8 @@ onMounted(() => {
   color: $background-color-white;
 }
 
-/* 简历列表 */
-.resume-list {
+/* 简历模板列表 */
+.templates-list {
   padding: $padding-base;
 }
 
@@ -670,7 +661,7 @@ onMounted(() => {
   gap: $margin-base;
 }
 
-.resume-item {
+.templates-item {
   background: $background-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
@@ -683,13 +674,13 @@ onMounted(() => {
   }
 }
 
-.resume-item-header {
+.templates-item-header {
   display: flex;
   align-items: center;
   margin-bottom: $margin-small;
 }
 
-.resume-avatar {
+.templates-avatar {
   width: 80rpx;
   height: 80rpx;
   border-radius: $border-radius-round;
@@ -704,25 +695,25 @@ onMounted(() => {
   font-weight: $font-weight-bold;
 }
 
-.resume-main-info {
+.templates-main-info {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: calc($margin-mini / 2);
 }
 
-.resume-name {
+.templates-name {
   font-size: $font-size-base;
   color: $text-primary;
   font-weight: $font-weight-medium;
 }
 
-.resume-title {
+.templates-title {
   font-size: $font-size-small;
   color: $text-regular;
 }
 
-.resume-status {
+.templates-status {
   margin-left: $margin-small;
 }
 
@@ -751,11 +742,11 @@ onMounted(() => {
   font-weight: $font-weight-medium;
 }
 
-.resume-item-content {
+.templates-item-content {
   margin-bottom: $margin-small;
 }
 
-.resume-meta {
+.templates-meta {
   display: flex;
   gap: $margin-base;
   margin-bottom: $margin-small;
@@ -777,7 +768,7 @@ onMounted(() => {
   color: $text-secondary;
 }
 
-.resume-skills {
+.templates-skills {
   display: flex;
   flex-wrap: wrap;
   gap: calc($margin-mini / 2);
@@ -796,7 +787,7 @@ onMounted(() => {
   color: $text-placeholder;
 }
 
-.resume-item-actions {
+.templates-item-actions {
   display: flex;
   gap: $margin-small;
   padding-top: $margin-small;
@@ -828,7 +819,7 @@ onMounted(() => {
   gap: $margin-base;
 }
 
-.resume-card {
+.templates-card {
   background: $background-color-white;
   border-radius: $border-radius;
   padding: $padding-base;

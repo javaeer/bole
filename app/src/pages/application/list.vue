@@ -57,9 +57,9 @@
           </view>
 
           <view class="card-content">
-            <view class="resume-info">
-              <text class="resume-title">{{ item.resumeTitle }}</text>
-              <text class="resume-position">{{ item.position }}</text>
+            <view class="resumes-info">
+              <text class="resumes-title">{{ item.resumeTitle }}</text>
+              <text class="resumes-position">{{ item.position }}</text>
             </view>
             <view class="application-reason">
               <text class="reason-label">申请理由：</text>
@@ -113,6 +113,306 @@
     </scroll-view>
   </view>
 </template>
+
+<script lang="ts" setup>
+import { ref, computed, onMounted } from 'vue'
+import type { Ref } from 'vue'
+
+// ============ 类型定义 ============
+interface ApplicationItem {
+  id: number
+  avatar?: string
+  name: string
+  createTime: string | number
+  resumeTitle: string
+  position: string
+  reason: string
+  resumeId: number
+  status: 'pending' | 'approved' | 'rejected' | 'exported'
+}
+
+interface StatusTab {
+  label: string
+  value: string
+  count?: number
+}
+
+// ============ 响应式数据 ============
+const searchKeyword = ref('')
+const activeStatus = ref('all')
+const applicationList: Ref<ApplicationItem[]> = ref([])
+const loading = ref(false)
+const hasMore = ref(true)
+const currentPage = ref(1)
+const pageSize = 20
+
+// 状态选项卡配置
+const statusTabs: Ref<StatusTab[]> = ref([
+  { label: '全部', value: 'all', count: 0 },
+  { label: '待审核', value: 'pending', count: 0 },
+  { label: '已通过', value: 'approved', count: 0 },
+  { label: '已拒绝', value: 'rejected', count: 0 },
+  { label: '已导出', value: 'exported', count: 0 }
+])
+
+// ============ 计算属性 ============
+const filteredList = computed(() => {
+  let list = applicationList.value
+
+  // 按状态筛选
+  if (activeStatus.value !== 'all') {
+    list = list.filter(item => item.status === activeStatus.value)
+  }
+
+  // 按关键词搜索
+  if (searchKeyword.value) {
+    const keyword = searchKeyword.value.toLowerCase()
+    list = list.filter(item =>
+      item.name.toLowerCase().includes(keyword) ||
+      item.resumeTitle.toLowerCase().includes(keyword) ||
+      item.position.toLowerCase().includes(keyword)
+    )
+  }
+
+  return list
+})
+
+// ============ 生命周期钩子 ============
+onMounted(() => {
+  initData()
+})
+
+// ============ 方法定义 ============
+
+// 初始化数据
+const initData = () => {
+  loading.value = true
+  // 模拟API请求
+  setTimeout(() => {
+    // 模拟数据
+    applicationList.value = generateMockData(15)
+    updateTabCounts()
+    loading.value = false
+  }, 500)
+}
+
+// 生成模拟数据
+const generateMockData = (count: number): ApplicationItem[] => {
+  const mockData: ApplicationItem[] = []
+  const statuses: ApplicationItem['status'][] = ['pending', 'approved', 'rejected', 'exported']
+  const positions = ['前端工程师', '后端开发', 'UI设计师', '产品经理', '测试工程师', '运维工程师']
+  const reasons = [
+    '需要简历用于面试准备',
+    '公司内部招聘需要',
+    '个人档案整理',
+    '岗位匹配度高，希望深入了解',
+    '投递其他公司需要',
+    '个人发展参考'
+  ]
+
+  for (let i = 1; i <= count; i++) {
+    const status = statuses[Math.floor(Math.random() * statuses.length)]
+    mockData.push({
+      id: i,
+      name: `用户${i}`,
+      avatar: i % 3 === 0 ? undefined : `/static/mock/avatar${i % 5 + 1}.png`,
+      createTime: Date.now() - i * 3600000,
+      resumeTitle: `高级${positions[i % positions.length]}简历`,
+      position: positions[i % positions.length],
+      reason: reasons[i % reasons.length],
+      resumeId: i,
+      status: status
+    })
+  }
+
+  return mockData
+}
+
+// 更新选项卡计数
+const updateTabCounts = () => {
+  const counts: Record<string, number> = {
+    all: applicationList.value.length,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    exported: 0
+  }
+
+  applicationList.value.forEach(item => {
+    if (item.status === 'pending') counts.pending++
+    else if (item.status === 'approved') counts.approved++
+    else if (item.status === 'rejected') counts.rejected++
+    else if (item.status === 'exported') counts.exported++
+  })
+
+  statusTabs.value = statusTabs.value.map(tab => ({
+    ...tab,
+    count: counts[tab.value]
+  }))
+}
+
+// 清空搜索
+const clearSearch = () => {
+  searchKeyword.value = ''
+}
+
+// 切换状态
+const changeStatus = (status: string) => {
+  activeStatus.value = status
+  currentPage.value = 1
+  hasMore.value = true
+  // 这里可以根据需要重新加载数据
+}
+
+// 加载更多
+const loadMore = () => {
+  if (loading.value || !hasMore.value) return
+
+  loading.value = true
+  // 模拟API请求
+  setTimeout(() => {
+    const newData = generateMockData(10)
+    applicationList.value = [...applicationList.value, ...newData]
+    updateTabCounts()
+
+    // 模拟没有更多数据的情况
+    if (applicationList.value.length >= 50) {
+      hasMore.value = false
+    }
+
+    currentPage.value++
+    loading.value = false
+  }, 800)
+}
+
+// 跳转到详情页
+const goToDetail = (id: number) => {
+  uni.navigateTo({
+    url: `/pages/application/application?id=${id}`
+  })
+}
+
+// 审核项目
+const reviewItem = (id: number) => {
+  uni.showModal({
+    title: '审核申请',
+    content: '请确认是否通过此申请？',
+    success: (res) => {
+      if (res.confirm) {
+        // 模拟审核操作
+        const item = applicationList.value.find(app => app.id === id)
+        if (item) {
+          item.status = 'approved'
+          updateTabCounts()
+          uni.showToast({
+            title: '审核通过',
+            icon: 'success'
+          })
+        }
+      }
+    }
+  })
+}
+
+// 查看简历
+const viewResume = (resumeId: number) => {
+  uni.navigateTo({
+    url: `/pages/resumes/preview?id=${resumeId}`
+  })
+}
+
+// 导出简历
+const exportResume = (item: ApplicationItem) => {
+  uni.showLoading({ title: '导出中...' })
+
+  // 模拟导出操作
+  setTimeout(() => {
+    uni.hideLoading()
+
+    // 更新状态为已导出
+    item.status = 'exported'
+    updateTabCounts()
+
+    uni.showModal({
+      title: '导出成功',
+      content: '简历已成功导出到您的设备',
+      showCancel: false,
+      success: () => {
+        // 可以在这里触发下载或分享
+        uni.showToast({
+          title: '导出成功',
+          icon: 'success'
+        })
+      }
+    })
+  }, 1500)
+}
+
+// 格式化时间
+const formatTime = (time: string | number) => {
+  const date = new Date(Number(time))
+  const now = new Date()
+  const diff = now.getTime() - date.getTime()
+
+  // 今天以内
+  if (diff < 24 * 60 * 60 * 1000) {
+    if (diff < 60 * 60 * 1000) {
+      return `${Math.floor(diff / (60 * 1000))}分钟前`
+    }
+    return `${Math.floor(diff / (60 * 60 * 1000))}小时前`
+  }
+
+  // 昨天
+  if (diff < 48 * 60 * 60 * 1000) {
+    return '昨天'
+  }
+
+  // 一周内
+  if (diff < 7 * 24 * 60 * 60 * 1000) {
+    return `${Math.floor(diff / (24 * 60 * 60 * 1000))}天前`
+  }
+
+  // 超过一周显示具体日期
+  return `${date.getMonth() + 1}月${date.getDate()}日`
+}
+
+// 获取状态文本
+const getStatusText = (status: ApplicationItem['status']) => {
+  const statusMap = {
+    pending: '待审核',
+    approved: '已通过',
+    rejected: '已拒绝',
+    exported: '已导出'
+  }
+  return statusMap[status] || '未知状态'
+}
+
+// 页面卸载时清理
+onUnmounted(() => {
+  // 清理数据
+  searchKeyword.value = ''
+  applicationList.value = []
+})
+
+// ============ 暴露给模板使用 ============
+defineExpose({
+  searchKeyword,
+  activeStatus,
+  applicationList: filteredList,
+  loading,
+  hasMore,
+  statusTabs,
+  clearSearch,
+  changeStatus,
+  loadMore,
+  goToDetail,
+  reviewItem,
+  viewResume,
+  exportResume,
+  formatTime,
+  getStatusText
+})
+</script>
 
 <style lang="scss" scoped>
 .page-container {
@@ -331,11 +631,11 @@
   margin-bottom: $margin-base;
 }
 
-.resume-info {
+.resumes-info {
   margin-bottom: $margin-base;
 }
 
-.resume-title {
+.resumes-title {
   display: block;
   font-size: $font-size-medium;
   font-weight: $font-weight-bold;
@@ -343,7 +643,7 @@
   margin-bottom: $margin-mini;
 }
 
-.resume-position {
+.resumes-position {
   font-size: $font-size-small;
   color: $text-secondary;
   background: $background-color;

@@ -4,10 +4,10 @@ import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.entity.ResumesTemplate;
-import cn.net.yunlou.bole.model.ResumesTemplateCreate;
-import cn.net.yunlou.bole.model.ResumesTemplateEdit;
-import cn.net.yunlou.bole.model.ResumesTemplateQuery;
-import cn.net.yunlou.bole.model.ResumesTemplateView;
+import cn.net.yunlou.bole.model.create.ResumesTemplateCreate;
+import cn.net.yunlou.bole.model.edit.ResumesTemplateEdit;
+import cn.net.yunlou.bole.model.query.ResumesTemplateQuery;
+import cn.net.yunlou.bole.model.view.ResumesTemplateView;
 import cn.net.yunlou.bole.service.ResumesTemplateService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,7 +60,8 @@ public class ResumesTemplateController {
     @GetMapping("{id}")
     @Operation(summary = "获取简历模板信息")
     public BusinessResponse<ResumesTemplate> get(@PathVariable(value = "id") Long id) {
-        return BusinessResponse.success(resumesTemplateService.getById(id));
+        ResumesTemplate resumesTemplate = resumesTemplateService.getById(id);
+        return BusinessResponse.success(resumesTemplate);
     }
 
     @PostMapping("page")

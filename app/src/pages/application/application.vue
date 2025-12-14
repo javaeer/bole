@@ -53,22 +53,22 @@
       <view class="info-section">
         <view class="section-title">简历信息</view>
 
-        <view class="resume-card">
-          <view class="resume-header">
-            <text class="resume-title">{{ applicationData.resumeTitle }}</text>
-            <view class="resume-tags">
-              <text class="resume-tag">{{ applicationData.workExperience }}年经验</text>
-              <text class="resume-tag">{{ applicationData.education }}</text>
-              <text class="resume-tag">{{ applicationData.age }}岁</text>
+        <view class="resumes-card">
+          <view class="resumes-header">
+            <text class="resumes-title">{{ applicationData.resumeTitle }}</text>
+            <view class="resumes-tags">
+              <text class="resumes-tag">{{ applicationData.workExperience }}年经验</text>
+              <text class="resumes-tag">{{ applicationData.education }}</text>
+              <text class="resumes-tag">{{ applicationData.age }}岁</text>
             </view>
           </view>
 
-          <view class="resume-content">
-            <text class="resume-position">{{ applicationData.position }}</text>
-            <text class="resume-salary">{{ applicationData.salary }}</text>
+          <view class="resumes-content">
+            <text class="resumes-position">{{ applicationData.position }}</text>
+            <text class="resumes-salary">{{ applicationData.salary }}</text>
           </view>
 
-          <view class="resume-skills">
+          <view class="resumes-skills">
             <text class="skills-label">技能标签：</text>
             <view class="skill-tags">
               <text
@@ -186,6 +186,297 @@
   </view>
 </template>
 
+<script lang="ts" setup>
+import { ref, reactive, computed, onMounted } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
+
+// 定义接口类型
+interface Attachment {
+  name: string
+  size: number
+  url?: string
+}
+
+interface ReviewRecord {
+  id: string | number
+  type: 'create' | 'review' | 'reject' | 'approved'
+  title: string
+  time: string
+  comment?: string
+  operator?: string
+}
+
+interface ApplicationData {
+  id: string | number
+  name: string
+  contact: string
+  avatar?: string
+  createTime: string
+  status: 'pending' | 'approved' | 'rejected'
+  resumeTitle: string
+  workExperience: number
+  education: string
+  age: number
+  position: string
+  salary: string
+  skills: string[]
+  reason: string
+  attachments?: Attachment[]
+}
+
+interface ReviewOption {
+  label: string
+  value: 'approved' | 'rejected'
+}
+
+// 响应式数据
+const applicationData = reactive<ApplicationData>({
+  id: '',
+  name: '',
+  contact: '',
+  avatar: '',
+  createTime: '',
+  status: 'pending',
+  resumeTitle: '',
+  workExperience: 0,
+  education: '',
+  age: 0,
+  position: '',
+  salary: '',
+  skills: [],
+  reason: '',
+  attachments: []
+})
+
+const reviewResult = ref<'approved' | 'rejected'>('approved')
+const reviewComment = ref('')
+
+// 审核选项
+const reviewOptions = ref<ReviewOption[]>([
+  { label: '通过', value: 'approved' },
+  { label: '拒绝', value: 'rejected' }
+])
+
+// 审核历史记录
+const reviewHistory = ref<ReviewRecord[]>([])
+
+// 状态文本映射
+const statusTextMap = {
+  pending: '待审核',
+  approved: '已通过',
+  rejected: '已拒绝'
+}
+
+// 页面加载
+onLoad((options) => {
+  const id = options?.id
+  if (id) {
+    fetchApplicationData(id)
+  }
+})
+
+// 获取申请数据
+const fetchApplicationData = async (id: string | number) => {
+  try {
+    // 这里应该调用实际的API
+    // 以下为模拟数据
+    const mockData: ApplicationData = {
+      id,
+      name: '张三',
+      contact: '13800138000',
+      avatar: '/static/avatar.jpg',
+      createTime: '2024-01-15 14:30:00',
+      status: 'pending',
+      resumeTitle: '前端开发工程师',
+      workExperience: 3,
+      education: '本科',
+      age: 28,
+      position: '高级前端开发',
+      salary: '20-30K',
+      skills: ['Vue.js', 'TypeScript', 'Node.js', '小程序开发'],
+      reason: '对贵公司的技术氛围和发展前景非常向往，希望能有机会加入团队共同成长。',
+      attachments: [
+        { name: '个人作品集.pdf', size: 2048576 },
+        { name: '项目案例.zip', size: 5123456 }
+      ]
+    }
+
+    Object.assign(applicationData, mockData)
+
+    // 生成审核历史记录
+    generateReviewHistory()
+  } catch (error) {
+    console.error('获取申请数据失败:', error)
+    uni.showToast({
+      title: '加载失败',
+      icon: 'error'
+    })
+  }
+}
+
+// 生成审核历史记录
+const generateReviewHistory = () => {
+  const history: ReviewRecord[] = [
+    {
+      id: 1,
+      type: 'create',
+      title: '提交申请',
+      time: applicationData.createTime,
+      operator: applicationData.name
+    }
+  ]
+
+  if (applicationData.status !== 'pending') {
+    history.push({
+      id: 2,
+      type: applicationData.status,
+      title: applicationData.status === 'approved' ? '通过申请' : '拒绝申请',
+      time: '2024-01-16 10:00:00',
+      comment: '符合岗位要求',
+      operator: '管理员'
+    })
+  }
+
+  reviewHistory.value = history
+}
+
+// 快速拒绝
+const handleQuickReject = () => {
+  uni.showModal({
+    title: '确认拒绝',
+    content: '确定要快速拒绝此申请吗？',
+    success: (res) => {
+      if (res.confirm) {
+        submitReviewDirect('rejected', '快速拒绝')
+      }
+    }
+  })
+}
+
+// 格式化时间
+const formatTime = (time: string): string => {
+  if (!time) return ''
+
+  try {
+    const date = new Date(time)
+    if (isNaN(date.getTime())) return time
+
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`
+  } catch {
+    return time
+  }
+}
+
+// 获取状态文本
+const getStatusText = (status: string): string => {
+  return statusTextMap[status as keyof typeof statusTextMap] || status
+}
+
+// 预览简历
+const previewResume = () => {
+  // 这里应该实现简历预览逻辑
+  uni.showToast({
+    title: '打开简历预览',
+    icon: 'none'
+  })
+}
+
+// 预览附件
+const previewAttachment = (file: Attachment) => {
+  // 这里应该实现附件预览逻辑
+  uni.showToast({
+    title: `打开附件: ${file.name}`,
+    icon: 'none'
+  })
+}
+
+// 格式化文件大小
+const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 B'
+
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+// 返回上一页
+const goBack = () => {
+  uni.navigateBack()
+}
+
+// 提交审核
+const submitReview = () => {
+  if (!reviewResult.value) {
+    uni.showToast({
+      title: '请选择审核结果',
+      icon: 'error'
+    })
+    return
+  }
+
+  const title = reviewResult.value === 'approved' ? '通过申请' : '拒绝申请'
+  const content = `确定要${title}吗？`
+
+  uni.showModal({
+    title: '确认提交',
+    content,
+    success: (res) => {
+      if (res.confirm) {
+        submitReviewDirect(reviewResult.value, reviewComment.value)
+      }
+    }
+  })
+}
+
+// 直接提交审核（用于快速拒绝和正常提交）
+const submitReviewDirect = (result: 'approved' | 'rejected', comment: string) => {
+  // 这里应该调用API提交审核结果
+  console.log('提交审核:', { result, comment })
+
+  // 模拟提交成功
+  uni.showToast({
+    title: result === 'approved' ? '已通过申请' : '已拒绝申请',
+    icon: 'success'
+  })
+
+  // 更新本地状态
+  applicationData.status = result
+
+  // 添加审核记录
+  reviewHistory.value.push({
+    id: Date.now(),
+    type: result,
+    title: result === 'approved' ? '通过申请' : '拒绝申请',
+    time: new Date().toISOString(),
+    comment: comment || undefined,
+    operator: '当前用户'
+  })
+
+  // 延迟返回上一页
+  setTimeout(() => {
+    uni.navigateBack()
+  }, 1500)
+}
+
+// 计算属性：是否显示审核区域
+const showReviewSection = computed(() => {
+  return applicationData.status === 'pending'
+})
+
+// 计算属性：是否显示历史记录
+const showHistorySection = computed(() => {
+  return applicationData.status !== 'pending'
+})
+</script>
+
 <style lang="scss" scoped>
 .page-container {
   background-color: $background-color;
@@ -264,7 +555,7 @@
 
 /* 信息卡片 */
 .info-card,
-.resume-card,
+.resumes-card,
 .reason-card {
   background: $background-color-white;
   border-radius: $border-radius;
@@ -357,13 +648,13 @@
 }
 
 /* 简历卡片 */
-.resume-header {
+.resumes-header {
   margin-bottom: $margin-base;
   padding-bottom: $padding-small;
   border-bottom: 1rpx solid $border-color-extra-light;
 }
 
-.resume-title {
+.resumes-title {
   display: block;
   font-size: $font-size-medium;
   font-weight: $font-weight-bold;
@@ -371,13 +662,13 @@
   margin-bottom: $margin-mini;
 }
 
-.resume-tags {
+.resumes-tags {
   display: flex;
   gap: $margin-mini;
   flex-wrap: wrap;
 }
 
-.resume-tag {
+.resumes-tag {
   font-size: $font-size-extra-small;
   color: $text-secondary;
   background: $background-color;
@@ -385,26 +676,26 @@
   border-radius: $border-radius-small;
 }
 
-.resume-content {
+.resumes-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: $margin-base;
 }
 
-.resume-position {
+.resumes-position {
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
   color: $text-primary;
 }
 
-.resume-salary {
+.resumes-salary {
   font-size: $font-size-base;
   color: $primary-color;
   font-weight: $font-weight-bold;
 }
 
-.resume-skills {
+.resumes-skills {
   margin-bottom: $margin-base;
 }
 

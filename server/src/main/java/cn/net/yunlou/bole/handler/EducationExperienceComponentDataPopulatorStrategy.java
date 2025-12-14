@@ -1,0 +1,62 @@
+package cn.net.yunlou.bole.handler;
+
+import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.utils.BeanUtils;
+import cn.net.yunlou.bole.entity.EducationExperience;
+import cn.net.yunlou.bole.model.view.EducationExperienceView;
+import cn.net.yunlou.bole.service.EducationExperienceService;
+import cn.net.yunlou.bole.struct.EducationExperienceStructMapper;
+import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+/**
+ * FileName: EducationExperienceComponentDataPopulatorStrategy Description: Created By laughtiger
+ * Created At 2025/12/14 02:52 Modified By Modified At
+ */
+@Component
+@RequiredArgsConstructor
+public class EducationExperienceComponentDataPopulatorStrategy
+        implements IComponentDataPopulatorStrategy {
+
+    private final EducationExperienceService educationExperienceService;
+
+    private final EducationExperienceStructMapper educationExperienceStructMapper;
+
+    @Override
+    public Map<String, Object> populate(Long userId, Map<String, Object> templateProps) {
+        List<EducationExperience> educationExperiences =
+                educationExperienceService.list(
+                        EducationExperience.builder().userId(userId).build());
+
+        Map<String, Object> props = new HashMap<>(templateProps);
+
+        if (!educationExperiences.isEmpty()) {
+
+            List<Map<String, Object>> realProps = Lists.newArrayList();
+
+            List<EducationExperienceView> views =
+                    educationExperienceStructMapper.toViews(educationExperiences);
+            for (EducationExperienceView view : views) {
+
+                Map<String, Object> map = BeanUtils.toMap(view);
+                realProps.add(map);
+            }
+
+            Map<String, Object> map = Map.of("experiences", realProps);
+
+            // 合并数据：模板props + 用户数据
+            props.putAll(map);
+        }
+
+        return props;
+    }
+
+    @Override
+    public boolean supports(TemplateComponentType componentType) {
+        return TemplateComponentType.EDUCATION_EXPERIENCE == componentType;
+    }
+}

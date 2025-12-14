@@ -43,13 +43,13 @@
 		{
 			"path": "pages/agreement/user",
 			"style": {
-				"navigationBarTitleText": "用户协议"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
 			"path": "pages/agreement/privacy",
 			"style": {
-				"navigationBarTitleText": "隐私协议"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
@@ -65,9 +65,9 @@
 			}
 		},
 		{
-			"path": "pages/template/template",
+			"path": "pages/template/create",
 			"style": {
-				"navigationBarTitleText": "模板"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
@@ -140,6 +140,42 @@
 			"path": "pages/notify/notify",
 			"style": {
 				"navigationBarTitleText": "系统通知"
+			}
+		},
+		{
+			"path": "pages/project/create",
+			"style": {
+				"navigationBarTitleText": "新增项目经历"
+			}
+		},
+		{
+			"path": "pages/resumes/resumes",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/resumes/create",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/template/select",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/editor/editor",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/test/resumes",
+			"style": {
+				"navigationBarTitleText": ""
 			}
 		}
 ],

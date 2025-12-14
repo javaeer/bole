@@ -189,7 +189,7 @@ const hotArticles = ref([
   {
     id: 3,
     title: '简历如何写才能通过HR初筛？',
-    image: '/static/guide/resume.jpg',
+    image: '/static/guide/resumes.jpg',
     tags: ['简历', '技巧', 'HR'],
     readCount: 15600,
     time: '3天前'

@@ -56,12 +56,12 @@ class Interceptors {
     console.log("进入响应拦截器");
 
     // 1. 首先打印完整的响应对象
-    console.log("完整响应对象:", response);
-    console.log("响应状态码:", response.statusCode);
-    console.log("响应数据类型:", typeof response.data);
+    // console.log("完整响应对象:", response);
+    // console.log("响应状态码:", response.statusCode);
+    // console.log("响应数据类型:", typeof response.data);
 
     // 2. 查看原始响应字符串
-    console.log("原始响应数据:", response.data);
+    // console.log("原始响应数据:", response.data);
 
 // 3. 尝试解析（如果是字符串）
     let parsedData;

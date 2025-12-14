@@ -212,3 +212,21 @@ export interface RegisterForm {
   phone?: string;
   invitationCode?: string;
 }
+
+/**
+ * 登录检查配置选项
+ */
+export interface LoginCheckOptions {
+  /** 提示信息 */
+  message?: string
+  /** 确认按钮文字 */
+  confirmText?: string
+  /** 取消按钮文字 */
+  cancelText?: string
+  /** 是否跳转登录页 */
+  redirect?: boolean
+  /** 自定义登录路径 */
+  loginPath?: string
+  /** 自定义失败回调 */
+  onFail?: () => void
+}

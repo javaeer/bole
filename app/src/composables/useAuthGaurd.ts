@@ -2,6 +2,9 @@ import { getToken } from "@/utils/store";
 import { getPageConfig, isAuthRequired } from "@/utils/page-auth";
 import { PageAuthConfig } from "@/types/page-auth";
 
+/**
+ * 认证守卫配置选项
+ */
 interface UseAuthGuardOptions {
   /**
    * 是否立即执行检查（默认：true）
@@ -14,7 +17,7 @@ interface UseAuthGuardOptions {
    * - 'beforeMount': 组件挂载前（默认，推荐）
    * - 'onShow': 页面显示时
    */
-  checkTiming?: 'beforeMount' | 'onShow';
+  checkTiming?: "beforeMount" | "onShow";
 
   /**
    * 自定义失败处理
@@ -27,6 +30,9 @@ interface UseAuthGuardOptions {
    * 为 true 时，会进行额外的权限检查
    */
   strict?: boolean;
+
+  /** 自定义重定向路径 */
+  loginPath?: string;
 }
 
 /**
@@ -36,9 +42,10 @@ interface UseAuthGuardOptions {
 export function useAuthGuard(options: UseAuthGuardOptions = {}) {
   const {
     immediate = true,
-    checkTiming = 'beforeMount',
+    checkTiming = "beforeMount",
     onAuthFail,
-    strict = false
+    strict = false,
+    loginPath = "/pages/auth/auth",
   } = options;
 
   const isChecking = ref(false);
@@ -47,7 +54,7 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
   // 获取当前页面路径
   const getCurrentPagePath = (): string => {
     const pages = getCurrentPages();
-    if (pages.length === 0) return '';
+    if (pages.length === 0) return "";
 
     const currentPage = pages[pages.length - 1];
     return `/${currentPage.route}`;
@@ -56,7 +63,7 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
   // 构建完整路径（包含参数）
   const buildFullPath = (): string => {
     const pages = getCurrentPages();
-    if (pages.length === 0) return '';
+    if (pages.length === 0) return "";
 
     const currentPage = pages[pages.length - 1];
     let path = `/${currentPage.route}`;
@@ -65,7 +72,7 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
     if (Object.keys(options).length > 0) {
       const queryString = Object.entries(options)
         .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`)
-        .join('&');
+        .join("&");
       path += `?${queryString}`;
     }
 
@@ -98,7 +105,7 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
           // 默认行为：跳转到登录页
           const redirectUrl = encodeURIComponent(buildFullPath());
           uni.redirectTo({
-            url: `/pages/auth/auth?redirect=${redirectUrl}&from=${encodeURIComponent(currentPath)}`
+            url: `${loginPath}?redirect=${redirectUrl}&from=${encodeURIComponent(currentPath)}`,
           });
         }
         return false;
@@ -111,7 +118,7 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
 
         // 检查Token是否即将过期
         if (tokenService.isTokenExpiringSoon.value) {
-          console.log('[useAuthGuard] Token即将过期，尝试静默刷新...');
+          console.log("[useAuthGuard] Token即将过期，尝试静默刷新...");
           // 可以在这里触发静默刷新
         }
       }
@@ -124,11 +131,11 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
 
   // 根据配置的时机执行检查
   if (immediate) {
-    if (checkTiming === 'beforeMount') {
+    if (checkTiming === "beforeMount") {
       onBeforeMount(() => {
         check();
       });
-    } else if (checkTiming === 'onShow') {
+    } else if (checkTiming === "onShow") {
       // 需要在页面中手动调用 onShow 生命周期
       // 或者使用 uni.onAppShow 全局监听
     }
@@ -141,7 +148,7 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
     isChecking,
     isAuthenticated,
     check: manualCheck,
-    getCurrentPagePath
+    getCurrentPagePath,
   };
 }
 
@@ -156,18 +163,18 @@ export function useStrictAuthGuard(options?: UseAuthGuardOptions) {
       console.error(`[严格守卫] 非法访问重要页面: ${path}`, {
         config,
         timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent
+        userAgent: navigator.userAgent,
       });
 
       // 跳转到登录页，使用 reLaunch 清空页面栈
       const redirectUrl = encodeURIComponent(path);
       uni.reLaunch({
-        url: `/pages/auth/auth?redirect=${redirectUrl}&strict=1`
+        url: `/pages/auth/auth?redirect=${redirectUrl}&strict=1`,
       });
 
       // 可以上报到监控系统
       // reportSecurityIncident({ type: 'unauthorized_access', path });
     },
-    ...options
+    ...options,
   });
 }

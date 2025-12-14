@@ -21,8 +21,8 @@
       </view>
       <view 
         class="filter-tab"
-        :class="{ 'filter-tab--active': filterType === 'resume' }"
-        @click="filterType = 'resume'"
+        :class="{ 'filter-tab--active': filterType === 'resumes' }"
+        @click="filterType = 'resumes'"
       >
         <text class="filter-tab-text">简历</text>
       </view>
@@ -50,10 +50,10 @@
         <view class="history-item-left">
           <view class="item-type">
             <view class="type-icon">
-              <text>{{ item.type === 'resume' ? '📄' : '🏢' }}</text>
+              <text>{{ item.type === 'resumes' ? '📄' : '🏢' }}</text>
             </view>
             <view class="type-badge" :class="`type-${item.type}`">
-              <text class="type-text">{{ item.type === 'resume' ? '简历' : '公司' }}</text>
+              <text class="type-text">{{ item.type === 'resumes' ? '简历' : '公司' }}</text>
             </view>
           </view>
           
@@ -113,7 +113,7 @@ import { ref, computed, onMounted } from 'vue'
 // 历史记录类型
 interface HistoryItem {
   id: string
-  type: 'resume' | 'company'
+  type: 'resumes' | 'company'
   title: string
   description: string
   tag: string
@@ -125,7 +125,7 @@ interface HistoryItem {
 const historyList = ref<HistoryItem[]>([
   {
     id: '1',
-    type: 'resume',
+    type: 'resumes',
     title: '高级前端开发工程师',
     description: '5年经验，精通Vue3、TypeScript，有大型项目经验',
     tag: '互联网',
@@ -143,7 +143,7 @@ const historyList = ref<HistoryItem[]>([
   },
   {
     id: '3',
-    type: 'resume',
+    type: 'resumes',
     title: 'UI/UX设计师',
     description: '专注用户体验设计，熟悉设计系统和交互设计',
     tag: '设计',
@@ -161,7 +161,7 @@ const historyList = ref<HistoryItem[]>([
   },
   {
     id: '5',
-    type: 'resume',
+    type: 'resumes',
     title: 'Java后端开发工程师',
     description: '精通Spring Cloud、微服务架构，有高并发处理经验',
     tag: '后端开发',
@@ -171,7 +171,7 @@ const historyList = ref<HistoryItem[]>([
 ])
 
 // 筛选状态
-const filterType = ref<'all' | 'resume' | 'company'>('all')
+const filterType = ref<'all' | 'resumes' | 'company'>('all')
 
 // 计算属性
 const filteredHistory = computed(() => {
@@ -243,9 +243,9 @@ const handleDeleteItem = (id: string) => {
 }
 
 const handleViewDetail = (item: HistoryItem) => {
-  if (item.type === 'resume') {
+  if (item.type === 'resumes') {
     uni.navigateTo({
-      url: `/pages/resume/detail?id=${item.id}`
+      url: `/pages/resumes/detail?id=${item.id}`
     })
   } else {
     uni.navigateTo({
@@ -441,7 +441,7 @@ onMounted(() => {
   font-size: $font-size-extra-small;
   text-align: center;
   
-  &.type-resume {
+  &.type-resumes {
     background: rgba($success-color, 0.1);
     
     .type-text {

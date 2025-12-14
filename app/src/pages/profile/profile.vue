@@ -32,7 +32,7 @@
         <text class="section-title">简历管理</text>
         <text class="section-more" @click="handleViewAllResumes">查看全部</text>
       </view>
-      <view class="resume-stats">
+      <view class="resumes-stats">
         <view class="stat-card" @click="handleCreateResume">
           <text class="stat-icon">📝</text>
           <text class="stat-title">创建简历</text>
@@ -124,7 +124,7 @@ const resumeStats = ref({
 
 // 菜单列表
 const menuList = ref([
-  { id: 1, name: "模板发布", icon: "📤", path: "/pages/template/release" },
+  { id: 1, name: "模板发布", icon: "📤", path: "/pages/template/create" },
   { id: 2, name: "浏览记录", icon: "👀", path: "/pages/history/history" },
   { id: 3, name: "申请管理", icon: "📅", path: "/pages/application/list" },
 ]);
@@ -172,31 +172,31 @@ const handleEditProfile = () => {
 
 const handleCreateResume = () => {
   uni.navigateTo({
-    url: "/pages/resume/create",
+    url: "/pages/resumes/create",
   });
 };
 
 const handleMyResumes = () => {
   uni.navigateTo({
-    url: "/pages/resume/list",
+    url: "/pages/resumes/list",
   });
 };
 
 const handleViewedResumes = () => {
   uni.navigateTo({
-    url: "/pages/resume/viewed",
+    url: "/pages/resumes/viewed",
   });
 };
 
 const handleDownloadResumes = () => {
   uni.navigateTo({
-    url: "/pages/resume/downloaded",
+    url: "/pages/resumes/downloaded",
   });
 };
 
 const handleViewAllResumes = () => {
   uni.navigateTo({
-    url: "/pages/resume/list",
+    url: "/pages/resumes/list",
   });
 };
 
@@ -352,7 +352,7 @@ onMounted(() => {
   color: $primary-color;
 }
 
-.resume-stats {
+.resumes-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: $margin-small;

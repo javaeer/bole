@@ -16,6 +16,8 @@ import lombok.*;
 @TableName("t_company_experiences")
 public class CompanyExperience extends BaseEntity {
 
+    private Long userId;
+
     private Long companyId;
 
     private String position;

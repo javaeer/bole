@@ -5,17 +5,21 @@ import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.Resumes;
-import cn.net.yunlou.bole.model.ResumesCreate;
-import cn.net.yunlou.bole.model.ResumesEdit;
-import cn.net.yunlou.bole.model.ResumesQuery;
-import cn.net.yunlou.bole.model.ResumesView;
+import cn.net.yunlou.bole.entity.ResumesTemplate;
+import cn.net.yunlou.bole.model.create.ResumesCreate;
+import cn.net.yunlou.bole.model.edit.ResumesEdit;
+import cn.net.yunlou.bole.model.query.ResumesQuery;
+import cn.net.yunlou.bole.model.view.ResumesView;
 import cn.net.yunlou.bole.service.ResumesService;
+import cn.net.yunlou.bole.service.ResumesTemplateService;
+import cn.net.yunlou.bole.service.UserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -29,6 +33,10 @@ import org.springframework.web.bind.annotation.*;
 public class ResumesController {
 
     private final ResumesService resumesService;
+
+    private final ResumesTemplateService resumesTemplateService;
+
+    private final UserService userService;
 
     @PostMapping("add")
     @Operation(summary = "新增简历")
@@ -63,18 +71,40 @@ public class ResumesController {
         return BusinessResponse.success(resumesService.updateByEdit(request));
     }
 
+    @GetMapping("preview/{template_id}")
+    @Operation(summary = "预览简历")
+    public BusinessResponse<ResumesView> preview(
+            @PathVariable(value = "template_id") Long templateId) {
+
+        ResumesTemplate resumesTemplate = resumesTemplateService.getById(templateId);
+        if (ObjectUtils.isEmpty(resumesTemplate)) {
+            throw new BusinessException(BusinessStatus.NOT_FOUND_RECORD);
+        }
+        Resumes entity =
+                Resumes.builder()
+                        .userId(SecurityContextUtils.getCurrentUserId())
+                        .templateId(templateId)
+                        .layout(resumesTemplate.getLayout())
+                        .globalStyle(resumesTemplate.getGlobalStyle())
+                        .components(resumesTemplate.getComponents())
+                        .build();
+
+        return BusinessResponse.success(resumesService.preview(entity));
+    }
+
     @GetMapping("{id}")
     @Operation(summary = "获取简历信息")
-    public BusinessResponse<Resumes> get(@PathVariable(value = "id") Long id) {
-        return BusinessResponse.success(resumesService.getById(id));
+    public BusinessResponse<ResumesView> get(@PathVariable(value = "id") Long id) {
+        return BusinessResponse.success(resumesService.getViewById(id));
     }
 
     @PostMapping("page")
     @Operation(summary = "获取简历列表")
-    public BusinessResponse<Page<ResumesView>> page(
+    public BusinessResponse<Page<Resumes>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody ResumesQuery request) {
-        return BusinessResponse.success(resumesService.pageViewByQuery(page, size, request));
+
+        return BusinessResponse.success(resumesService.pageByQuery(page, size, request));
     }
 }

@@ -16,7 +16,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_user_role")
-public class UserRole extends MultiEntity<User, Role> {
+public class UserRole extends MultiEntity {
 
     private Long userId;
 

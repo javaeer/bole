@@ -1,8 +1,11 @@
 package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import java.util.List;
+import java.util.Map;
 import lombok.*;
 
 @Data
@@ -15,35 +18,22 @@ public class Resumes extends BaseEntity {
 
     private Long userId;
 
-    private String salaryCurrent;
-
-    private String salaryExpectation;
+    private Long templateId;
 
     private String status;
-
-    private Long templateId;
 
     private Integer viewCount;
 
     private Integer downloadCount;
 
-    // 非数据库字段 - 关联用户信息 获取基础信息
-    @TableField(exist = false)
-    private User user;
+    /** 样式配置 */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private Map<String, Object> globalStyle;
 
-    // 非数据库字段 - 教育经历
-    @TableField(exist = false)
-    private List<EducationExperience> educationExperiences;
+    /** 布局配置 */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private Map<String, Object> layout;
 
-    // 非数据库字段 - 工作经历
-    @TableField(exist = false)
-    private List<WorkExperience> workExperiences;
-
-    // 非数据库字段 - 项目经验
-    @TableField(exist = false)
-    private List<ProjectExperience> projectExperiences;
-
-    // 非数据库字段 - 技能
-    @TableField(exist = false)
-    private List<Skill> skills;
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<ResumesTemplateComponent> components;
 }

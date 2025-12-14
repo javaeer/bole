@@ -2,10 +2,11 @@ package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
 import cn.net.yunlou.bole.entity.ProjectExperience;
-import cn.net.yunlou.bole.model.ProjectExperienceCreate;
-import cn.net.yunlou.bole.model.ProjectExperienceEdit;
-import cn.net.yunlou.bole.model.ProjectExperienceQuery;
-import cn.net.yunlou.bole.model.ProjectExperienceView;
+import cn.net.yunlou.bole.model.create.ProjectExperienceCreate;
+import cn.net.yunlou.bole.model.edit.ProjectExperienceEdit;
+import cn.net.yunlou.bole.model.query.ProjectExperienceQuery;
+import cn.net.yunlou.bole.model.view.ProjectExperienceView;
+import java.util.List;
 
 /**
  * FileName: ProjectExperienceService Description: Created By MR. WANG Created At 2025/11/24 23:48
@@ -17,4 +18,6 @@ public interface ProjectExperienceService
                 ProjectExperienceCreate,
                 ProjectExperienceView,
                 ProjectExperienceEdit,
-                ProjectExperienceQuery> {}
+                ProjectExperienceQuery> {
+    List<ProjectExperience> listByUserId(Long userId);
+}

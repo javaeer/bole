@@ -8,9 +8,9 @@
 
       <view class="header-content">
         <!-- 简历标题 -->
-        <view class="resume-title-section">
-          <text class="resume-title">{{ resumeData.title }}</text>
-          <text class="resume-subtitle">{{ resumeData.subtitle }}</text>
+        <view class="resumes-title-section">
+          <text class="resumes-title">{{ resumeData.title }}</text>
+          <text class="resumes-subtitle">{{ resumeData.subtitle }}</text>
         </view>
 
         <!-- 操作按钮 -->
@@ -314,31 +314,31 @@ const handleDownload = () => {
 
 const handlePreview = () => {
   uni.navigateTo({
-    url: '/pages/resume/preview'
+    url: '/pages/resumes/preview'
   })
 }
 
 const handleAddEducation = () => {
   uni.navigateTo({
-    url: '/pages/resume/education/edit'
+    url: '/pages/resumes/education/edit'
   })
 }
 
 const handleAddExperience = () => {
   uni.navigateTo({
-    url: '/pages/resume/experience/edit'
+    url: '/pages/resumes/experience/edit'
   })
 }
 
 const handleAddSkill = () => {
   uni.navigateTo({
-    url: '/pages/resume/skill/edit'
+    url: '/pages/resumes/skill/edit'
   })
 }
 
 const handleAddProject = () => {
   uni.navigateTo({
-    url: '/pages/resume/project/edit'
+    url: '/pages/resumes/project/edit'
   })
 }
 </script>
@@ -382,17 +382,17 @@ const handleAddProject = () => {
 }
 
 
-.resume-title-section {
+.resumes-title-section {
   margin-bottom: $margin-base;
 
-  .resume-title {
+  .resumes-title {
     display: block;
     font-size: $font-size-extra-large;
     font-weight: $font-weight-bold;
     margin-bottom: $margin-mini;
   }
 
-  .resume-subtitle {
+  .resumes-subtitle {
     display: block;
     font-size: $font-size-base;
     opacity: 0.9;

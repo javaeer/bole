@@ -471,6 +471,50 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_company_experiences.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_company_experiences.deleted IS '逻辑删除(0-正常,1-删除)';
 
+    -- 求职意向表
+    CREATE TABLE IF NOT EXISTS bole_app.t_job_intention (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        position VARCHAR(255),
+        city VARCHAR(255),
+        salary VARCHAR(100),
+        job_type VARCHAR(100),
+        
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0,
+        
+        -- 外键约束（如果需要关联用户表）
+        -- CONSTRAINT fk_job_intention_user FOREIGN KEY (user_id) REFERENCES bole_app.t_user(id)
+        
+        -- 唯一约束（每个用户最多一条意向记录，根据业务需求可选）
+        CONSTRAINT uk_user_job_intention UNIQUE (user_id)
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_job_intention_user_id ON bole_app.t_job_intention(user_id);
+    CREATE INDEX IF NOT EXISTS idx_job_intention_position ON bole_app.t_job_intention(position);
+    CREATE INDEX IF NOT EXISTS idx_job_intention_city ON bole_app.t_job_intention(city);
+    CREATE INDEX IF NOT EXISTS idx_job_intention_job_type ON bole_app.t_job_intention(job_type);
+    CREATE INDEX IF NOT EXISTS idx_job_intention_created_at ON bole_app.t_job_intention(created_at);
+    CREATE INDEX IF NOT EXISTS idx_job_intention_deleted ON bole_app.t_job_intention(deleted);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_job_intention IS '求职意向表';
+    COMMENT ON COLUMN bole_app.t_job_intention.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_job_intention.user_id IS '用户ID';
+    COMMENT ON COLUMN bole_app.t_job_intention.position IS '职位意向';
+    COMMENT ON COLUMN bole_app.t_job_intention.city IS '期望城市';
+    COMMENT ON COLUMN bole_app.t_job_intention.salary IS '期望薪资';
+    COMMENT ON COLUMN bole_app.t_job_intention.job_type IS '工作类型（全职/兼职/实习等）';
+    COMMENT ON COLUMN bole_app.t_job_intention.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_job_intention.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_job_intention.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
+
     -- 创建教育经历表
     CREATE TABLE IF NOT EXISTS bole_app.t_education_experience (
         -- 主键字段
@@ -728,75 +772,18 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_skill.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_skill.deleted IS '逻辑删除(0-正常,1-删除)';
 
-    -- 创建简历表
-    CREATE TABLE IF NOT EXISTS bole_app.t_resumes (
-        -- 主键字段
-        id BIGSERIAL PRIMARY KEY,
-        
-        -- 关联字段
-        user_id BIGINT NOT NULL,
-        template_id BIGINT,
-        
-        -- 薪资信息
-        salary_current VARCHAR(100),
-        salary_expectation VARCHAR(100),
-        
-        -- 状态字段
-        status VARCHAR(50) DEFAULT 'draft',
-        
-        -- 统计字段
-        view_count INTEGER DEFAULT 0,
-        download_count INTEGER DEFAULT 0,
-        
-        -- 时间字段
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        
-        -- 逻辑删除字段
-        deleted INTEGER DEFAULT 0,
-        
-        -- 外键约束
-        CONSTRAINT fk_resumes_user 
-            FOREIGN KEY (user_id) 
-            REFERENCES bole_app.t_user(id) 
-            ON DELETE CASCADE
-    );
-
-    -- 创建索引
-    CREATE INDEX IF NOT EXISTS idx_resumes_user_id ON bole_app.t_resumes(user_id);
-    CREATE INDEX IF NOT EXISTS idx_resumes_status ON bole_app.t_resumes(status);
-    CREATE INDEX IF NOT EXISTS idx_resumes_template_id ON bole_app.t_resumes(template_id);
-    CREATE INDEX IF NOT EXISTS idx_resumes_created_at ON bole_app.t_resumes(created_at);
-
-    -- 注释
-    COMMENT ON TABLE bole_app.t_resumes IS '简历表';
-    COMMENT ON COLUMN bole_app.t_resumes.id IS '主键ID';
-    COMMENT ON COLUMN bole_app.t_resumes.user_id IS '用户ID';
-    COMMENT ON COLUMN bole_app.t_resumes.salary_current IS '当前薪资';
-    COMMENT ON COLUMN bole_app.t_resumes.salary_expectation IS '期望薪资';
-    COMMENT ON COLUMN bole_app.t_resumes.status IS '简历状态(draft-草稿,active-活跃,inactive-不活跃)';
-    COMMENT ON COLUMN bole_app.t_resumes.template_id IS '使用的模板ID';
-    COMMENT ON COLUMN bole_app.t_resumes.view_count IS '查看次数';
-    COMMENT ON COLUMN bole_app.t_resumes.download_count IS '下载次数';
-    COMMENT ON COLUMN bole_app.t_resumes.created_at IS '创建时间';
-    COMMENT ON COLUMN bole_app.t_resumes.updated_at IS '更新时间';
-    COMMENT ON COLUMN bole_app.t_resumes.deleted IS '逻辑删除(0-正常,1-删除)';
-
-    -- 创建简历模板表
+    -- 简历模板表
     CREATE TABLE IF NOT EXISTS bole_app.t_resumes_template (
         -- 主键字段
         id BIGSERIAL PRIMARY KEY,
-        
-        -- 模板基本信息
-        name VARCHAR(200) NOT NULL,
-        store_path TEXT NOT NULL,
-        template_config JSONB,
-        category VARCHAR(100),
-        framework_type VARCHAR(100),
-        
-        -- 状态和版本信息
+        name VARCHAR(255) NOT NULL,
+        code VARCHAR(100) UNIQUE NOT NULL,
+        description TEXT,
+        preview_image VARCHAR(500),
         is_active BOOLEAN DEFAULT FALSE,
         version VARCHAR(50) DEFAULT '1.0.0',
+        global_style JSONB,
+        layout JSONB,
         
         -- 时间字段
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -807,45 +794,40 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     );
 
     -- 创建索引
-    CREATE INDEX IF NOT EXISTS idx_resumes_template_name ON bole_app.t_resumes_template(name);
-    CREATE INDEX IF NOT EXISTS idx_resumes_template_category ON bole_app.t_resumes_template(category);
-    CREATE INDEX IF NOT EXISTS idx_resumes_template_framework ON bole_app.t_resumes_template(framework_type);
-    CREATE INDEX IF NOT EXISTS idx_resumes_template_active ON bole_app.t_resumes_template(is_active);
-    CREATE INDEX IF NOT EXISTS idx_resumes_template_created_at ON bole_app.t_resumes_template(created_at);
+    CREATE INDEX IF NOT EXISTS idx_resumes_template_code ON bole_app.t_resumes_template(code);
+    CREATE INDEX IF NOT EXISTS idx_resumes_template_is_active ON bole_app.t_resumes_template(is_active);
     CREATE INDEX IF NOT EXISTS idx_resumes_template_version ON bole_app.t_resumes_template(version);
+    CREATE INDEX IF NOT EXISTS idx_resumes_template_created_at ON bole_app.t_resumes_template(created_at);
+    CREATE INDEX IF NOT EXISTS idx_resumes_template_deleted ON bole_app.t_resumes_template(deleted);
 
-    -- 创建 JSONB 索引（如果经常查询模板配置中的特定字段）
-    CREATE INDEX IF NOT EXISTS idx_resumes_template_config ON bole_app.t_resumes_template USING GIN (template_config);
+    -- JSONB字段索引（如果经常查询JSON结构中的特定字段）
+    -- CREATE INDEX IF NOT EXISTS idx_resumes_template_global_style ON bole_app.t_resumes_template USING gin(global_style);
+    -- CREATE INDEX IF NOT EXISTS idx_resumes_template_layout ON bole_app.t_resumes_template USING gin(layout);
 
-    -- 注释
+    -- 表注释和字段注释
     COMMENT ON TABLE bole_app.t_resumes_template IS '简历模板表';
     COMMENT ON COLUMN bole_app.t_resumes_template.id IS '主键ID';
     COMMENT ON COLUMN bole_app.t_resumes_template.name IS '模板名称';
-    COMMENT ON COLUMN bole_app.t_resumes_template.store_path IS '模板文件存储路径';
-    COMMENT ON COLUMN bole_app.t_resumes_template.template_config IS '模板配置(JSON格式)';
-    COMMENT ON COLUMN bole_app.t_resumes_template.category IS '模板分类';
-    COMMENT ON COLUMN bole_app.t_resumes_template.framework_type IS '框架类型';
+    COMMENT ON COLUMN bole_app.t_resumes_template.code IS '模板编码（唯一标识）';
+    COMMENT ON COLUMN bole_app.t_resumes_template.description IS '模板描述';
+    COMMENT ON COLUMN bole_app.t_resumes_template.preview_image IS '预览图路径/URL';
     COMMENT ON COLUMN bole_app.t_resumes_template.is_active IS '是否激活';
     COMMENT ON COLUMN bole_app.t_resumes_template.version IS '版本号';
+    COMMENT ON COLUMN bole_app.t_resumes_template.global_style IS '全局样式配置（JSON格式）';
+    COMMENT ON COLUMN bole_app.t_resumes_template.layout IS '布局配置（JSON格式）';
     COMMENT ON COLUMN bole_app.t_resumes_template.created_at IS '创建时间';
     COMMENT ON COLUMN bole_app.t_resumes_template.updated_at IS '更新时间';
-    COMMENT ON COLUMN bole_app.t_resumes_template.deleted IS '逻辑删除(0-正常,1-删除)';
+    COMMENT ON COLUMN bole_app.t_resumes_template.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
-    -- 创建简历模板组件关联表
+    -- 简历模板组件表
     CREATE TABLE IF NOT EXISTS bole_app.t_resumes_template_component (
         -- 主键字段
         id BIGSERIAL PRIMARY KEY,
-        
-        -- 关联字段
         template_id BIGINT NOT NULL,
-        component_id BIGINT NOT NULL,
-        
-        -- 组件信息字段
-        component_type VARCHAR(100) NOT NULL,
-        component_name VARCHAR(200) NOT NULL,
-        component_config JSONB,
-        sort INTEGER DEFAULT 0,
-        is_required BOOLEAN DEFAULT FALSE,
+        name VARCHAR(255) NOT NULL,
+        component VARCHAR(100) NOT NULL,
+        props JSONB,
+        styles JSONB,
         
         -- 时间字段
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -854,102 +836,72 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         -- 逻辑删除字段
         deleted INTEGER DEFAULT 0,
         
-        -- 外键约束
+        -- 外键约束（假设存在 t_resumes_template 表）
         CONSTRAINT fk_template_component_template 
             FOREIGN KEY (template_id) 
             REFERENCES bole_app.t_resumes_template(id) 
-            ON DELETE CASCADE,
-        
-        -- 唯一约束，避免同一模板中重复组件
-        CONSTRAINT uk_template_component_unique 
-            UNIQUE (template_id, component_id, component_type)
+            ON DELETE CASCADE
     );
 
     -- 创建索引
     CREATE INDEX IF NOT EXISTS idx_template_component_template_id ON bole_app.t_resumes_template_component(template_id);
-    CREATE INDEX IF NOT EXISTS idx_template_component_component_id ON bole_app.t_resumes_template_component(component_id);
-    CREATE INDEX IF NOT EXISTS idx_template_component_type ON bole_app.t_resumes_template_component(component_type);
-    CREATE INDEX IF NOT EXISTS idx_template_component_sort ON bole_app.t_resumes_template_component(sort);
-    CREATE INDEX IF NOT EXISTS idx_template_component_required ON bole_app.t_resumes_template_component(is_required);
+    CREATE INDEX IF NOT EXISTS idx_template_component_component ON bole_app.t_resumes_template_component(component);
     CREATE INDEX IF NOT EXISTS idx_template_component_created_at ON bole_app.t_resumes_template_component(created_at);
+    CREATE INDEX IF NOT EXISTS idx_template_component_deleted ON bole_app.t_resumes_template_component(deleted);
 
-    -- 创建复合索引（常用查询场景）
-    CREATE INDEX IF NOT EXISTS idx_template_component_template_sort ON bole_app.t_resumes_template_component(template_id, sort);
-    CREATE INDEX IF NOT EXISTS idx_template_component_template_type ON bole_app.t_resumes_template_component(template_id, component_type);
+    -- 如果需要查询 JSONB 字段中的特定属性，可以创建 GIN 索引
+    CREATE INDEX IF NOT EXISTS idx_template_component_props ON bole_app.t_resumes_template_component USING GIN (props);
+    CREATE INDEX IF NOT EXISTS idx_template_component_styles ON bole_app.t_resumes_template_component USING GIN (styles);
 
-    -- 创建 JSONB 索引（如果经常查询组件配置中的特定字段）
-    CREATE INDEX IF NOT EXISTS idx_template_component_config ON bole_app.t_resumes_template_component USING GIN (component_config);
-
-    -- 注释
-    COMMENT ON TABLE bole_app.t_resumes_template_component IS '简历模板组件关联表';
+    -- 表注释和字段注释
+    COMMENT ON TABLE bole_app.t_resumes_template_component IS '简历模板组件表';
     COMMENT ON COLUMN bole_app.t_resumes_template_component.id IS '主键ID';
     COMMENT ON COLUMN bole_app.t_resumes_template_component.template_id IS '模板ID';
-    COMMENT ON COLUMN bole_app.t_resumes_template_component.component_id IS '组件ID';
-    COMMENT ON COLUMN bole_app.t_resumes_template_component.component_type IS '组件类型';
-    COMMENT ON COLUMN bole_app.t_resumes_template_component.component_name IS '组件名称';
-    COMMENT ON COLUMN bole_app.t_resumes_template_component.component_config IS '组件配置(JSON格式)';
-    COMMENT ON COLUMN bole_app.t_resumes_template_component.sort IS '排序顺序';
-    COMMENT ON COLUMN bole_app.t_resumes_template_component.is_required IS '是否必填';
+    COMMENT ON COLUMN bole_app.t_resumes_template_component.name IS '组件名称';
+    COMMENT ON COLUMN bole_app.t_resumes_template_component.component IS '预定义组件名称';
+    COMMENT ON COLUMN bole_app.t_resumes_template_component.props IS '组件属性（JSON格式）';
+    COMMENT ON COLUMN bole_app.t_resumes_template_component.styles IS '组件样式变量（JSON格式）';
     COMMENT ON COLUMN bole_app.t_resumes_template_component.created_at IS '创建时间';
     COMMENT ON COLUMN bole_app.t_resumes_template_component.updated_at IS '更新时间';
-    COMMENT ON COLUMN bole_app.t_resumes_template_component.deleted IS '逻辑删除(0-正常,1-删除)';
+    COMMENT ON COLUMN bole_app.t_resumes_template_component.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
-    -- 创建组件库表
-    CREATE TABLE IF NOT EXISTS bole_app.t_component_library (
+    -- 自我评价表
+    CREATE TABLE IF NOT EXISTS bole_app.t_self_evaluation (
         -- 主键字段
         id BIGSERIAL PRIMARY KEY,
-        
-        -- 组件基本信息
-        component_type VARCHAR(100) NOT NULL,
-        component_name VARCHAR(200) NOT NULL,
-        default_config JSONB,
-        framework_type VARCHAR(100),
-        category VARCHAR(100),
-        description TEXT,
-        thumbnail TEXT,
+        user_id BIGINT NOT NULL,
+        content TEXT,
+        keywords JSONB,
         
         -- 时间字段
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         
         -- 逻辑删除字段
-        deleted INTEGER DEFAULT 0,
+        deleted INTEGER DEFAULT 0
         
-        -- 唯一约束，避免重复组件
-        CONSTRAINT uk_component_library_unique 
-            UNIQUE (component_type, component_name, framework_type)
+        -- 添加外键约束（如果存在用户表）
+        -- CONSTRAINT fk_self_evaluation_user 
+        -- FOREIGN KEY (user_id) 
+        -- REFERENCES t_user(id)
     );
 
     -- 创建索引
-    CREATE INDEX IF NOT EXISTS idx_component_library_type ON bole_app.t_component_library(component_type);
-    CREATE INDEX IF NOT EXISTS idx_component_library_name ON bole_app.t_component_library(component_name);
-    CREATE INDEX IF NOT EXISTS idx_component_library_framework ON bole_app.t_component_library(framework_type);
-    CREATE INDEX IF NOT EXISTS idx_component_library_category ON bole_app.t_component_library(category);
-    CREATE INDEX IF NOT EXISTS idx_component_library_created_at ON bole_app.t_component_library(created_at);
+    CREATE INDEX IF NOT EXISTS idx_self_evaluation_user_id ON bole_app.t_self_evaluation(user_id);
+    CREATE INDEX IF NOT EXISTS idx_self_evaluation_created_at ON bole_app.t_self_evaluation(created_at);
 
-    -- 创建复合索引（常用查询场景）
-    CREATE INDEX IF NOT EXISTS idx_component_library_type_category ON bole_app.t_component_library(component_type, category);
-    CREATE INDEX IF NOT EXISTS idx_component_library_framework_category ON bole_app.t_component_library(framework_type, category);
-
-    -- 创建 JSONB 索引（如果经常查询默认配置中的特定字段）
-    CREATE INDEX IF NOT EXISTS idx_component_library_default_config ON bole_app.t_component_library USING GIN (default_config);
-
-    -- 创建全文搜索索引（如果需要对描述进行搜索）
-    -- CREATE INDEX IF NOT EXISTS idx_component_library_description_search ON bole_app.t_component_library USING GIN (to_tsvector('chinese', description)); 
+    -- 如果需要查询 JSONB 字段中的特定属性，可以创建 GIN 索引
+    CREATE INDEX IF NOT EXISTS idx_self_evaluation_keywords ON bole_app.t_self_evaluation USING GIN (keywords);
+    
 
     -- 注释
-    COMMENT ON TABLE bole_app.t_component_library IS '组件库表';
-    COMMENT ON COLUMN bole_app.t_component_library.id IS '主键ID';
-    COMMENT ON COLUMN bole_app.t_component_library.component_type IS '组件类型';
-    COMMENT ON COLUMN bole_app.t_component_library.component_name IS '组件名称';
-    COMMENT ON COLUMN bole_app.t_component_library.default_config IS '默认配置(JSON格式)';
-    COMMENT ON COLUMN bole_app.t_component_library.framework_type IS '框架类型';
-    COMMENT ON COLUMN bole_app.t_component_library.category IS '分类';
-    COMMENT ON COLUMN bole_app.t_component_library.description IS '组件描述';
-    COMMENT ON COLUMN bole_app.t_component_library.thumbnail IS '缩略图URL';
-    COMMENT ON COLUMN bole_app.t_component_library.created_at IS '创建时间';
-    COMMENT ON COLUMN bole_app.t_component_library.updated_at IS '更新时间';
-    COMMENT ON COLUMN bole_app.t_component_library.deleted IS '逻辑删除(0-正常,1-删除)';
+    COMMENT ON TABLE bole_app.t_self_evaluation IS '自我评价表';
+    COMMENT ON COLUMN bole_app.t_self_evaluation.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_self_evaluation.user_id IS '用户ID';
+    COMMENT ON COLUMN bole_app.t_self_evaluation.content IS '评价内容';
+    COMMENT ON COLUMN bole_app.t_self_evaluation.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_self_evaluation.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_self_evaluation.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
     -- 城市等级表
     CREATE TABLE IF NOT EXISTS bole_app.t_city_grade (
@@ -980,6 +932,61 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_city_grade.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_city_grade.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
     
+    -- 创建简历表
+    CREATE TABLE IF NOT EXISTS bole_app.t_resumes (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        template_id BIGINT,
+        status VARCHAR(50),
+        view_count INTEGER DEFAULT 0,
+        download_count INTEGER DEFAULT 0,
+        
+        -- JSON配置字段
+        global_style JSONB,
+        layout JSONB,
+        components JSONB,
+        
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0,
+        
+        -- 外键约束
+        CONSTRAINT fk_resumes_user FOREIGN KEY (user_id) REFERENCES bole_app.t_user(id),
+        CONSTRAINT fk_resumes_template FOREIGN KEY (template_id) REFERENCES bole_app.t_resumes_template(id)
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_resumes_user_id ON bole_app.t_resumes(user_id);
+    CREATE INDEX IF NOT EXISTS idx_resumes_template_id ON bole_app.t_resumes(template_id);
+    CREATE INDEX IF NOT EXISTS idx_resumes_status ON bole_app.t_resumes(status);
+    CREATE INDEX IF NOT EXISTS idx_resumes_created_at ON bole_app.t_resumes(created_at);
+    CREATE INDEX IF NOT EXISTS idx_resumes_view_count ON bole_app.t_resumes(view_count);
+    CREATE INDEX IF NOT EXISTS idx_resumes_download_count ON bole_app.t_resumes(download_count);
+
+    -- 为JSON字段创建GIN索引（如果需要进行JSON查询）
+    CREATE INDEX IF NOT EXISTS idx_resumes_global_style ON bole_app.t_resumes USING GIN (global_style);
+    CREATE INDEX IF NOT EXISTS idx_resumes_layout ON bole_app.t_resumes USING GIN (layout);
+    CREATE INDEX IF NOT EXISTS idx_resumes_components ON bole_app.t_resumes USING GIN (components);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_resumes IS '简历表';
+    COMMENT ON COLUMN bole_app.t_resumes.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_resumes.user_id IS '用户ID';
+    COMMENT ON COLUMN bole_app.t_resumes.template_id IS '模板ID';
+    COMMENT ON COLUMN bole_app.t_resumes.status IS '简历状态';
+    COMMENT ON COLUMN bole_app.t_resumes.view_count IS '查看次数';
+    COMMENT ON COLUMN bole_app.t_resumes.download_count IS '下载次数';
+    COMMENT ON COLUMN bole_app.t_resumes.global_style IS '全局样式配置(JSON格式)';
+    COMMENT ON COLUMN bole_app.t_resumes.layout IS '布局配置(JSON格式)';
+    COMMENT ON COLUMN bole_app.t_resumes.components IS '组件列表(JSON格式)';
+    COMMENT ON COLUMN bole_app.t_resumes.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_resumes.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_resumes.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
+
     --城市表
     CREATE TABLE IF NOT EXISTS bole_app.t_city (
             -- 主键字段
@@ -1128,11 +1135,11 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             AND table_name IN (
                 't_config', 't_banner','t_dict',
                 't_user', 't_company', 't_role', 't_company_comment', 
-                't_company_experiences', 't_work_experiences', 
+                't_company_experiences', 't_work_experiences', 't_job_intention',
                 't_education_experience', 't_project_experience',
-                't_resumes', 't_resumes_template', 't_component_library',
-                't_resumes_template_component','t_skill',
-                't_city_grade','t_city','t_file'
+                't_resumes', 't_resumes_template','t_resumes_template_component',
+                't_skill','t_city_grade','t_self_evaluation',
+                't_city','t_file'
             )
         LOOP
             EXECUTE format('

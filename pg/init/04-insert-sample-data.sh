@@ -153,34 +153,406 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     (5, 3, 2, 'Java开发工程师', '2018-07-01', '2021-08-31', false, '参与电商平台开发', '["处理高并发场景", "系统稳定性提升"]', 1),
     (6, 3, 2, '系统架构师', '2021-09-01', NULL, true, '负责系统架构设计', '["设计微服务架构", "技术团队建设"]', 2);
 
-    -- 插入简历模板数据
-    INSERT INTO bole_app.t_resumes_template (id, name, store_path, template_config, category, framework_type, is_active, version) VALUES
-    (1, '现代简约简历模板', '/templates/modern-simple', '{"sections": ["basic", "education", "work", "skills"], "colors": {"primary": "#2563eb", "secondary": "#64748b"}, "fonts": {"heading": "Arial", "body": "Helvetica"}}', '现代', 'React', true, '1.0.0'),
-    (2, '专业传统简历模板', '/templates/professional-traditional', '{"sections": ["basic", "summary", "education", "work", "projects", "skills"], "colors": {"primary": "#000000", "secondary": "#333333"}, "fonts": {"heading": "Times New Roman", "body": "Georgia"}}', '传统', 'Vue', true, '1.1.0'),
-    (3, '创意设计简历模板', '/templates/creative-design', '{"sections": ["basic", "portfolio", "skills", "education", "work"], "colors": {"primary": "#ec4899", "secondary": "#8b5cf6"}, "fonts": {"heading": "Poppins", "body": "Inter"}}', '创意', 'React', false, '2.0.0');
 
-    -- 插入简历数据
-    INSERT INTO bole_app.t_resumes (id, user_id, template_id, salary_current, salary_expectation, status, view_count, download_count) VALUES
-    (1, 1, 1, '30-40万/年', '45-60万/年', 'active', 150, 25),
-    (2, 2, 2, '25-35万/年', '40-55万/年', 'active', 120, 18),
-    (3, 3, 1, '50-70万/年', '80-100万/年', 'draft', 45, 5),
-    (4, 4, 3, '20-30万/年', '35-50万/年', 'inactive', 80, 12);
 
-    -- 插入组件库数据
-    INSERT INTO bole_app.t_component_library (id, component_type, component_name, default_config, framework_type, category, description, thumbnail) VALUES
-    (1, 'header', '基础头部组件', '{"title": "个人简历", "subtitle": "", "showAvatar": true, "showContact": true}', 'React', 'layout', '简历头部信息展示组件', '/thumbnails/header-basic.jpg'),
-    (2, 'education', '时间轴教育组件', '{"layout": "timeline", "showDuration": true, "showDescription": true}', 'React', 'content', '教育经历时间轴展示', '/thumbnails/education-timeline.jpg'),
-    (3, 'work', '卡片式工作经历', '{"layout": "card", "showAchievements": true, "showSkills": true}', 'Vue', 'content', '工作经历卡片式布局', '/thumbnails/work-card.jpg'),
-    (4, 'skills', '技能进度条组件', '{"layout": "progress", "showLevel": true, "maxLevel": 5}', 'React', 'content', '技能水平进度条展示', '/thumbnails/skills-progress.jpg');
+    -- 插入5个简历模板
+    INSERT INTO bole_app.t_resumes_template (name, code, description, preview_image, is_active, version, global_style, layout, created_at) VALUES
+    -- 1. 经典简洁模板
+    (
+        '经典简洁',
+        'classic_simple_v1',
+        '经典简约设计，适合传统行业和保守型求职者，布局清晰，重点突出',
+        'https://example.com/images/resumes/classic_simple.png',
+        true,
+        '1.0.0',
+        '{
+            "theme": "classic",
+            "fontFamily": "Microsoft YaHei, SimSun, serif",
+            "fontSize": "12px",
+            "lineHeight": "1.6",
+            "primaryColor": "#2c3e50",
+            "secondaryColor": "#7f8c8d",
+            "backgroundColor": "#ffffff",
+            "headerColor": "#3498db",
+            "margin": "20mm",
+            "padding": "10px"
+        }'::jsonb,
+        '{
+            "sections": ["personal_info", "education", "work_experience", "skills", "projects"],
+            "columns": 1,
+            "sectionOrder": ["header", "personal_info", "summary", "work_experience", "education", "skills", "projects", "certifications"],
+            "showPhoto": true,
+            "photoPosition": "right_top",
+            "pageSize": "A4",
+            "orientation": "portrait"
+        }'::jsonb,
+        CURRENT_TIMESTAMP
+    ),
 
-    -- 插入简历模板组件关联数据
-    INSERT INTO bole_app.t_resumes_template_component (id, template_id, component_id, component_type, component_name, component_config, sort, is_required) VALUES
-    (1, 1, 1, 'header', '基础头部组件', '{"title": "个人简历", "showAvatar": true}', 1, true),
-    (2, 1, 2, 'education', '时间轴教育组件', '{"layout": "timeline"}', 2, true),
-    (3, 1, 3, 'work', '卡片式工作经历', '{"layout": "card"}', 3, true),
-    (4, 1, 4, 'skills', '技能进度条组件', '{"layout": "progress"}', 4, false),
-    (5, 2, 1, 'header', '基础头部组件', '{"title": "个人简历", "showAvatar": false}', 1, true),
-    (6, 2, 2, 'education', '时间轴教育组件', '{"layout": "list"}', 2, true);
+    -- 2. 现代设计模板
+    (
+        '现代设计',
+        'modern_design_v1',
+        '现代扁平化设计，适合互联网、科技行业，视觉冲击力强',
+        'https://example.com/images/resumes/modern_design.png',
+        true,
+        '1.2.0',
+        '{
+            "theme": "modern",
+            "fontFamily": "PingFang SC, Helvetica, Arial, sans-serif",
+            "fontSize": "14px",
+            "lineHeight": "1.8",
+            "primaryColor": "#1a237e",
+            "secondaryColor": "#5c6bc0",
+            "accentColor": "#ff9800",
+            "backgroundColor": "#f5f7fa",
+            "headerColor": "#1a237e",
+            "borderRadius": "8px",
+            "shadow": "0 2px 10px rgba(0,0,0,0.1)"
+        }'::jsonb,
+        '{
+            "sections": ["personal_info", "summary", "work_experience", "projects", "skills", "education"],
+            "columns": 2,
+            "leftColumn": ["personal_info", "skills", "languages"],
+            "rightColumn": ["summary", "work_experience", "projects", "education"],
+            "showPhoto": true,
+            "photoPosition": "left_top",
+            "pageSize": "A4",
+            "orientation": "portrait",
+            "showSidebar": true
+        }'::jsonb,
+        CURRENT_TIMESTAMP
+    ),
+
+    -- 3. 创意艺术模板
+    (
+        '创意艺术',
+        'creative_art_v1',
+        '创意设计风格，适合设计师、艺术家、创意工作者，展现个性与创造力',
+        'https://example.com/images/resumes/creative_art.png',
+        true,
+        '1.1.0',
+        '{
+            "theme": "creative",
+            "fontFamily": "Montserrat, Roboto, sans-serif",
+            "fontSize": "13px",
+            "lineHeight": "1.7",
+            "primaryColor": "#d81b60",
+            "secondaryColor": "#8e24aa",
+            "accentColor": "#ffeb3b",
+            "backgroundColor": "#ffffff",
+            "gradient": "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+            "borderStyle": "dashed",
+            "iconStyle": "filled"
+        }'::jsonb,
+        '{
+            "sections": ["personal_info", "portfolio", "work_experience", "skills", "education", "awards"],
+            "columns": 1,
+            "sectionOrder": ["header", "personal_info", "portfolio", "work_experience", "skills", "education", "awards"],
+            "showPhoto": true,
+            "photoPosition": "center_top",
+            "photoStyle": "circle",
+            "pageSize": "A4",
+            "orientation": "portrait",
+            "showIcons": true
+        }'::jsonb,
+        CURRENT_TIMESTAMP
+    ),
+
+    -- 4. 专业商务模板
+    (
+        '专业商务',
+        'professional_business_v1',
+        '专业商务风格，适合金融、咨询、管理岗位，彰显专业与权威',
+        'https://example.com/images/resumes/professional_business.png',
+        true,
+        '1.3.0',
+        '{
+            "theme": "professional",
+            "fontFamily": "Times New Roman, Georgia, serif",
+            "fontSize": "11px",
+            "lineHeight": "1.5",
+            "primaryColor": "#000000",
+            "secondaryColor": "#333333",
+            "accentColor": "#1a237e",
+            "backgroundColor": "#ffffff",
+            "headerColor": "#1a237e",
+            "borderColor": "#e0e0e0",
+            "fontWeight": "normal",
+            "letterSpacing": "0.5px"
+        }'::jsonb,
+        '{
+            "sections": ["personal_info", "professional_summary", "work_experience", "education", "certifications", "skills"],
+            "columns": 1,
+            "sectionOrder": ["header", "personal_info", "professional_summary", "work_experience", "education", "certifications", "skills"],
+            "showPhoto": false,
+            "pageSize": "A4",
+            "orientation": "portrait",
+            "margin": {
+                "top": "15mm",
+                "right": "15mm",
+                "bottom": "15mm",
+                "left": "15mm"
+            },
+            "lineStyle": "solid"
+        }'::jsonb,
+        CURRENT_TIMESTAMP
+    ),
+
+    -- 5. 学术研究模板
+    (
+        '学术研究',
+        'academic_research_v1',
+        '学术研究风格，适合学者、研究人员、教育工作者，突出学术成果',
+        'https://example.com/images/resumes/academic_research.png',
+        true,
+        '1.0.0',
+        '{
+            "theme": "academic",
+            "fontFamily": "Cambria, Georgia, serif",
+            "fontSize": "12px",
+            "lineHeight": "1.8",
+            "primaryColor": "#2e7d32",
+            "secondaryColor": "#558b2f",
+            "backgroundColor": "#ffffff",
+            "headerColor": "#1b5e20",
+            "citationStyle": "APA",
+            "paragraphIndent": "2em",
+            "sectionSpacing": "20px"
+        }'::jsonb,
+        '{
+            "sections": ["personal_info", "education", "research_interests", "publications", "conferences", "teaching_experience", "grants", "references"],
+            "columns": 1,
+            "sectionOrder": ["header", "personal_info", "education", "research_interests", "publications", "conferences", "teaching_experience", "grants", "skills", "references"],
+            "showPhoto": false,
+            "pageSize": "A4",
+            "orientation": "portrait",
+            "showPageNumbers": true,
+            "headerFooter": true,
+            "bibStyle": "APA"
+        }'::jsonb,
+        CURRENT_TIMESTAMP
+    );
+
+    -- 插入测试数据到简历模板组件表
+    -- 假设有一个简历模板ID为 1
+
+    -- 1. ResumeBasicInfo（基本信息组件）
+    INSERT INTO bole_app.t_resumes_template_component 
+    (template_id, name, component, props, styles, created_at, updated_at, deleted)
+    VALUES 
+    (
+        1, 
+        '基本信息', 
+        'ResumeBasicInfo', 
+        '{
+            "title": "基本信息",
+            "showAvatar": true,
+            "avatarSize": "medium",
+            "showName": true,
+            "showGender": true,
+            "showBirthday": true,
+            "showPhone": true,
+            "showEmail": true,
+            "showLocation": true,
+            "showWorkYears": true,
+            "fields": ["name", "gender", "birthday", "phone", "email", "location", "workYears"]
+        }'::jsonb,
+        '{
+            "fontSize": "16px",
+            "titleColor": "#333333",
+            "fieldColor": "#666666",
+            "backgroundColor": "#FFFFFF",
+            "padding": "20px",
+            "borderRadius": "8px",
+            "avatarBorder": "2px solid #e8e8e8"
+        }'::jsonb,
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
+        0
+    );
+
+    -- 2. ResumeJobIntention（求职意向组件）
+    INSERT INTO bole_app.t_resumes_template_component 
+    (template_id, name, component, props, styles, created_at, updated_at, deleted)
+    VALUES 
+    (
+        1, 
+        '求职意向', 
+        'ResumeJobIntention', 
+        '{
+            "title": "求职意向",
+            "showExpectedPosition": true,
+            "showExpectedIndustry": true,
+            "showExpectedSalary": true,
+            "showWorkLocation": true,
+            "showJobType": true,
+            "showOnboardingTime": true,
+            "showCurrentStatus": true,
+            "salaryUnit": "K",
+            "locationType": "city"
+        }'::jsonb,
+        '{
+            "fontSize": "16px",
+            "titleColor": "#333333",
+            "highlightColor": "#1890ff",
+            "backgroundColor": "#FFFFFF",
+            "padding": "20px",
+            "borderRadius": "8px",
+            "boxShadow": "0 2px 8px rgba(0,0,0,0.1)"
+        }'::jsonb,
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
+        0
+    );
+
+    -- 3. ResumeWorkExperience（工作经历组件）
+    INSERT INTO bole_app.t_resumes_template_component 
+    (template_id, name, component, props, styles, created_at, updated_at, deleted)
+    VALUES 
+    (
+        1, 
+        '工作经历', 
+        'ResumeWorkExperience', 
+        '{
+            "title": "工作经历",
+            "maxItems": 5,
+            "showCompanyLogo": true,
+            "showCompanyName": true,
+            "showJobTitle": true,
+            "showDepartment": true,
+            "showWorkPeriod": true,
+            "showWorkContent": true,
+            "showAchievements": true,
+            "showSkills": true,
+            "orderBy": "startDate",
+            "orderDirection": "desc"
+        }'::jsonb,
+        '{
+            "fontSize": "14px",
+            "titleColor": "#333333",
+            "companyColor": "#1890ff",
+            "periodColor": "#999999",
+            "backgroundColor": "#FFFFFF",
+            "padding": "20px",
+            "borderRadius": "8px",
+            "itemSpacing": "16px",
+            "timelineColor": "#e8e8e8"
+        }'::jsonb,
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
+        0
+    );
+
+    -- 4. ResumeEducation（教育背景组件）
+    INSERT INTO bole_app.t_resumes_template_component 
+    (template_id, name, component, props, styles, created_at, updated_at, deleted)
+    VALUES 
+    (
+        1, 
+        '教育背景', 
+        'ResumeEducation', 
+        '{
+            "title": "教育背景",
+            "maxItems": 3,
+            "showSchoolLogo": true,
+            "showSchoolName": true,
+            "showMajor": true,
+            "showDegree": true,
+            "showEducationPeriod": true,
+            "showGPA": true,
+            "showHonors": true,
+            "showCourses": true,
+            "orderBy": "graduationDate",
+            "orderDirection": "desc",
+            "degreeFormat": "full"
+        }'::jsonb,
+        '{
+            "fontSize": "14px",
+            "titleColor": "#333333",
+            "schoolColor": "#52c41a",
+            "majorColor": "#666666",
+            "backgroundColor": "#FFFFFF",
+            "padding": "20px",
+            "borderRadius": "8px",
+            "itemSpacing": "12px",
+            "borderLeft": "3px solid #52c41a"
+        }'::jsonb,
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
+        0
+    );
+
+    -- 5. ResumeSelfEvaluation（自我评价组件）
+    INSERT INTO bole_app.t_resumes_template_component 
+    (template_id, name, component, props, styles, created_at, updated_at, deleted)
+    VALUES 
+    (
+        1, 
+        '自我评价', 
+        'ResumeSelfEvaluation', 
+        '{
+            "title": "自我评价",
+            "maxLength": 500,
+            "showCharacterTraits": true,
+            "showSkillsSummary": true,
+            "showCareerGoals": true,
+            "showStrengths": true,
+            "showHobbies": true,
+            "characterTraits": ["责任心强", "学习能力强", "团队协作"],
+            "format": "paragraph",
+            "allowRichText": true
+        }'::jsonb,
+        '{
+            "fontSize": "14px",
+            "titleColor": "#333333",
+            "contentColor": "#555555",
+            "backgroundColor": "#fafafa",
+            "padding": "20px",
+            "borderRadius": "8px",
+            "lineHeight": "1.8",
+            "border": "1px solid #f0f0f0",
+            "highlightBackground": "#fff7e6"
+        }'::jsonb,
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
+        0
+    );
+
+    -- 6. 额外添加一个技能专长组件（ResumeSkills）
+    INSERT INTO bole_app.t_resumes_template_component 
+    (template_id, name, component, props, styles, created_at, updated_at, deleted)
+    VALUES 
+    (
+        1, 
+        '技能专长', 
+        'ResumeSkills', 
+        '{
+            "title": "技能专长",
+            "skillCategories": ["编程语言", "框架工具", "数据库", "其他技能"],
+            "showSkillLevel": true,
+            "showExperienceYears": true,
+            "skillLevelType": "progress",
+            "maxSkillsPerCategory": 8,
+            "groupByCategory": true
+        }'::jsonb,
+        '{
+            "fontSize": "14px",
+            "titleColor": "#333333",
+            "skillNameColor": "#555555",
+            "progressColor": "#1890ff",
+            "backgroundColor": "#FFFFFF",
+            "padding": "20px",
+            "borderRadius": "8px",
+            "categorySpacing": "24px",
+            "skillSpacing": "12px"
+        }'::jsonb,
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
+        0
+    );
+
+
 
     -- 插入技能数据
     INSERT INTO bole_app.t_skill (user_id, name, level, category, description, proficiency_percent, experience_years, is_certified, certificate_name, certificate_date, tags, is_public, sort) VALUES
@@ -245,7 +617,6 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     SELECT setval('bole_app.t_work_experiences_id_seq', (SELECT MAX(id) FROM bole_app.t_work_experiences));
     SELECT setval('bole_app.t_resumes_id_seq', (SELECT MAX(id) FROM bole_app.t_resumes));
     SELECT setval('bole_app.t_resumes_template_id_seq', (SELECT MAX(id) FROM bole_app.t_resumes_template));
-    SELECT setval('bole_app.t_component_library_id_seq', (SELECT MAX(id) FROM bole_app.t_component_library));
     SELECT setval('bole_app.t_resumes_template_component_id_seq', (SELECT MAX(id) FROM bole_app.t_resumes_template_component));
     SELECT setval('bole_app.t_skill_id_seq', (SELECT MAX(id) FROM bole_app.t_skill));
     SELECT setval('bole_audit.audit_logs_id_seq', (SELECT MAX(id) FROM bole_audit.audit_logs));

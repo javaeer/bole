@@ -3,7 +3,9 @@ package cn.net.yunlou.bole.entity;
 import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import java.util.List;
+import java.util.Map;
 import lombok.*;
 
 /**
@@ -15,23 +17,20 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_resumes_template")
+@TableName(value = "t_resumes_template", resultMap = "resumesTemplateResultMap")
 public class ResumesTemplate extends BaseEntity {
 
     /** 模板名称 */
     private String name;
 
-    /** 模板文件所在路径 */
-    private String storePath;
+    /** 模板编码 */
+    private String code;
 
-    /** JSON格式的模板配置 */
-    private String templateConfig;
+    /** 描述 */
+    private String description;
 
-    /** 模板分类 */
-    private String category;
-
-    /** 框架类型 */
-    private String frameworkType;
+    /** 预览图 */
+    private String previewImage;
 
     /** 是否激活 */
     private Boolean isActive;
@@ -39,7 +38,14 @@ public class ResumesTemplate extends BaseEntity {
     /** 版本号 */
     private String version;
 
-    // 关联的组件列表
+    /** 样式配置 */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private Map<String, Object> globalStyle;
+
+    /** 布局配置 */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private Map<String, Object> layout;
+
     @TableField(exist = false)
     private List<ResumesTemplateComponent> components;
 }

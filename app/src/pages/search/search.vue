@@ -2,6 +2,7 @@
   <view class="search-page">
     <!-- 顶部搜索栏 -->
     <view class="search-header">
+      <view class="status-bar"></view>
       <!-- 搜索框 -->
       <view class="search-box">
         <view class="search-icon">🔍</view>
@@ -363,6 +364,7 @@ onMounted(() => {
 .search-header {
   background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
   padding: var(--status-bar-height, 0) $padding-base $padding-base;
+  padding-top: calc(var(--status-bar-height) + 20rpx);
   display: flex;
   align-items: center;
   gap: $margin-small;

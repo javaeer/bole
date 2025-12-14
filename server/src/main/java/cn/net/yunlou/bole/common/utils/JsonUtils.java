@@ -253,6 +253,10 @@ public class JsonUtils {
         list.add("2");
         list.add("");
 
-        System.out.println(JsonUtils.toJson(JsonUtils.toJson(list)));
+        /*String json = JsonUtils.toJson(list);
+                System.out.println(json);
+        */
+
+        System.out.println(BeanUtils.toMap(list));
     }
 }

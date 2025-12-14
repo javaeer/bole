@@ -9,5 +9,5 @@ import lombok.Data;
  * laughtiger Created At 2025/12/4 22:48 Modified By Modified At
  */
 @Data
-@Schema(description = "请求响应基类")
+@Schema(description = "请求基类")
 public class BaseDTO implements Serializable {}

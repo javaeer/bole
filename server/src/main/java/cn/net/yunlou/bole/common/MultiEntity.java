@@ -8,4 +8,4 @@ import lombok.Data;
  * By Modified At
  */
 @Data
-public class MultiEntity<L extends BaseEntity, R extends BaseEntity> implements Serializable {}
+public class MultiEntity implements Serializable {}

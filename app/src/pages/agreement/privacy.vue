@@ -16,7 +16,7 @@
           <view class="section">
             <text class="section-title">引言</text>
             <text class="section-text">
-              欢迎使用"简历大师"。我们深知个人信息对您的重要性，并会尽全力保护您的个人信息安全可靠。我们致力于维持您对我们的信任，恪守以下原则，保护您的个人信息：权责一致原则、目的明确原则、选择同意原则、最少够用原则、确保安全原则、主体参与原则、公开透明原则等。同时，我们承诺，我们将按业界成熟的安全标准，采取相应的安全保护措施来保护您的个人信息。
+              欢迎使用"伯乐简历大师"。我们深知个人信息对您的重要性，并会尽全力保护您的个人信息安全可靠。我们致力于维持您对我们的信任，恪守以下原则，保护您的个人信息：权责一致原则、目的明确原则、选择同意原则、最少够用原则、确保安全原则、主体参与原则、公开透明原则等。同时，我们承诺，我们将按业界成熟的安全标准，采取相应的安全保护措施来保护您的个人信息。
             </text>
           </view>
 
@@ -83,7 +83,7 @@
             <text class="section-title">六、联系我们</text>
             <view class="contact-info">
               <text class="contact-item">如果您对本隐私政策有任何疑问、意见或建议，请通过以下方式与我们联系：</text>
-              <text class="contact-item">邮箱：privacy@resume-master.com</text>
+              <text class="contact-item">邮箱：privacy@resumes-master.com</text>
               <text class="contact-item">电话：400-xxx-xxxx</text>
               <text class="contact-item">工作时间：周一至周五 9:00-18:00</text>
             </view>

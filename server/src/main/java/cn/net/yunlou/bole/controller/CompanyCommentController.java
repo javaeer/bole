@@ -2,10 +2,10 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.CompanyComment;
-import cn.net.yunlou.bole.model.CompanyCommentCreate;
-import cn.net.yunlou.bole.model.CompanyCommentEdit;
-import cn.net.yunlou.bole.model.CompanyCommentQuery;
-import cn.net.yunlou.bole.model.CompanyCommentView;
+import cn.net.yunlou.bole.model.create.CompanyCommentCreate;
+import cn.net.yunlou.bole.model.edit.CompanyCommentEdit;
+import cn.net.yunlou.bole.model.query.CompanyCommentQuery;
+import cn.net.yunlou.bole.model.view.CompanyCommentView;
 import cn.net.yunlou.bole.service.CompanyCommentService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;

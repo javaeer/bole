@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public abstract class MultiService<
                 M extends IMultiMapper<T, L, R>,
-                T extends MultiEntity<L, R>,
+                T extends MultiEntity,
                 L extends BaseEntity,
                 R extends BaseEntity>
         extends ServiceImpl<M, T> implements IMultiService<T, L, R> {

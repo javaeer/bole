@@ -2,10 +2,10 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.Banner;
-import cn.net.yunlou.bole.model.BannerCreate;
-import cn.net.yunlou.bole.model.BannerEdit;
-import cn.net.yunlou.bole.model.BannerQuery;
-import cn.net.yunlou.bole.model.BannerView;
+import cn.net.yunlou.bole.model.create.BannerCreate;
+import cn.net.yunlou.bole.model.edit.BannerEdit;
+import cn.net.yunlou.bole.model.query.BannerQuery;
+import cn.net.yunlou.bole.model.view.BannerView;
 import cn.net.yunlou.bole.service.BannerService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;

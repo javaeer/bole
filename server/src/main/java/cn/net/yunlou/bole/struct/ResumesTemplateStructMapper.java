@@ -2,10 +2,10 @@ package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
 import cn.net.yunlou.bole.entity.ResumesTemplate;
-import cn.net.yunlou.bole.model.ResumesTemplateCreate;
-import cn.net.yunlou.bole.model.ResumesTemplateEdit;
-import cn.net.yunlou.bole.model.ResumesTemplateQuery;
-import cn.net.yunlou.bole.model.ResumesTemplateView;
+import cn.net.yunlou.bole.model.create.ResumesTemplateCreate;
+import cn.net.yunlou.bole.model.edit.ResumesTemplateEdit;
+import cn.net.yunlou.bole.model.query.ResumesTemplateQuery;
+import cn.net.yunlou.bole.model.view.ResumesTemplateView;
 import org.mapstruct.Mapper;
 
 /**

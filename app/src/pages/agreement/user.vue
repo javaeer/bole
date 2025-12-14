@@ -15,7 +15,7 @@
           <view class="section">
             <text class="section-title">一、协议的接受</text>
             <text class="section-text">
-              欢迎您使用"简历大师"服务。请您仔细阅读以下条款，如果您对本协议的任何条款表示异议，您可以选择不使用我们的服务。当您注册成功或开始使用我们的服务时，即表示您已经阅读、理解并同意接受本协议的所有条款。
+              欢迎您使用"伯乐简历大师"服务。请您仔细阅读以下条款，如果您对本协议的任何条款表示异议，您可以选择不使用我们的服务。当您注册成功或开始使用我们的服务时，即表示您已经阅读、理解并同意接受本协议的所有条款。
             </text>
           </view>
 
@@ -34,10 +34,10 @@
           <view class="section">
             <text class="section-title">三、用户权利与义务</text>
             <view class="section-list">
-              <text class="list-item">3.1 您有权拥有自己在"简历大师"的用户名及密码，并有权使用自己的用户名及密码随时登录服务。</text>
-              <text class="list-item">3.2 您不得以任何形式转让或授权他人使用自己的"简历大师"账号。</text>
+              <text class="list-item">3.1 您有权拥有自己在"伯乐简历大师"的用户名及密码，并有权使用自己的用户名及密码随时登录服务。</text>
+              <text class="list-item">3.2 您不得以任何形式转让或授权他人使用自己的"伯乐简历大师"账号。</text>
               <text class="list-item">3.3 您应对通过您的账号进行的所有活动和事件负法律责任。</text>
-              <text class="list-item">3.4 您保证在"简历大师"上发布的信息真实、准确、完整、有效，不侵犯任何第三方合法权益。</text>
+              <text class="list-item">3.4 您保证在"伯乐简历大师"上发布的信息真实、准确、完整、有效，不侵犯任何第三方合法权益。</text>
               <text class="list-item">3.5 您承诺遵守所有适用的法律、法规、规章、条例以及具有法律约束力的规范性文件。</text>
             </view>
           </view>
@@ -46,7 +46,7 @@
           <view class="section">
             <text class="section-title">四、内容规范</text>
             <text class="section-text">
-              您承诺不得在"简历大师"制作、复制、发布、传播含有下列内容的信息：
+              您承诺不得在"伯乐简历大师"制作、复制、发布、传播含有下列内容的信息：
             </text>
             <view class="section-list">
               <text class="list-item">(1) 反对宪法所确定的基本原则的；</text>
@@ -65,9 +65,9 @@
           <view class="section">
             <text class="section-title">五、知识产权</text>
             <view class="section-list">
-              <text class="list-item">5.1 "简历大师"提供的网络服务中包含的任何文本、图片、图形、音频和/或视频资料均受版权、商标和/或其它财产所有权法律的保护。</text>
+              <text class="list-item">5.1 "伯乐简历大师"提供的网络服务中包含的任何文本、图片、图形、音频和/或视频资料均受版权、商标和/或其它财产所有权法律的保护。</text>
               <text class="list-item">5.2 未经相关权利人同意，上述资料均不得在任何媒体直接或间接发布、播放、出于播放或发布目的而改写或再发行。</text>
-              <text class="list-item">5.3 "简历大师"为提供服务而使用的任何软件的一切权利均属于该软件的著作权人。</text>
+              <text class="list-item">5.3 "伯乐简历大师"为提供服务而使用的任何软件的一切权利均属于该软件的著作权人。</text>
               <text class="list-item">5.4 您对自己上传的内容保留所有权，但授予我们全球性的、免费的、非独占的许可，以便我们在提供、维护和改进服务时使用这些内容。</text>
             </view>
           </view>
@@ -76,7 +76,7 @@
           <view class="section">
             <text class="section-title">六、免责声明</text>
             <view class="section-list">
-              <text class="list-item">6.1 用户明确同意其使用"简历大师"服务所存在的风险将完全由其自己承担。</text>
+              <text class="list-item">6.1 用户明确同意其使用"伯乐简历大师"服务所存在的风险将完全由其自己承担。</text>
               <text class="list-item">6.2 我们不保证服务一定能满足用户的要求，也不保证服务不会中断，对服务的及时性、安全性、准确性也都不作保证。</text>
               <text class="list-item">6.3 对于因不可抗力或我们不能控制的原因造成的网络服务中断或其他缺陷，我们不承担任何责任。</text>
               <text class="list-item">6.4 我们不对用户所发布信息的删除或储存失败负责。</text>

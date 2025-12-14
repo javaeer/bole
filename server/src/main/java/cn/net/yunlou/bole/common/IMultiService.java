@@ -8,8 +8,7 @@ import java.util.List;
  * FileName: IMultiService Description: Created By MR. WANG Created At 2025/11/19 15:28 Modified By
  * Modified At
  */
-public interface IMultiService<
-                T extends MultiEntity<L, R>, L extends BaseEntity, R extends BaseEntity>
+public interface IMultiService<T extends MultiEntity, L extends BaseEntity, R extends BaseEntity>
         extends IService<T> {
 
     long countLeft(T entity);

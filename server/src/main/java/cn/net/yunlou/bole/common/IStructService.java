@@ -9,7 +9,11 @@ import java.util.List;
  * 23:08 Modified By Modified At
  */
 public interface IStructService<
-        C extends BaseCreate, V extends BaseView, E extends BaseEdit, Q extends BaseQuery> {
+        T extends BaseEntity,
+        C extends BaseCreate,
+        V extends BaseView,
+        E extends BaseEdit,
+        Q extends BaseQuery> {
 
     /** 根据ID获取DTO */
     V getViewById(Serializable id);
@@ -21,11 +25,15 @@ public interface IStructService<
     boolean updateByEdit(E edit);
 
     /** 删除DTO */
-    boolean removeByQuery(Q dto);
+    boolean removeByQuery(Q query);
 
     /** 条件分页查询 */
+    Page<T> pageByQuery(long pageNum, long pageSize, Q query);
+
     Page<V> pageViewByQuery(long pageNum, long pageSize, Q query);
 
     /** 条件列表查询 */
+    List<T> listByQuery(Q query);
+
     List<V> listViewByQuery(Q query);
 }

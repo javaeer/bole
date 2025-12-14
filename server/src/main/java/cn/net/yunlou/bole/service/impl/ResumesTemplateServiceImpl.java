@@ -3,12 +3,13 @@ package cn.net.yunlou.bole.service.impl;
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.entity.ResumesTemplate;
 import cn.net.yunlou.bole.mapper.ResumesTemplateMapper;
-import cn.net.yunlou.bole.model.ResumesTemplateCreate;
-import cn.net.yunlou.bole.model.ResumesTemplateEdit;
-import cn.net.yunlou.bole.model.ResumesTemplateQuery;
-import cn.net.yunlou.bole.model.ResumesTemplateView;
+import cn.net.yunlou.bole.model.create.ResumesTemplateCreate;
+import cn.net.yunlou.bole.model.edit.ResumesTemplateEdit;
+import cn.net.yunlou.bole.model.query.ResumesTemplateQuery;
+import cn.net.yunlou.bole.model.view.ResumesTemplateView;
 import cn.net.yunlou.bole.service.ResumesTemplateService;
 import cn.net.yunlou.bole.struct.ResumesTemplateStructMapper;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,4 +26,15 @@ public class ResumesTemplateServiceImpl
                 ResumesTemplateEdit,
                 ResumesTemplateQuery,
                 ResumesTemplateStructMapper>
-        implements ResumesTemplateService {}
+        implements ResumesTemplateService {
+
+    @Override
+    public List<ResumesTemplate> getAllActiveTemplates() {
+        return list(ResumesTemplate.builder().isActive(Boolean.TRUE).build());
+    }
+
+    @Override
+    public ResumesTemplate getByCode(String code) {
+        return get(ResumesTemplate.builder().code(code).build());
+    }
+}

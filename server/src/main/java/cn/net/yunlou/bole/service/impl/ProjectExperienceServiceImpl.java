@@ -3,12 +3,13 @@ package cn.net.yunlou.bole.service.impl;
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.entity.ProjectExperience;
 import cn.net.yunlou.bole.mapper.ProjectExperienceMapper;
-import cn.net.yunlou.bole.model.ProjectExperienceCreate;
-import cn.net.yunlou.bole.model.ProjectExperienceEdit;
-import cn.net.yunlou.bole.model.ProjectExperienceQuery;
-import cn.net.yunlou.bole.model.ProjectExperienceView;
+import cn.net.yunlou.bole.model.create.ProjectExperienceCreate;
+import cn.net.yunlou.bole.model.edit.ProjectExperienceEdit;
+import cn.net.yunlou.bole.model.query.ProjectExperienceQuery;
+import cn.net.yunlou.bole.model.view.ProjectExperienceView;
 import cn.net.yunlou.bole.service.ProjectExperienceService;
 import cn.net.yunlou.bole.struct.ProjectExperienceStructMapper;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,4 +26,12 @@ public class ProjectExperienceServiceImpl
                 ProjectExperienceEdit,
                 ProjectExperienceQuery,
                 ProjectExperienceStructMapper>
-        implements ProjectExperienceService {}
+        implements ProjectExperienceService {
+    @Override
+    public List<ProjectExperience> listByUserId(Long userId) {
+
+        ProjectExperience projectExperience = ProjectExperience.builder().userId(userId).build();
+
+        return list(projectExperience);
+    }
+}

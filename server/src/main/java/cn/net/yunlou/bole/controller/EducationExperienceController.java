@@ -2,10 +2,10 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.EducationExperience;
-import cn.net.yunlou.bole.model.EducationExperienceCreate;
-import cn.net.yunlou.bole.model.EducationExperienceEdit;
-import cn.net.yunlou.bole.model.EducationExperienceQuery;
-import cn.net.yunlou.bole.model.EducationExperienceView;
+import cn.net.yunlou.bole.model.create.EducationExperienceCreate;
+import cn.net.yunlou.bole.model.edit.EducationExperienceEdit;
+import cn.net.yunlou.bole.model.query.EducationExperienceQuery;
+import cn.net.yunlou.bole.model.view.EducationExperienceView;
 import cn.net.yunlou.bole.service.EducationExperienceService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;

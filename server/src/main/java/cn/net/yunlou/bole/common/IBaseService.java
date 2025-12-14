@@ -23,7 +23,7 @@ public interface IBaseService<
                 V extends BaseView,
                 E extends BaseEdit,
                 Q extends BaseQuery>
-        extends IService<T>, IStructService<C, V, E, Q> {
+        extends IService<T>, IStructService<T, C, V, E, Q> {
 
     //  ==============针对 MP mapper 定制开始 =================
     boolean exist(T entity);

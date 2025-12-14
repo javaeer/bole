@@ -140,8 +140,8 @@ public abstract class BaseService<
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean removeByQuery(Q dto) {
-        T entity = structMapper.queryToEntity(dto);
+    public boolean removeByQuery(Q query) {
+        T entity = structMapper.queryToEntity(query);
         return remove(entity);
     }
 
@@ -155,5 +155,17 @@ public abstract class BaseService<
     public List<V> listViewByQuery(Q query) {
         T entity = structMapper.queryToEntity(query);
         return structMapper.toViews(list(entity));
+    }
+
+    @Override
+    public List<T> listByQuery(Q query) {
+        T entity = structMapper.queryToEntity(query);
+        return list(entity);
+    }
+
+    @Override
+    public Page<T> pageByQuery(long pageNum, long pageSize, Q query) {
+        T entity = structMapper.queryToEntity(query);
+        return page(pageNum, pageSize, entity);
     }
 }

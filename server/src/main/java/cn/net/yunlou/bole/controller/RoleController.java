@@ -2,10 +2,10 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.entity.Role;
-import cn.net.yunlou.bole.model.RoleCreate;
-import cn.net.yunlou.bole.model.RoleEdit;
-import cn.net.yunlou.bole.model.RoleQuery;
-import cn.net.yunlou.bole.model.RoleView;
+import cn.net.yunlou.bole.model.create.RoleCreate;
+import cn.net.yunlou.bole.model.edit.RoleEdit;
+import cn.net.yunlou.bole.model.query.RoleQuery;
+import cn.net.yunlou.bole.model.view.RoleView;
 import cn.net.yunlou.bole.service.RoleService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
