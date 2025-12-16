@@ -1,36 +1,92 @@
 <template>
   <view class="template-select-page">
+
     <view class="select-header">
-      <text class="header-title">选择简历模板</text>
-      <text class="header-subtitle">请选择适合您风格的模板</text>
+      <text class="header-title">选择适合您的简历模板</text>
+      <text class="header-subtitle">模板将决定简历的整体风格和布局</text>
     </view>
 
+    <!-- 模板分类筛选 -->
+    <view class="category-tabs" v-if="categories.length > 0">
+      <scroll-view class="tabs-scroll" scroll-x="true" :scroll-left="scrollLeft">
+        <view class="tabs-container">
+          <view
+            class="tab-item"
+            :class="{ active: activeCategory === 'all' }"
+            @click="changeCategory('all')"
+          >
+            <text class="tab-text">全部</text>
+          </view>
+          <view
+            class="tab-item"
+            v-for="category in categories"
+            :key="category"
+            :class="{ active: activeCategory === category }"
+            @click="changeCategory(category)"
+          >
+            <text class="tab-text">{{ category }}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 模板网格 -->
     <view class="template-grid">
       <view
-        v-for="template in templates"
+        v-for="template in filteredTemplates"
         :key="template.id"
         class="template-card"
         :class="{ 'template-card-active': selectedTemplate === template.id }"
         @click="selectTemplate(template.id)"
       >
-        <view class="template-preview">
+        <view class="template-preview" :style="getPreviewStyle(template)">
+          <!-- 预览头部 -->
           <view class="preview-header">
-            <view class="preview-avatar"></view>
+            <view class="preview-avatar" v-if="template.globalLayout?.showPhoto">
+              <text class="avatar-placeholder">👤</text>
+            </view>
             <view class="preview-title">
               <view class="preview-name-line"></view>
               <view class="preview-position-line"></view>
             </view>
           </view>
+
+          <!-- 预览内容 -->
           <view class="preview-content">
             <view class="preview-section" v-for="n in 3" :key="n"></view>
           </view>
-          <view class="template-badge" :class="'badge-' + template.style">
+
+          <!-- 模板标签 -->
+          <view class="template-badge" :class="getBadgeClass(template)">
             {{ template.name }}
+          </view>
+
+          <!-- 使用人数 -->
+          <view class="template-stats" v-if="template.usedCount > 0">
+            <text class="stats-icon">👥</text>
+            <text class="stats-text">{{ template.usedCount }}人使用</text>
+          </view>
+        </view>
+
+        <!-- 模板信息 -->
+        <view class="template-info">
+          <text class="template-name">{{ template.name }}</text>
+          <text class="template-desc">{{ template.description || '经典简约设计' }}</text>
+          <view class="template-tags">
+            <text class="tag-item" v-if="template.globalLayout?.columns === 2">双栏</text>
+            <text class="tag-item" v-if="template.globalLayout?.showPhoto">带照片</text>
+            <text class="tag-item">{{ template.globalLayout?.pageSize || 'A4' }}</text>
           </view>
         </view>
       </view>
     </view>
 
+    <!-- 加载更多 -->
+    <view v-if="hasMore && !loading" class="load-more" @click="loadMore">
+      <text class="load-more-text">加载更多</text>
+    </view>
+
+    <!-- 底部操作区域 -->
     <view class="action-area">
       <button
         class="next-button"
@@ -38,59 +94,153 @@
         :disabled="!selectedTemplate"
         @click="enterFormPage"
       >
-        开始创建简历
+        {{ selectedTemplate ? '使用此模板' : '请选择模板' }}
       </button>
+    </view>
+
+    <!-- 加载状态 -->
+    <view v-if="loading" class="loading-overlay">
+      <view class="loading-content">
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载中...</text>
+      </view>
     </view>
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      selectedTemplate: null,
-      templates: [
-        { id: 1, name: '传统风', style: 'traditional' },
-        { id: 2, name: '科技风', style: 'tech' },
-        { id: 3, name: '简约风', style: 'simple' },
-        { id: 4, name: '创意风', style: 'creative' },
-        { id: 5, name: '商务风', style: 'business' },
-        { id: 6, name: '学术风', style: 'academic' }
-      ]
+<script lang="ts">
+import { defineComponent, ref, computed, onMounted } from 'vue'
+import { useTemplate } from '@/composables/useTemplate'
+
+export default defineComponent({
+  name: 'TemplateSelectPage',
+
+  setup() {
+    const { templateList, loading, hasMore, loadListTemplates, loadMore, setCurrentTemplate } = useTemplate()
+
+    const selectedTemplate = ref<number | null>(null)
+    const activeCategory = ref<string>('all')
+    const scrollLeft = ref(0)
+
+    // 模板分类
+    const categories = computed(() => {
+      const themes = new Set<string>()
+      templateList.value.forEach(template => {
+        const theme = template.globalStyle?.theme
+        if (theme) {
+          themes.add(theme)
+        }
+      })
+      return Array.from(themes)
+    })
+
+    // 过滤模板
+    const filteredTemplates = computed(() => {
+      if (activeCategory.value === 'all') {
+        return templateList.value
+      }
+      return templateList.value.filter(template =>
+        template.globalStyle?.theme === activeCategory.value
+      )
+    })
+
+    // 分类切换
+    const changeCategory = (category: string) => {
+      activeCategory.value = category
+      scrollLeft.value = 0
     }
-  },
 
-  methods: {
-    selectTemplate(id) {
-      this.selectedTemplate = id
-    },
+    // 选择模板
+    const selectTemplate = (id: number) => {
+      selectedTemplate.value = id
+    }
 
-    enterFormPage() {
-      if (this.selectedTemplate) {
-        // 跳转到简历创建页，传递选中的模板ID
-        uni.navigateTo({
-          url: `/pages/resumes/create?templateId=${this.selectedTemplate}`
-        })
+    // 进入表单页面
+    const enterFormPage = () => {
+      if (selectedTemplate.value) {
+        const template = templateList.value.find(t => t.id === selectedTemplate.value)
+        if (template) {
+          setCurrentTemplate(template)
+          uni.navigateTo({
+            url: `/pages/resumes/create?templateId=${selectedTemplate.value}`
+          })
+        }
       }
     }
-  }
-}
 
+    // 返回
+    const handleBack = () => {
+      uni.navigateBack()
+    }
+
+    // 获取预览样式
+    const getPreviewStyle = (template: TemplateResult) => {
+      const style: Record<string, string> = {
+        backgroundColor: template.globalStyle?.backgroundColor || '#ffffff'
+      }
+
+      if (template.globalStyle?.primaryColor) {
+        style.borderColor = template.globalStyle.primaryColor
+      }
+
+      return style
+    }
+
+    // 获取徽章类
+    const getBadgeClass = (template: TemplateResult) => {
+      const theme = template.globalStyle?.theme || 'classic'
+      return `badge-${theme}`
+    }
+
+    // 加载模板列表
+    const loadTemplates = async () => {
+      await loadListTemplates(1, { isActive: true })
+    }
+
+    // 初始化
+    onMounted(async () => {
+      await loadTemplates()
+    })
+
+    return {
+      // 状态
+      selectedTemplate,
+      activeCategory,
+      scrollLeft,
+      templateList,
+      loading,
+      hasMore,
+
+      // 计算属性
+      categories,
+      filteredTemplates,
+
+      // 方法
+      changeCategory,
+      selectTemplate,
+      enterFormPage,
+      handleBack,
+      getPreviewStyle,
+      getBadgeClass,
+      loadMore
+    }
+  }
+})
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 
-/* ==================== 模板选择页面样式 ==================== */
 .template-select-page {
   min-height: 100vh;
   background: linear-gradient(135deg, $primary-lighter 0%, $background-color-white 100%);
-  padding: $padding-base;
+  padding-bottom: 160rpx;
 }
 
+
+/* 头部区域 */
 .select-header {
+  padding: $uni-spacing-row-base;
   text-align: center;
-  margin-bottom: $margin-large;
-  padding-top: $navigation-bar-height;
 }
 
 .header-title {
@@ -98,74 +248,123 @@ export default {
   font-size: $font-size-extra-large;
   font-weight: $font-weight-bold;
   color: $text-primary;
-  margin-bottom: $margin-mini;
+  margin-bottom: math.div($uni-spacing-col-sm, 2);
 }
 
 .header-subtitle {
   display: block;
-  font-size: $font-size-base;
+  font-size: $uni-font-size-base;
   color: $text-secondary;
 }
 
+/* 分类标签 */
+.category-tabs {
+  background: $uni-bg-color;
+  padding: $uni-spacing-col-sm $uni-spacing-row-base;
+  border-bottom: 1rpx solid $border-color-extra-light;
+}
+
+.tabs-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.tabs-container {
+  display: inline-flex;
+  align-items: center;
+  gap: $uni-spacing-col-base;
+}
+
+.tab-item {
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-base;
+  border-radius: $uni-border-radius-circle;
+  font-size: $uni-font-size-base;
+  color: $text-regular;
+  background: $background-color;
+  cursor: pointer;
+  transition: all $transition-fast;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &.active {
+    background: $primary-color;
+    color: $uni-bg-color;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.tab-text {
+  font-size: $uni-font-size-base;
+}
+
+/* 模板网格 */
 .template-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $margin-base;
-  margin-bottom: $margin-large;
+  gap: $uni-spacing-col-base;
+  padding: $uni-spacing-row-base;
 }
 
 .template-card {
-  background: $background-color-white;
-  border-radius: $card-border-radius;
-  padding: $padding-base;
+  background: $uni-bg-color;
+  border-radius: $border-radius-large;
+  overflow: hidden;
   box-shadow: $card-shadow;
   transition: all $transition-normal;
-  position: relative;
-  overflow: hidden;
   cursor: pointer;
+  border: 2rpx solid transparent;
 
-  &:hover {
-    transform: translateY(-4rpx);
+  &:active {
+    transform: translateY(-2rpx);
     box-shadow: $card-hover-shadow;
   }
 
   &-active {
-    border: 2px solid $primary-color;
-    background: linear-gradient(135deg, $primary-lighter 0%, $background-color-white 100%);
+    border-color: $primary-color;
+    background: linear-gradient(135deg, $primary-lighter 0%, $uni-bg-color 100%);
   }
 }
 
 .template-preview {
   height: 320rpx;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: $border-radius-small;
-  padding: $padding-small;
+  border-radius: math.div($border-radius-large, 2) math.div($border-radius-large, 2) 0 0;
+  padding: $uni-spacing-col-base;
   position: relative;
+  border-bottom: 1rpx solid $border-color-extra-light;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .preview-header {
   display: flex;
   align-items: center;
-  margin-bottom: $margin-mini;
+  margin-bottom: $uni-spacing-col-base;
 }
 
 .preview-avatar {
-  width: 80rpx;
-  height: 80rpx;
+  width: 60rpx;
+  height: 60rpx;
   background: $border-color;
-  border-radius: $border-radius-round;
-  margin-right: $margin-small;
+  border-radius: $uni-border-radius-circle;
+  margin-right: $uni-spacing-col-sm;
+  @extend .flex-center;
+}
+
+.avatar-placeholder {
+  font-size: $uni-font-size-lg;
+  color: $text-placeholder;
 }
 
 .preview-title {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: math.div($uni-spacing-col-sm, 2);
 }
 
 .preview-name-line {
   height: 16rpx;
   background: $text-primary;
   border-radius: 4rpx;
-  margin-bottom: 8rpx;
   width: 60%;
 }
 
@@ -197,65 +396,218 @@ export default {
   position: absolute;
   top: 20rpx;
   right: 20rpx;
-  padding: 4rpx 12rpx;
-  border-radius: $border-radius-round;
-  font-size: $font-size-extra-small;
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  border-radius: $uni-border-radius-circle;
+  font-size: $uni-font-size-sm;
   font-weight: $font-weight-medium;
-  color: $background-color-white;
+  color: $uni-bg-color;
 
-  &.badge-traditional {
+  &.badge-classic {
     background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -20%) 100%);
   }
 
-  &.badge-tech {
+  &.badge-modern {
     background: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
-  }
-
-  &.badge-simple {
-    background: linear-gradient(135deg, #909399 0%, #606266 100%);
   }
 
   &.badge-creative {
     background: linear-gradient(135deg, #e6a23c 0%, #b8821e 100%);
   }
 
-  &.badge-business {
+  &.badge-professional {
     background: linear-gradient(135deg, #303133 0%, #000000 100%);
   }
 
-  &.badge-academic {
-    background: linear-gradient(135deg, #67c23a 0%, #459a1c 100%);
+  &.badge-simple {
+    background: linear-gradient(135deg, #909399 0%, #606266 100%);
   }
 }
 
+.template-stats {
+  position: absolute;
+  bottom: 20rpx;
+  right: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: math.div($uni-spacing-col-sm, 2);
+  background: rgba($uni-bg-color, 0.8);
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  border-radius: $uni-border-radius-sm;
+  font-size: $uni-font-size-sm;
+  color: $text-secondary;
+}
+
+.stats-icon {
+  font-size: $uni-font-size-sm;
+}
+
+.stats-text {
+  font-size: $uni-font-size-sm;
+}
+
+.template-info {
+  padding: $uni-spacing-col-base;
+  display: flex;
+  flex-direction: column;
+  gap: math.div($uni-spacing-col-sm, 2);
+}
+
+.template-name {
+  font-size: $uni-font-size-base;
+  color: $text-primary;
+  font-weight: $font-weight-medium;
+  @extend .text-truncate;
+}
+
+.template-desc {
+  font-size: $uni-font-size-sm;
+  color: $text-regular;
+  line-height: 1.4;
+  @extend .text-multi-truncate;
+  -webkit-line-clamp: 2;
+}
+
+.template-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: math.div($uni-spacing-col-sm, 2);
+  margin-top: math.div($uni-spacing-col-sm, 2);
+}
+
+.tag-item {
+  font-size: $uni-font-size-sm;
+  color: $text-secondary;
+  background: $background-color;
+  padding: math.div($uni-spacing-col-sm, 4) math.div($uni-spacing-col-sm, 2);
+  border-radius: $uni-border-radius-sm;
+  border: 1rpx solid $border-color-light;
+}
+
+/* 加载更多 */
+.load-more {
+  @extend .flex-center;
+  padding: $uni-spacing-row-base;
+}
+
+.load-more-text {
+  font-size: $uni-font-size-base;
+  color: $primary-color;
+  cursor: pointer;
+  padding: $uni-spacing-col-sm $uni-spacing-row-base;
+  border: 1rpx solid $primary-color;
+  border-radius: $uni-border-radius-lg;
+  transition: all $transition-fast;
+
+  &:active {
+    background: $primary-light;
+    opacity: 0.8;
+  }
+}
+
+/* 底部操作区域 */
 .action-area {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: $padding-base;
-  background: linear-gradient(to top, $background-color-white 80%, transparent);
+  padding: $uni-spacing-col-base $uni-spacing-row-base;
+  background: linear-gradient(to top, $uni-bg-color 80%, transparent);
+  z-index: $z-index-dropdown;
 }
 
 .next-button {
   width: 100%;
   height: $button-height;
-  background: $button-primary-bg;
-  border-radius: $button-border-radius;
-  color: $background-color-white;
-  font-size: $font-size-medium;
-  font-weight: $font-weight-semibold;
+  background: $primary-color;
+  border-radius: $uni-border-radius-lg;
+  color: $uni-bg-color;
+  font-size: $uni-font-size-base;
+  font-weight: $font-weight-medium;
   border: none;
   transition: all $transition-normal;
 
   &:active {
     transform: scale(0.98);
     box-shadow: $button-active-shadow;
+    background: color.adjust($primary-color, $lightness: -10%);
   }
 
   &-disabled {
     background: $button-disabled-bg;
     opacity: $button-disabled-opacity;
   }
+}
+
+/* 加载状态 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba($uni-bg-color, 0.8);
+  @extend .flex-center;
+  z-index: $z-index-modal;
+}
+
+.loading-content {
+  background: $uni-bg-color;
+  border-radius: $border-radius-large;
+  padding: $uni-spacing-row-base;
+  box-shadow: $box-shadow-dark;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $uni-spacing-col-sm;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid $border-color-light;
+  border-top-color: $primary-color;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: $uni-font-size-base;
+  color: $text-regular;
+}
+
+/* 响应式调整 */
+@media (max-width: $breakpoint-sm) {
+  .template-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs-container {
+    gap: $uni-spacing-col-sm;
+  }
+}
+
+/* 工具类 */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-multi-truncate {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 </style>

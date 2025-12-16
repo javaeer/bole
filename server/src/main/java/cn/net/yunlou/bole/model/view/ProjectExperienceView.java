@@ -1,6 +1,8 @@
 package cn.net.yunlou.bole.model.view;
 
 import cn.net.yunlou.bole.common.BaseView;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -23,10 +25,9 @@ public class ProjectExperienceView extends BaseView {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    private Integer isHighest;
-
     private String description;
 
+    @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> achievements;
 
     private Integer sort;

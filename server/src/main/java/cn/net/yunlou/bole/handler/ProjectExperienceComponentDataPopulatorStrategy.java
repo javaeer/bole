@@ -5,7 +5,6 @@ import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.ProjectExperience;
 import cn.net.yunlou.bole.model.view.ProjectExperienceView;
 import cn.net.yunlou.bole.service.ProjectExperienceService;
-import cn.net.yunlou.bole.struct.ProjectExperienceStructMapper;
 import com.google.common.collect.Lists;
 import java.util.HashMap;
 import java.util.List;
@@ -24,22 +23,19 @@ public class ProjectExperienceComponentDataPopulatorStrategy
 
     private final ProjectExperienceService projectExperienceService;
 
-    private final ProjectExperienceStructMapper projectExperienceStructMapper;
-
     @Override
     public Map<String, Object> populate(Long userId, Map<String, Object> templateProps) {
-        List<ProjectExperience> companyExperiences =
-                projectExperienceService.list(ProjectExperience.builder().userId(userId).build());
+        List<ProjectExperienceView> projectExperienceViews =
+                projectExperienceService.listView(
+                        ProjectExperience.builder().userId(userId).build());
 
         Map<String, Object> props = new HashMap<>(templateProps);
 
-        if (!companyExperiences.isEmpty()) {
+        if (!projectExperienceViews.isEmpty()) {
 
             List<Map<String, Object>> realProps = Lists.newArrayList();
 
-            List<ProjectExperienceView> views =
-                    projectExperienceStructMapper.toViews(companyExperiences);
-            for (ProjectExperienceView view : views) {
+            for (ProjectExperienceView view : projectExperienceViews) {
 
                 Map<String, Object> map = BeanUtils.toMap(view);
                 realProps.add(map);

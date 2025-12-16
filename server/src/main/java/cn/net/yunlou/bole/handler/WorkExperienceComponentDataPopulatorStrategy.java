@@ -5,7 +5,6 @@ import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.WorkExperience;
 import cn.net.yunlou.bole.model.view.WorkExperienceView;
 import cn.net.yunlou.bole.service.WorkExperienceService;
-import cn.net.yunlou.bole.struct.WorkExperienceStructMapper;
 import com.google.common.collect.Lists;
 import java.util.HashMap;
 import java.util.List;
@@ -24,21 +23,17 @@ public class WorkExperienceComponentDataPopulatorStrategy
 
     private final WorkExperienceService workExperienceService;
 
-    private final WorkExperienceStructMapper workExperienceStructMapper;
-
     @Override
     public Map<String, Object> populate(Long userId, Map<String, Object> templateProps) {
-        List<WorkExperience> workExperiences =
-                workExperienceService.list(WorkExperience.builder().userId(userId).build());
+        List<WorkExperienceView> workExperienceViews =
+                workExperienceService.listView(WorkExperience.builder().userId(userId).build());
 
         Map<String, Object> props = new HashMap<>(templateProps);
 
-        if (!workExperiences.isEmpty()) {
+        if (!workExperienceViews.isEmpty()) {
 
             List<Map<String, Object>> realProps = Lists.newArrayList();
-
-            List<WorkExperienceView> views = workExperienceStructMapper.toViews(workExperiences);
-            for (WorkExperienceView view : views) {
+            for (WorkExperienceView view : workExperienceViews) {
 
                 Map<String, Object> map = BeanUtils.toMap(view);
                 realProps.add(map);

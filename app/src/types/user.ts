@@ -218,15 +218,28 @@ export interface RegisterForm {
  */
 export interface LoginCheckOptions {
   /** 提示信息 */
-  message?: string
+  message?: string;
   /** 确认按钮文字 */
-  confirmText?: string
+  confirmText?: string;
   /** 取消按钮文字 */
-  cancelText?: string
+  cancelText?: string;
   /** 是否跳转登录页 */
-  redirect?: boolean
+  redirect?: boolean;
   /** 自定义登录路径 */
-  loginPath?: string
+  loginPath?: string;
   /** 自定义失败回调 */
-  onFail?: () => void
+  onFail?: () => void;
+
+  redirectPath?: any;
+}
+
+// 自定义错误类型
+export class LoginError extends Error {
+  constructor(
+    message: string,
+    public type: 'not_logged_in' | 'user_cancelled' | 'redirect_failed' | 'modal_failed' = 'not_logged_in'
+  ) {
+    super(message);
+    this.name = 'LoginError';
+  }
 }

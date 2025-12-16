@@ -1,7 +1,6 @@
 import { RequestConfig } from "@/types/request";
 import { useUserStore } from "@/stores/user";
 import { hasRefreshToken, isTokenExpiring } from "@/utils/store";
-import AuthAPI from "@/api/auth";
 import { ResultCode } from "@/constants/result-code";
 import { errorHandles } from "@/utils/error-handles";
 
@@ -35,17 +34,18 @@ class Interceptors {
     // 如果令牌即将过期且有刷新令牌，尝试刷新
     if (isTokenExpiring() && hasRefreshToken() && token) {
       try {
-        token = await AuthAPI.refreshToken();
+        token = await userStore.refreshTokenAction()
       } catch (error) {
         console.warn("刷新令牌失败:", error);
         // 刷新失败不立即跳转，等接口返回401再处理
       }
     }
-    config.header = {
-      ...config.header,
-      Authorization: `Bearer ${token}`,
-    };
-
+    if (token){
+      config.header = {
+        ...config.header,
+        Authorization: `Bearer ${token}`,
+      };
+    }
 
     return config;
   }
@@ -78,9 +78,9 @@ class Interceptors {
     }
 
     // 4. 查看解析后的结构
-    console.log("解析后的完整结构:", JSON.stringify(parsedData, null, 2));
-    console.log("解析后的code属性:", parsedData?.code);
-    console.log("解析后的所有键:", Object.keys(parsedData || {}));
+    // console.log("解析后的完整结构:", JSON.stringify(parsedData, null, 2));
+    // console.log("解析后的code属性:", parsedData?.code);
+    // console.log("解析后的所有键:", Object.keys(parsedData || {}));
 
     // 继续原有逻辑...
     const result = parsedData as ResponseResult<T>;

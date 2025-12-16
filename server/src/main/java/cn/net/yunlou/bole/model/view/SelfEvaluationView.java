@@ -1,9 +1,19 @@
 package cn.net.yunlou.bole.model.view;
 
 import cn.net.yunlou.bole.common.BaseView;
+import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * FileName: SelfEvaluationView Description: Created By laughtiger Created At 2025/12/14 04:10
  * Modified By Modified At
  */
-public class SelfEvaluationView extends BaseView {}
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class SelfEvaluationView extends BaseView {
+
+    private String content;
+
+    private List<String> keywords;
+}

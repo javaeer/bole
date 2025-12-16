@@ -5,10 +5,7 @@ const NOTICE_BASE_URL = "/notices";
 const NoticeAPI = {
   /** 获取通知公告分页数据 */
   getPage(queryParams?: NoticePageQuery) {
-    return request.get<PageResult<NoticePageVO[]>>({
-      url: `${NOTICE_BASE_URL}/page`,
-      data: queryParams,
-    });
+    return request.post<PageResult<NoticePageVO[]>>(`${NOTICE_BASE_URL}/page`, queryParams);
   },
 
   /**
@@ -18,9 +15,7 @@ const NoticeAPI = {
    * @returns Notice表单数据
    */
   getFormData(id: number) {
-    return request.get<NoticeForm>({
-      url: `${NOTICE_BASE_URL}/${id}/form`,
-    });
+    return request.get<NoticeForm>( `${NOTICE_BASE_URL}/${id}/form`);
   },
 
   /**
@@ -30,10 +25,7 @@ const NoticeAPI = {
    * @returns
    */
   add(data: NoticeForm) {
-    return request.post({
-      url: `${NOTICE_BASE_URL}`,
-      data: data,
-    });
+    return request.post(`${NOTICE_BASE_URL}`, data);
   },
 
   /**
@@ -43,10 +35,7 @@ const NoticeAPI = {
    * @param data Notice表单数据
    */
   update(id: number, data: NoticeForm) {
-    return request.put({
-      url: `${NOTICE_BASE_URL}/${id}`,
-      data: data,
-    });
+    return request.put(`${NOTICE_BASE_URL}/${id}`, data);
   },
 
   /**
@@ -55,9 +44,7 @@ const NoticeAPI = {
    * @param ids 通知公告ID字符串，多个以英文逗号(,)分割
    */
   deleteByIds(ids: string) {
-    return request.delete({
-      url: `${NOTICE_BASE_URL}/${ids}`,
-    });
+    return request.delete(`${NOTICE_BASE_URL}/${ids}`);
   },
 
   /**
@@ -67,9 +54,7 @@ const NoticeAPI = {
    * @returns
    */
   publish(id: number) {
-    return request.put({
-      url: `${NOTICE_BASE_URL}/${id}/publish`,
-    });
+    return request.put( `${NOTICE_BASE_URL}/${id}/publish`);
   },
 
   /**
@@ -79,9 +64,7 @@ const NoticeAPI = {
    * @returns
    */
   revoke(id: number) {
-    return request.put({
-      url: `${NOTICE_BASE_URL}/${id}/revoke`,
-    });
+    return request.put( `${NOTICE_BASE_URL}/${id}/revoke`);
   },
   /**
    * 查看通知
@@ -89,26 +72,17 @@ const NoticeAPI = {
    * @param id
    */
   getDetail(id: string) {
-    return request.get<NoticeDetailVO>({
-      url: `${NOTICE_BASE_URL}/${id}/detail`,
-    });
+    return request.get<NoticeDetailVO>( `${NOTICE_BASE_URL}/${id}/detail`);
   },
 
   /* 全部已读 */
   readAll() {
-    return request.put({
-      url: `${NOTICE_BASE_URL}/read-all`,
-      method: "PUT",
-    });
+    return request.put( `${NOTICE_BASE_URL}/read-all`);
   },
 
   /** 获取我的通知分页列表 */
   getMyNoticePage(queryParams?: PageQuery, queryData?: any) {
-    return request.page<PageResult<NoticePageVO[]>>({
-      url: `${NOTICE_BASE_URL}/my-page`,
-      data: queryData,
-      params: queryParams,
-    });
+    return request.page<PageResult<NoticePageVO[]>>( `${NOTICE_BASE_URL}/my-page`, queryData, queryParams);
   },
 };
 

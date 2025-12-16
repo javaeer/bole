@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  * By Modified At
  */
 @RestController
-@RequestMapping("resumes-template")
+@RequestMapping("template")
 @Tag(name = "08.简历模板管理", description = "简历模板相关接口")
 @RequiredArgsConstructor
 public class ResumesTemplateController {
@@ -59,8 +59,8 @@ public class ResumesTemplateController {
 
     @GetMapping("{id}")
     @Operation(summary = "获取简历模板信息")
-    public BusinessResponse<ResumesTemplate> get(@PathVariable(value = "id") Long id) {
-        ResumesTemplate resumesTemplate = resumesTemplateService.getById(id);
+    public BusinessResponse<ResumesTemplateView> get(@PathVariable(value = "id") Long id) {
+        ResumesTemplateView resumesTemplate = resumesTemplateService.getViewById(id);
         return BusinessResponse.success(resumesTemplate);
     }
 

@@ -101,6 +101,12 @@ $border-radius-small: 10rpx;
 $border-radius-large: 20rpx;
 $border-radius-round: 50%;
 
+$primary-border: rgba($primary-color, 0.3);
+$success-border: rgba($success-color, 0.3);
+$warning-border: rgba($warning-color, 0.3);
+$danger-border: rgba($danger-color, 0.3);
+$info-border: rgba($info-color, 0.3);
+
 $padding-base: 30rpx;
 $padding-small: 20rpx;
 $padding-mini: 15rpx;
@@ -118,6 +124,8 @@ $font-size-small: 24rpx;
 $font-size-extra-small: 20rpx;
 
 /* 字体粗细 */
+$font-weight-thin: 100;
+$font-weight-light: 300;
 $font-weight-normal: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 500;
@@ -165,6 +173,8 @@ $success-border-color: $success-color;
 $input-focus-shadow: 0 0 0 2rpx rgba($primary-color, 0.2);
 $input-error-shadow: 0 0 0 2rpx rgba($danger-color, 0.2);
 $button-active-shadow: 0 4rpx 12rpx rgba($primary-color, 0.3);
+$button-disabled-opacity: 0.6;
+$button-disabled-bg: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness: -10%) 100%);
 $button-disabled-opacity: 0.6;
 
 /* 组件变量 - 消息页 */
@@ -409,3 +419,41 @@ $screen-xl: 1280rpx;  // 超大屏幕
   transition: all $transition-fast;
   &:hover { box-shadow: $message-item-hover-shadow; }
 }
+
+
+/* ==================== 模板编辑器特定变量 ==================== */
+
+/* 布局变量 */
+$layout-column-preview-height: 120rpx;
+
+/* 拖拽相关 */
+$drag-handle-width: 60rpx;
+$drag-icon-opacity: 0.5;
+
+/* 预览面板 */
+$preview-placeholder-icon-size: 120rpx;
+$preview-min-height: 400rpx;
+
+/* 区块管理 */
+$section-item-height: 80rpx;
+$section-item-gap: 16rpx;
+
+/* 颜色输入 */
+$color-input-width: 120rpx;
+$color-preview-size: 40rpx;
+
+/* 字体大小输入 */
+$font-size-input-width: 80rpx;
+
+/* 间距输入 */
+$spacing-input-width: 120rpx;
+
+/* 布局图标 */
+$layout-icon-size: 48rpx;
+
+/* 设备切换按钮 */
+$device-btn-padding: 8rpx 16rpx;
+
+/* 标签指示器 */
+$tab-indicator-width: 80rpx;
+$tab-indicator-height: 4rpx;

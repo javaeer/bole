@@ -69,7 +69,7 @@
 
 <script>
 export default {
-  name: 'ResumeBasicInfo',
+  name: 'UserBasicInfo',
   props: {
     config: {
       type: Object,

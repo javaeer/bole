@@ -9,10 +9,7 @@ const LogAPI = {
    * @param queryParams 查询参数
    */
   getPage(queryParams: LogPageQuery) {
-    return request.get<PageResult<LogVO[]>>({
-      url: `${LOG_BASE_URL}/page`,
-      data: queryParams,
-    });
+    return request.get<PageResult<LogVO[]>>(`${LOG_BASE_URL}/page`, queryParams);
   },
 
   /**
@@ -22,10 +19,7 @@ const LogAPI = {
    * @returns
    */
   getVisitTrend(queryParams: VisitTrendQuery) {
-    return request.get<VisitTrendVO>({
-      url: `${LOG_BASE_URL}/visit-trend`,
-      data: queryParams,
-    });
+    return request.get<VisitTrendVO>(`${LOG_BASE_URL}/visit-trend`, queryParams);
   },
 
   /**
@@ -35,10 +29,7 @@ const LogAPI = {
    * @returns
    */
   getVisitStats() {
-    return request.get<VisitStatsVO>({
-      url: `${LOG_BASE_URL}/visit-stats`,
-      method: "GET",
-    });
+    return request.get<VisitStatsVO>(`${LOG_BASE_URL}/visit-stats`);
   },
 };
 

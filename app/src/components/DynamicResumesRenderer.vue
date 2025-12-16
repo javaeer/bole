@@ -15,30 +15,25 @@
 
 <script>
 // 导入所有简历组件
-import ResumeBasicInfo from '@/components/resumes/ResumeBasicInfo.vue';
-import ResumeJobIntention from '@/components/resumes/ResumeJobIntention.vue';
-import ResumeWorkExperience from '@/components/resumes/ResumeWorkExperience.vue';
-import ResumeEducation from '@/components/resumes/ResumeEducation.vue';
-import ResumeSelfEvaluation from '@/components/resumes/ResumeSelfEvaluation.vue';
-
-// 组件映射表
-const componentMap = {
-  'ResumeBasicInfo': ResumeBasicInfo,
-  'ResumeJobIntention': ResumeJobIntention,
-  'ResumeWorkExperience': ResumeWorkExperience,
-  'ResumeEducation': ResumeEducation,
-  'ResumeSelfEvaluation': ResumeSelfEvaluation,
-};
+import UserBasicInfo from '@/components/resumes/UserBasicInfo.vue';
+import JobIntention from '@/components/resumes/JobIntention.vue';
+import CompanyExperience from '@/components/resumes/CompanyExperience.vue';
+import WorkExperience from '@/components/resumes/WorkExperience.vue';
+import ProjectExperience from '@/components/resumes/ProjectExperience.vue';
+import EducationExperience from '@/components/resumes/EducationExperience.vue';
+import SelfEvaluation from '@/components/resumes/SelfEvaluation.vue';
 
 export default {
   name: 'DynamicResumeRenderer',
   //注册组件
   components: {
-    ResumeBasicInfo,
-    ResumeJobIntention,
-    ResumeWorkExperience,
-    ResumeEducation,
-    ResumeSelfEvaluation,
+    UserBasicInfo: UserBasicInfo,
+    JobIntention: JobIntention,
+    CompanyExperience: CompanyExperience,
+    WorkExperience: WorkExperience,
+    ProjectExperience: ProjectExperience,
+    EducationExperience: EducationExperience,
+    SelfEvaluation: SelfEvaluation,
   },
   props: {
     config: {

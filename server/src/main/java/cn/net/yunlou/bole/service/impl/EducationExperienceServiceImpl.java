@@ -9,6 +9,7 @@ import cn.net.yunlou.bole.model.query.EducationExperienceQuery;
 import cn.net.yunlou.bole.model.view.EducationExperienceView;
 import cn.net.yunlou.bole.service.EducationExperienceService;
 import cn.net.yunlou.bole.struct.EducationExperienceStructMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,4 +26,11 @@ public class EducationExperienceServiceImpl
                 EducationExperienceEdit,
                 EducationExperienceQuery,
                 EducationExperienceStructMapper>
-        implements EducationExperienceService {}
+        implements EducationExperienceService {
+    @Override
+    public QueryWrapper<EducationExperience> getBaseQueryWrapper(EducationExperience entity) {
+        QueryWrapper<EducationExperience> queryWrapper = super.getBaseQueryWrapper(entity);
+        queryWrapper.lambda().orderByDesc(EducationExperience::getEndDate);
+        return queryWrapper;
+    }
+}

@@ -25,7 +25,12 @@
 
     <!-- 功能入口 -->
     <view class="function-grid">
-      <view class="grid-item" v-for="item in functionList" :key="item.id" @click="handleFunctionClick(item)">
+      <view
+        class="grid-item"
+        v-for="item in functionList"
+        :key="item.id"
+        @click="() => handleFunctionClick(item)"
+      >
         <view class="grid-icon">
           <text class="icon">{{ item.icon }}</text>
         </view>
@@ -41,8 +46,12 @@
       </view>
       <scroll-view class="template-scroll" scroll-x="true">
         <view class="template-list">
-          <view class="template-item" v-for="template in templateList" :key="template.id"
-                @click="handleTemplateClick(template)">
+          <view
+            class="template-item"
+            v-for="template in templateList"
+            :key="template.id"
+            @click="handleTemplateClick(template)"
+          >
             <image :src="template.cover" class="template-cover" mode="aspectFill" />
             <view class="template-info">
               <text class="template-name">{{ template.name }}</text>
@@ -78,15 +87,16 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-
 import { useConfigStore } from "@/stores/config";
-
 import { useLoginCheck } from "@/composables/useLoginCheck";
+import { useTemplate } from "@/composables/useTemplate";
+import { onShow } from "@dcloudio/uni-app";
+import { useUserStore } from "@/stores/user";
 
 const configStore = useConfigStore();
-
-// 2. 登录状态检查（用于按钮）
-const login = useLoginCheck();
+const userStore = useUserStore();
+const loginCheck = useLoginCheck();
+const { loading, templateList, loadHomeTemplates } = useTemplate();
 
 // 使用计算属性获取配置值
 const systemName = computed(() =>
@@ -96,6 +106,9 @@ const systemName = computed(() =>
 const systemVersion = computed(() =>
   configStore.getConfigValue("system.version") || "1.0.0",
 );
+
+// 需要登录验证的功能ID列表
+const requireLoginFunctionIds = [1, 3]; // 创建简历(id=1)和简历分析(id=3)需要登录
 
 // 轮播图数据
 const bannerList = ref([
@@ -124,34 +137,6 @@ const functionList = ref([
   { id: 4, name: "求职指南", icon: "📚", path: "/pages/guide/guide" },
 ]);
 
-// 模板列表
-const templateList = ref([
-  {
-    id: 1,
-    name: "经典简约",
-    description: "适合应届毕业生",
-    cover: "/static/template/classic.jpg",
-    price: 0,
-    users: 12543,
-  },
-  {
-    id: 2,
-    name: "专业商务",
-    description: "适合职场人士",
-    cover: "/static/template/business.jpg",
-    price: 9.9,
-    users: 8765,
-  },
-  {
-    id: 3,
-    name: "创意设计",
-    description: "适合设计岗位",
-    cover: "/static/template/creative.jpg",
-    price: 19.9,
-    users: 5432,
-  },
-]);
-
 // 指南列表
 const guideList = ref([
   {
@@ -172,22 +157,51 @@ const guideList = ref([
   },
 ]);
 
-// 事件处理
+/**
+ * 处理功能点击事件，添加登录校验
+ */
+const handleFunctionClick = (item: any) => {
+
+// 检查是否需要登录验证
+  if (requireLoginFunctionIds.includes(item.id)) {
+    // 需要登录的功能，先验证登录状态
+    // 注意：这里要使用 .value
+    if (!loginCheck.isLoggedIn.value) {
+      console.log("未登录");
+      // 使用 checkAndExecute 来处理登录检查
+      loginCheck.checkAndExecute(() => {
+        uni.navigateTo({
+          url: item.path,
+        });
+      }, {
+        message: "需要登录后才能使用此功能",
+        redirectPath: item.path,  // 登录成功后跳转到这个页面
+      }).catch((error) => {
+        console.log("操作中断:", error.message);
+      });
+    } else {
+      // 已登录，跳转到目标页面
+      uni.navigateTo({
+        url: item.path,
+      });
+    }
+  } else {
+    // 不需要登录的功能，直接跳转
+    uni.navigateTo({
+      url: item.path,
+    });
+  }
+};
+// 其他事件处理函数
 const handleSearch = () => {
   uni.navigateTo({
-    url: "/pages/search/search", // 你的搜索页面路径
+    url: "/pages/search/search",
   });
 };
 
 const handleBannerClick = (item: any) => {
   uni.navigateTo({
     url: item.link,
-  });
-};
-
-const handleFunctionClick = (item: any) => {
-  uni.navigateTo({
-    url: item.path,
   });
 };
 
@@ -202,6 +216,10 @@ const handleMoreTemplates = () => {
     url: "/pages/template/list",
   });
 };
+
+onShow(() => {
+  loadHomeTemplates();
+});
 
 onMounted(() => {
   console.log("首页加载完成");

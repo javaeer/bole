@@ -5,7 +5,6 @@ import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.SelfEvaluation;
 import cn.net.yunlou.bole.model.view.SelfEvaluationView;
 import cn.net.yunlou.bole.service.SelfEvaluationService;
-import cn.net.yunlou.bole.struct.SelfEvaluationStructMapper;
 import com.google.common.collect.Lists;
 import java.util.HashMap;
 import java.util.List;
@@ -24,21 +23,18 @@ public class SelfEvaluationComponentDataPopulatorStrategy
 
     private final SelfEvaluationService selfEvaluationService;
 
-    private final SelfEvaluationStructMapper selfEvaluationStructMapper;
-
     @Override
     public Map<String, Object> populate(Long userId, Map<String, Object> templateProps) {
-        List<SelfEvaluation> selfEvaluations =
-                selfEvaluationService.list(SelfEvaluation.builder().userId(userId).build());
+        List<SelfEvaluationView> selfEvaluationViews =
+                selfEvaluationService.listView(SelfEvaluation.builder().userId(userId).build());
 
         Map<String, Object> props = new HashMap<>(templateProps);
 
-        if (!selfEvaluations.isEmpty()) {
+        if (!selfEvaluationViews.isEmpty()) {
 
             List<Map<String, Object>> realProps = Lists.newArrayList();
 
-            List<SelfEvaluationView> views = selfEvaluationStructMapper.toViews(selfEvaluations);
-            for (SelfEvaluationView view : views) {
+            for (SelfEvaluationView view : selfEvaluationViews) {
 
                 Map<String, Object> map = BeanUtils.toMap(view);
                 realProps.add(map);

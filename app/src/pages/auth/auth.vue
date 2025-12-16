@@ -244,11 +244,12 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { useConfigStore } from "@/stores/config";
-import AuthAPI from "@/api/auth";
 import { LoginForm, RegisterForm } from "@/types/user";
+import { useUserStore } from "@/stores/user";
 
 //初始配置
 const configStore = useConfigStore();
+const userStore = useUserStore();
 const activeTab = ref("login");
 const systemName = configStore.getConfigValue("system.name");
 
@@ -256,7 +257,7 @@ const systemName = configStore.getConfigValue("system.name");
 const loginForm = reactive<LoginForm>({
   username: "",
   password: "",
-})
+});
 
 const loginError = reactive({
   username: "",
@@ -272,7 +273,7 @@ const registerForm = reactive<RegisterForm>({
   code: "",
   password: "",
   confirmPassword: "",
-})
+});
 
 const registerError = reactive({
   phone: "",
@@ -361,9 +362,9 @@ const validateField = (field: string) => {
       case "username":
         if (!loginForm.username.trim()) {
           loginError.username = "请输入手机号或邮箱";
-        // } else if (!/^1[3-9]\d{9}$/.test(loginForm.username) &&
-        //   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginForm.username)) {
-        //   loginError.username = "请输入正确的手机号或邮箱";
+          // } else if (!/^1[3-9]\d{9}$/.test(loginForm.username) &&
+          //   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginForm.username)) {
+          //   loginError.username = "请输入正确的手机号或邮箱";
         }
         break;
       case "password":
@@ -428,8 +429,7 @@ const handleLogin = async () => {
 
   try {
     // 调用登录API
-    const result = await AuthAPI.login(loginForm);
-    console.log(result)
+    await userStore.login(loginForm);
     uni.showToast({
       title: "登录成功",
       icon: "success",

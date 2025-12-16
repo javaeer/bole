@@ -57,7 +57,7 @@
 
 <script>
 export default {
-  name: 'ResumeJobIntention',
+  name: 'JobIntention',
   props: {
     config: {
       type: Object,

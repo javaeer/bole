@@ -157,13 +157,13 @@
 		{
 			"path": "pages/resumes/create",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "生成简历"
 			}
 		},
 		{
 			"path": "pages/template/select",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "选择模板"
 			}
 		},
 		{

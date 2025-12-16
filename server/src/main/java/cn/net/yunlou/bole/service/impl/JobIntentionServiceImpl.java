@@ -9,6 +9,7 @@ import cn.net.yunlou.bole.model.query.JobIntentionQuery;
 import cn.net.yunlou.bole.model.view.JobIntentionView;
 import cn.net.yunlou.bole.service.JobIntentionService;
 import cn.net.yunlou.bole.struct.JobIntentionStructMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -33,5 +34,12 @@ public class JobIntentionServiceImpl
     public JobIntention getLatest(Long userId) {
         List<JobIntention> jobIntentions = list(JobIntention.builder().userId(userId).build());
         return jobIntentions != null ? CollectionUtils.firstElement(jobIntentions) : null;
+    }
+
+    @Override
+    public QueryWrapper<JobIntention> getBaseQueryWrapper(JobIntention entity) {
+        QueryWrapper<JobIntention> queryWrapper = super.getBaseQueryWrapper(entity);
+        queryWrapper.lambda().orderByDesc(JobIntention::getCreatedAt);
+        return queryWrapper;
     }
 }

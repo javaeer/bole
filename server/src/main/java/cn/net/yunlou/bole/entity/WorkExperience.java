@@ -3,6 +3,7 @@ package cn.net.yunlou.bole.entity;
 import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -32,7 +33,7 @@ public class WorkExperience extends BaseEntity {
 
     private String description;
 
-    @TableField(typeHandler = com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler.class)
+    @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> achievements;
 
     private Integer sort;

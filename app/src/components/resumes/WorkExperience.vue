@@ -84,7 +84,7 @@
 
 <script>
 export default {
-  name: 'ResumeWorkExperience',
+  name: 'WorkExperience',
   props: {
     config: {
       type: Object,

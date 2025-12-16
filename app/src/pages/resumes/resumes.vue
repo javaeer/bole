@@ -41,21 +41,21 @@
 </template>
 
 <script>
-import DynamicResumeRenderer from "@/components/DynamicResumeRenderer.vue";
-import ResumeBasicInfo from "@/components/resumes/ResumeBasicInfo.vue";
-import ResumeJobIntention from "@/components/resumes/ResumeJobIntention.vue";
-import ResumeWorkExperience from "@/components/resumes/ResumeWorkExperience.vue";
-import ResumeEducation from "@/components/resumes/ResumeEducation.vue";
-import ResumeSelfEvaluation from "@/components/resumes/ResumeSelfEvaluation.vue";
+import DynamicResumeRenderer from "@/components/DynamicResumesRenderer.vue";
+import UserBasicInfo from "@/components/resumes/UserBasicInfo.vue";
+import JobIntention from "@/components/resumes/JobIntention.vue";
+import WorkExperience from "@/components/resumes/WorkExperience.vue";
+import EducationExperience from "@/components/resumes/EducationExperience.vue";
+import SelfEvaluation from "@/components/resumes/SelfEvaluation.vue";
 
 export default {
   components: {
     DynamicResumeRenderer,
-    ResumeBasicInfo,
-    ResumeJobIntention,
-    ResumeWorkExperience,
-    ResumeEducation,
-    ResumeSelfEvaluation,
+    UserBasicInfo: UserBasicInfo,
+    JobIntention: JobIntention,
+    WorkExperience: WorkExperience,
+    EducationExperience: EducationExperience,
+    SelfEvaluation: SelfEvaluation,
   },
 
   data() {

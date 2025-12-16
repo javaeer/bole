@@ -28,11 +28,15 @@ public interface IStructService<
     boolean removeByQuery(Q query);
 
     /** 条件分页查询 */
+    Page<V> pageView(long pageNum, long pageSize, T entity);
+
     Page<T> pageByQuery(long pageNum, long pageSize, Q query);
 
     Page<V> pageViewByQuery(long pageNum, long pageSize, Q query);
 
     /** 条件列表查询 */
+    List<V> listView(T entity);
+
     List<T> listByQuery(Q query);
 
     List<V> listViewByQuery(Q query);

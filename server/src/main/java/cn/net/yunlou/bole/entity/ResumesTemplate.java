@@ -44,7 +44,7 @@ public class ResumesTemplate extends BaseEntity {
 
     /** 布局配置 */
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private Map<String, Object> layout;
+    private ResumesTemplateLayout layout;
 
     @TableField(exist = false)
     private List<ResumesTemplateComponent> components;

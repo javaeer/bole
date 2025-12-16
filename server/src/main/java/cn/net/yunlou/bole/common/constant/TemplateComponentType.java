@@ -11,13 +11,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TemplateComponentType implements IEnum<String> {
-    SELF_EVALUATION("ResumeSelfEvaluation", "自我评价组件"),
-    EDUCATION_EXPERIENCE("ResumeEducationExperience", "教育经历组件"),
-    PROJECT_EXPERIENCE("ResumeProjectExperience", "项目经历组件"),
-    COMPANY_EXPERIENCE("ResumeCompanyExperience", "公司经历组件"),
-    WORK_EXPERIENCE("ResumeWorkExperience", "工作经历组件"),
-    JOB_INTENTION("ResumeJobIntention", "求职意向组件"),
-    USER_BASIC_INFO("ResumeUserBasicInfo", "用户基础信息组件");
+    SELF_EVALUATION("SelfEvaluation", "自我评价组件"),
+    EDUCATION_EXPERIENCE("EducationExperience", "教育经历组件"),
+    PROJECT_EXPERIENCE("ProjectExperience", "项目经历组件"),
+    WORK_EXPERIENCE("WorkExperience", "工作经历组件"),
+    COMPANY_EXPERIENCE("CompanyExperience", "公司经历组件"),
+    SKILLS("Skills", "技能专长组件"),
+    JOB_INTENTION("JobIntention", "求职意向组件"),
+    USER_BASIC_INFO("UserBasicInfo", "用户基础信息组件");
 
     private final String value;
 

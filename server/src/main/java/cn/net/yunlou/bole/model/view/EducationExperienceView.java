@@ -1,7 +1,6 @@
 package cn.net.yunlou.bole.model.view;
 
 import cn.net.yunlou.bole.common.BaseView;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -30,7 +29,6 @@ public class EducationExperienceView extends BaseView {
 
     private String description;
 
-    @TableField(typeHandler = com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler.class)
     private List<String> achievements;
 
     private Integer sort;

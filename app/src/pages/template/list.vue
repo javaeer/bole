@@ -10,6 +10,7 @@
           placeholder-class="search-placeholder"
           v-model="searchKeyword"
           @input="handleSearch"
+          @confirm="handleSearch"
         />
         <view v-if="searchKeyword" class="search-clear" @click="clearSearch">
           <text class="clear-icon">×</text>
@@ -40,12 +41,12 @@
       <view class="sort-tabs">
         <view
           class="sort-tab"
-          :class="{ active: sortField === 'updateTime' }"
-          @click="changeSort('updateTime')"
+          :class="{ active: sortField === 'updatedAt' }"
+          @click="changeSort('updatedAt')"
         >
           <text class="sort-text">最近更新</text>
-          <view v-if="sortField === 'updateTime'" class="sort-arrow">
-            <text>{{ sortOrder === 'desc' ? '↓' : '↑' }}</text>
+          <view v-if="sortField === 'updatedAt'" class="sort-arrow">
+            <text>{{ sortOrder === "desc" ? "↓" : "↑" }}</text>
           </view>
         </view>
         <view
@@ -55,17 +56,17 @@
         >
           <text class="sort-text">名称</text>
           <view v-if="sortField === 'name'" class="sort-arrow">
-            <text>{{ sortOrder === 'desc' ? '↓' : '↑' }}</text>
+            <text>{{ sortOrder === "desc" ? "↓" : "↑" }}</text>
           </view>
         </view>
         <view
           class="sort-tab"
-          :class="{ active: sortField === 'matchScore' }"
-          @click="changeSort('matchScore')"
+          :class="{ active: sortField === 'version' }"
+          @click="changeSort('version')"
         >
-          <text class="sort-text">热度</text>
-          <view v-if="sortField === 'matchScore'" class="sort-arrow">
-            <text>{{ sortOrder === 'desc' ? '↓' : '↑' }}</text>
+          <text class="sort-text">版本</text>
+          <view v-if="sortField === 'version'" class="sort-arrow">
+            <text>{{ sortOrder === "desc" ? "↓" : "↑" }}</text>
           </view>
         </view>
       </view>
@@ -93,12 +94,12 @@
       <text class="loading-text">加载中...</text>
     </view>
 
-    <view v-else-if="templates.length === 0" class="empty-state">
+    <view v-else-if="templateList.length === 0" class="empty-state">
       <text class="empty-icon">📄</text>
       <text class="empty-text">暂无简历模板</text>
-      <text class="empty-subtext">创建你的第一份简历模板开始吧</text>
+      <text class="empty-subtext">选择模板开始创建简历吧</text>
       <button class="btn-create" @click="handleCreateTemplate">
-        <text class="create-text">+ 简历模板</text>
+        <text class="create-text">+ 创建模板</text>
       </button>
     </view>
 
@@ -106,58 +107,59 @@
       <!-- 列表视图 -->
       <view v-if="viewMode === 'list'" class="list-view">
         <view
-          class="templates-item"
-          v-for="templates in templates"
-          :key="templates.id"
-          @click="handleViewTemplate(templates)"
+          class="template-item"
+          v-for="template in displayList"
+          :key="template.id"
+          @click="handleViewTemplate(template)"
         >
-          <view class="templates-item-header">
-            <view class="templates-avatar">
-              <text class="avatar-text">{{ templates.name.charAt(0) }}</text>
+          <view class="template-item-header">
+            <view class="template-avatar" :style="{ backgroundColor: getAvatarColor(template.id) }">
+              <text class="avatar-text">{{ getTemplateInitial(template.name) }}</text>
             </view>
-            <view class="templates-main-info">
-              <text class="templates-name">{{ templates.name }}</text>
-              <text class="templates-title">{{ templates.title }}</text>
+            <view class="template-main-info">
+              <text class="template-name">{{ template.name }}</text>
+              <text class="template-description">{{ template.description || "经典简约设计" }}</text>
             </view>
-            <view class="templates-status">
-              <view class="status-badge" :class="templates.status">
-                <text class="status-text">{{ getStatusText(templates.status) }}</text>
+            <view class="template-status">
+              <view class="status-badge" :class="template.isActive ? 'active' : 'inactive'">
+                <text class="status-text">{{ template.isActive ? "已启用" : "未启用" }}</text>
               </view>
             </view>
           </view>
 
-          <view class="templates-item-content">
-            <view class="templates-meta">
+          <view class="template-item-content">
+            <view class="template-meta">
               <view class="meta-item">
-                <text class="meta-icon">📅</text>
-                <text class="meta-text">更新: {{ formatDate(templates.updateTime) }}</text>
+                <text class="meta-icon">🔄</text>
+                <text class="meta-text">更新: {{ formatDate(template.updatedAt) }}</text>
               </view>
               <view class="meta-item">
-                <text class="meta-icon">👁️</text>
-                <text class="meta-text">{{ templates.viewCount }} 浏览</text>
+                <text class="meta-icon">📊</text>
+                <text class="meta-text">v{{ template.version }}</text>
+              </view>
+              <view class="meta-item">
+                <text class="meta-icon">📐</text>
+                <text class="meta-text">{{ template.layout?.pageSize || "A4" }}</text>
               </view>
             </view>
 
-            <view class="templates-skills">
+            <view class="template-features">
               <text
-                class="skill-tag"
-                v-for="(skill, index) in templates.skills.slice(0, 3)"
+                class="feature-tag"
+                v-for="(feature, index) in getTemplateFeatures(template)"
                 :key="index"
               >
-                {{ skill }}
-              </text>
-              <text v-if="templates.skills.length > 3" class="more-skills">
-                +{{ templates.skills.length - 3 }}
+                {{ feature }}
               </text>
             </view>
           </view>
 
-          <view class="templates-item-actions">
-            <button class="btn-action" @click.stop="handleSelected(templates)">
-              <text class="action-text">选择模板</text>
+          <view class="template-item-actions">
+            <button class="btn-action primary" @click.stop="handleSelected(template)">
+              <text class="action-text">使用模板</text>
             </button>
-            <button class="btn-action" @click.stop="handleShare(templates)">
-              <text class="action-text">分享</text>
+            <button class="btn-action secondary" @click.stop="handlePreview(template)">
+              <text class="action-text">预览</text>
             </button>
           </view>
         </view>
@@ -166,42 +168,44 @@
       <!-- 网格视图 -->
       <view v-if="viewMode === 'grid'" class="grid-view">
         <view
-          class="templates-card"
-          v-for="templates in templates"
-          :key="templates.id"
-          @click="handleViewTemplate(templates)"
+          class="template-card"
+          v-for="template in displayList"
+          :key="template.id"
+          @click="handleViewTemplate(template)"
         >
           <view class="card-header">
-            <view class="card-avatar">
-              <text class="avatar-text">{{ templates.name.charAt(0) }}</text>
+            <view class="card-avatar" :style="{ backgroundColor: getAvatarColor(template.id) }">
+              <text class="avatar-text">{{ getTemplateInitial(template.name) }}</text>
             </view>
             <view class="card-title">
-              <text class="card-name">{{ templates.name }}</text>
-              <text class="card-job">{{ templates.title }}</text>
+              <text class="card-name">{{ template.name }}</text>
+              <view class="card-status">
+                <view class="status-badge" :class="template.isActive ? 'active' : 'inactive'">
+                  <text class="status-text">{{ template.isActive ? "启用" : "停用" }}</text>
+                </view>
+              </view>
             </view>
           </view>
 
-          <view class="card-status">
-            <view class="status-badge" :class="templates.status">
-              <text class="status-text">{{ getStatusText(templates.status) }}</text>
-            </view>
+          <view class="card-description">
+            <text class="description-text">{{ template.description || "经典简约设计" }}</text>
           </view>
 
-          <view class="card-skills">
+          <view class="card-features">
             <text
-              class="skill-chip"
-              v-for="(skill, index) in templates.skills.slice(0, 2)"
+              class="feature-chip"
+              v-for="(feature, index) in getTemplateFeatures(template).slice(0, 2)"
               :key="index"
             >
-              {{ skill }}
+              {{ feature }}
             </text>
           </view>
 
           <view class="card-footer">
-            <text class="update-time">更新于 {{ formatRelativeTime(templates.updateTime) }}</text>
+            <text class="update-time">v{{ template.version }} • {{ formatRelativeTime(template.updatedAt) }}</text>
             <view class="card-actions">
-              <text class="card-action" @click.stop="handleSelected(templates)">✏️</text>
-              <text class="card-action" @click.stop="handleShare(templates)">↗️</text>
+              <text class="card-action use" @click.stop="handleSelected(template)">使用</text>
+              <text class="card-action preview" @click.stop="handlePreview(template)">预览</text>
             </view>
           </view>
         </view>
@@ -222,263 +226,370 @@
   </view>
 </template>
 
-<script setup lang="ts">
-import { onMounted, ref } from "vue";
+<script lang="ts">
+import { computed, defineComponent, onMounted, ref } from "vue";
+import { TemplateResult, useTemplate } from "@/composables/useTemplate";
 
-// 搜索和筛选状态
-const searchKeyword = ref('')
-const activeFilters = ref<Array<{label: string, value: string}>>([])
-const sortField = ref('updateTime')
-const sortOrder = ref('desc')
-const viewMode = ref('list')
-const showFilter = ref(false)
-
-// 数据状态
-const loading = ref(false)
-const templates = ref<any[]>([
-  {
-    id: 1,
-    name: '高级前端工程师简历模板',
-    title: '高级前端开发工程师',
-    status: 'published',
-    updateTime: '2024-01-15',
-    viewCount: 245,
-    skills: ['Vue.js', 'TypeScript', 'Node.js', 'Webpack', 'React']
-  },
-  {
-    id: 2,
-    name: '全栈开发工程师简历模板',
-    title: '全栈开发工程师',
-    status: 'draft',
-    updateTime: '2024-01-14',
-    viewCount: 89,
-    skills: ['JavaScript', 'Python', 'Django', 'Vue.js', 'MySQL']
-  },
-  {
-    id: 3,
-    name: 'UI设计师作品集',
-    title: 'UI/UX设计师',
-    status: 'published',
-    updateTime: '2024-01-12',
-    viewCount: 156,
-    skills: ['Figma', 'Sketch', 'UI设计', '用户体验', '原型设计']
-  },
-  {
-    id: 4,
-    name: '产品经理简历模板',
-    title: '高级产品经理',
-    status: 'archived',
-    updateTime: '2024-01-10',
-    viewCount: 312,
-    skills: ['产品规划', '用户研究', '数据分析', '项目管理']
-  }
-])
-
-const hasMore = ref(true)
-
-// 搜索处理
-const handleSearch = () => {
-  // 实际项目中这里会调用API
-  console.log('搜索关键词:', searchKeyword.value)
+interface Filter {
+  label: string;
+  value: string;
 }
 
-const clearSearch = () => {
-  searchKeyword.value = ''
-  handleSearch()
-}
+export default defineComponent({
+  name: "TemplateList",
 
-// 筛选处理
-const removeFilter = (index: number) => {
-  activeFilters.value.splice(index, 1)
-}
+  setup() {
+    const {
+      templateList,
+      loading,
+      hasMore,
+      loadListTemplates,
+      loadMore,
+      searchTemplates,
+      sortTemplates,
+      currentTemplate,
+      setCurrentTemplate,
+    } = useTemplate();
 
-const clearAllFilters = () => {
-  activeFilters.value = []
-}
+    // 搜索和筛选状态
+    const searchKeyword = ref("");
+    const activeFilters = ref<Filter[]>([]);
+    const sortField = ref("updatedAt");
+    const sortOrder = ref<"asc" | "desc">("desc");
+    const viewMode = ref<"list" | "grid">("list");
+    const showFilter = ref(false);
 
-// 排序处理
-const changeSort = (field: string) => {
-  if (sortField.value === field) {
-    sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
-  } else {
-    sortField.value = field
-    sortOrder.value = 'desc'
-  }
-  // 实际项目中这里会重新排序数据
-}
+    // 计算显示列表（包含搜索和排序）
+    const displayList = computed(() => {
+      let list = [...templateList.value];
 
-// 操作处理
-const handleViewTemplate = (templates: any) => {
-  uni.navigateTo({
-    url: `/pages/template/detail?id=${templates.id}`
-  })
-}
-
-const handleSelected = (templates: any) => {
-  uni.navigateTo({
-    url: `/pages/resumes/create?id=${templates.id}`
-  })
-}
-
-const handleShare = (templates: any) => {
-  uni.showToast({
-    title: '分享功能开发中',
-    icon: 'none'
-  })
-}
-
-
-const handleCreateTemplate = () => {
-  uni.navigateTo({
-    url: '/pages/template/create'
-  })
-}
-
-const loadMore = () => {
-  loading.value = true
-  // 模拟加载更多数据
-  setTimeout(() => {
-    const newResumes = [
-      {
-        id: templates.value.length + 1,
-        name: `新增简历模板 ${templates.value.length + 1}`,
-        title: '软件工程师',
-        status: 'published',
-        updateTime: '2024-01-08',
-        viewCount: 45,
-        skills: ['Java', 'Spring Boot', 'MySQL']
+      // 搜索过滤
+      if (searchKeyword.value.trim()) {
+        const keyword = searchKeyword.value.toLowerCase();
+        list = list.filter(
+          (template: TemplateResult) =>
+            template.name.toLowerCase().includes(keyword) ||
+            template.description?.toLowerCase().includes(keyword) ||
+            template.code?.toLowerCase().includes(keyword),
+        );
       }
-    ]
-    templates.value.push(...newResumes)
-    hasMore.value = templates.value.length < 10
-    loading.value = false
-  }, 1000)
-}
 
-// 工具函数
-const getStatusText = (status: string) => {
-  const statusMap: Record<string, string> = {
-    draft: '草稿',
-    published: '已发布',
-    archived: '已归档'
-  }
-  return statusMap[status] || '未知'
-}
+      // 排序
+      list.sort((a: TemplateResult, b: TemplateResult) => {
+        const order = sortOrder.value === "asc" ? 1 : -1;
 
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
-  return `${date.getMonth() + 1}-${date.getDate()}`
-}
+        if (sortField.value === "updatedAt") {
+          const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+          const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+          return (dateB - dateA) * order;
+        }
 
-const formatRelativeTime = (dateStr: string) => {
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-  
-  if (diffDays === 0) return '今天'
-  if (diffDays === 1) return '昨天'
-  if (diffDays < 7) return `${diffDays}天前`
-  return `${Math.floor(diffDays / 7)}周前`
-}
+        if (sortField.value === "name") {
+          return (a.name || "").localeCompare(b.name || "") * order;
+        }
 
-onMounted(() => {
-  console.log('列表页面加载完成')
-})
+        if (sortField.value === "version") {
+          const verA = parseVersion(a.version || "0.0.0");
+          const verB = parseVersion(b.version || "0.0.0");
+          return (verB - verA) * order;
+        }
+
+        return 0;
+      });
+
+      return list;
+    });
+
+    // 搜索处理
+    const handleSearch = () => {
+      if (searchKeyword.value.trim()) {
+        searchTemplates(searchKeyword.value);
+      } else {
+        loadListTemplates(1, { isActive: true });
+      }
+    };
+
+    const clearSearch = () => {
+      searchKeyword.value = "";
+      loadListTemplates(1, { isActive: true });
+    };
+
+    // 筛选处理
+    const removeFilter = (index: number) => {
+      activeFilters.value.splice(index, 1);
+    };
+
+    const clearAllFilters = () => {
+      activeFilters.value = [];
+    };
+
+    // 排序处理
+    const changeSort = (field: string) => {
+      if (sortField.value === field) {
+        sortOrder.value = sortOrder.value === "desc" ? "asc" : "desc";
+      } else {
+        sortField.value = field;
+        sortOrder.value = "desc";
+      }
+    };
+
+    // 操作处理
+    const handleViewTemplate = (template: TemplateResult) => {
+      uni.navigateTo({
+        url: `/pages/template/detail?id=${template.id}`,
+      });
+    };
+
+    const handleSelected = (template: TemplateResult) => {
+      setCurrentTemplate(template);
+      uni.navigateTo({
+        url: `/pages/resumes/create?templateId=${template.id}`,
+      });
+    };
+
+    const handlePreview = (template: TemplateResult) => {
+      uni.navigateTo({
+        url: `/pages/template/preview?id=${template.id}`,
+      });
+    };
+
+    const handleCreateTemplate = () => {
+      uni.navigateTo({
+        url: "/pages/template/create",
+      });
+    };
+
+    // 工具函数
+    const getTemplateInitial = (name: string) => {
+      if (!name) return "R";
+      return name.charAt(0).toUpperCase();
+    };
+
+    const getAvatarColor = (id: number) => {
+      const colors = [
+        "#3498db",
+        "#2ecc71",
+        "#e74c3c",
+        "#f39c12",
+        "#9b59b6",
+        "#1abc9c",
+        "#d35400",
+        "#c0392b",
+      ];
+      return colors[id % colors.length];
+    };
+
+    const getTemplateFeatures = (template: TemplateResult) => {
+      const features: string[] = [];
+
+      // 根据布局添加特征
+      if (template.globalLayout) {
+        if (template.globalLayout.columns === 2) {
+          features.push("双栏");
+        } else {
+          features.push("单栏");
+        }
+
+        if (template.globalLayout.showPhoto) {
+          features.push("带照片");
+        }
+
+        const orientation = template.globalLayout.orientation === "portrait" ? "竖向" : "横向";
+        features.push(orientation);
+      }
+
+      // 根据全局样式添加特征
+      if (template.globalStyle?.theme) {
+        const themeMap: Record<string, string> = {
+          classic: "经典",
+          modern: "现代",
+          creative: "创意",
+          professional: "专业",
+          simple: "简约",
+        };
+        const themeName = themeMap[template.globalStyle.theme] || template.globalStyle.theme;
+        features.push(themeName);
+      }
+
+      // 添加组件数量特征
+      if (template.components?.length) {
+        features.push(`${template.components.length}模块`);
+      }
+
+      return features.slice(0, 4); // 最多显示4个特征
+    };
+
+    const formatDate = (dateStr: string) => {
+      if (!dateStr) return "未知";
+      try {
+        const date = new Date(dateStr);
+        return `${date.getMonth() + 1}-${date.getDate()}`;
+      } catch {
+        return "未知";
+      }
+    };
+
+    const formatRelativeTime = (dateStr: string) => {
+      if (!dateStr) return "未知";
+      try {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffTime = Math.abs(now.getTime() - date.getTime());
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return "今天";
+        if (diffDays === 1) return "昨天";
+        if (diffDays < 7) return `${diffDays}天前`;
+        if (diffDays < 30) return `${Math.floor(diffDays / 7)}周前`;
+        return `${Math.floor(diffDays / 30)}月前`;
+      } catch {
+        return "未知";
+      }
+    };
+
+    const parseVersion = (version: string) => {
+      const parts = version.split(".").map(Number);
+      return parts[0] * 10000 + (parts[1] || 0) * 100 + (parts[2] || 0);
+    };
+
+    // 初始化加载
+    onMounted(async () => {
+      await loadListTemplates(1, { isActive: true });
+    });
+
+    return {
+      // 状态
+      templateList,
+      loading,
+      hasMore,
+      searchKeyword,
+      activeFilters,
+      sortField,
+      sortOrder,
+      viewMode,
+      showFilter,
+      displayList,
+
+      // 方法
+      loadMore,
+      handleSearch,
+      clearSearch,
+      removeFilter,
+      clearAllFilters,
+      changeSort,
+      handleViewTemplate,
+      handleSelected,
+      handlePreview,
+      handleCreateTemplate,
+
+      // 工具函数
+      getTemplateInitial,
+      getAvatarColor,
+      getTemplateFeatures,
+      formatDate,
+      formatRelativeTime,
+    };
+  },
+});
 </script>
 
 <style scoped lang="scss">
 .list-page-container {
-  background-color: $background-color;
+  background-color: $uni-bg-color-grey;
   min-height: 100vh;
   padding-bottom: $tabbar-height;
 }
 
 /* 搜索栏 */
 .search-bar {
-  background: $background-color-white;
-  padding: $padding-small $padding-base;
+  background: $uni-bg-color;
+  padding: $uni-spacing-col-sm $uni-spacing-row-base;
   display: flex;
   align-items: center;
-  gap: $margin-small;
+  gap: $uni-spacing-col-sm;
   position: sticky;
   top: 0;
   z-index: $z-index-base;
   box-shadow: $box-shadow-light;
+  border-bottom: 1rpx solid $border-color-light;
 }
 
 .search-input-wrapper {
   flex: 1;
   position: relative;
   background: $background-color;
-  border-radius: $border-radius;
-  border: 2rpx solid $border-color-light;
+  border-radius: $uni-border-radius-lg;
+  border: 1rpx solid $border-color-light;
   display: flex;
   align-items: center;
-  padding: 0 $padding-small;
+  padding: 0 $uni-spacing-col-sm;
+  height: $input-height;
   transition: all $transition-fast;
-  
+
   &:focus-within {
     border-color: $focus-border-color;
     box-shadow: $input-focus-shadow;
+    background: $uni-bg-color;
   }
 }
 
 .search-icon {
-  font-size: $font-size-base;
-  color: $text-placeholder;
-  margin-right: $margin-mini;
+  font-size: $uni-font-size-base;
+  color: $uni-text-color-grey;
+  margin-right: $uni-spacing-col-sm;
 }
 
 .search-input {
   flex: 1;
-  height: $input-height - 20rpx;
-  font-size: $font-size-base;
-  color: $text-primary;
+  height: $input-height - 10rpx;
+  font-size: $uni-font-size-base;
+  color: $uni-text-color;
   background: transparent;
   border: none;
   outline: none;
 }
 
 .search-placeholder {
-  color: $text-placeholder;
-  font-size: $font-size-base;
+  color: $uni-text-color-placeholder;
+  font-size: $uni-font-size-base;
 }
 
 .search-clear {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: $border-radius-round;
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: $uni-border-radius-circle;
   background: $border-color;
   @extend .flex-center;
   cursor: pointer;
 }
 
 .clear-icon {
-  font-size: $font-size-medium;
-  color: $text-secondary;
+  font-size: $uni-font-size-lg;
+  color: $uni-text-color-grey;
   font-weight: $font-weight-bold;
 }
 
 .btn-filter {
-  height: $input-height - 20rpx;
+  height: $input-height;
   background: $background-color;
-  border: 2rpx solid $border-color-light;
-  border-radius: $border-radius;
-  padding: 0 $padding-small;
-  font-size: $font-size-base;
-  color: $text-regular;
+  border: 1rpx solid $border-color-light;
+  border-radius: $uni-border-radius-lg;
+  padding: 0 $uni-spacing-col-sm;
+  font-size: $uni-font-size-base;
+  color: $uni-text-color-grey;
   white-space: nowrap;
+  @extend .flex-center;
 }
 
 .filter-icon {
-  font-size: $font-size-small;
+  font-size: $uni-font-size-base;
 }
 
 /* 筛选标签 */
 .filter-tags {
-  background: $background-color-white;
-  padding: $padding-mini $padding-base;
-  border-bottom: 2rpx solid $border-color-extra-light;
+  background: $uni-bg-color;
+  padding: $uni-spacing-col-sm $uni-spacing-row-base;
+  border-bottom: 1rpx solid $border-color-extra-light;
 }
 
 .tags-scroll {
@@ -489,62 +600,65 @@ onMounted(() => {
 .tags-container {
   display: inline-flex;
   align-items: center;
-  gap: $margin-mini;
+  gap: $uni-spacing-col-sm;
 }
 
 .filter-tag {
   display: inline-flex;
   align-items: center;
   background: $primary-light;
-  border-radius: $border-radius-small;
-  padding: calc($padding-mini / 2) $padding-small;
-  gap: calc($margin-mini / 2);
+  border-radius: $uni-border-radius-sm;
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  gap: math.div($uni-spacing-col-sm, 2);
+  border: 1rpx solid color.adjust($primary-color, $lightness: 20%);
 }
 
 .tag-text {
-  font-size: $font-size-extra-small;
+  font-size: $uni-font-size-sm;
   color: $primary-color;
 }
 
 .tag-remove {
-  font-size: $font-size-small;
+  font-size: $uni-font-size-sm;
   color: $primary-color;
   font-weight: $font-weight-bold;
   cursor: pointer;
+  padding-left: math.div($uni-spacing-col-sm, 2);
 }
 
 .clear-all {
-  padding: calc($padding-mini / 2) $padding-small;
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
 }
 
 .clear-all-text {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $uni-font-size-sm;
+  color: $uni-text-color-grey;
   cursor: pointer;
 }
 
 /* 排序栏 */
 .sort-bar {
-  background: $background-color-white;
-  padding: $padding-small $padding-base;
+  background: $uni-bg-color;
+  padding: $uni-spacing-col-sm $uni-spacing-row-base;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2rpx solid $border-color-extra-light;
+  border-bottom: 1rpx solid $border-color-extra-light;
 }
 
 .sort-tabs {
   display: flex;
-  gap: $margin-base * 2;
+  gap: $uni-spacing-row-lg;
 }
 
 .sort-tab {
   display: flex;
   align-items: center;
-  gap: calc($margin-mini / 2);
+  gap: math.div($uni-spacing-col-sm, 2);
   cursor: pointer;
-  padding: calc($padding-mini / 2) 0;
-  
+  padding: math.div($uni-spacing-col-sm, 2) 0;
+  transition: all $transition-fast;
+
   &.active {
     .sort-text {
       color: $primary-color;
@@ -554,30 +668,36 @@ onMounted(() => {
 }
 
 .sort-text {
-  font-size: $font-size-base;
+  font-size: $uni-font-size-base;
   color: $text-regular;
+  transition: color $transition-fast;
 }
 
 .sort-arrow {
-  font-size: $font-size-small;
+  font-size: $uni-font-size-sm;
   color: $primary-color;
 }
 
 .view-mode {
   display: flex;
-  gap: $margin-small;
+  gap: $uni-spacing-col-sm;
+  background: $background-color;
+  border-radius: $uni-border-radius-sm;
+  padding: math.div($uni-spacing-col-sm, 2);
 }
 
 .view-mode-btn {
-  font-size: $font-size-medium;
+  font-size: $uni-font-size-lg;
   color: $text-placeholder;
   cursor: pointer;
-  padding: calc($padding-mini / 2) $padding-mini;
-  
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  border-radius: $uni-border-radius-sm;
+  transition: all $transition-fast;
+
   &.active {
     color: $primary-color;
-    background: $primary-light;
-    border-radius: $border-radius-small;
+    background: $uni-bg-color;
+    box-shadow: $box-shadow-light;
   }
 }
 
@@ -585,7 +705,7 @@ onMounted(() => {
 .loading-state {
   @extend .flex-center;
   flex-direction: column;
-  padding: $padding-base * 2;
+  padding: $uni-spacing-row-base * 2 $uni-spacing-row-base;
 }
 
 .loading-spinner {
@@ -593,9 +713,9 @@ onMounted(() => {
   height: 60rpx;
   border: 4rpx solid $border-color-light;
   border-top-color: $primary-color;
-  border-radius: $border-radius-round;
+  border-radius: $uni-border-radius-circle;
   animation: spin 1s linear infinite;
-  margin-bottom: $margin-small;
+  margin-bottom: $uni-spacing-col-sm;
 }
 
 @keyframes spin {
@@ -605,364 +725,447 @@ onMounted(() => {
 }
 
 .loading-text {
-  font-size: $font-size-base;
-  color: $text-secondary;
+  font-size: $uni-font-size-base;
+  color: $uni-text-color-grey;
 }
 
 /* 空状态 */
 .empty-state {
   @extend .flex-center;
   flex-direction: column;
-  padding: $padding-base * 3 $padding-base;
+  padding: $uni-spacing-row-base * 3 $uni-spacing-row-base;
 }
 
 .empty-icon {
   font-size: 80rpx;
-  margin-bottom: $margin-base;
+  margin-bottom: $uni-spacing-row-base;
   opacity: 0.3;
 }
 
 .empty-text {
-  font-size: $font-size-medium;
-  color: $text-regular;
-  margin-bottom: $margin-mini;
+  font-size: $uni-font-size-lg;
+  color: $uni-text-color;
+  margin-bottom: $uni-spacing-col-sm;
   font-weight: $font-weight-medium;
 }
 
 .empty-subtext {
-  font-size: $font-size-small;
-  color: $text-secondary;
-  margin-bottom: $margin-base * 2;
+  font-size: $uni-font-size-sm;
+  color: $uni-text-color-grey;
+  margin-bottom: $uni-spacing-row-base * 2;
 }
 
 .btn-create {
   background: $primary-color;
-  color: $background-color-white;
+  color: $uni-bg-color;
   border: none;
-  border-radius: $border-radius;
-  padding: $padding-small $padding-base * 1.5;
-  font-size: $font-size-base;
+  border-radius: $uni-border-radius-lg;
+  padding: $uni-spacing-col-sm $uni-spacing-row-base * 1.5;
+  font-size: $uni-font-size-base;
   font-weight: $font-weight-medium;
 }
 
 .create-text {
-  color: $background-color-white;
+  color: $uni-bg-color;
 }
 
 /* 简历模板列表 */
 .templates-list {
-  padding: $padding-base;
+  padding: $uni-spacing-row-base;
 }
 
 /* 列表视图 */
 .list-view {
   display: flex;
   flex-direction: column;
-  gap: $margin-base;
+  gap: $uni-spacing-row-base;
 }
 
-.templates-item {
-  background: $background-color-white;
-  border-radius: $border-radius;
-  padding: $padding-base;
-  box-shadow: $box-shadow;
-  transition: all $transition-fast;
-  
+.template-item {
+  background: $uni-bg-color;
+  border-radius: $border-radius-large;
+  padding: $card-padding;
+  box-shadow: $card-shadow;
+  transition: all $transition-normal;
+  border: 1rpx solid transparent;
+
   &:active {
-    background: color.adjust($background-color-white, $lightness:  -2%);
-    box-shadow: $box-shadow-dark;
+    background: color.adjust($uni-bg-color, $lightness: -2%);
+    box-shadow: $card-hover-shadow;
+    border-color: $border-color-light;
+    transform: translateY(-2rpx);
   }
 }
 
-.templates-item-header {
+.template-item-header {
   display: flex;
-  align-items: center;
-  margin-bottom: $margin-small;
+  align-items: flex-start;
+  margin-bottom: $uni-spacing-row-base;
 }
 
-.templates-avatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: $border-radius-round;
-  background: linear-gradient(135deg, $primary-color, $secondary-color);
+.template-avatar {
+  width: $avatar-size;
+  height: $avatar-size;
+  border-radius: $avatar-border-radius;
   @extend .flex-center;
-  margin-right: $margin-small;
+  margin-right: $uni-spacing-col-sm;
+  flex-shrink: 0;
+  box-shadow: $box-shadow-light;
 }
 
 .avatar-text {
-  font-size: $font-size-medium;
-  color: $background-color-white;
+  font-size: $uni-font-size-lg;
+  color: $uni-text-color-inverse;
   font-weight: $font-weight-bold;
 }
 
-.templates-main-info {
+.template-main-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: calc($margin-mini / 2);
+  gap: math.div($uni-spacing-col-sm, 2);
+  min-width: 0;
 }
 
-.templates-name {
-  font-size: $font-size-base;
+.template-name {
+  font-size: $uni-font-size-lg;
   color: $text-primary;
   font-weight: $font-weight-medium;
+  line-height: 1.4;
+  @extend .text-truncate;
 }
 
-.templates-title {
-  font-size: $font-size-small;
+.template-description {
+  font-size: $uni-font-size-base;
   color: $text-regular;
+  line-height: 1.4;
+  @extend .text-multi-truncate;
 }
 
-.templates-status {
-  margin-left: $margin-small;
+.template-status {
+  margin-left: $uni-spacing-col-sm;
+  flex-shrink: 0;
 }
 
 .status-badge {
-  padding: calc($padding-mini / 2) $padding-small;
-  border-radius: $border-radius-small;
-  font-size: $font-size-extra-small;
-  
-  &.draft {
-    background: $warning-light;
-    color: $warning-color;
-  }
-  
-  &.published {
-    background: color.adjust($success-color, $lightness:  40%);
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  border-radius: $badge-border-radius;
+  font-size: $uni-font-size-sm;
+  font-weight: $font-weight-medium;
+
+  &.active {
+    background: $success-bg;
     color: $success-color;
+    border: 1rpx solid $success-border;
   }
-  
-  &.archived {
+
+  &.inactive {
     background: $background-color;
-    color: $text-secondary;
+    color: $uni-text-color-grey;
+    border: 1rpx solid $border-color-light;
   }
 }
 
 .status-text {
+  font-size: $uni-font-size-sm;
   font-weight: $font-weight-medium;
 }
 
-.templates-item-content {
-  margin-bottom: $margin-small;
+.template-item-content {
+  margin-bottom: $uni-spacing-row-base;
 }
 
-.templates-meta {
+.template-meta {
   display: flex;
-  gap: $margin-base;
-  margin-bottom: $margin-small;
+  flex-wrap: wrap;
+  gap: $uni-spacing-col-base;
+  margin-bottom: $uni-spacing-col-base;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  gap: calc($margin-mini / 2);
+  gap: math.div($uni-spacing-col-sm, 2);
 }
 
 .meta-icon {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $uni-font-size-sm;
+  color: $uni-text-color-grey;
 }
 
 .meta-text {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
-}
-
-.templates-skills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc($margin-mini / 2);
-}
-
-.skill-tag {
-  background: $background-color;
-  border-radius: $border-radius-small;
-  padding: calc($padding-mini / 2) $padding-mini;
-  font-size: $font-size-extra-small;
+  font-size: $uni-font-size-sm;
   color: $text-regular;
 }
 
-.more-skills {
-  font-size: $font-size-extra-small;
-  color: $text-placeholder;
+.template-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $uni-spacing-col-sm;
 }
 
-.templates-item-actions {
+.feature-tag {
+  background: $background-color;
+  border-radius: $uni-border-radius-sm;
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  font-size: $uni-font-size-sm;
+  color: $text-regular;
+  border: 1rpx solid $border-color-light;
+}
+
+.template-item-actions {
   display: flex;
-  gap: $margin-small;
-  padding-top: $margin-small;
+  gap: $uni-spacing-col-sm;
+  padding-top: $uni-spacing-row-base;
   border-top: 1rpx solid $border-color-extra-light;
 }
 
 .btn-action {
   flex: 1;
-  background: $background-color;
-  border: 2rpx solid $border-color-light;
-  border-radius: $border-radius-small;
-  padding: calc($padding-mini / 2);
-  font-size: $font-size-small;
-  color: $text-regular;
-  
-  &:active {
-    background: color.adjust($background-color, $lightness:  - 5%);
+  border-radius: $uni-border-radius-lg;
+  padding: $uni-spacing-col-base 0;
+  font-size: $uni-font-size-base;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast;
+
+  &.primary {
+    background: $primary-color;
+    color: $uni-bg-color;
+    border: none;
+
+    &:active {
+      background: color.adjust($primary-color, $lightness: -10%);
+      opacity: 0.9;
+    }
+  }
+
+  &.secondary {
+    background: $uni-bg-color;
+    color: $text-regular;
+    border: 1rpx solid $border-color-light;
+
+    &:active {
+      background: $background-color;
+      border-color: $border-color;
+    }
   }
 }
 
 .action-text {
-  font-size: $font-size-extra-small;
+  font-size: $uni-font-size-base;
+  font-weight: $font-weight-medium;
 }
 
 /* 网格视图 */
 .grid-view {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $margin-base;
+  gap: $uni-spacing-row-base;
 }
 
-.templates-card {
-  background: $background-color-white;
-  border-radius: $border-radius;
-  padding: $padding-base;
-  box-shadow: $box-shadow;
-  transition: all $transition-fast;
-  
+.template-card {
+  background: $uni-bg-color;
+  border-radius: $border-radius-large;
+  padding: $card-padding;
+  box-shadow: $card-shadow;
+  transition: all $transition-normal;
+  border: 1rpx solid transparent;
+  display: flex;
+  flex-direction: column;
+  height: 320rpx;
+
   &:active {
-    background: color.adjust($background-color-white, $lightness:  -2%);
-    box-shadow: $box-shadow-dark;
+    background: color.adjust($uni-bg-color, $lightness: -2%);
+    box-shadow: $card-hover-shadow;
+    border-color: $border-color-light;
+    transform: translateY(-2rpx);
   }
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  margin-bottom: $margin-small;
+  margin-bottom: $uni-spacing-col-base;
 }
 
 .card-avatar {
   width: 60rpx;
   height: 60rpx;
-  border-radius: $border-radius-round;
-  background: linear-gradient(135deg, $primary-color, $secondary-color);
+  border-radius: $avatar-border-radius;
   @extend .flex-center;
-  margin-right: $margin-small;
+  margin-right: $uni-spacing-col-sm;
+  flex-shrink: 0;
+  box-shadow: $box-shadow-light;
 }
 
 .card-title {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: calc($margin-mini / 2);
+  gap: math.div($uni-spacing-col-sm, 2);
+  min-width: 0;
 }
 
 .card-name {
-  font-size: $font-size-base;
+  font-size: $uni-font-size-lg;
   color: $text-primary;
   font-weight: $font-weight-medium;
-  @extend .text-ellipsis;
+  @extend .text-truncate;
 }
 
-.card-job {
-  font-size: $font-size-extra-small;
+.card-description {
+  margin-bottom: $uni-spacing-col-base;
+  flex: 1;
+}
+
+.description-text {
+  font-size: $uni-font-size-base;
   color: $text-regular;
-  @extend .text-ellipsis;
+  line-height: 1.4;
+  @extend .text-multi-truncate;
 }
 
-.card-status {
-  margin-bottom: $margin-small;
-}
-
-.card-skills {
+.card-features {
   display: flex;
-  flex-direction: column;
-  gap: calc($margin-mini / 2);
-  margin-bottom: $margin-small;
+  flex-wrap: wrap;
+  gap: $uni-spacing-col-sm;
+  margin-bottom: $uni-spacing-col-base;
 }
 
-.skill-chip {
+.feature-chip {
   background: $background-color;
-  border-radius: $border-radius-small;
-  padding: calc($padding-mini / 2) $padding-mini;
-  font-size: $font-size-extra-small;
+  border-radius: $uni-border-radius-sm;
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  font-size: $uni-font-size-sm;
   color: $text-regular;
-  @extend .text-ellipsis;
+  border: 1rpx solid $border-color-light;
+  @extend .text-truncate;
+  max-width: 120rpx;
 }
 
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: $margin-small;
+  padding-top: $uni-spacing-col-base;
   border-top: 1rpx solid $border-color-extra-light;
+  margin-top: auto;
 }
 
 .update-time {
-  font-size: $font-size-extra-small;
-  color: $text-placeholder;
+  font-size: $uni-font-size-sm;
+  color: $uni-text-color-grey;
 }
 
 .card-actions {
   display: flex;
-  gap: $margin-mini;
+  gap: $uni-spacing-col-sm;
 }
 
 .card-action {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $uni-font-size-base;
+  font-weight: $font-weight-medium;
   cursor: pointer;
-  padding: calc($padding-mini / 2);
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  border-radius: $uni-border-radius-sm;
+  transition: all $transition-fast;
+
+  &.use {
+    color: $primary-color;
+    background: $primary-light;
+
+    &:active {
+      background: color.adjust($primary-light, $lightness: -5%);
+    }
+  }
+
+  &.preview {
+    color: $text-regular;
+    background: $background-color;
+
+    &:active {
+      background: color.adjust($background-color, $lightness: -5%);
+    }
+  }
 }
 
 /* 加载更多 */
 .load-more {
   @extend .flex-center;
-  padding: $padding-base;
-  margin-top: $margin-base;
+  padding: $uni-spacing-row-base $uni-spacing-row-base;
+  margin-top: $uni-spacing-row-base;
 }
 
 .load-more-text {
-  font-size: $font-size-base;
+  font-size: $uni-font-size-base;
   color: $primary-color;
   cursor: pointer;
-  padding: $padding-small $padding-base;
-  border: 2rpx solid $primary-color;
-  border-radius: $border-radius;
+  padding: $uni-spacing-col-sm $uni-spacing-row-base;
+  border: 1rpx solid $primary-color;
+  border-radius: $uni-border-radius-lg;
+  transition: all $transition-fast;
+
+  &:active {
+    background: $primary-light;
+    opacity: 0.8;
+  }
 }
 
 /* 悬浮按钮 */
 .floating-action {
   position: fixed;
   bottom: calc($tabbar-height + 40rpx);
-  right: $padding-base;
+  right: $uni-spacing-row-base;
   z-index: $z-index-dropdown;
 }
 
 .btn-fab {
   width: 100rpx;
   height: 100rpx;
-  border-radius: $border-radius-round;
+  border-radius: $uni-border-radius-circle;
   background: $primary-color;
-  color: $background-color-white;
+  color: $uni-bg-color;
   border: none;
   box-shadow: $box-shadow-dark;
   @extend .flex-center;
   font-size: $font-size-extra-large;
-  font-weight: $font-weight-bold;
+  font-weight: $font-weight-light;
+  transition: all $transition-normal;
+
+  &:active {
+    transform: scale(0.95);
+    box-shadow: $button-active-shadow;
+  }
 }
 
 .fab-text {
-  color: $background-color-white;
+  color: $uni-bg-color;
   font-size: $font-size-extra-large;
   line-height: 1;
+  font-weight: $font-weight-light;
 }
 
 /* 响应式调整 */
-@media (max-width: 375px) {
+@media (max-width: $breakpoint-sm) {
   .grid-view {
     grid-template-columns: 1fr;
   }
-  
+
   .sort-tabs {
-    gap: $margin-base;
+    gap: $uni-spacing-row-base;
   }
+}
+
+/* 使用通用样式类 */
+.flex-center {
+  @extend .flex-center;
+}
+
+.text-truncate {
+  @extend .text-truncate;
+}
+
+.text-multi-truncate {
+  @extend .text-multi-truncate;
 }
 </style>

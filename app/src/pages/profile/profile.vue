@@ -98,7 +98,6 @@
 import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import { getUserInfo } from "@/utils/store";
-import AuthAPI from "@/api/auth";
 import FileAPI from "@/api/file";
 
 const userStore = useUserStore();
@@ -218,6 +217,7 @@ const handleAbout = () => {
   });
 };
 
+
 // 退出登录
 const handleLogout = () => {
   uni.showModal({
@@ -229,8 +229,7 @@ const handleLogout = () => {
           title: "退出成功",
           icon: "success",
         });
-        // 实际应用中这里应该清理用户状态并跳转到登录页
-        AuthAPI.logout();
+        userStore.logout({ callApi: true });
         setTimeout(() => {
           uni.reLaunch({
             url: "/pages/index/index",

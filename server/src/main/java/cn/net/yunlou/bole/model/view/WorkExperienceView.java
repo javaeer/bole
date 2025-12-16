@@ -1,6 +1,9 @@
 package cn.net.yunlou.bole.model.view;
 
 import cn.net.yunlou.bole.common.BaseView;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.*;
 
 /**
@@ -9,4 +12,21 @@ import lombok.*;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class WorkExperienceView extends BaseView {}
+public class WorkExperienceView extends BaseView {
+
+    private String position;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
+
+    private Boolean isCurrent;
+
+    private String description;
+
+    private List<String> achievements;
+
+    private Integer sort;
+}

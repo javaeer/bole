@@ -1,15 +1,20 @@
 import { request } from "@/utils/request";
+import { TemplateQuery, TemplateResult } from "@/types/template";
 
 const TEMPLATE_BASE_URL = "/template";
 
 const TemplateAPI = {
 
-  getTemplateById(id: number) {
-    return request.get({ url: `${TEMPLATE_BASE_URL}/${id}` });
+  getById(id: number) {
+    return request.get(`${TEMPLATE_BASE_URL}/${id}`);
   },
 
   getPreview(code: string) {
-    return request.get({ url: `${TEMPLATE_BASE_URL}/preview/${code}` });
+    return request.get(`${TEMPLATE_BASE_URL}/preview/${code}`);
+  },
+
+  page(params: PageQuery, query?: TemplateQuery) {
+    return request.page<PageResult<TemplateResult>>(`${TEMPLATE_BASE_URL}/page`, params, query);
   },
 
 };

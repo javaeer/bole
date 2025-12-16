@@ -5,17 +5,12 @@ const ROLE_BASE_URL = "/roles";
 const RoleAPI = {
   /** 获取角色分页数据 */
   getPage(queryParams?: RolePageQuery) {
-    return request.get<PageResult<RolePageVO[]>>({
-      url: `${ROLE_BASE_URL}/page`,
-      data: queryParams,
-    });
+    return request.get<PageResult<RolePageVO[]>>( `${ROLE_BASE_URL}/page`, queryParams);
   },
 
   /** 获取角色下拉数据源 */
   getOptions() {
-    return request.get<OptionType[]>({
-      url: `${ROLE_BASE_URL}/options`,
-    });
+    return request.get<OptionType[]>( `${ROLE_BASE_URL}/options`);
   },
   /**
    * 获取角色的菜单ID集合
@@ -24,9 +19,7 @@ const RoleAPI = {
    * @returns 角色的菜单ID集合
    */
   getRoleMenuIds(roleId: number) {
-    return request.get<number[]>({
-      url: `${ROLE_BASE_URL}/${roleId}/menuIds`,
-    });
+    return request.get<number[]>( `${ROLE_BASE_URL}/${roleId}/menuIds`);
   },
 
   /**
@@ -36,10 +29,7 @@ const RoleAPI = {
    * @param data 菜单ID集合
    */
   updateRoleMenus(roleId: number, data: number[]) {
-    return request.put({
-      url: `${ROLE_BASE_URL}/${roleId}/menus`,
-      data: data,
-    });
+    return request.put( `${ROLE_BASE_URL}/${roleId}/menus`, data);
   },
 
   /**
@@ -49,17 +39,12 @@ const RoleAPI = {
    * @returns 角色表单数据
    */
   getFormData(id: number) {
-    return request.get<RoleForm>({
-      url: `${ROLE_BASE_URL}/${id}/form`,
-    });
+    return request.get<RoleForm>( `${ROLE_BASE_URL}/${id}/form`);
   },
 
   /** 添加角色 */
   add(data: RoleForm) {
-    return request.post({
-      url: `${ROLE_BASE_URL}`,
-      data: data,
-    });
+    return request.post( `${ROLE_BASE_URL}`, data);
   },
 
   /**
@@ -69,10 +54,7 @@ const RoleAPI = {
    * @param data 角色表单数据
    */
   update(id: number, data: RoleForm) {
-    return request.put({
-      url: `${ROLE_BASE_URL}/${id}`,
-      data: data,
-    });
+    return request.put( `${ROLE_BASE_URL}/${id}`, data);
   },
 
   /**
@@ -81,9 +63,7 @@ const RoleAPI = {
    * @param ids 角色ID字符串，多个以英文逗号(,)分割
    */
   deleteByIds(ids: string) {
-    return request.delete({
-      url: `${ROLE_BASE_URL}/${ids}`,
-    });
+    return request.delete( `${ROLE_BASE_URL}/${ids}`);
   },
 };
 

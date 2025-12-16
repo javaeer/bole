@@ -1,7 +1,5 @@
 import { request } from "@/utils/request";
 import { LoginForm, LoginResult, RegisterForm, ResetPasswordForm, TokenResult } from "@/types/user";
-import { useUserStore } from "@/stores/user";
-import { clearUserAll, setToken } from "@/utils/store";
 
 const AuthAPI = {
   /**
@@ -9,96 +7,39 @@ const AuthAPI = {
    */
   async login(data: LoginForm): Promise<LoginResult> {
     console.log("登录请求数据:", JSON.stringify(data));
-    const response = await request.post<LoginResult>("/auth/login", data, { skipAuth: true });
-    setToken(response);
-    return response;
+    return await request.post<LoginResult>("/auth/login", data, { skipAuth: true });
   },
 
   /**
    * 微信登录接口
    */
   async wechatLogin(code: string): Promise<LoginResult> {
-    const response = await request.post<LoginResult>("/auth/wechat-login", { code }, { skipAuth: true });
-    setToken(response);
-    return response;
+    return await request.post<LoginResult>("/auth/wechat-login", { code }, { skipAuth: true });
   },
 
   /**
    * 登出接口
    */
   async logout(): Promise<void> {
-    try {
-      await request.post("/auth/logout", {});
-    } catch (error) {
-      console.warn("登出请求失败:", error);
-    } finally {
-      clearUserAll();
-    }
+    await request.post("/auth/logout", {});
   },
 
   /**
    * 刷新令牌
    */
-  async refreshToken(): Promise<string> {
-    const userStore = useUserStore();
-    if (userStore.isRefreshing) {
-      // 如果已经在刷新，返回一个等待的 Promise
-      return new Promise((resolve) => {
-        userStore.addRefreshSubscriber(resolve);
-      });
-    }
-
-    userStore.setRefreshing(true);
-
-    try {
-      const refreshToken = userStore.getRefreshToken();
-      if (!refreshToken) {
-        throw new Error("No refresh token available");
-      }
-
-      // 调用刷新令牌接口
-      const response = await request.post<TokenResult>(
-        "/auth/refresh",
-        { refreshToken },
-        { skipAuth: true },
-      );
-
-      //更新令牌数据
-      setToken(response);
-
-      // 通知所有等待的请求
-      userStore.onRefreshed(response.accessToken);
-      userStore.setRefreshing(false);
-
-      return response.accessToken;
-    } catch (error) {
-      userStore.setRefreshing(false);
-      userStore.refreshSubscribers = []; // 清空等待队列
-      throw error;
-    }
-  },
-
-  /**
-   * 获取刷新令牌状态
-   */
-  getRefreshStatus() {
-    const userStore = useUserStore();
-    return {
-      isRefreshing: userStore.isRefreshing,
-      refreshSubscribers: userStore.refreshSubscribers.length,
-    };
+  async refreshToken(refreshToken: string): Promise<TokenResult> {
+    return await request.post<TokenResult>(
+      "/auth/refresh",
+      { refreshToken },
+      { skipAuth: true },
+    );
   },
 
   /**
    * 注册接口
    */
   async register(data: RegisterForm): Promise<LoginResult> {
-    const response = await request.post<LoginResult>("/auth/register", data, { skipAuth: true });
-
-    // 使用设置用户数据
-    setToken(response);
-
-    return response;
+    return await request.post<LoginResult>("/auth/register", data, { skipAuth: true });
   },
 
   /**

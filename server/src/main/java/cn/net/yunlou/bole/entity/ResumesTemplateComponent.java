@@ -23,7 +23,11 @@ public class ResumesTemplateComponent extends BaseEntity {
 
     private String name;
 
-    /** 对应预定义组件的名称 */
+
+    /**
+     * 对应预定义组件的名称
+     * @see cn.net.yunlou.bole.common.constant.TemplateComponentType
+     */
     private String component;
 
     /** 传递给组件的属性，根据正式数据，对其中的默认值进行替换 */

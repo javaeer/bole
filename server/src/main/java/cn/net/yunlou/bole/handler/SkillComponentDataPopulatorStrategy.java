@@ -2,9 +2,9 @@ package cn.net.yunlou.bole.handler;
 
 import cn.net.yunlou.bole.common.constant.TemplateComponentType;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
-import cn.net.yunlou.bole.entity.JobIntention;
-import cn.net.yunlou.bole.model.view.JobIntentionView;
-import cn.net.yunlou.bole.service.JobIntentionService;
+import cn.net.yunlou.bole.entity.Skill;
+import cn.net.yunlou.bole.model.view.SkillView;
+import cn.net.yunlou.bole.service.SkillService;
 import com.google.common.collect.Lists;
 import java.util.HashMap;
 import java.util.List;
@@ -13,40 +13,41 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * FileName: JobIntentionComponentDataPopulatorStrategy Description: Created By laughtiger Created
- * At 2025/12/14 02:50 Modified By Modified At
+ * FileName: SkillComponentDataPopulatorStrategy Description: Created By laughtiger Created At
+ * 2025/12/14 14:51 Modified By Modified At
  */
 @Component
 @RequiredArgsConstructor
-public class JobIntentionComponentDataPopulatorStrategy implements IComponentDataPopulatorStrategy {
+public class SkillComponentDataPopulatorStrategy implements IComponentDataPopulatorStrategy {
 
-    private final JobIntentionService jobIntentionService;
+    private final SkillService skillService;
 
     @Override
     public Map<String, Object> populate(Long userId, Map<String, Object> templateProps) {
-        List<JobIntentionView> jobIntentions =
-                jobIntentionService.listView(JobIntention.builder().userId(userId).build());
+        List<SkillView> skillViews = skillService.listView(Skill.builder().userId(userId).build());
 
         Map<String, Object> props = new HashMap<>(templateProps);
 
-        if (!jobIntentions.isEmpty()) {
+        if (!skillViews.isEmpty()) {
+
             List<Map<String, Object>> realProps = Lists.newArrayList();
-            for (JobIntentionView view : jobIntentions) {
+
+            for (SkillView view : skillViews) {
+
                 Map<String, Object> map = BeanUtils.toMap(view);
                 realProps.add(map);
             }
 
-            Map<String, Object> map = Map.of("intentions", realProps);
+            Map<String, Object> map = Map.of("skills", realProps);
 
             // 合并数据：模板props + 用户数据
             props.putAll(map);
         }
-
         return props;
     }
 
     @Override
     public boolean supports(TemplateComponentType componentType) {
-        return TemplateComponentType.JOB_INTENTION == componentType;
+        return TemplateComponentType.SKILLS == componentType;
     }
 }

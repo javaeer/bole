@@ -10,4 +10,13 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class JobIntentionView extends BaseView {}
+public class JobIntentionView extends BaseView {
+
+    private String position;
+
+    private String city;
+
+    private String salary;
+
+    private String jobType;
+}

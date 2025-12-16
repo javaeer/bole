@@ -4,7 +4,7 @@
     <view class="editor-header">
       <view class="header-title">
         <h2 class="title">{{ isEditMode ? "编辑模板" : "创建模板" }}</h2>
-        <text class="subtitle">{{ isEditMode ? "修改模板配置" : "创建新的文档模板" }}</text>
+        <text class="subtitle">{{ isEditMode ? "修改模板配置" : "创建新的模板" }}</text>
       </view>
     </view>
 
@@ -24,25 +24,24 @@
             <view v-if="activeTab === tab.id" class="tab-indicator"></view>
           </view>
         </view>
-
         <!-- 配置内容区域 -->
         <scroll-view
           class="config-content"
-          scroll-y
+          scroll-y="true"
           :scroll-top="scrollTop"
           @scroll="onScroll"
         >
           <!-- 基础配置 -->
           <view v-if="activeTab === 'basic'" class="config-section">
-            <view class="section-header">
-              <text class="section-title">基础信息</text>
-              <text class="section-desc">设置模板的基本属性和分类</text>
+            <view class="component-header">
+              <text class="component-title">基础信息</text>
+              <text class="component-desc">设置模板的基本属性和分类</text>
             </view>
 
             <view class="form-group">
               <text class="form-label required">模板编码</text>
               <input
-                v-model="config.templateCode"
+                v-model="template.code"
                 :disabled="isEditMode"
                 placeholder="英文、数字、下划线，如: resume_tech"
                 :class="['form-input', { disabled: isEditMode }]"
@@ -55,7 +54,7 @@
             <view class="form-group">
               <text class="form-label required">模板名称</text>
               <input
-                v-model="config.templateName"
+                v-model="template.name"
                 placeholder="如: 科技风格简历"
                 class="form-input"
                 @focus="onInputFocus"
@@ -63,42 +62,10 @@
               />
             </view>
 
-            <view class="form-row">
-              <view class="form-group half">
-                <text class="form-label">分类</text>
-                <picker
-                  :value="categoryIndex"
-                  :range="categoryOptions"
-                  @change="onCategoryChange"
-                  class="form-picker"
-                >
-                  <view class="picker-display flex-between">
-                    <text>{{ config.category || "请选择分类" }}</text>
-                    <text class="picker-arrow">▼</text>
-                  </view>
-                </picker>
-              </view>
-
-              <view class="form-group half">
-                <text class="form-label">风格</text>
-                <picker
-                  :value="styleIndex"
-                  :range="styleOptions"
-                  @change="onStyleChange"
-                  class="form-picker"
-                >
-                  <view class="picker-display flex-between">
-                    <text>{{ config.style || "请选择风格" }}</text>
-                    <text class="picker-arrow">▼</text>
-                  </view>
-                </picker>
-              </view>
-            </view>
-
             <view class="form-group">
               <text class="form-label">描述</text>
               <textarea
-                v-model="config.description"
+                v-model="template.description"
                 placeholder="请输入模板描述..."
                 class="form-textarea"
                 maxlength="200"
@@ -107,26 +74,26 @@
               />
               <view class="textarea-footer flex-between">
                 <text class="textarea-tip">简要描述模板用途和特点</text>
-                <text class="textarea-count">{{ config.description.length }}/200</text>
+                <text class="textarea-count">{{ template.description?.length || 0 }}/200</text>
               </view>
             </view>
           </view>
 
           <!-- 布局配置 -->
           <view v-if="activeTab === 'layout'" class="config-section">
-            <view class="section-header">
-              <text class="section-title">布局设置</text>
-              <text class="section-desc">调整页面结构和区块排列</text>
+            <view class="component-header">
+              <text class="component-title">布局设置</text>
+              <text class="component-desc">调整页面结构和区块排列</text>
             </view>
 
             <view class="form-group">
               <text class="form-label">布局类型</text>
               <view class="layout-types">
                 <view
-                  v-for="type in layoutTypes"
+                  v-for="type in LAYOUT_TYPES"
                   :key="type.value"
-                  :class="['layout-type-item', { active: config.layoutConfig.type === type.value }]"
-                  @click="config.layoutConfig.type = type.value"
+                  :class="['layout-type-item', { active: template.globalLayout.type === type.value }]"
+                  @click="template.globalLayout.type = type.value"
                 >
                   <view :class="['layout-icon', type.icon]"></view>
                   <text class="layout-name">{{ type.label }}</text>
@@ -135,7 +102,7 @@
             </view>
 
             <!-- 双栏布局配置 -->
-            <view v-if="config.layoutConfig.type === 'two-column'" class="layout-config">
+            <view v-if="template.globalLayout.type === 'two-column'" class="layout-config">
               <view class="layout-preview-container">
                 <text class="preview-title">布局预览</text>
                 <view class="two-column-preview">
@@ -156,9 +123,9 @@
 
               <view class="width-controls">
                 <view class="control-group">
-                  <text class="control-label">左侧宽度: {{ config.layoutConfig.columns.left.width }}%</text>
+                  <text class="control-label">左侧宽度: {{ template.globalLayout.columns.left }}%</text>
                   <slider
-                    :value="config.layoutConfig.columns.left.width"
+                    :value="template.globalLayout.columns.left"
                     min="20"
                     max="80"
                     step="5"
@@ -170,9 +137,9 @@
                   />
                 </view>
                 <view class="control-group">
-                  <text class="control-label">右侧宽度: {{ config.layoutConfig.columns.right.width }}%</text>
+                  <text class="control-label">右侧宽度: {{ template.globalLayout.columns.right }}%</text>
                   <slider
-                    :value="config.layoutConfig.columns.right.width"
+                    :value="template.globalLayout.columns.right"
                     min="20"
                     max="80"
                     step="5"
@@ -187,54 +154,91 @@
             </view>
 
             <!-- 区块管理 -->
-            <view class="section-management">
-              <view class="section-header">
-                <text class="section-title">区块管理</text>
-                <text class="section-desc">拖拽调整顺序，点击编辑</text>
+            <view class="component-management">
+              <view class="component-header">
+                <text class="component-title">区块管理</text>
+                <text class="component-desc">选择区块后使用上下按钮调整顺序</text>
               </view>
 
-              <view class="section-list">
+              <view class="component-list">
                 <view
-                  v-for="(section, index) in config.layoutConfig.sections"
-                  :key="index"
-                  class="section-item"
-                  @touchstart="onSectionTouchStart(index)"
-                  @touchmove="onSectionTouchMove"
-                  @touchend="onSectionTouchEnd"
-                  :style="{ transform: sectionTransform(index) }"
+                  v-for="(component, index) in template.components"
+                  :key="component.id || index"
+                  :class="['component-item', { 'selected': selectedIndex === index }]"
+                  @click="selectComponent(index)"
                 >
-                  <view class="section-item-main">
-                    <view class="drag-handle">
-                      <text class="drag-icon">⋮⋮</text>
+                  <view class="component-item-main">
+                    <view class="component-index">
+                      <text class="index-text">{{ index + 1 }}</text>
                     </view>
-                    <input
-                      v-model="section.name"
-                      placeholder="区块名称"
-                      class="section-input"
-                      @focus="onSectionInputFocus(index)"
-                    />
-                    <picker
-                      :value="getFragmentIndex(section.fragment)"
-                      :range="fragmentOptions"
-                      @change="(e: any) => onFragmentChange(index, e)"
-                      class="fragment-picker"
-                    >
-                      <view class="picker-display flex-between">
-                        <text>{{ getFragmentLabel(section.fragment) || "选择片段" }}</text>
-                        <text class="picker-arrow">▼</text>
-                      </view>
-                    </picker>
-                    <button
-                      @click.stop="removeSection(index)"
-                      class="section-remove"
-                    >
-                      <text class="remove-icon">✕</text>
-                    </button>
+                    <view class="component-info">
+                      <input
+                        v-model="component.name"
+                        placeholder="区块名称"
+                        class="component-input"
+                        @focus="onSectionInputFocus(index)"
+                      />
+                      <picker
+                        :value="getComponentIndex(component.component)"
+                        :range="componentOptionLabels"
+                        @change="(e) => onComponentChange(index, e)"
+                        class="component-picker"
+                      >
+                        <view class="picker-display flex-between">
+                          <text>{{ getComponentName(component.component) || "选择片段" }}</text>
+                          <text class="picker-arrow">▼</text>
+                        </view>
+                      </picker>
+                    </view>
+                    <view class="component-actions">
+                      <button
+                        @click.stop="moveComponentUp(index)"
+                        :class="['action-btn move-up-btn', { disabled: index === 0 }]"
+                        :disabled="index === 0"
+                      >
+                        <text class="action-icon">↑</text>
+                      </button>
+                      <button
+                        @click.stop="moveComponentDown(index)"
+                        :class="['action-btn move-down-btn', { disabled: index === template.components.length - 1 }]"
+                        :disabled="index === template.components.length - 1"
+                      >
+                        <text class="action-icon">↓</text>
+                      </button>
+                      <button
+                        @click.stop="removeSection(index)"
+                        class="action-btn remove-btn"
+                      >
+                        <text class="action-icon">×</text>
+                      </button>
+                    </view>
                   </view>
                 </view>
               </view>
 
-              <button @click="addSection" class="add-section-btn">
+              <view class="sort-controls" v-if="selectedIndex !== -1 && template.components.length > 0">
+                <text class="sort-hint">当前选中: {{ template.components[selectedIndex]?.name }}</text>
+                <view class="sort-buttons">
+                  <button
+                    @click="moveSelectedToTop"
+                    :class="['sort-btn', { disabled: selectedIndex === 0 }]"
+                    :disabled="selectedIndex === 0"
+                  >
+                    <text class="sort-icon">⏫</text>
+                    移到顶部
+                  </button>
+                  <button
+                    @click="moveSelectedToBottom"
+                    :class="['sort-btn', { disabled: selectedIndex === template.components.length - 1 }]"
+                    :disabled="selectedIndex === template.components.length - 1"
+                  >
+                    <text class="sort-icon">⏬</text>
+                    移到底部
+                  </button>
+                </view>
+              </view>
+
+              <button @click="addSection" class="add-component-btn">
                 <text class="add-icon">+</text>
                 添加区块
               </button>
@@ -243,9 +247,9 @@
 
           <!-- 样式配置 -->
           <view v-if="activeTab === 'style'" class="config-section">
-            <view class="section-header">
-              <text class="section-title">样式设置</text>
-              <text class="section-desc">自定义颜色、字体和间距</text>
+            <view class="component-header">
+              <text class="component-title">样式设置</text>
+              <text class="component-desc">自定义颜色、字体和间距</text>
             </view>
 
             <!-- 颜色配置 -->
@@ -262,15 +266,18 @@
                     <text class="color-desc">用于标题和重要元素</text>
                   </view>
                   <view class="color-controls">
+                    <!-- 修复：使用正确的 v-model 和事件处理 -->
                     <input
                       type="text"
-                      v-model="config.styleConfig.theme.primary_color"
+                      :value="template.globalStyle.primaryColor"
+                      @input="onColorInput($event, 'primaryColor')"
                       class="color-input"
-                      @input="validateColor"
+                      placeholder="#d4af37"
                     />
                     <view
                       class="color-preview"
-                      :style="{ backgroundColor: config.styleConfig.theme.primary_color }"
+                      :style="{ backgroundColor: template.globalStyle.primaryColor }"
+                      @click="showColorPicker('primaryColor')"
                     />
                   </view>
                 </view>
@@ -283,13 +290,15 @@
                   <view class="color-controls">
                     <input
                       type="text"
-                      v-model="config.styleConfig.theme.secondary_color"
+                      :value="template.globalStyle.secondaryColor"
+                      @input="onColorInput($event, 'secondaryColor')"
                       class="color-input"
-                      @input="validateColor"
+                      placeholder="#f9f3e3"
                     />
                     <view
                       class="color-preview"
-                      :style="{ backgroundColor: config.styleConfig.theme.secondary_color }"
+                      :style="{ backgroundColor: template.globalStyle.secondaryColor }"
+                      @click="showColorPicker('secondaryColor')"
                     />
                   </view>
                 </view>
@@ -302,15 +311,31 @@
                   <view class="color-controls">
                     <input
                       type="text"
-                      v-model="config.styleConfig.theme.accent_color"
+                      :value="template.globalStyle.accentColor"
+                      @input="onColorInput($event, 'accentColor')"
                       class="color-input"
-                      @input="validateColor"
+                      placeholder="#f7ef8a"
                     />
                     <view
                       class="color-preview"
-                      :style="{ backgroundColor: config.styleConfig.theme.accent_color }"
+                      :style="{ backgroundColor: template.globalStyle.accentColor }"
+                      @click="showColorPicker('accentColor')"
                     />
                   </view>
+                </view>
+              </view>
+
+              <!-- 预定义颜色选择 -->
+              <view class="color-presets" v-if="showColorPresets">
+                <view class="presets-title">常用颜色</view>
+                <view class="presets-grid">
+                  <view
+                    v-for="color in colorPresets"
+                    :key="color"
+                    class="preset-color"
+                    :style="{ backgroundColor: color }"
+                    @click="setColor(currentColorField, color)"
+                  />
                 </view>
               </view>
             </view>
@@ -324,7 +349,7 @@
               <view class="form-group">
                 <text class="form-label">字体家族</text>
                 <input
-                  v-model="config.styleConfig.theme.font_family"
+                  v-model="template.globalStyle.fontFamily"
                   placeholder="如: 'Microsoft YaHei', sans-serif"
                   class="form-input"
                 />
@@ -336,7 +361,7 @@
                   <view class="size-controls">
                     <input
                       type="number"
-                      v-model="config.styleConfig.font_sizes.h1"
+                      v-model="template.globalStyle.fontSizes.h1"
                       class="size-input"
                       min="12"
                       max="72"
@@ -344,7 +369,7 @@
                     <text class="size-unit">px</text>
                     <view class="size-slider">
                       <slider
-                        :value="config.styleConfig.font_sizes.h1"
+                        :value="template.globalStyle.fontSizes.h1"
                         min="12"
                         max="72"
                         step="2"
@@ -362,7 +387,7 @@
                   <view class="size-controls">
                     <input
                       type="number"
-                      v-model="config.styleConfig.font_sizes.body"
+                      v-model="template.globalStyle.fontSizes.body"
                       class="size-input"
                       min="10"
                       max="36"
@@ -370,7 +395,7 @@
                     <text class="size-unit">px</text>
                     <view class="size-slider">
                       <slider
-                        :value="config.styleConfig.font_sizes.body"
+                        :value="template.globalStyle.fontSizes.body"
                         min="10"
                         max="36"
                         step="1"
@@ -399,7 +424,7 @@
                   </view>
                   <input
                     type="text"
-                    v-model="config.styleConfig.spacing.section_margin"
+                    v-model="template.globalStyle.spacing.sectionMargin"
                     placeholder="如: 20px"
                     class="spacing-input"
                   />
@@ -412,7 +437,7 @@
                   </view>
                   <input
                     type="text"
-                    v-model="config.styleConfig.spacing.padding"
+                    v-model="template.globalStyle.spacing.padding"
                     placeholder="如: 15px"
                     class="spacing-input"
                   />
@@ -425,7 +450,7 @@
                   </view>
                   <input
                     type="text"
-                    v-model="config.styleConfig.spacing.line_height"
+                    v-model="template.globalStyle.spacing.lineHeight"
                     placeholder="如: 1.5"
                     class="spacing-input"
                   />
@@ -468,38 +493,30 @@
         </view>
 
         <view class="preview-content" :class="previewDevice">
-          <view class="preview-container">
-            <web-view
-              v-if="previewUrl"
-              :src="previewUrl"
-              class="preview-webview"
-            ></web-view>
-            <view v-else class="preview-placeholder flex-center">
-              <view class="placeholder-content">
-                <text class="placeholder-icon">📄</text>
-                <text class="placeholder-title">模板预览</text>
-                <text class="placeholder-desc">配置完成后点击预览按钮查看效果</text>
-                <button @click="previewTemplate" class="placeholder-btn">
-                  开始预览
-                </button>
-              </view>
-            </view>
-          </view>
+          <!-- 实时预览组件 -->
+          <template-preview
+            :key="previewKey"
+            :components="template.components"
+            :layout="template.globalLayout"
+            :global-style="template.globalStyle"
+            :device="previewDevice"
+            class="template-preview-container"
+          />
 
           <view class="preview-info">
             <text class="info-title">模板信息</text>
             <view class="info-items">
               <view class="info-item">
                 <text class="info-label">名称:</text>
-                <text class="info-value">{{ config.templateName || "未命名" }}</text>
-              </view>
-              <view class="info-item">
-                <text class="info-label">分类:</text>
-                <text class="info-value">{{ config.category || "未选择" }}</text>
+                <text class="info-value">{{ template.name || "未命名" }}</text>
               </view>
               <view class="info-item">
                 <text class="info-label">布局:</text>
                 <text class="info-value">{{ layoutTypeLabel }}</text>
+              </view>
+              <view class="info-item">
+                <text class="info-label">区块数:</text>
+                <text class="info-value">{{ template.components.length }}</text>
               </view>
             </view>
           </view>
@@ -524,7 +541,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import { COMPONENT_LIBRARY, LAYOUT_TYPES } from "@/constants/resumes-components";
+import TemplatePreview from "@/components/template/TemplatePreview.vue";
+import { ConfigTab, TemplateResult } from "@/types/template";
+import { TemplateComponentResult } from "@/types/template-component";
 
 // 样式变量导入
 const primaryColor = "#d4af37";
@@ -539,120 +560,87 @@ const textSecondary = "#909399";
 const backgroundColor = "#f8f8f8";
 const backgroundColorWhite = "#ffffff";
 
-// 接口定义
-interface ConfigTab {
-  id: string;
-  label: string;
-  icon?: string;
-}
-
-interface LayoutColumn {
-  width: number;
-}
-
-interface LayoutConfig {
-  type: string;
-  columns: {
-    left: LayoutColumn
-    right: LayoutColumn
-  };
-  sections: Array<{
-    name: string
-    fragment: string
-  }>;
-}
-
-interface StyleConfig {
-  theme: {
-    primary_color: string
-    secondary_color: string
-    accent_color: string
-    font_family: string
-  };
-  font_sizes: {
-    h1: number
-    body: number
-  };
-  spacing: {
-    section_margin: string
-    padding: string
-    line_height: string
-  };
-}
-
-interface TemplateConfig {
-  templateCode: string;
-  templateName: string;
-  category: string;
-  style: string;
-  description: string;
-  layoutConfig: LayoutConfig;
-  styleConfig: StyleConfig;
-}
-
-interface Fragment {
-  code: string;
-  name: string;
-  icon?: string;
-}
-
-interface DeviceOption {
-  value: string;
-  name: string;
-  icon: string;
-}
-
-interface LayoutType {
-  value: string;
-  label: string;
-  icon: string;
-}
-
 // 响应式数据
 const isEditMode = ref(false);
 const activeTab = ref("basic");
 const previewDevice = ref("desktop");
-const previewUrl = ref("");
+const previewKey = ref(0);
 const categoryIndex = ref(0);
 const styleIndex = ref(0);
 const layoutTypeIndex = ref(0);
 const scrollTop = ref(0);
 const draggingSection = ref<number | null>(null);
+const showColorPresets = ref(false);
+const currentColorField = ref("primaryColor");
+const colorPresets = ref([
+  "#d4af37", // 主色调
+  "#f9f3e3", // 辅色调
+  "#f7ef8a", // 强调色
+  "#67c23a", // 成功色
+  "#e6a23c", // 警告色
+  "#f56c6c", // 危险色
+  "#909399", // 信息色
+  "#409eff", // 蓝色
+  "#303133", // 主要文字色
+  "#606266", // 常规文字色
+  "#909399", // 次要文字色
+  "#c0c4cc", // 占位文字色
+  "#dcdfe6", // 边框色
+  "#e4e7ed", // 边框色2
+  "#ebeef5", // 边框色3
+  "#f2f6fc",  // 边框色4
+]);
+
+// 选择排序相关
+const selectedIndex = ref(-1);
+
+// 拖拽相关数据
 const dragStartY = ref(0);
 const dragOffsetY = ref(0);
 
 // 配置数据
-const config = reactive<TemplateConfig>({
-  templateCode: "",
-  templateName: "",
-  category: "resume",
-  style: "classic",
+const template = reactive<TemplateResult>({
+  id: 0,
+  code: "",
+  name: "",
   description: "",
-  layoutConfig: {
+  previewImage: "",
+  isActive: true,
+  version: "1.0.0",
+  globalLayout: {
     type: "single-column",
     columns: {
-      left: { width: 40 },
-      right: { width: 60 },
+      left: 40,
+      right: 60,
     },
-    sections: [],
+    components: [],
+    orientation: "portrait",
+    componentOrder: [],
   },
-  styleConfig: {
-    theme: {
-      primary_color: "#d4af37",
-      secondary_color: "#f9f3e3",
-      accent_color: "#f7ef8a",
-      font_family: "'Microsoft YaHei', 'PingFang SC', sans-serif",
+  globalStyle: {
+    theme: "light",
+    fontSizes: {
+      h1: "24",
+      body: "14",
     },
-    font_sizes: {
-      h1: 24,
-      body: 14,
-    },
+    fontFamily: "'Microsoft YaHei', 'PingFang SC', sans-serif",
+    headerColor: "",
+    primaryColor: "#d4af37",
+    accentColor: "#f7ef8a",
+    secondaryColor: "#f9f3e3",
+    backgroundColor: "",
     spacing: {
-      section_margin: "20px",
+      sectionMargin: "20px",
       padding: "15px",
-      line_height: "1.5",
+      lineHeight: "1.5",
     },
   },
+  components: [],
+  price: 0,
+  users: 0,
+  tags: [],
+  category: "",
+  rating: 0,
 });
 
 // 选项数据
@@ -662,54 +650,27 @@ const configTabs: ConfigTab[] = [
   { id: "style", label: "样式配置", icon: "🎨" },
 ];
 
-const categoryOptions = ["简历", "报告", "邀请函", "证书", "其他"];
-const styleOptions = ["经典", "国风", "科技", "时尚", "简约", "现代", "创意"];
-
-const layoutTypes: LayoutType[] = [
-  { value: "single-column", label: "单栏", icon: "single" },
-  { value: "two-column", label: "双栏", icon: "double" },
-  { value: "three-column", label: "三栏", icon: "triple" },
-  { value: "creative", label: "创意", icon: "creative" },
-];
-
 const deviceOptions: DeviceOption[] = [
   { value: "desktop", name: "桌面", icon: "🖥️" },
   { value: "tablet", name: "平板", icon: "📱" },
   { value: "mobile", name: "手机", icon: "📲" },
 ];
 
-// 片段数据
-const availableFragments: Fragment[] = [
-  { code: "header", name: "页眉", icon: "📄" },
-  { code: "personal_info", name: "个人信息", icon: "👤" },
-  { code: "education", name: "教育背景", icon: "🎓" },
-  { code: "work_experience", name: "工作经历", icon: "💼" },
-  { code: "skills", name: "技能", icon: "⚡" },
-  { code: "projects", name: "项目经验", icon: "📋" },
-  { code: "footer", name: "页脚", icon: "📝" },
-];
+const availableComponents = ref(COMPONENT_LIBRARY);
 
 // 计算属性
-const fragmentOptions = computed(() => availableFragments.map(f => f.name));
+const componentOptionLabels = computed(() => availableComponents.value.map(f => f.name));
 const layoutTypeLabel = computed(() => {
-  const type = layoutTypes.find(t => t.value === config.layoutConfig.type);
+  const type = LAYOUT_TYPES.find(t => t.value === template.globalLayout.type);
   return type ? type.label : "单栏";
 });
 
 // 方法
-const previewTemplate = () => {
-  if (!config.templateName) {
-    uni.showToast({
-      title: "请先填写模板名称",
-      icon: "none",
-    });
-    return;
-  }
-
-  previewUrl.value = TemplateAPI.getPreview(config.templateCode);
+const refreshPreview = () => {
+  previewKey.value += 1;
   uni.showToast({
-    title: "正在生成预览...",
-    icon: "loading",
+    title: "预览已刷新",
+    icon: "success",
   });
 };
 
@@ -779,7 +740,7 @@ const cancel = () => {
 };
 
 const validateRequiredFields = (): boolean => {
-  if (!config.templateCode) {
+  if (!template.code) {
     uni.showToast({
       title: "请填写模板编码",
       icon: "none",
@@ -787,7 +748,7 @@ const validateRequiredFields = (): boolean => {
     return false;
   }
 
-  if (!config.templateName) {
+  if (!template.name) {
     uni.showToast({
       title: "请填写模板名称",
       icon: "none",
@@ -798,53 +759,130 @@ const validateRequiredFields = (): boolean => {
   return true;
 };
 
-const refreshPreview = () => {
-  if (!previewUrl.value) {
-    previewTemplate();
-  } else {
-    previewUrl.value = `${previewUrl.value}&refresh=${Date.now()}`;
-    uni.showToast({
-      title: "刷新成功",
-      icon: "success",
-    });
-  }
-};
-
-const onCategoryChange = (e: any) => {
-  const index = e.detail.value;
-  categoryIndex.value = index;
-  config.category = ["resume", "report", "invitation", "certificate", "other"][index];
-};
-
-const onStyleChange = (e: any) => {
-  const index = e.detail.value;
-  styleIndex.value = index;
-  config.style = ["classic", "chinese", "tech", "fashion", "minimal", "modern", "creative"][index];
-};
-
 const getColumnWidth = (side: "left" | "right") => {
-  return `${config.layoutConfig.columns[side].width}%`;
+  return `${template.globalLayout.columns[side]}%`;
 };
 
 const onColumnWidthChanging = (e: any) => {
   const value = e.detail.value;
   const side = e.currentTarget.dataset.side;
   if (side === "left") {
-    config.layoutConfig.columns.left.width = value;
-    config.layoutConfig.columns.right.width = 100 - value;
+    template.globalLayout.columns.left = value;
+    template.globalLayout.columns.right = 100 - value;
   } else {
-    config.layoutConfig.columns.right.width = value;
-    config.layoutConfig.columns.left.width = 100 - value;
+    template.globalLayout.columns.right = value;
+    template.globalLayout.columns.left = 100 - value;
   }
+  previewKey.value += 1;
 };
 
-const addSection = () => {
-  config.layoutConfig.sections.push({
-    name: `区块${config.layoutConfig.sections.length + 1}`,
-    fragment: "",
+// 选择组件
+const selectComponent = (index: number) => {
+  selectedIndex.value = index;
+  console.log("选择组件:", index, template.components[index]?.name);
+};
+
+// 上移组件
+const moveComponentUp = (index: number) => {
+  if (index <= 0) return;
+
+  const components = [...template.components];
+  const temp = components[index];
+  components[index] = components[index - 1];
+  components[index - 1] = temp;
+
+  template.components = components;
+  selectedIndex.value = index - 1;
+  previewKey.value += 1;
+
+  uni.showToast({
+    title: "已上移",
+    icon: "success",
+    duration: 800,
   });
 };
 
+// 下移组件
+const moveComponentDown = (index: number) => {
+  if (index >= template.components.length - 1) return;
+
+  const components = [...template.components];
+  const temp = components[index];
+  components[index] = components[index + 1];
+  components[index + 1] = temp;
+
+  template.components = components;
+  selectedIndex.value = index + 1;
+  previewKey.value += 1;
+
+  uni.showToast({
+    title: "已下移",
+    icon: "success",
+    duration: 800,
+  });
+};
+
+// 移到顶部
+const moveSelectedToTop = () => {
+  if (selectedIndex.value <= 0) return;
+
+  const components = [...template.components];
+  const selected = components[selectedIndex.value];
+  components.splice(selectedIndex.value, 1);
+  components.unshift(selected);
+
+  template.components = components;
+  selectedIndex.value = 0;
+  previewKey.value += 1;
+
+  uni.showToast({
+    title: "已移到顶部",
+    icon: "success",
+    duration: 1000,
+  });
+};
+
+// 移到底部
+const moveSelectedToBottom = () => {
+  if (selectedIndex.value >= template.components.length - 1) return;
+
+  const components = [...template.components];
+  const selected = components[selectedIndex.value];
+  components.splice(selectedIndex.value, 1);
+  components.push(selected);
+
+  template.components = components;
+  selectedIndex.value = components.length - 1;
+  previewKey.value += 1;
+
+  uni.showToast({
+    title: "已移到底部",
+    icon: "success",
+    duration: 1000,
+  });
+};
+
+// 添加区块
+const addSection = () => {
+  const newComponent: TemplateComponentResult = {
+    name: `区块${template.components.length + 1}`,
+    component: "",
+    props: "",
+    styles: "",
+    id: Date.now(),
+  };
+  template.components.push(newComponent);
+  selectedIndex.value = template.components.length - 1;
+  previewKey.value += 1;
+
+  uni.showToast({
+    title: "已添加区块",
+    icon: "success",
+    duration: 800,
+  });
+};
+
+// 删除区块
 const removeSection = (index: number) => {
   uni.showModal({
     title: "删除区块",
@@ -852,7 +890,16 @@ const removeSection = (index: number) => {
     confirmColor: dangerColor,
     success: (res) => {
       if (res.confirm) {
-        config.layoutConfig.sections.splice(index, 1);
+        template.components.splice(index, 1);
+
+        // 调整选中索引
+        if (selectedIndex.value === index) {
+          selectedIndex.value = -1;
+        } else if (selectedIndex.value > index) {
+          selectedIndex.value -= 1;
+        }
+
+        previewKey.value += 1;
         uni.showToast({
           title: "删除成功",
           icon: "success",
@@ -862,18 +909,27 @@ const removeSection = (index: number) => {
   });
 };
 
-const getFragmentIndex = (fragmentCode: string) => {
-  return availableFragments.findIndex(f => f.code === fragmentCode);
+// 片段选择相关方法
+const getComponentIndex = (componentCode: string) => {
+  if (!componentCode) return -1;
+  return availableComponents.value.findIndex(f => f.code === componentCode);
 };
 
-const getFragmentLabel = (fragmentCode: string) => {
-  const fragment = availableFragments.find(f => f.code === fragmentCode);
-  return fragment ? fragment.name : "";
+const getComponentName = (componentCode: string) => {
+  if (!componentCode) return "";
+  const component = availableComponents.value.find(f => f.code === componentCode);
+  return component ? component.name : "";
 };
 
-const onFragmentChange = (sectionIndex: number, e: any) => {
-  const fragmentIndex = e.detail.value;
-  config.layoutConfig.sections[sectionIndex].fragment = availableFragments[fragmentIndex].code;
+const onComponentChange = (sectionIndex: number, e: any) => {
+  const fragmentIndex = parseInt(e.detail.value);
+  if (fragmentIndex >= 0 && fragmentIndex < availableComponents.value.length) {
+    const selectedComponent = availableComponents.value[fragmentIndex];
+    template.components[sectionIndex].component = selectedComponent.code;
+    template.components[sectionIndex].component = selectedComponent.code;
+    template.components[sectionIndex].name = template.components[sectionIndex].name || selectedComponent.name;
+    previewKey.value += 1;
+  }
 };
 
 const onScroll = (e: any) => {
@@ -896,58 +952,156 @@ const onTextareaBlur = () => {
   // 文本域失焦处理
 };
 
-const onSectionTouchStart = (index: number) => {
-  draggingSection.value = index;
-  dragStartY.value = 0; // 实际开发中需要通过事件获取触摸位置
-};
-
-const onSectionTouchMove = () => {
-  // 拖拽移动处理
-};
-
-const onSectionTouchEnd = () => {
-  draggingSection.value = null;
-  dragOffsetY.value = 0;
-};
-
-const sectionTransform = (index: number) => {
-  if (draggingSection.value === index) {
-    return `translateY(${dragOffsetY.value}px)`;
-  }
-  return "";
-};
 
 const onFontSizeChanging = (e: any) => {
   const value = e.detail.value;
   const type = e.currentTarget.dataset.type;
   if (type === "h1") {
-    config.styleConfig.font_sizes.h1 = value;
+    template.globalStyle.fontSizes.h1 = value.toString();
   } else {
-    config.styleConfig.font_sizes.body = value;
+    template.globalStyle.fontSizes.body = value.toString();
+  }
+  previewKey.value += 1;
+};
+
+// 修复：颜色输入处理
+const onColorInput = (event: any, field: string) => {
+  const value = event.detail?.value || event.target?.value;
+  if (value) {
+    // 格式化颜色值
+    let formattedValue = value.trim();
+
+    // 如果以#开头但长度不正确
+    if (formattedValue.startsWith("#") && formattedValue.length !== 4 && formattedValue.length !== 7) {
+      // 尝试修复常见的3位或6位十六进制颜色
+      if (formattedValue.length === 4) {
+        // 格式 #rgb 转换为 #rrggbb
+        formattedValue = "#" + formattedValue[1] + formattedValue[1] +
+          formattedValue[2] + formattedValue[2] +
+          formattedValue[3] + formattedValue[3];
+      }
+    }
+
+    // 如果没有#开头，添加#
+    if (!formattedValue.startsWith("#")) {
+      // 检查是否是有效的十六进制
+      const hexRegex = /^[0-9A-Fa-f]{3}$|^[0-9A-Fa-f]{6}$/;
+      if (hexRegex.test(formattedValue)) {
+        formattedValue = "#" + formattedValue;
+      }
+    }
+
+    // 验证颜色
+    if (validateColorHex(formattedValue)) {
+      template.globalStyle[field] = formattedValue;
+      previewKey.value += 1;
+    } else {
+      // 显示错误提示
+      uni.showToast({
+        title: `颜色格式无效: ${formattedValue}`,
+        icon: "none",
+        duration: 2000,
+      });
+    }
   }
 };
 
-const validateColor = (e: any) => {
-  const value = e.detail.value;
-  const colorRegex = /^#([0-9A-F]{3}){1,2}$/i;
-  if (!colorRegex.test(value)) {
-    // 可以添加颜色验证提示
+// 修复：验证十六进制颜色
+const validateColorHex = (color: string): boolean => {
+  const hexRegex = /^#([0-9A-Fa-f]{3}){1,2}$/i;
+  return hexRegex.test(color);
+};
+
+// 修复：显示颜色选择器
+const showColorPicker = (field: string) => {
+  currentColorField.value = field;
+
+  // 在 uni-app 中，可以使用 uni.chooseColor 调起原生颜色选择器
+  if (uni.chooseColor) {
+    uni.chooseColor({
+      color: template.globalStyle[field],
+      success: (res) => {
+        template.globalStyle[field] = res.color;
+        previewKey.value += 1;
+      },
+      fail: (err) => {
+        console.log("颜色选择失败:", err);
+        // 如果原生选择器失败，显示自定义预设
+        showColorPresets.value = !showColorPresets.value;
+      },
+    });
+  } else {
+    // 如果没有原生选择器，显示自定义预设
+    showColorPresets.value = !showColorPresets.value;
   }
 };
 
-const resetColors = () => {
-  config.styleConfig.theme.primary_color = "#d4af37";
-  config.styleConfig.theme.secondary_color = "#f9f3e3";
-  config.styleConfig.theme.accent_color = "#f7ef8a";
+// 修复：设置颜色
+const setColor = (field: string, color: string) => {
+  template.globalStyle[field] = color;
+  previewKey.value += 1;
+  showColorPresets.value = false;
+
   uni.showToast({
-    title: "颜色已重置",
+    title: `${field} 已设置为 ${color}`,
+    icon: "success",
+    duration: 1000,
+  });
+};
+
+// 修复：重置颜色
+const resetColors = () => {
+  template.globalStyle.primaryColor = "#d4af37";
+  template.globalStyle.secondaryColor = "#f9f3e3";
+  template.globalStyle.accentColor = "#f7ef8a";
+  previewKey.value += 1;
+  showColorPresets.value = false;
+
+  uni.showToast({
+    title: "颜色已重置为默认值",
     icon: "success",
   });
 };
 
+
 const onSectionInputFocus = (index: number) => {
   // 区块输入框聚焦处理
+  selectedIndex.value = index;
 };
+
+// 监听模板变化，自动更新预览
+watch(
+  () => [
+    template.name,
+    template.code,
+    template.description,
+    template.globalLayout.type,
+    template.globalStyle.primaryColor,
+    template.globalStyle.secondaryColor,
+    template.globalStyle.accentColor,
+    template.globalStyle.fontFamily,
+    template.globalStyle.fontSizes.h1,
+    template.globalStyle.fontSizes.body,
+    template.globalStyle.spacing.sectionMargin,
+    template.globalStyle.spacing.padding,
+    template.globalStyle.spacing.lineHeight,
+  ],
+  () => {
+    setTimeout(() => {
+      previewKey.value += 1;
+    }, 100);
+  },
+  { deep: false },
+);
+
+// 监听组件数组变化
+watch(
+  () => template.components,
+  () => {
+    previewKey.value += 1;
+  },
+  { deep: true },
+);
 
 // 生命周期
 onMounted(() => {
@@ -960,19 +1114,57 @@ onMounted(() => {
     isEditMode.value = true;
     // 加载现有模板数据
     loadTemplateData(options.id);
+  } else {
+    // 初始化一个示例组件
+    initExampleComponents();
   }
 });
 
+const initExampleComponents = () => {
+  // 添加示例组件
+  template.components = [
+    {
+      id: Date.now() + 1,
+      name: "个人信息",
+      component: "UserBasicInfo",
+      props: "",
+      styles: "",
+    },
+    {
+      id: Date.now() + 2,
+      name: "工作经历",
+      component: "WorkExperience",
+      props: "",
+      styles: "",
+    },
+    {
+      id: Date.now() + 3,
+      name: "教育背景",
+      component: "EducationExperience",
+      props: "",
+      styles: "",
+    },
+  ];
+  previewKey.value += 1;
+};
+
 const loadTemplateData = (id: string) => {
-  // 实际应用中这里应该从API加载数据
   console.log("加载模板数据:", id);
   // 模拟加载数据
   setTimeout(() => {
-    config.templateCode = "resume_tech";
-    config.templateName = "科技风格简历";
-    config.category = "resume";
-    config.style = "tech";
-    config.description = "专业的科技行业简历模板";
+    template.code = "resume_tech";
+    template.name = "科技风格简历";
+    template.category = "resume";
+    template.description = "专业的科技行业简历模板";
+
+    // 重置并添加示例组件
+    template.components = [];
+
+    exampleComponents.forEach(comp => {
+      template.components.push(comp);
+    });
+
+    previewKey.value += 1;
   }, 500);
 };
 </script>
@@ -1135,12 +1327,12 @@ const loadTemplateData = (id: string) => {
 
 /* 配置区域通用样式 */
 .config-section {
-  .section-header {
+  .component-header {
     margin-bottom: $margin-base;
     padding-bottom: $padding-small;
     border-bottom: 1px solid $border-color-lighter;
 
-    .section-title {
+    .component-title {
       display: block;
       font-size: $font-size-large;
       font-weight: $font-weight-semibold;
@@ -1148,7 +1340,7 @@ const loadTemplateData = (id: string) => {
       margin-bottom: 4rpx;
     }
 
-    .section-desc {
+    .component-desc {
       font-size: $font-size-small;
       color: $text-secondary;
     }
@@ -1392,72 +1584,239 @@ const loadTemplateData = (id: string) => {
 }
 
 /* 区块管理 */
-.section-management {
-  .section-list {
+.component-management {
+  .component-list {
     margin-bottom: $margin-base;
+
+    .component-item {
+      margin-bottom: $margin-small;
+      background: $background-color-white;
+      border: 2rpx solid $border-color-lighter;
+      border-radius: $border-radius;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        border-color: rgba($primary-color, 0.5);
+        box-shadow: $box-shadow-light;
+      }
+
+      &.selected {
+        border-color: $primary-color;
+        background: rgba($primary-color, 0.05);
+        box-shadow: 0 4rpx 16rpx rgba($primary-color, 0.15);
+
+        .component-index {
+          background: $primary-color;
+          color: white;
+        }
+
+        .component-info {
+          .component-input {
+            border-color: $primary-color;
+          }
+
+          .component-picker .picker-display {
+            border-color: $primary-color;
+            background: rgba($primary-color, 0.02);
+          }
+        }
+      }
+
+      .component-item-main {
+        display: flex;
+        align-items: center;
+        padding: $padding-small;
+        gap: $padding-small;
+
+        .component-index {
+          width: 48rpx;
+          height: 48rpx;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: $background-color;
+          border-radius: 50%;
+          font-weight: $font-weight-semibold;
+          color: $text-secondary;
+          transition: all 0.3s ease;
+
+          .index-text {
+            font-size: $font-size-base;
+          }
+        }
+
+        .component-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 8rpx;
+
+          .component-input {
+            width: 100%;
+            padding: 12rpx;
+            border: 1px solid $border-color-lighter;
+            border-radius: var(--border-radius-small);
+            font-size: $font-size-base;
+            background: $background-color-white;
+            transition: all 0.2s ease;
+
+            &:focus {
+              border-color: $primary-color;
+              outline: none;
+            }
+          }
+
+          .component-picker {
+            .picker-display {
+              padding: 12rpx;
+              border: 1px solid $border-color-lighter;
+              border-radius: var(--border-radius-small);
+              background: $background-color-white;
+              font-size: $font-size-base;
+              color: $text-primary;
+              transition: all 0.2s ease;
+
+              &:active {
+                background: $background-color;
+              }
+
+              .picker-arrow {
+                color: $text-secondary;
+                font-size: $font-size-small;
+              }
+            }
+          }
+        }
+
+        .component-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 4rpx;
+
+          .action-btn {
+            width: 64rpx;
+            height: 32rpx;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: var(--border-radius-small);
+            font-size: $font-size-small;
+            transition: all 0.2s ease;
+
+            &.move-up-btn {
+              background: rgba($success-color, 0.1);
+              color: $success-color;
+
+              &:not(.disabled):active {
+                background: rgba($success-color, 0.2);
+              }
+
+              &.disabled {
+                background: rgba($text-secondary, 0.1);
+                color: $text-secondary;
+                cursor: not-allowed;
+                opacity: 0.5;
+              }
+            }
+
+            &.move-down-btn {
+              background: rgba($warning-color, 0.1);
+              color: $warning-color;
+
+              &:not(.disabled):active {
+                background: rgba($warning-color, 0.2);
+              }
+
+              &.disabled {
+                background: rgba($text-secondary, 0.1);
+                color: $text-secondary;
+                cursor: not-allowed;
+                opacity: 0.5;
+              }
+            }
+
+            &.remove-btn {
+              background: rgba($danger-color, 0.1);
+              color: $danger-color;
+              margin-top: 4rpx;
+
+              &:active {
+                background: rgba($danger-color, 0.2);
+              }
+            }
+
+            .action-icon {
+              font-weight: $font-weight-bold;
+              font-size: 16rpx;
+            }
+          }
+        }
+      }
+    }
   }
 
-  .section-item {
-    margin-bottom: $margin-small;
-    background: $background-color-white;
-    border: 2rpx solid $border-color-lighter;
+  .sort-controls {
+    margin-bottom: $margin-base;
+    padding: $padding-base;
+    background: $background-color;
     border-radius: $border-radius;
-    overflow: hidden;
-    transition: all $transition-fast $ease-in-out;
+    border: 1px solid $border-color-lighter;
 
-    &:hover {
-      border-color: $primary-color;
-      box-shadow: $box-shadow-light;
+    .sort-hint {
+      display: block;
+      font-size: $font-size-small;
+      color: $text-primary;
+      margin-bottom: $padding-small;
+      font-weight: $font-weight-medium;
+
+      &:before {
+        content: '📌 ';
+      }
     }
 
-    .section-item-main {
+    .sort-buttons {
       display: flex;
-      align-items: center;
-      padding: $padding-small;
       gap: $padding-small;
 
-      .drag-handle {
-        padding: 0 12rpx;
-        cursor: move;
+      .sort-btn {
+        flex: 1;
+        padding: 16rpx;
+        background: rgba($primary-color, 0.1);
+        border: 1px solid $primary-color;
+        border-radius: var(--border-radius-small);
+        color: $primary-color;
+        font-size: $font-size-small;
+        font-weight: $font-weight-medium;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8rpx;
+        transition: all 0.2s ease;
 
-        .drag-icon {
+        &:not(.disabled):active {
+          background: rgba($primary-color, 0.2);
+          transform: translateY(1rpx);
+        }
+
+        &.disabled {
+          background: rgba($text-secondary, 0.1);
+          border-color: $text-secondary;
           color: $text-secondary;
-          font-size: $font-size-base;
+          cursor: not-allowed;
           opacity: 0.5;
         }
-      }
 
-      .section-input {
-        flex: 1;
-        min-width: 0;
-        padding: 12rpx;
-        border: 1px solid $border-color-lighter;
-        border-radius: var(--border-radius-small);
-        font-size: $font-size-base;
-        background: $background-color-white;
-      }
-
-      .fragment-picker {
-        flex: 2;
-        min-width: 0;
-      }
-
-      .section-remove {
-        padding: 8rpx 12rpx;
-        background: $danger-color;
-        color: white;
-        border: none;
-        border-radius: var(--border-radius-small);
-        font-size: $font-size-small;
-
-        .remove-icon {
-          font-weight: $font-weight-bold;
+        .sort-icon {
+          font-size: $font-size-base;
         }
       }
     }
   }
 
-  .add-section-btn {
+  .add-component-btn {
     width: 100%;
     padding: 24rpx;
     background: rgba($primary-color, 0.05);
@@ -1477,10 +1836,46 @@ const loadTemplateData = (id: string) => {
       border-color: $primary-color;
     }
 
+    &:active {
+      background: rgba($primary-color, 0.15);
+    }
+
     .add-icon {
       font-size: $font-size-large;
       font-weight: $font-weight-bold;
     }
+  }
+
+  // 操作提示
+  .operation-hint {
+    margin-top: $margin-small;
+    padding: 12rpx;
+    background: rgba($info-color, 0.05);
+    border-radius: var(--border-radius-small);
+    font-size: $font-size-small;
+    color: $text-secondary;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8rpx;
+
+    .hint-icon {
+      color: $info-color;
+      font-size: $font-size-base;
+    }
+  }
+}
+
+// 在区块管理标题下添加操作说明
+.component-management .component-desc {
+  display: block;
+  font-size: $font-size-small;
+  color: $text-secondary;
+  margin-top: 4rpx;
+
+  &:before {
+    content: '💡 ';
   }
 }
 
@@ -1938,18 +2333,245 @@ const loadTemplateData = (id: string) => {
   align-items: center;
 }
 
-/* 响应式调整 */
-@media (max-width: 768px) {
+.preview-mode-switch {
+  margin-top: $margin-base;
+  padding: $padding-small;
+  background: $background-color;
+  border-radius: $border-radius;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .switch-label {
+    font-size: $font-size-base;
+    color: $text-primary;
+  }
+
+  .switch-buttons {
+    display: flex;
+    gap: 8rpx;
+
+    .mode-btn {
+      padding: 8rpx 16rpx;
+      border: 1px solid $border-color-lighter;
+      border-radius: var(--border-radius-small);
+      background: $background-color-white;
+      font-size: $font-size-small;
+
+      &.active {
+        background: $primary-color;
+        color: white;
+        border-color: $primary-color;
+      }
+    }
+  }
+}
+
+.template-preview-container {
+  width: 100%;
+  height: 100%;
+  min-height: 600rpx;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #ebeef5;
+  border-radius: 8rpx;
+}
+
+/* 更新预览容器样式 */
+.preview-content {
+  &.desktop .template-preview-container {
+    max-width: 100%;
+    height: 600rpx;
+  }
+
+  &.tablet .template-preview-container {
+    max-width: 768px;
+    height: 800rpx;
+    margin: 0 auto;
+    border-radius: 16rpx;
+  }
+
+  &.mobile .template-preview-container {
+    max-width: 375px;
+    height: 800rpx;
+    margin: 0 auto;
+    border-radius: 24rpx;
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  }
+}
+
+.template-preview-component {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.webview-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.color-config {
+  background: $background-color;
+  border-radius: $border-radius;
+  padding: $padding-base;
+  margin-bottom: $margin-base;
+
+  .config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $margin-base;
+
+    .config-title {
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+    }
+
+    .reset-btn {
+      padding: 8rpx 16rpx;
+      background: rgba($danger-color, 0.1);
+      color: $danger-color;
+      border: 1px solid $danger-color;
+      border-radius: var(--border-radius-small);
+      font-size: $font-size-small;
+      transition: all 0.2s ease;
+
+      &:active {
+        background: rgba($danger-color, 0.2);
+      }
+    }
+  }
+
+  .color-group {
+    .color-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $padding-small 0;
+      border-bottom: 1px solid $border-color-lighter;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .color-info {
+        flex: 1;
+
+        .color-label {
+          display: block;
+          font-size: $font-size-base;
+          font-weight: $font-weight-medium;
+          color: $text-primary;
+          margin-bottom: 4rpx;
+        }
+
+        .color-desc {
+          font-size: $font-size-small;
+          color: $text-secondary;
+        }
+      }
+
+      .color-controls {
+        display: flex;
+        align-items: center;
+        gap: $padding-small;
+
+        .color-input {
+          width: 160rpx;
+          padding: 12rpx;
+          border: 1px solid $border-color-lighter;
+          border-radius: var(--border-radius-small);
+          font-size: $font-size-base;
+          text-align: center;
+          font-family: monospace;
+          background: white;
+          transition: all 0.2s ease;
+
+          &:focus {
+            border-color: $primary-color;
+            box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+            outline: none;
+          }
+
+          &::placeholder {
+            color: #c0c4cc;
+          }
+        }
+
+        .color-preview {
+          width: 48rpx;
+          height: 48rpx;
+          border-radius: var(--border-radius-small);
+          border: 2rpx solid $border-color-lighter;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+          }
+
+          &:active {
+            transform: scale(0.95);
+          }
+        }
+      }
+    }
+  }
+
+  .color-presets {
+    margin-top: $margin-base;
+    padding-top: $padding-base;
+    border-top: 1px solid $border-color-lighter;
+
+    .presets-title {
+      font-size: $font-size-small;
+      color: $text-secondary;
+      margin-bottom: $padding-small;
+    }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8rpx;
+
+      .preset-color {
+        width: 36rpx;
+        height: 36rpx;
+        border-radius: 4rpx;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+
+        &:hover {
+          transform: scale(1.2);
+          box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+        }
+
+        &:active {
+          transform: scale(0.9);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .preview-mode-switch {
+    flex-direction: column;
+    gap: $margin-small;
+    align-items: flex-start;
+  }
   .editor-container {
     flex-direction: column;
   }
-
   .config-panel,
   .preview-panel {
     flex: none;
     width: 100%;
   }
-
   .preview-header {
     flex-direction: column;
     gap: $margin-base;
@@ -1959,13 +2581,71 @@ const loadTemplateData = (id: string) => {
       justify-content: space-between;
     }
   }
-
   .header-actions {
     flex-direction: column;
   }
-
   .form-row {
     flex-direction: column;
+  }
+  .color-config {
+    .color-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $padding-small;
+
+      .color-info {
+        width: 100%;
+      }
+
+      .color-controls {
+        width: 100%;
+        justify-content: space-between;
+
+        .color-input {
+          flex: 1;
+        }
+      }
+    }
+
+    .color-presets {
+      .presets-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  }
+  .component-management {
+    .component-item {
+      .component-item-main {
+        flex-direction: column;
+        align-items: stretch;
+
+        .component-index {
+          align-self: flex-start;
+          margin-bottom: 8rpx;
+        }
+
+        .component-actions {
+          flex-direction: row;
+          justify-content: flex-end;
+          margin-top: 12rpx;
+
+          .action-btn {
+            width: 32rpx;
+            height: 32rpx;
+
+            .action-icon {
+              font-size: 14rpx;
+            }
+          }
+        }
+      }
+    }
+
+    .sort-controls {
+      .sort-buttons {
+        flex-direction: column;
+      }
+    }
   }
 }
 </style>

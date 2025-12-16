@@ -1,4 +1,4 @@
-<!-- /components/resume/ResumeSelfEvaluation.vue -->
+<!-- /components/resume/SelfEvaluation.vue -->
 <template>
   <view :class="['self-evaluation', `theme-${theme}`]" :style="computedStyle">
     <!-- 区块标题 -->
@@ -108,7 +108,7 @@
 
 <script>
 export default {
-  name: 'ResumeSelfEvaluation',
+  name: 'SelfEvaluation',
 
   props: {
     config: {

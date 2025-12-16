@@ -168,4 +168,14 @@ public abstract class BaseService<
         T entity = structMapper.queryToEntity(query);
         return page(pageNum, pageSize, entity);
     }
+
+    @Override
+    public Page<V> pageView(long pageNum, long pageSize, T entity) {
+        return structMapper.toViewPage(page(pageNum, pageSize, entity));
+    }
+
+    @Override
+    public List<V> listView(T entity) {
+        return structMapper.toViews(list(entity));
+    }
 }

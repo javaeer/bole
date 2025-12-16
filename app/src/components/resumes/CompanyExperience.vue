@@ -1,16 +1,15 @@
-<!-- /components/resume/ResumeEducation.vue -->
 <template>
   <view :class="['education-section', `theme-${theme}`]" :style="computedStyle">
     <!-- 区块标题 -->
     <view class="section-header">
-      <text class="section-title">教育背景</text>
+      <text class="section-title">公司经历</text>
       <view class="section-divider"></view>
     </view>
 
     <!-- 空状态 -->
     <view v-if="!hasEducationData" class="empty-state">
       <text class="empty-icon">🎓</text>
-      <text class="empty-text">暂无教育背景信息</text>
+      <text class="empty-text">暂无公司经历信息</text>
     </view>
 
     <!-- 教育经历列表 -->
@@ -93,7 +92,7 @@
 
 <script>
 export default {
-  name: 'ResumeEducation',
+  name: 'CompanyExperience',
 
   props: {
     config: {
@@ -168,8 +167,8 @@ export default {
 
   mounted() {
     console.log('教育背景组件加载完成', {
-      教育经历数量: this.educations.length,
-      配置: this.config
+      '教育经历数量': this.educations.length,
+      '配置': this.config
     });
   },
 
