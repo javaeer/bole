@@ -10,8 +10,8 @@ import lombok.*;
  * FileName: WorkExperienceDTO Description: Created By MR. WANG Created At 2025/11/26 17:49 Modified
  * By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class WorkExperienceView extends BaseView {
 
     private String position;

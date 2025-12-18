@@ -9,8 +9,8 @@ import java.util.List;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

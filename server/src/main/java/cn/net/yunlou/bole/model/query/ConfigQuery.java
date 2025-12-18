@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: SystemEditRequest Description: Created By laughtiger Created At 2025/11/28 11:59
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class ConfigQuery extends BaseQuery {
 
     @NotBlank(message = "键不得为空")

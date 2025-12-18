@@ -8,8 +8,8 @@ import cn.net.yunlou.bole.model.query.ResumesTemplateComponentQuery;
 import cn.net.yunlou.bole.model.view.ResumesTemplateComponentView;
 
 /**
- * FileName: ResumesTemplateComponentService Description: Created By laughtiger Created At
- * 2025/12/13 21:18 Modified By Modified At
+ * FileName: ResumesComponentService Description: Created By laughtiger Created At 2025/12/17 16:20
+ * Modified By Modified At
  */
 public interface ResumesTemplateComponentService
         extends IBaseService<

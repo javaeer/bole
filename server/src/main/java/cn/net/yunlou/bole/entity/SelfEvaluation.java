@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
+import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import java.util.List;
 import lombok.*;
 
@@ -11,8 +11,8 @@ import lombok.*;
  * FileName: SelfEvaluation Description: Created By laughtiger Created At 2025/12/14 04:08 Modified
  * By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +23,6 @@ public class SelfEvaluation extends BaseEntity {
 
     private String content;
 
-    @TableField(typeHandler = JacksonTypeHandler.class)
+    @TableField(typeHandler = JsonbTypeHandler.class)
     private List<String> keywords;
 }

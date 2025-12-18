@@ -1,23 +1,24 @@
 package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
+import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import java.util.List;
-import java.util.Map;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 /**
  * FileName: ResumeTemplate Description: 简历模板 Created By MR. WANG Created At 2025/11/24 20:00
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "t_resumes_template", resultMap = "resumesTemplateResultMap")
+@Accessors(chain = true)
+@TableName(value = "t_resumes_template", autoResultMap = true, resultMap = "BaseResultMap")
 public class ResumesTemplate extends BaseEntity {
 
     /** 模板名称 */
@@ -39,13 +40,14 @@ public class ResumesTemplate extends BaseEntity {
     private String version;
 
     /** 样式配置 */
-    @TableField(typeHandler = JacksonTypeHandler.class)
-    private Map<String, Object> globalStyle;
+    @TableField(typeHandler = JsonbTypeHandler.class)
+    private ResumesTemplateStyle globalStyle;
 
     /** 布局配置 */
-    @TableField(typeHandler = JacksonTypeHandler.class)
-    private ResumesTemplateLayout layout;
+    @TableField(typeHandler = JsonbTypeHandler.class)
+    private ResumesTemplateLayout globalLayout;
 
+    // @TableField(typeHandler = JsonbTypeHandler.class)
     @TableField(exist = false)
     private List<ResumesTemplateComponent> components;
 }

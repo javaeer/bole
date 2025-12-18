@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: JobIntention Description: Created By laughtiger Created At 2025/12/13 23:32 Modified By
  * Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -8,7 +8,7 @@ import lombok.*;
  * FileName: SkillEditRequest Description: Created By MR. WANG Created At 2025/11/25 00:07 Modified
  * By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "编辑技能请求")
 public class SkillEdit extends BaseEdit {}

@@ -20,6 +20,10 @@
                 <text class="status-text">{{ template?.isActive ? "已启用" : "未启用" }}</text>
               </view>
             </view>
+            <view class="meta-item">
+              <text class="meta-label">编码：</text>
+              <text class="meta-value">{{ template?.code || "未设置" }}</text>
+            </view>
           </view>
         </view>
       </view>
@@ -31,8 +35,8 @@
         <text class="btn-icon">🎨</text>
         <text class="btn-text">使用此模板</text>
       </button>
-      <button class="action-btn primary" @click="handleShare">
-        <text class="btn-icon">💯 </text>
+      <button class="action-btn secondary" @click="handleShare">
+        <text class="btn-icon">💯</text>
         <text class="btn-text">分享</text>
       </button>
     </view>
@@ -41,78 +45,50 @@
     <view class="preview-section">
       <view class="section-header">
         <text class="section-title">模板预览</text>
+        <view class="device-switch">
+          <view class="switch-buttons">
+            <button
+              v-for="device in deviceOptions"
+              :key="device.value"
+              :class="['device-btn', { active: previewDevice === device.value }]"
+              @click="previewDevice = device.value"
+            >
+              <text class="device-icon">{{ device.icon }}</text>
+              <text class="device-name">{{ device.name }}</text>
+            </button>
+          </view>
+        </view>
       </view>
       <view class="preview-card">
-        <view class="preview-content" :style="previewStyle">
-          <!-- 预览头部 -->
-          <view class="preview-header">
-            <view class="preview-avatar" v-if="template?.layout?.showPhoto">
-              <text class="avatar-placeholder">👤</text>
-            </view>
-            <view class="preview-basic-info">
-              <text class="preview-name">张三</text>
-              <text class="preview-title">前端开发工程师</text>
-              <view class="preview-contact">
-                <text class="contact-item">📱 13800138000</text>
-                <text class="contact-item">✉️ zhangsan@email.com</text>
-                <text class="contact-item">📍 北京市</text>
-              </view>
+        <!-- 使用统一的预览组件 -->
+        <view class="preview-content" :class="previewDevice">
+          <template-preview
+            :key="previewKey"
+            :components="template.components || []"
+            :layout="template.globalLayout"
+            :global-style="template.globalStyle"
+            :device="previewDevice"
+            class="template-preview-container"
+          />
+        </view>
+
+        <!-- 预览信息 -->
+        <view class="preview-info">
+          <view class="info-item">
+            <text class="info-label">布局类型：</text>
+            <text class="info-value">{{ getLayoutTypeLabel(template?.globalLayout?.type) }}</text>
+          </view>
+          <view class="info-item">
+            <text class="info-label">颜色主题：</text>
+            <view class="color-theme-preview">
+              <view class="color-dot" :style="{ backgroundColor: template?.globalStyle?.primaryColor || '#d4af37' }"></view>
+              <view class="color-dot" :style="{ backgroundColor: template?.globalStyle?.secondaryColor || '#f9f3e3' }"></view>
+              <view class="color-dot" :style="{ backgroundColor: template?.globalStyle?.accentColor || '#f7ef8a' }"></view>
             </view>
           </view>
-
-          <!-- 预览内容 -->
-          <view class="preview-body">
-            <view class="preview-section-item" v-if="template?.components?.find(c => c.component === 'JobIntention')">
-              <text class="section-title">求职意向</text>
-              <view class="section-content">
-                <text class="content-item">期望职位：前端开发工程师</text>
-                <text class="content-item">期望薪资：20-30K</text>
-                <text class="content-item">工作地点：北京</text>
-              </view>
-            </view>
-
-            <view class="preview-section-item" v-if="template?.components?.find(c => c.component === 'WorkExperience')">
-              <text class="section-title">工作经历</text>
-              <view class="section-content">
-                <view class="experience-item">
-                  <text class="company">ABC科技有限公司</text>
-                  <text class="period">2020.09 - 至今</text>
-                  <text class="position">高级前端开发工程师</text>
-                  <text class="description">负责核心产品的前端架构设计与开发...</text>
-                </view>
-              </view>
-            </view>
-
-            <view class="preview-section-item"
-                  v-if="template?.components?.find(c => c.component === 'EducationExperience')">
-              <text class="section-title">教育背景</text>
-              <view class="section-content">
-                <view class="education-item">
-                  <text class="school">清华大学</text>
-                  <text class="period">2016.09 - 2020.06</text>
-                  <text class="major">计算机科学与技术 / 本科</text>
-                  <text class="gpa">GPA: 3.8/4.0</text>
-                </view>
-              </view>
-            </view>
-
-            <view class="preview-section-item" v-if="template?.components?.find(c => c.component === 'Skills')">
-              <text class="section-title">专业技能</text>
-              <view class="section-content">
-                <view class="skill-item">
-                  <text class="skill-name">Vue.js</text>
-                  <view class="skill-level">
-                    <view class="level-bar" style="width: 90%"></view>
-                  </view>
-                </view>
-                <view class="skill-item">
-                  <text class="skill-name">React</text>
-                  <view class="skill-level">
-                    <view class="level-bar" style="width: 80%"></view>
-                  </view>
-                </view>
-              </view>
-            </view>
+          <view class="info-item">
+            <text class="info-label">字体：</text>
+            <text class="info-value">{{ template?.globalStyle?.fontFamily || '默认字体' }}</text>
           </view>
         </view>
       </view>
@@ -125,39 +101,71 @@
       </view>
 
       <!-- 全局样式配置 -->
-      <view class="config-card">
+      <view class="config-card" v-if="template?.globalStyle">
         <view class="config-header">
           <text class="config-title">全局样式</text>
         </view>
         <view class="config-content">
-          <view class="config-item" v-for="(value, key) in template?.globalStyle" :key="key">
-            <text class="config-label">{{ getStyleLabel(key) }}</text>
-            <text class="config-value">{{ value }}</text>
+          <view class="config-item">
+            <text class="config-label">主色调</text>
+            <view class="config-value">
+              <view class="color-value" :style="{ backgroundColor: template.globalStyle.primaryColor }">
+                {{ template.globalStyle.primaryColor || '#d4af37' }}
+              </view>
+            </view>
+          </view>
+          <view class="config-item">
+            <text class="config-label">辅色调</text>
+            <view class="config-value">
+              <view class="color-value" :style="{ backgroundColor: template.globalStyle.secondaryColor }">
+                {{ template.globalStyle.secondaryColor || '#f9f3e3' }}
+              </view>
+            </view>
+          </view>
+          <view class="config-item">
+            <text class="config-label">强调色</text>
+            <view class="config-value">
+              <view class="color-value" :style="{ backgroundColor: template.globalStyle.accentColor }">
+                {{ template.globalStyle.accentColor || '#f7ef8a' }}
+              </view>
+            </view>
+          </view>
+          <view class="config-item">
+            <text class="config-label">字体家族</text>
+            <text class="config-value">{{ template.globalStyle.fontFamily || "'Microsoft YaHei', 'PingFang SC', sans-serif" }}</text>
+          </view>
+          <view class="config-item">
+            <text class="config-label">标题字体</text>
+            <text class="config-value">{{ template.globalStyle.fontSizes?.h1 || '24' }}px</text>
+          </view>
+          <view class="config-item">
+            <text class="config-label">正文字体</text>
+            <text class="config-value">{{ template.globalStyle.fontSizes?.body || '14' }}px</text>
           </view>
         </view>
       </view>
 
       <!-- 布局配置 -->
-      <view class="config-card">
+      <view class="config-card" v-if="template?.globalLayout">
         <view class="config-header">
           <text class="config-title">布局配置</text>
         </view>
         <view class="config-content">
           <view class="config-item">
-            <text class="config-label">页面尺寸</text>
-            <text class="config-value">{{ template?.layout?.pageSize || "A4" }}</text>
+            <text class="config-label">布局类型</text>
+            <text class="config-value">{{ getLayoutTypeLabel(template.globalLayout.type) }}</text>
+          </view>
+          <view v-if="template.globalLayout.type === 'two-column'" class="config-item">
+            <text class="config-label">左侧宽度</text>
+            <text class="config-value">{{ template.globalLayout.columns?.left || 40 }}%</text>
+          </view>
+          <view v-if="template.globalLayout.type === 'two-column'" class="config-item">
+            <text class="config-label">右侧宽度</text>
+            <text class="config-value">{{ template.globalLayout.columns?.right || 60 }}%</text>
           </view>
           <view class="config-item">
-            <text class="config-label">布局方向</text>
-            <text class="config-value">{{ template?.layout?.orientation === "portrait" ? "竖向" : "横向" }}</text>
-          </view>
-          <view class="config-item">
-            <text class="config-label">列数</text>
-            <text class="config-value">{{ template?.layout?.columns || 1 }}</text>
-          </view>
-          <view class="config-item">
-            <text class="config-label">显示照片</text>
-            <text class="config-value">{{ template?.layout?.showPhoto ? "是" : "否" }}</text>
+            <text class="config-label">页面方向</text>
+            <text class="config-value">{{ template.globalLayout.orientation === 'portrait' ? '纵向' : '横向' }}</text>
           </view>
         </view>
       </view>
@@ -168,32 +176,38 @@
           <text class="config-title">启用组件</text>
           <text class="config-count">{{ template?.components?.length || 0 }}个</text>
         </view>
-        <view class="components-list">
-          <view class="component-item" v-for="component in template?.components" :key="component.id">
+        <view class="components-list" v-if="template?.components?.length > 0">
+          <view class="component-item" v-for="(component, index) in template.components" :key="component.id || index">
+            <view class="component-index">
+              <text class="index-text">{{ index + 1 }}</text>
+            </view>
             <view class="component-info">
-              <text class="component-name">{{ component.name }}</text>
-              <text class="component-type">{{ component.component }}</text>
+              <text class="component-name">{{ component.name || '未命名区块' }}</text>
+              <text class="component-type">{{ getComponentTypeLabel(component.fragment) }}</text>
             </view>
             <view class="component-actions">
-              <text class="component-action" @click.stop="viewComponentDetail(component)">查看详情</text>
+              <text class="component-action" @click.stop="viewComponentDetail(component)">查看</text>
             </view>
           </view>
+        </view>
+        <view v-else class="empty-components">
+          <text class="empty-text">暂无组件配置</text>
         </view>
       </view>
 
       <!-- 时间信息 -->
-      <view class="config-card">
+      <view class="config-card" v-if="template?.createdAt || template?.updatedAt">
         <view class="config-header">
           <text class="config-title">时间信息</text>
         </view>
         <view class="config-content">
-          <view class="config-item">
+          <view class="config-item" v-if="template?.createdAt">
             <text class="config-label">创建时间</text>
-            <text class="config-value">{{ formatDateTime(template?.createdAt) }}</text>
+            <text class="config-value">{{ formatDateTime(template.createdAt) }}</text>
           </view>
-          <view class="config-item">
+          <view class="config-item" v-if="template?.updatedAt">
             <text class="config-label">更新时间</text>
-            <text class="config-value">{{ formatDateTime(template?.updatedAt) }}</text>
+            <text class="config-value">{{ formatDateTime(template.updatedAt) }}</text>
           </view>
         </view>
       </view>
@@ -207,7 +221,7 @@
       <button class="bottom-btn toggle-status" @click="handleToggleStatus">
         <text class="btn-text">{{ template?.isActive ? "停用模板" : "启用模板" }}</text>
       </button>
-      <button class="bottom-btn toggle-status" @click="handleEdit">
+      <button class="bottom-btn primary" @click="handleEdit">
         <text class="btn-text">编辑模板</text>
       </button>
     </view>
@@ -223,36 +237,40 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
-import { onLoad, onShow } from "@dcloudio/uni-app";
-import { TemplateResult, useTemplate } from "@/composables/useTemplate";
-import { TemplateComponentResult } from "@/types/template-component";
+import { computed, defineComponent, ref, onMounted } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
+import TemplatePreview from "@/components/template/TemplatePreview.vue";
+import type { TemplateResult } from "@/types/template";
+import { useTemplate } from "@/composables/useTemplate";
+
+interface DeviceOption {
+  value: string;
+  name: string;
+  icon: string;
+}
 
 export default defineComponent({
   name: "TemplateDetail",
 
-  setup() {
-    const { fetchTemplateDetail, setCurrentTemplate } = useTemplate();
+  components: {
+    TemplatePreview
+  },
 
+  setup() {
     const template = ref<TemplateResult | null>(null);
     const loading = ref(true);
-    const templateId = ref<string>("");
+    const previewKey = ref(0);
+    const previewDevice = ref("desktop");
+    const { fetchTemplateDetail, setCurrentTemplate } = useTemplate();
 
-    // 计算预览样式
-    const previewStyle = computed(() => {
-      if (!template.value?.globalStyle) return {};
+    // 设备选项
+    const deviceOptions: DeviceOption[] = [
+      { value: "desktop", name: "桌面", icon: "🖥️" },
+      { value: "tablet", name: "平板", icon: "📱" },
+      { value: "mobile", name: "手机", icon: "📲" },
+    ];
 
-      const style = template.value.globalStyle;
-      return {
-        fontFamily: style.fontFamily || "Microsoft YaHei, SimSun, serif",
-        fontSize: style.fontSize || "12px",
-        lineHeight: style.lineHeight || "1.6",
-        color: style.primaryColor || "#2c3e50",
-        backgroundColor: style.backgroundColor || "#ffffff",
-      };
-    });
-
-    // 加载模板详情
+    // 模拟加载模板数据
     const loadTemplateDetail = async (id: string) => {
       try {
         loading.value = true;
@@ -268,6 +286,7 @@ export default defineComponent({
             uni.navigateBack();
           }, 1500);
         }
+        previewKey.value += 1;
       } catch (error) {
         console.error("加载模板详情失败:", error);
         uni.showToast({
@@ -306,16 +325,13 @@ export default defineComponent({
     // 模板操作
     const handleUseTemplate = () => {
       if (!template.value) return;
-      setCurrentTemplate(template.value);
+      uni.showToast({
+        title: "开始使用此模板",
+        icon: "success",
+      });
+      // 这里应该导航到使用模板创建简历的页面
       uni.navigateTo({
         url: `/pages/resumes/create?templateId=${template.value.id}`,
-      });
-    };
-
-    const handlePreview = () => {
-      if (!template.value) return;
-      uni.navigateTo({
-        url: `/pages/template/preview?id=${template.value.id}`,
       });
     };
 
@@ -327,13 +343,16 @@ export default defineComponent({
         content: "确定要删除这个模板吗？删除后无法恢复。",
         success: (res) => {
           if (res.confirm) {
-            // 调用删除API
-            uni.showToast({
-              title: "删除成功",
-              icon: "success",
-            });
+            uni.showLoading({ title: "删除中..." });
             setTimeout(() => {
-              uni.navigateBack();
+              uni.hideLoading();
+              uni.showToast({
+                title: "删除成功",
+                icon: "success",
+              });
+              setTimeout(() => {
+                uni.navigateBack();
+              }, 1500);
             }, 1500);
           }
         },
@@ -351,8 +370,8 @@ export default defineComponent({
         content: `确定要${action}这个模板吗？`,
         success: (res) => {
           if (res.confirm) {
-            // 调用更新状态API
             template.value!.isActive = newStatus;
+            previewKey.value += 1;
             uni.showToast({
               title: `${action}成功`,
               icon: "success",
@@ -362,10 +381,10 @@ export default defineComponent({
       });
     };
 
-    const viewComponentDetail = (component: TemplateComponentResult) => {
+    const viewComponentDetail = (component: any) => {
       uni.showModal({
         title: component.name,
-        content: JSON.stringify(component.props, null, 2),
+        content: `组件类型: ${getComponentTypeLabel(component.fragment)}\n组件代码: ${component.fragment}`,
         showCancel: false,
         confirmText: "关闭",
       });
@@ -385,20 +404,27 @@ export default defineComponent({
       return colors[id % colors.length];
     };
 
-    const getStyleLabel = (key: string) => {
-      const labelMap: Record<string, string> = {
-        "theme": "主题",
-        "margin": "边距",
-        "padding": "内边距",
-        "fontSize": "字体大小",
-        "fontFamily": "字体",
-        "lineHeight": "行高",
-        "headerColor": "页眉颜色",
-        "primaryColor": "主色",
-        "secondaryColor": "辅色",
-        "backgroundColor": "背景色",
+    const getLayoutTypeLabel = (type?: string) => {
+      const typeMap: Record<string, string> = {
+        "single-column": "单栏",
+        "two-column": "双栏",
+        "three-column": "三栏",
+        "creative": "创意布局"
       };
-      return labelMap[key] || key;
+      return type ? (typeMap[type] || type) : "单栏";
+    };
+
+    const getComponentTypeLabel = (fragment?: string) => {
+      const typeMap: Record<string, string> = {
+        "UserBasicInfo": "基本信息",
+        "EducationExperience": "教育背景",
+        "WorkExperience": "工作经历",
+        "Skills": "技能专长",
+        "ProjectExperience": "项目经验",
+        "SelfEvaluation": "自我评价",
+        "JobIntention": "求职意向"
+      };
+      return fragment ? (typeMap[fragment] || fragment) : "未知类型";
     };
 
     const formatDateTime = (dateStr?: string) => {
@@ -420,15 +446,7 @@ export default defineComponent({
     // 生命周期
     onLoad((options) => {
       if (options.id) {
-        templateId.value = options.id;
         loadTemplateDetail(options.id);
-      }
-    });
-
-    onShow(() => {
-      // 如果从编辑页面返回，重新加载数据
-      if (templateId.value) {
-        loadTemplateDetail(templateId.value);
       }
     });
 
@@ -436,16 +454,15 @@ export default defineComponent({
       // 状态
       template,
       loading,
-
-      // 计算属性
-      previewStyle,
+      previewDevice,
+      deviceOptions,
+      previewKey,
 
       // 方法
       handleBack,
       handleEdit,
       handleShare,
       handleUseTemplate,
-      handlePreview,
       handleDelete,
       handleToggleStatus,
       viewComponentDetail,
@@ -453,7 +470,8 @@ export default defineComponent({
       // 工具函数
       getTemplateInitial,
       getAvatarColor,
-      getStyleLabel,
+      getLayoutTypeLabel,
+      getComponentTypeLabel,
       formatDateTime,
     };
   },
@@ -461,10 +479,11 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+
 .template-detail-container {
   background-color: $uni-bg-color-grey;
   min-height: 100vh;
-  padding-bottom: 120rpx;
+  padding-bottom: 140rpx;
 }
 
 /* 模板头部 */
@@ -569,7 +588,7 @@ export default defineComponent({
 
 .action-btn {
   flex: 1;
-  height: 80rpx;
+  height: $button-height;
   border-radius: $uni-border-radius-lg;
   display: flex;
   align-items: center;
@@ -616,6 +635,9 @@ export default defineComponent({
 }
 
 .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: $uni-spacing-col-base;
 }
 
@@ -623,6 +645,34 @@ export default defineComponent({
   font-size: $uni-font-size-lg;
   color: $text-primary;
   font-weight: $font-weight-bold;
+}
+
+.device-switch {
+  .switch-buttons {
+    display: flex;
+    gap: 8rpx;
+
+    .device-btn {
+      padding: $device-btn-padding;
+      border: 1rpx solid $border-color;
+      border-radius: $uni-border-radius-sm;
+      background: $uni-bg-color;
+      font-size: $uni-font-size-sm;
+      display: flex;
+      align-items: center;
+      gap: 4rpx;
+
+      &.active {
+        background: $primary-color;
+        color: $uni-bg-color;
+        border-color: $primary-color;
+      }
+
+      .device-icon {
+        font-size: $uni-font-size-base;
+      }
+    }
+  }
 }
 
 .preview-card {
@@ -633,155 +683,73 @@ export default defineComponent({
 }
 
 .preview-content {
-  background: $uni-bg-color;
-  border: 1rpx solid $border-color-light;
-  border-radius: $uni-border-radius-lg;
-  padding: $uni-spacing-row-base;
-  min-height: 400rpx;
-}
+  &.desktop .template-preview-container {
+    max-width: 100%;
+    height: $preview-min-height;
+  }
 
-.preview-header {
-  display: flex;
-  align-items: center;
-  gap: $uni-spacing-col-base;
-  padding-bottom: $uni-spacing-col-base;
-  border-bottom: 1rpx solid $border-color-extra-light;
-  margin-bottom: $uni-spacing-col-base;
-}
+  &.tablet .template-preview-container {
+    max-width: 768rpx;
+    height: 800rpx;
+    margin: 0 auto;
+    border-radius: $border-radius-large;
+  }
 
-.preview-avatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  background: $background-color;
-  @extend .flex-center;
-  border: 2rpx solid $border-color-light;
-}
-
-.avatar-placeholder {
-  font-size: $uni-font-size-lg;
-  color: $text-placeholder;
-}
-
-.preview-basic-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: math.div($uni-spacing-col-sm, 2);
-}
-
-.preview-name {
-  font-size: $uni-font-size-lg;
-  color: $text-primary;
-  font-weight: $font-weight-bold;
-}
-
-.preview-title {
-  font-size: $uni-font-size-base;
-  color: $primary-color;
-  font-weight: $font-weight-medium;
-}
-
-.preview-contact {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $uni-spacing-col-sm;
-  margin-top: $uni-spacing-col-sm;
-}
-
-.contact-item {
-  font-size: $uni-font-size-sm;
-  color: $text-regular;
-  padding-right: $uni-spacing-col-sm;
-  border-right: 1rpx solid $border-color-light;
-
-  &:last-child {
-    border-right: none;
-    padding-right: 0;
+  &.mobile .template-preview-container {
+    max-width: 375rpx;
+    height: 800rpx;
+    margin: 0 auto;
+    border-radius: $border-radius-large;
+    box-shadow: $box-shadow-dark;
   }
 }
 
-.preview-body {
-  display: flex;
-  flex-direction: column;
-  gap: $uni-spacing-col-base;
+.template-preview-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: $uni-bg-color;
+  border: 1rpx solid $border-color-lighter;
+  border-radius: $uni-border-radius-lg;
 }
 
-.preview-section-item {
-  margin-bottom: $uni-spacing-col-base;
-}
-
-.section-content {
-  margin-top: $uni-spacing-col-sm;
+.preview-info {
+  margin-top: $margin-base;
+  padding: $padding-base;
+  background: $background-color;
+  border-radius: $border-radius;
   display: flex;
   flex-direction: column;
   gap: $uni-spacing-col-sm;
 }
 
-.content-item {
-  font-size: $uni-font-size-base;
-  color: $text-regular;
-  line-height: 1.6;
-}
-
-.experience-item, .education-item {
+.info-item {
   display: flex;
-  flex-direction: column;
-  gap: math.div($uni-spacing-col-sm, 2);
-  padding: $uni-spacing-col-sm;
-  background: $background-color;
-  border-radius: $uni-border-radius-sm;
-  border-left: 3rpx solid $primary-color;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.company, .school {
+.info-label {
+  font-size: $uni-font-size-base;
+  color: $text-secondary;
+}
+
+.info-value {
   font-size: $uni-font-size-base;
   color: $text-primary;
   font-weight: $font-weight-medium;
 }
 
-.period {
-  font-size: $uni-font-size-sm;
-  color: $text-secondary;
-}
-
-.position, .major {
-  font-size: $uni-font-size-sm;
-  color: $text-regular;
-}
-
-.description, .gpa {
-  font-size: $uni-font-size-sm;
-  color: $text-secondary;
-  line-height: 1.6;
-}
-
-.skill-item {
+.color-theme-preview {
   display: flex;
-  align-items: center;
   gap: $uni-spacing-col-sm;
-  margin-bottom: math.div($uni-spacing-col-sm, 2);
-}
 
-.skill-name {
-  font-size: $uni-font-size-sm;
-  color: $text-regular;
-  width: 100rpx;
-}
-
-.skill-level {
-  flex: 1;
-  height: 8rpx;
-  background: $border-color-light;
-  border-radius: 4rpx;
-  overflow: hidden;
-}
-
-.level-bar {
-  height: 100%;
-  background: $primary-color;
-  border-radius: 4rpx;
-  transition: width 0.3s ease;
+  .color-dot {
+    width: 32rpx;
+    height: 32rpx;
+    border-radius: $uni-border-radius-circle;
+    border: 1rpx solid rgba(0, 0, 0, 0.1);
+  }
 }
 
 /* 配置详情 */
@@ -792,8 +760,8 @@ export default defineComponent({
 .config-card {
   background: $uni-bg-color;
   border-radius: $border-radius-large;
-  padding: $uni-spacing-col-base;
-  margin-bottom: $uni-spacing-col-base;
+  padding: $padding-base;
+  margin-bottom: $margin-base;
   box-shadow: $card-shadow;
 }
 
@@ -801,8 +769,8 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $uni-spacing-col-base;
-  padding-bottom: $uni-spacing-col-sm;
+  margin-bottom: $margin-base;
+  padding-bottom: $padding-small;
   border-bottom: 1rpx solid $border-color-extra-light;
 }
 
@@ -823,7 +791,7 @@ export default defineComponent({
 .config-content {
   display: flex;
   flex-direction: column;
-  gap: math.div($uni-spacing-col-sm, 2);
+  gap: $uni-spacing-col-sm;
 }
 
 .config-item {
@@ -834,18 +802,28 @@ export default defineComponent({
 }
 
 .config-label {
-  font-size: $uni-font-size-sm;
+  font-size: $uni-font-size-base;
   color: $text-secondary;
   flex-shrink: 0;
 }
 
 .config-value {
-  font-size: $uni-font-size-sm;
-  color: $text-regular;
+  font-size: $uni-font-size-base;
+  color: $text-primary;
   font-weight: $font-weight-medium;
   text-align: right;
-  word-break: break-all;
   margin-left: $uni-spacing-col-sm;
+}
+
+.color-value {
+  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  border-radius: $uni-border-radius-sm;
+  color: $uni-text-color-inverse;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);
+  font-family: monospace;
+  font-size: $uni-font-size-sm;
+  min-width: 120rpx;
+  text-align: center;
 }
 
 .components-list {
@@ -856,11 +834,10 @@ export default defineComponent({
 
 .component-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: $uni-spacing-col-sm;
+  padding: $padding-small;
   background: $background-color;
-  border-radius: $uni-border-radius-sm;
+  border-radius: $uni-border-radius-lg;
   border: 1rpx solid $border-color-light;
   transition: all $transition-fast;
 
@@ -869,7 +846,26 @@ export default defineComponent({
   }
 }
 
+.component-index {
+  width: $avatar-size;
+  height: $avatar-size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $avatar-bg-color;
+  border-radius: $uni-border-radius-circle;
+  margin-right: $uni-spacing-col-base;
+  flex-shrink: 0;
+
+  .index-text {
+    font-size: $uni-font-size-base;
+    color: $text-secondary;
+    font-weight: $font-weight-medium;
+  }
+}
+
 .component-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: math.div($uni-spacing-col-sm, 2);
@@ -884,7 +880,6 @@ export default defineComponent({
 .component-type {
   font-size: $uni-font-size-sm;
   color: $text-secondary;
-  font-family: monospace;
 }
 
 .component-actions {
@@ -905,6 +900,16 @@ export default defineComponent({
   }
 }
 
+.empty-components {
+  padding: $padding-base 0;
+  text-align: center;
+
+  .empty-text {
+    font-size: $uni-font-size-base;
+    color: $text-placeholder;
+  }
+}
+
 /* 底部操作栏 */
 .bottom-actions {
   position: fixed;
@@ -922,7 +927,7 @@ export default defineComponent({
 
 .bottom-btn {
   flex: 1;
-  height: 80rpx;
+  height: $button-height;
   border-radius: $uni-border-radius-lg;
   font-size: $uni-font-size-base;
   font-weight: $font-weight-medium;
@@ -942,6 +947,16 @@ export default defineComponent({
   }
 
   &.toggle-status {
+    background: $info-bg;
+    color: $info-color;
+    border: 1rpx solid $info-border;
+
+    &:active {
+      background: color.adjust($info-bg, $lightness: -10%);
+    }
+  }
+
+  &.primary {
     background: $primary-color;
     color: $uni-bg-color;
     border: none;
@@ -980,7 +995,7 @@ export default defineComponent({
   height: 60rpx;
   border: 4rpx solid $border-color-light;
   border-top-color: $primary-color;
-  border-radius: 50%;
+  border-radius: $uni-border-radius-circle;
   animation: spin 1s linear infinite;
 }
 
@@ -995,10 +1010,28 @@ export default defineComponent({
   color: $text-regular;
 }
 
-/* 工具类 */
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* 响应式调整 */
+@media (max-width: $screen-md) {
+  .action-buttons {
+    flex-direction: column;
+
+    .action-btn {
+      width: 100%;
+    }
+  }
+
+  .device-switch .switch-buttons {
+    .device-btn .device-name {
+      display: none;
+    }
+  }
+
+  .bottom-actions {
+    flex-direction: column;
+
+    .bottom-btn {
+      width: 100%;
+    }
+  }
 }
 </style>

@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.handler;
 
-import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class ComponentDataPopulatorFactory {
      * @return
      */
     public IComponentDataPopulatorStrategy getComponentDataPopulatorStrategy(
-            TemplateComponentType component) {
+            TemplateComponentKey component) {
         return strategies.stream()
                 .filter(strategy -> strategy.supports(component))
                 .findFirst()

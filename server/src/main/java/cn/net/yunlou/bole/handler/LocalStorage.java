@@ -77,6 +77,15 @@ public class LocalStorage implements IStorage {
             // 保存文件
             multipartFile.transferTo(targetPath.toFile());
 
+            File file = new File();
+            file.setFileKey(fileKey);
+            file.setFileName(uniqueFilename);
+            file.setOriginalFilename(originalFilename);
+            file.setStoragePath(targetPath.toString());
+            file.setFileSizeBytes(multipartFile.getSize());
+            file.setContentType(multipartFile.getContentType());
+            file.setFileKey(fileKey);
+            file.setFileKey(fileKey);
             // 构建文件信息对象
             return File.builder()
                     .fileName(uniqueFilename)

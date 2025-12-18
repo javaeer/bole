@@ -9,8 +9,8 @@ import lombok.*;
  * FileName: FileDTO Description: Created By laughtiger Created At 2025/12/4 01:24 Modified By
  * Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class FileView extends BaseView {
     private String fileName;
 

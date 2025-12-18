@@ -6,8 +6,8 @@ import lombok.*;
  * FileName: BaseTreeQuery Description: Created By laughtiger Created At 2025/11/30 22:05 Modified
  * By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class BaseTreeQuery extends BaseQuery {
 
     private Long parentId;

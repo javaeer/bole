@@ -13,8 +13,6 @@ import lombok.*;
 @Data
 @TableName(value = "t_config")
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Config implements Serializable {
 
     @TableId(type = IdType.INPUT)

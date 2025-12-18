@@ -4,15 +4,17 @@ import cn.net.yunlou.bole.common.BaseView;
 import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
 import java.util.List;
 import java.util.Map;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import cn.net.yunlou.bole.entity.ResumesTemplateLayout;
+import cn.net.yunlou.bole.entity.ResumesTemplateStyle;
+import lombok.*;
 
 /**
  * FileName: ResumesDTO Description: Created By MR. WANG Created At 2025/11/26 17:45 Modified By
  * Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class ResumesView extends BaseView {
 
     private Long userId;
@@ -26,10 +28,10 @@ public class ResumesView extends BaseView {
     private Integer downloadCount;
 
     /** 样式配置 */
-    private Map<String, Object> globalStyle;
+    private ResumesTemplateStyle globalStyle;
 
     /** 布局配置 */
-    private Map<String, Object> layout;
+    private ResumesTemplateLayout globalLayout;
 
     private List<ResumesTemplateComponent> components;
 }

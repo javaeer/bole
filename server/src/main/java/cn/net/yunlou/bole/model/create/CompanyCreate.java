@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: CompanyAddRequest Description: Created By MR. WANG Created At 2025/11/24 21:47 Modified
  * By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "新增企业请求")
 public class CompanyCreate extends BaseCreate {
 

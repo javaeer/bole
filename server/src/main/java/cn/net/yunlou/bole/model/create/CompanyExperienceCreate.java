@@ -8,7 +8,7 @@ import lombok.*;
  * FileName: CompanyExperienceAddRequest Description: Created By MR. WANG Created At 2025/11/24
  * 23:28 Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "新增企业经历请求")
 public class CompanyExperienceCreate extends BaseCreate {}

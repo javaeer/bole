@@ -152,9 +152,8 @@ public class FileServiceImpl
 
     @Override
     public File getByFileKey(String fileKey) {
-        File entity = File.builder().fileKey(fileKey).build();
-        /*File entity = new File();
-        entity.setFileKey(fileKey);*/
+        File entity = new File();
+        entity.setFileKey(fileKey);
         return baseMapper.selectOne(getBaseQueryWrapper(entity));
     }
 }

@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

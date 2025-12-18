@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.handler;
 
-import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.model.view.UserBasicInfoView;
@@ -39,7 +39,7 @@ public class UserBasicComponentDataPopulatorStrategy implements IComponentDataPo
     }
 
     @Override
-    public boolean supports(TemplateComponentType componentType) {
-        return componentType == TemplateComponentType.USER_BASIC_INFO;
+    public boolean supports(TemplateComponentKey componentType) {
+        return componentType == TemplateComponentKey.USER_BASIC_INFO;
     }
 }

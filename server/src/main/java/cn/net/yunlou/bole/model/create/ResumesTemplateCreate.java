@@ -1,19 +1,18 @@
 package cn.net.yunlou.bole.model.create;
 
 import cn.net.yunlou.bole.common.BaseCreate;
-import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
+import cn.net.yunlou.bole.entity.ResumesTemplateLayout;
+import cn.net.yunlou.bole.entity.ResumesTemplateStyle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
-import java.util.Map;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * FileName: ResumesTemplateAddRequest Description: Created By MR. WANG Created At 2025/11/24 23:56
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "新增简历模板请求")
 public class ResumesTemplateCreate extends BaseCreate {
 
@@ -36,10 +35,10 @@ public class ResumesTemplateCreate extends BaseCreate {
     private String version;
 
     /** 样式配置 */
-    private Map<String, Object> globalStyle;
+    private ResumesTemplateStyle globalStyle;
 
     /** 布局配置 */
-    private Map<String, Object> layout;
+    private ResumesTemplateLayout globalLayout;
 
-    private List<ResumesTemplateComponent> components;
+    private List<ResumesTemplateComponentCreate> components;
 }

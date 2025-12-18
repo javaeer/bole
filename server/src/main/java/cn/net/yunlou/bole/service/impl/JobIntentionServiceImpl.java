@@ -32,7 +32,9 @@ public class JobIntentionServiceImpl
 
     @Override
     public JobIntention getLatest(Long userId) {
-        List<JobIntention> jobIntentions = list(JobIntention.builder().userId(userId).build());
+        JobIntention entity = new JobIntention();
+        entity.setUserId(userId);
+        List<JobIntention> jobIntentions = list(entity);
         return jobIntentions != null ? CollectionUtils.firstElement(jobIntentions) : null;
     }
 

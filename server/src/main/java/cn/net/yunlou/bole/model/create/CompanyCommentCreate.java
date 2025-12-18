@@ -9,8 +9,8 @@ import lombok.*;
  * FileName: CompanyCommentAddRequest Description: Created By MR. WANG Created At 2025/11/24 23:19
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "新增企业评论请求")
 public class CompanyCommentCreate extends BaseCreate {
 

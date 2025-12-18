@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum TemplateComponentType implements IEnum<String> {
+public enum TemplateComponentKey implements IEnum<String> {
     SELF_EVALUATION("SelfEvaluation", "自我评价组件"),
     EDUCATION_EXPERIENCE("EducationExperience", "教育经历组件"),
     PROJECT_EXPERIENCE("ProjectExperience", "项目经历组件"),

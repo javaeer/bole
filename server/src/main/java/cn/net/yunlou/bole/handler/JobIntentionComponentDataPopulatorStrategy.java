@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.handler;
 
-import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.JobIntention;
 import cn.net.yunlou.bole.model.view.JobIntentionView;
@@ -24,8 +24,9 @@ public class JobIntentionComponentDataPopulatorStrategy implements IComponentDat
 
     @Override
     public Map<String, Object> populate(Long userId, Map<String, Object> templateProps) {
-        List<JobIntentionView> jobIntentions =
-                jobIntentionService.listView(JobIntention.builder().userId(userId).build());
+        JobIntention entity = new JobIntention();
+        entity.setUserId(userId);
+        List<JobIntentionView> jobIntentions = jobIntentionService.listView(entity);
 
         Map<String, Object> props = new HashMap<>(templateProps);
 
@@ -46,7 +47,7 @@ public class JobIntentionComponentDataPopulatorStrategy implements IComponentDat
     }
 
     @Override
-    public boolean supports(TemplateComponentType componentType) {
-        return TemplateComponentType.JOB_INTENTION == componentType;
+    public boolean supports(TemplateComponentKey componentType) {
+        return TemplateComponentKey.JOB_INTENTION == componentType;
     }
 }

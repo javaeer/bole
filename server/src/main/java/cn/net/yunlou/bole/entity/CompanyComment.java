@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: CompanyComment Description: 企业评论 与追贴 （parentId） Created By MR. WANG Created At
  * 2025/11/24 21:17 Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

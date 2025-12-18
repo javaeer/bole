@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.handler;
 
-import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.EducationExperience;
 import cn.net.yunlou.bole.model.view.EducationExperienceView;
@@ -25,9 +25,12 @@ public class EducationExperienceComponentDataPopulatorStrategy
 
     @Override
     public Map<String, Object> populate(Long userId, Map<String, Object> templateProps) {
+
+        EducationExperience entity = new EducationExperience();
+        entity.setUserId(userId);
+
         List<EducationExperienceView> educationExperienceViews =
-                educationExperienceService.listView(
-                        EducationExperience.builder().userId(userId).build());
+                educationExperienceService.listView(entity);
 
         Map<String, Object> props = new HashMap<>(templateProps);
 
@@ -51,7 +54,7 @@ public class EducationExperienceComponentDataPopulatorStrategy
     }
 
     @Override
-    public boolean supports(TemplateComponentType componentType) {
-        return TemplateComponentType.EDUCATION_EXPERIENCE == componentType;
+    public boolean supports(TemplateComponentKey componentType) {
+        return TemplateComponentKey.EDUCATION_EXPERIENCE == componentType;
     }
 }

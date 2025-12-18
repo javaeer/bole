@@ -10,8 +10,8 @@ import lombok.*;
  * FileName: BaseTreeEntity Description: 树形结构基础实体类 Created By MR. WANG Created At 2025/11/25 17:00
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEntity {
 
     public static final Long ROOT_ID = 0L;

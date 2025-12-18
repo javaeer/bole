@@ -10,11 +10,11 @@ import lombok.*;
  * FileName: File Description: Created By laughtiger Created At 2025/12/4 00:38 Modified By Modified
  * At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @TableName("t_file")
 public class File extends BaseEntity {
 

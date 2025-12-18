@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.handler;
 
-import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.ProjectExperience;
 import cn.net.yunlou.bole.model.view.ProjectExperienceView;
@@ -51,7 +51,7 @@ public class ProjectExperienceComponentDataPopulatorStrategy
     }
 
     @Override
-    public boolean supports(TemplateComponentType componentType) {
-        return TemplateComponentType.PROJECT_EXPERIENCE == componentType;
+    public boolean supports(TemplateComponentKey componentType) {
+        return TemplateComponentKey.PROJECT_EXPERIENCE == componentType;
     }
 }

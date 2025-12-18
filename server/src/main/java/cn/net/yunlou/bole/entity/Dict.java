@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: Dict Description: Created By laughtiger Created At 2025/11/30 21:33 Modified By
  * Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

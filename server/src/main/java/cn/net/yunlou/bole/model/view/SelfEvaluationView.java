@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
  * FileName: SelfEvaluationView Description: Created By laughtiger Created At 2025/12/14 04:10
  * Modified By Modified At
  */
-@Data
 @EqualsAndHashCode(callSuper = true)
+@Data
 public class SelfEvaluationView extends BaseView {
 
     private String content;

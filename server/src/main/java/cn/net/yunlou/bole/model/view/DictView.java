@@ -7,8 +7,8 @@ import lombok.*;
  * FileName: DictDTO Description: Created By laughtiger Created At 2025/11/30 22:06 Modified By
  * Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class DictView extends BaseTreeView<DictView> {
 
     private String name;

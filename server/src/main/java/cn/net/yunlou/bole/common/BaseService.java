@@ -40,29 +40,29 @@ public abstract class BaseService<
 
     @Override
     public T get(T entity) {
-        return getOne(getBaseQueryWrapper(entity));
+        return super.getOne(getBaseQueryWrapper(entity));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean remove(T entity) {
-        return remove(getBaseQueryWrapper(entity));
+        return super.remove(getBaseQueryWrapper(entity));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean update(T entity) {
-        return update(getBaseUpdateWrapper(entity));
+        return super.update(getBaseUpdateWrapper(entity));
     }
 
     @Override
     public long count(T entity) {
-        return count(getBaseQueryWrapper(entity));
+        return super.count(getBaseQueryWrapper(entity));
     }
 
     @Override
     public List<T> list(T entity) {
-        return list(getBaseQueryWrapper(entity));
+        return super.list(getBaseQueryWrapper(entity));
     }
 
     @Override
@@ -90,7 +90,7 @@ public abstract class BaseService<
             }
             queryWrapper.lt("created_at", DateUtils.truncate(date, Calendar.SECOND));
         }
-        return page(page, queryWrapper);
+        return super.page(page, queryWrapper);
     }
 
     @Override
@@ -100,6 +100,7 @@ public abstract class BaseService<
 
     @Override
     public UpdateWrapper<T> getBaseUpdateWrapper(T entity) {
+        log.error("自行 实现 getBaseUpdateWrapper 方法");
         return SkipInvalidValueWrappers.update(entity);
     }
 
@@ -126,16 +127,16 @@ public abstract class BaseService<
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean saveByCreate(C dto) {
-        T entity = structMapper.createToEntity(dto);
+    public boolean saveByCreate(C create) {
+        T entity = structMapper.createToEntity(create);
         return save(entity);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean updateByEdit(E dto) {
-        T entity = structMapper.editToEntity(dto);
-        return update(entity);
+    public boolean updateByEdit(E edit) {
+        T entity = structMapper.editToEntity(edit);
+        return updateById(entity);
     }
 
     @Override

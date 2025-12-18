@@ -112,10 +112,7 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     @Override
     public LambdaUpdateWrapper<T> set(boolean condition, SFunction<T, ?> column, Object value) {
-        boolean isValid =
-                allowNullValue
-                        ? (value != null || ValueUtils.isValid(value))
-                        : ValueUtils.isValid(value);
+        boolean isValid = allowNullValue ? value != null : ValueUtils.isValid(value);
         if (condition && isValid) {
             return super.set(true, column, value);
         } else if (strictMode && condition) {
@@ -126,10 +123,7 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     @Override
     public LambdaUpdateWrapper<T> set(SFunction<T, ?> column, Object value) {
-        boolean isValid =
-                allowNullValue
-                        ? (value != null || ValueUtils.isValid(value))
-                        : ValueUtils.isValid(value);
+        boolean isValid = allowNullValue ? value != null : ValueUtils.isValid(value);
         if (isValid) {
             return super.set(column, value);
         } else if (strictMode) {

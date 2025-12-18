@@ -3,8 +3,8 @@ package cn.net.yunlou.bole.model.view;
 import cn.net.yunlou.bole.common.BaseTreeView;
 import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class CityView extends BaseTreeView<CityView> {
     private String name;
 

@@ -2,23 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.net.yunlou.bole.mapper.ResumesTemplateMapper">
 
-    <resultMap id="resumesTemplateResultMap" type="cn.net.yunlou.bole.entity.ResumesTemplate">
-        <id property="id" column="id"/>
-        <result property="deleted" column="deleted"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
+    <resultMap id="BaseResultMap" type="cn.net.yunlou.bole.entity.ResumesTemplate">
+        <!-- 继承 BaseEntity 的字段 -->
+        <id column="id" property="id"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="deleted" property="deleted"/>
 
-        <result property="name" column="name"/>
-        <result property="code" column="code"/>
-        <result property="description" column="description"/>
-        <result property="previewImage" column="preview_image"/>
-        <result property="isActive" column="is_active"/>
-        <result property="version" column="version"/>
-        <result property="globalStyle" column="global_style"
-                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
-        <result property="layout" column="layout"
-                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
-        <collection property="components" column="id"
+        <!-- ResumesTemplate 特有字段 -->
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="description" property="description"/>
+        <result column="preview_image" property="previewImage"/>
+        <result column="is_active" property="isActive"/>
+        <result column="version" property="version"/>
+
+        <!-- JSON 类型字段，使用 typeHandler -->
+        <result column="global_style" property="globalStyle"
+                typeHandler="cn.net.yunlou.bole.common.handler.JsonbTypeHandler"/>
+        <result column="global_layout" property="globalLayout"
+                typeHandler="cn.net.yunlou.bole.common.handler.JsonbTypeHandler"/>
+
+        <collection column="id" property="components"
                     select="cn.net.yunlou.bole.mapper.ResumesTemplateComponentMapper.selectListByTemplateId"/>
     </resultMap>
+
 </mapper>

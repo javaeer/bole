@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: BaseTreeDTO Description: Created By laughtiger Created At 2025/11/30 22:06 Modified By
  * Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "树状结构响应基类")
 public class BaseTreeView<V> extends BaseView {
 

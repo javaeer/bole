@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: Banner Description: Created By laughtiger Created At 2025/11/28 11:10 Modified By
  * Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

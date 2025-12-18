@@ -5,22 +5,19 @@ import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.Resumes;
-import cn.net.yunlou.bole.entity.ResumesTemplate;
 import cn.net.yunlou.bole.model.create.ResumesCreate;
 import cn.net.yunlou.bole.model.edit.ResumesEdit;
 import cn.net.yunlou.bole.model.query.ResumesQuery;
 import cn.net.yunlou.bole.model.view.ResumesView;
 import cn.net.yunlou.bole.service.ResumesService;
-import cn.net.yunlou.bole.service.ResumesTemplateService;
-import cn.net.yunlou.bole.service.UserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 /**
  * FileName: ResumesController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
@@ -34,13 +31,10 @@ public class ResumesController {
 
     private final ResumesService resumesService;
 
-    private final ResumesTemplateService resumesTemplateService;
-
-    private final UserService userService;
-
     @PostMapping("add")
     @Operation(summary = "新增简历")
     public BusinessResponse<Boolean> add(@RequestBody ResumesCreate request) {
+        request.setUserId(SecurityContextUtils.getCurrentUserId());
         return BusinessResponse.success(resumesService.saveByCreate(request));
     }
 
@@ -76,20 +70,12 @@ public class ResumesController {
     public BusinessResponse<ResumesView> preview(
             @PathVariable(value = "template_id") Long templateId) {
 
-        ResumesTemplate resumesTemplate = resumesTemplateService.getById(templateId);
-        if (ObjectUtils.isEmpty(resumesTemplate)) {
-            throw new BusinessException(BusinessStatus.NOT_FOUND_RECORD);
-        }
-        Resumes entity =
-                Resumes.builder()
-                        .userId(SecurityContextUtils.getCurrentUserId())
-                        .templateId(templateId)
-                        .layout(resumesTemplate.getLayout())
-                        .globalStyle(resumesTemplate.getGlobalStyle())
-                        .components(resumesTemplate.getComponents())
-                        .build();
-
-        return BusinessResponse.success(resumesService.preview(entity));
+        return BusinessResponse.success(
+                resumesService.preview(
+                        Resumes.builder()
+                                .userId(SecurityContextUtils.getCurrentUserId())
+                                .templateId(templateId)
+                                .build()));
     }
 
     @GetMapping("{id}")

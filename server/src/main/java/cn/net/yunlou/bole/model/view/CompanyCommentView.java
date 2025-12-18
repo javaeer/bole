@@ -7,8 +7,8 @@ import lombok.*;
  * FileName: CompanyCommentDTO Description: Created By MR. WANG Created At 2025/11/26 00:57 Modified
  * By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class CompanyCommentView extends BaseView {
     /** 评论内容 */
     private String content;

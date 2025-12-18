@@ -8,7 +8,7 @@ import lombok.*;
  * FileName: ProjectExperienceEditRequest Description: Created By MR. WANG Created At 2025/11/24
  * 23:53 Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "编辑项目经历请求")
 public class ProjectExperienceEdit extends BaseEdit {}

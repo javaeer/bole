@@ -9,8 +9,8 @@ import lombok.*;
  * FileName: RegisterRequest Description: Created By MR. WANG Created At 2025/11/19 14:23 Modified
  * By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "注册请求实体")
 public class RegisterDTO extends BaseDTO {
 

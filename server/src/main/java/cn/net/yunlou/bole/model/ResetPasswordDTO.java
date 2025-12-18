@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: ResetPasswordRequest Description: Created By laughtiger Created At 2025/11/28 10:50
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class ResetPasswordDTO extends BaseDTO {
 
     /** 验证码 */

@@ -7,6 +7,6 @@ import lombok.*;
  * FileName: SystemBannerEditRequest Description: Created By laughtiger Created At 2025/11/28 13:29
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class BannerEdit extends BaseEdit {}

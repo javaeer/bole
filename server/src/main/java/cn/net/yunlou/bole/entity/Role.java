@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: Role Description: Created By MR. WANG Created At 2025/11/19 14:01 Modified By Modified
  * At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

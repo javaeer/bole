@@ -1,15 +1,14 @@
 package cn.net.yunlou.bole.model.view;
 
 import cn.net.yunlou.bole.common.BaseView;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * FileName: UserBasicInfoView Description: Created By laughtiger Created At 2025/12/14 02:42
  * Modified By Modified At
  */
-@Data
 @EqualsAndHashCode(callSuper = true)
+@Data
 public class UserBasicInfoView extends BaseView {
 
     private String email;

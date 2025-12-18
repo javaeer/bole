@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.handler;
 
-import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import java.util.Map;
 
 /**
@@ -12,5 +12,5 @@ public interface IComponentDataPopulatorStrategy {
     /** 执行 组件数据填充 */
     Map<String, Object> populate(Long userId, Map<String, Object> templateProps);
 
-    boolean supports(TemplateComponentType componentType);
+    boolean supports(TemplateComponentKey componentType);
 }

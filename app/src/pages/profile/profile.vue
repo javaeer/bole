@@ -84,7 +84,7 @@
         </view>
         <view class="menu-item" @click="handleLogout">
           <view class="menu-left">
-            <text class="menu-icon">ℹ️</text>
+            <text class="menu-icon">⏰</text>
             <text class="menu-text">退出登录</text>
           </view>
           <text class="menu-arrow">›</text>

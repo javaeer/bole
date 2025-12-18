@@ -9,8 +9,8 @@ import lombok.*;
  * FileName: BaseEditRequest Description: Created By MR. WANG Created At 2025/11/24 21:50 Modified
  * By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "响应基类")
 public class BaseView extends BaseDTO {
     private Long id;

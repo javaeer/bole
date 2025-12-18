@@ -1,17 +1,16 @@
 package cn.net.yunlou.bole.model.query;
 
 import cn.net.yunlou.bole.common.BaseQuery;
-import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
-import java.util.List;
-import java.util.Map;
+import cn.net.yunlou.bole.entity.ResumesTemplateLayout;
+import cn.net.yunlou.bole.entity.ResumesTemplateStyle;
 import lombok.*;
 
 /**
  * FileName: ResumesTemplateQuery Description: Created By MR. WANG Created At 2025/11/26 17:46
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class ResumesTemplateQuery extends BaseQuery {
     /** 模板名称 */
     private String name;
@@ -32,10 +31,8 @@ public class ResumesTemplateQuery extends BaseQuery {
     private String version;
 
     /** 样式配置 */
-    private Map<String, Object> globalStyle;
+    private ResumesTemplateStyle globalStyle;
 
     /** 布局配置 */
-    private Map<String, Object> layout;
-
-    private List<ResumesTemplateComponent> components;
+    private ResumesTemplateLayout globalLayout;
 }

@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.handler;
 
-import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.Skill;
 import cn.net.yunlou.bole.model.view.SkillView;
@@ -47,7 +47,7 @@ public class SkillComponentDataPopulatorStrategy implements IComponentDataPopula
     }
 
     @Override
-    public boolean supports(TemplateComponentType componentType) {
-        return TemplateComponentType.SKILLS == componentType;
+    public boolean supports(TemplateComponentKey componentType) {
+        return TemplateComponentKey.SKILLS == componentType;
     }
 }

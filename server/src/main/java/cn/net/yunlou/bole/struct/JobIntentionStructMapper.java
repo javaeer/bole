@@ -6,13 +6,14 @@ import cn.net.yunlou.bole.model.create.JobIntentionCreate;
 import cn.net.yunlou.bole.model.edit.JobIntentionEdit;
 import cn.net.yunlou.bole.model.query.JobIntentionQuery;
 import cn.net.yunlou.bole.model.view.JobIntentionView;
+import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 
 /**
  * FileName: JobIntentionStructMapper Description: Created By laughtiger Created At 2025/12/13 23:44
  * Modified By Modified At
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface JobIntentionStructMapper
         extends BaseStructMapper<
                 JobIntention,

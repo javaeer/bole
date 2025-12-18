@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: UpdateUserRequest Description: Created By MR. WANG Created At 2025/11/19 14:14 Modified
  * By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "编辑用户请求")
 public class UserEdit extends BaseEdit {
 

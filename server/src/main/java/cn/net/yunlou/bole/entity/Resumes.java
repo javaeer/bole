@@ -1,15 +1,14 @@
 package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
+import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import java.util.List;
-import java.util.Map;
 import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,14 +25,22 @@ public class Resumes extends BaseEntity {
 
     private Integer downloadCount;
 
+    /**
+     * 来自模板
+     */
+
     /** 样式配置 */
-    @TableField(typeHandler = JacksonTypeHandler.class)
-    private Map<String, Object> globalStyle;
+    @TableField(typeHandler = JsonbTypeHandler.class)
+    private ResumesTemplateStyle globalStyle;
 
     /** 布局配置 */
-    @TableField(typeHandler = JacksonTypeHandler.class)
-    private Map<String, Object> layout;
+    @TableField(typeHandler = JsonbTypeHandler.class)
+    private ResumesTemplateLayout globalLayout;
 
-    @TableField(typeHandler = JacksonTypeHandler.class)
+    //替换真实数据
+    @TableField(typeHandler = JsonbTypeHandler.class)
     private List<ResumesTemplateComponent> components;
+
+    @TableField(exist = false)
+    private ResumesTemplate template;
 }

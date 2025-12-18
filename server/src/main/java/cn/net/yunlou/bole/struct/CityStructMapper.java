@@ -9,6 +9,6 @@ import cn.net.yunlou.bole.model.view.CityView;
 import org.mapstruct.*;
 
 /** 映射器 */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface CityStructMapper
         extends BaseStructMapper<City, CityCreate, CityView, CityEdit, CityQuery> {}

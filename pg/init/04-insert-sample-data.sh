@@ -153,8 +153,6 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     (5, 3, 2, 'Java开发工程师', '2018-07-01', '2021-08-31', false, '参与电商平台开发', '["处理高并发场景", "系统稳定性提升"]', 1),
     (6, 3, 2, '系统架构师', '2021-09-01', NULL, true, '负责系统架构设计', '["设计微服务架构", "技术团队建设"]', 2);
 
-
-
     -- 插入5个简历模板
     INSERT INTO bole_app.t_resumes_template (name, code, description, preview_image, is_active, version, global_style, layout, created_at) VALUES
     -- 1. 经典简洁模板
@@ -334,18 +332,13 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         CURRENT_TIMESTAMP
     );
 
-    -- 插入测试数据到简历模板组件表
-    -- 假设有一个简历模板ID为 1
-
-    -- 1. ResumeBasicInfo（基本信息组件）
-    INSERT INTO bole_app.t_resumes_template_component 
-    (template_id, name, component, props, styles, created_at, updated_at, deleted)
-    VALUES 
-    (
-        1, 
-        '基本信息', 
-        'ResumeBasicInfo', 
-        '{
+-- 1. ResumeBasicInfo（基本信息组件）
+INSERT INTO bole_app.t_resumes_component
+(name, key, default_config, created_at, updated_at, deleted)
+VALUES (
+        '基本信息',
+        'ResumeBasicInfo',
+        '{"props":{
             "title": "基本信息",
             "showAvatar": true,
             "avatarSize": "medium",
@@ -357,8 +350,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "showLocation": true,
             "showWorkYears": true,
             "fields": ["name", "gender", "birthday", "phone", "email", "location", "workYears"]
-        }'::jsonb,
-        '{
+        },"styles":{
             "fontSize": "16px",
             "titleColor": "#333333",
             "fieldColor": "#666666",
@@ -366,21 +358,17 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "padding": "20px",
             "borderRadius": "8px",
             "avatarBorder": "2px solid #e8e8e8"
-        }'::jsonb,
+        }}'::jsonb,
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
-        0
-    );
+        0);
 
-    -- 2. ResumeJobIntention（求职意向组件）
-    INSERT INTO bole_app.t_resumes_template_component 
-    (template_id, name, component, props, styles, created_at, updated_at, deleted)
-    VALUES 
-    (
-        1, 
-        '求职意向', 
-        'ResumeJobIntention', 
-        '{
+-- 2. ResumeJobIntention（求职意向组件）
+INSERT INTO bole_app.t_resumes_component
+(name, key, default_config, created_at, updated_at, deleted)
+VALUES ('求职意向',
+        'ResumeJobIntention',
+        '{"props":{
             "title": "求职意向",
             "showExpectedPosition": true,
             "showExpectedIndustry": true,
@@ -391,8 +379,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "showCurrentStatus": true,
             "salaryUnit": "K",
             "locationType": "city"
-        }'::jsonb,
-        '{
+        },"styles":{
             "fontSize": "16px",
             "titleColor": "#333333",
             "highlightColor": "#1890ff",
@@ -400,21 +387,17 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "padding": "20px",
             "borderRadius": "8px",
             "boxShadow": "0 2px 8px rgba(0,0,0,0.1)"
-        }'::jsonb,
+        }}'::jsonb,
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
-        0
-    );
+        0);
 
-    -- 3. ResumeWorkExperience（工作经历组件）
-    INSERT INTO bole_app.t_resumes_template_component 
-    (template_id, name, component, props, styles, created_at, updated_at, deleted)
-    VALUES 
-    (
-        1, 
-        '工作经历', 
-        'ResumeWorkExperience', 
-        '{
+-- 3. ResumeWorkExperience（工作经历组件）
+INSERT INTO bole_app.t_resumes_component
+(name, key, default_config, created_at, updated_at, deleted)
+VALUES ('工作经历',
+        'ResumeWorkExperience',
+        '{"props":{
             "title": "工作经历",
             "maxItems": 5,
             "showCompanyLogo": true,
@@ -427,8 +410,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "showSkills": true,
             "orderBy": "startDate",
             "orderDirection": "desc"
-        }'::jsonb,
-        '{
+        },"styles":{
             "fontSize": "14px",
             "titleColor": "#333333",
             "companyColor": "#1890ff",
@@ -438,21 +420,18 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "borderRadius": "8px",
             "itemSpacing": "16px",
             "timelineColor": "#e8e8e8"
-        }'::jsonb,
+        }}'::jsonb,
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
-        0
-    );
+        0);
 
-    -- 4. ResumeEducation（教育背景组件）
-    INSERT INTO bole_app.t_resumes_template_component 
-    (template_id, name, component, props, styles, created_at, updated_at, deleted)
-    VALUES 
-    (
-        1, 
-        '教育背景', 
-        'ResumeEducation', 
-        '{
+-- 4. ResumeEducation（教育背景组件）
+INSERT INTO bole_app.t_resumes_component
+(name, key, default_config, created_at, updated_at, deleted)
+VALUES (
+        '教育背景',
+        'ResumeEducation',
+        '{"props":{
             "title": "教育背景",
             "maxItems": 3,
             "showSchoolLogo": true,
@@ -466,8 +445,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "orderBy": "graduationDate",
             "orderDirection": "desc",
             "degreeFormat": "full"
-        }'::jsonb,
-        '{
+        },"styles":{
             "fontSize": "14px",
             "titleColor": "#333333",
             "schoolColor": "#52c41a",
@@ -477,21 +455,18 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "borderRadius": "8px",
             "itemSpacing": "12px",
             "borderLeft": "3px solid #52c41a"
-        }'::jsonb,
+        }}'::jsonb,
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
-        0
-    );
+        0);
 
-    -- 5. ResumeSelfEvaluation（自我评价组件）
-    INSERT INTO bole_app.t_resumes_template_component 
-    (template_id, name, component, props, styles, created_at, updated_at, deleted)
-    VALUES 
-    (
-        1, 
-        '自我评价', 
-        'ResumeSelfEvaluation', 
-        '{
+-- 5. ResumeSelfEvaluation（自我评价组件）
+INSERT INTO bole_app.t_resumes_component
+(name, key, default_config, created_at, updated_at, deleted)
+VALUES (
+        '自我评价',
+        'ResumeSelfEvaluation',
+        '{"props":{
             "title": "自我评价",
             "maxLength": 500,
             "showCharacterTraits": true,
@@ -502,8 +477,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "characterTraits": ["责任心强", "学习能力强", "团队协作"],
             "format": "paragraph",
             "allowRichText": true
-        }'::jsonb,
-        '{
+        },"styles":{
             "fontSize": "14px",
             "titleColor": "#333333",
             "contentColor": "#555555",
@@ -513,21 +487,18 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "lineHeight": "1.8",
             "border": "1px solid #f0f0f0",
             "highlightBackground": "#fff7e6"
-        }'::jsonb,
+        }}'::jsonb,
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
-        0
-    );
+        0);
 
-    -- 6. 额外添加一个技能专长组件（ResumeSkills）
-    INSERT INTO bole_app.t_resumes_template_component 
-    (template_id, name, component, props, styles, created_at, updated_at, deleted)
-    VALUES 
-    (
-        1, 
-        '技能专长', 
-        'ResumeSkills', 
-        '{
+-- 6. 额外添加一个技能专长组件（ResumeSkills）
+INSERT INTO bole_app.t_resumes_component
+(name, key, default_config, created_at, updated_at, deleted)
+VALUES (
+        '技能专长',
+        'ResumeSkills',
+        '{"props":{
             "title": "技能专长",
             "skillCategories": ["编程语言", "框架工具", "数据库", "其他技能"],
             "showSkillLevel": true,
@@ -535,8 +506,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "skillLevelType": "progress",
             "maxSkillsPerCategory": 8,
             "groupByCategory": true
-        }'::jsonb,
-        '{
+        },"styles":{
             "fontSize": "14px",
             "titleColor": "#333333",
             "skillNameColor": "#555555",
@@ -546,12 +516,10 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
             "borderRadius": "8px",
             "categorySpacing": "24px",
             "skillSpacing": "12px"
-        }'::jsonb,
+        }}'::jsonb,
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
-        0
-    );
-
+        0);
 
 
     -- 插入技能数据
@@ -617,7 +585,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     SELECT setval('bole_app.t_work_experiences_id_seq', (SELECT MAX(id) FROM bole_app.t_work_experiences));
     SELECT setval('bole_app.t_resumes_id_seq', (SELECT MAX(id) FROM bole_app.t_resumes));
     SELECT setval('bole_app.t_resumes_template_id_seq', (SELECT MAX(id) FROM bole_app.t_resumes_template));
-    SELECT setval('bole_app.t_resumes_template_component_id_seq', (SELECT MAX(id) FROM bole_app.t_resumes_template_component));
+    SELECT setval('bole_app.t_resumes_component_id_seq', (SELECT MAX(id) FROM bole_app.t_resumes_component));
     SELECT setval('bole_app.t_skill_id_seq', (SELECT MAX(id) FROM bole_app.t_skill));
     SELECT setval('bole_audit.audit_logs_id_seq', (SELECT MAX(id) FROM bole_audit.audit_logs));
 EOSQL

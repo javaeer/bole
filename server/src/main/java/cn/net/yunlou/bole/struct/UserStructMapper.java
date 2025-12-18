@@ -8,13 +8,14 @@ import cn.net.yunlou.bole.model.query.UserQuery;
 import cn.net.yunlou.bole.model.view.UserBasicInfoView;
 import cn.net.yunlou.bole.model.view.UserView;
 import java.util.Map;
+import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 
 /**
  * FileName: UserStructMapper Description: Created By MR. WANG Created At 2025/11/26 19:17 Modified
  * By Modified At
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface UserStructMapper
         extends BaseStructMapper<User, UserCreate, UserView, UserEdit, UserQuery> {
 

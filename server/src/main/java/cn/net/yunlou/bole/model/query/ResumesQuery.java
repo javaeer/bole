@@ -8,7 +8,7 @@ import lombok.*;
  * FileName: ResumesSearchRequest Description: Created By MR. WANG Created At 2025/11/24 22:25
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Schema(description = "查询简历请求")
 public class ResumesQuery extends BaseQuery {}

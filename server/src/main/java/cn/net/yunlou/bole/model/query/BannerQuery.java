@@ -7,6 +7,6 @@ import lombok.*;
  * FileName: SystemBannerQuery Description: Created By laughtiger Created At 2025/11/28 13:23
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class BannerQuery extends BaseQuery {}

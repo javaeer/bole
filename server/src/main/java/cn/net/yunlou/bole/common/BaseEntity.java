@@ -3,27 +3,28 @@ package cn.net.yunlou.bole.common;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
-import lombok.*;
+import lombok.Data;
+import org.apache.ibatis.type.JdbcType;
 
 /**
  * FileName: BaseEntity Description: 实体对象 数据库表结构 一致 Created By MR. WANG Created At 2025/11/19 13:45
  * Modified By Modified At
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
+@Schema(description = "数据库实体")
 public class BaseEntity implements Serializable {
-
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @TableField(value = "created_at", fill = FieldFill.INSERT, jdbcType = JdbcType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE, jdbcType = JdbcType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 

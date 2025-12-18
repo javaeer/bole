@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.handler;
 
-import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.WorkExperience;
 import cn.net.yunlou.bole.model.view.WorkExperienceView;
@@ -49,7 +49,7 @@ public class WorkExperienceComponentDataPopulatorStrategy
     }
 
     @Override
-    public boolean supports(TemplateComponentType componentType) {
-        return TemplateComponentType.WORK_EXPERIENCE == componentType;
+    public boolean supports(TemplateComponentKey componentType) {
+        return TemplateComponentKey.WORK_EXPERIENCE == componentType;
     }
 }

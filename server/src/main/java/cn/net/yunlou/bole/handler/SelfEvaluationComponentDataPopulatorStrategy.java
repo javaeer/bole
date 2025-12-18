@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.handler;
 
-import cn.net.yunlou.bole.common.constant.TemplateComponentType;
+import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.entity.SelfEvaluation;
 import cn.net.yunlou.bole.model.view.SelfEvaluationView;
@@ -25,8 +25,9 @@ public class SelfEvaluationComponentDataPopulatorStrategy
 
     @Override
     public Map<String, Object> populate(Long userId, Map<String, Object> templateProps) {
-        List<SelfEvaluationView> selfEvaluationViews =
-                selfEvaluationService.listView(SelfEvaluation.builder().userId(userId).build());
+        SelfEvaluation entity = new SelfEvaluation();
+        entity.setUserId(userId);
+        List<SelfEvaluationView> selfEvaluationViews = selfEvaluationService.listView(entity);
 
         Map<String, Object> props = new HashMap<>(templateProps);
 
@@ -50,7 +51,7 @@ public class SelfEvaluationComponentDataPopulatorStrategy
     }
 
     @Override
-    public boolean supports(TemplateComponentType componentType) {
-        return TemplateComponentType.SELF_EVALUATION == componentType;
+    public boolean supports(TemplateComponentKey componentType) {
+        return TemplateComponentKey.SELF_EVALUATION == componentType;
     }
 }

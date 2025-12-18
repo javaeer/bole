@@ -8,8 +8,8 @@ import lombok.*;
  * FileName: ChangePasswordRequest Description: Created By laughtiger Created At 2025/11/28 10:34
  * Modified By Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class ChangePasswordDTO extends BaseDTO {
 
     @NotBlank(message = "旧密码不得为空")
