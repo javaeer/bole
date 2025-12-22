@@ -81,7 +81,7 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  config: {
+  component: {
     type: Object,
     default: () => ({})
   },
@@ -92,11 +92,25 @@ const props = defineProps({
 })
 
 // 提取配置
-const componentProps = computed(() => props.config.props || {})
-const componentStyles = computed(() => props.config.styles || {})
+const componentProps = computed(() => props.component.props || {})
+const componentStyles = computed(() => props.component.styles || {})
 
 // 公司数据
-const companies = computed(() => componentProps.value.experiences || [])
+const companies = computed(() => {
+  const raw = componentProps.value.experiences || []
+  return raw.map(exp => ({
+    id: exp.id || Date.now(),
+    name: exp.company || exp.companyName || '未指定公司',
+    position: exp.position || exp.jobTitle || '职位未填写',
+    description: exp.description || '',
+    startDate: exp.startDate || '',
+    endDate: exp.endDate || '',
+    department: exp.department || '',
+    skills: exp.skills || exp.technologies || [],
+    achievements: exp.achievements || [],
+    duration: exp.duration || ''
+  }))
+})
 const hasCompanyData = computed(() => companies.value.length > 0)
 
 // 样式相关
@@ -122,7 +136,7 @@ const formatDate = (dateStr) => {
 // 组件加载日志
 console.log('公司经历组件加载完成', {
   公司经历数量: companies.value.length,
-  配置: props.config
+  配置: props.component
 })
 </script>
 

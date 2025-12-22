@@ -1,5 +1,5 @@
 <template>
-  <view :class="['work-experience', `layout-${computedLayout}`, `theme-${theme}`]">
+  <view :class="['work-experience', `layout-${layout}`, `theme-${theme}`]" :style="computedStyle">
     <view class="section-header">
       <text class="section-title">{{ title }}</text>
       <view class="section-divider"></view>
@@ -16,14 +16,14 @@
       <block v-for="(exp, index) in sortedExperiences" :key="exp.id || index">
         <view class="experience-item" :style="itemStyle">
           <!-- 时间线布局 -->
-          <view v-if="computedLayout === 'timeline'" class="timeline-layout">
+          <view v-if="layout === 'timeline'" class="timeline-layout">
             <view class="timeline-dot"></view>
             <view v-if="index < sortedExperiences.length - 1" class="timeline-line"></view>
 
             <view class="experience-content">
               <view class="company-header">
                 <view class="company-info">
-                  <text class="company-name">{{ exp.company || '未知公司' }}</text>
+                  <text class="company-name">{{ exp.company }}</text>
                   <text class="duration">
                     {{ formatDate(exp.startDate) }} - {{ exp.endDate ? formatDate(exp.endDate) : '至今' }}
                     <text v-if="exp.duration"> ({{ exp.duration }})</text>
@@ -76,7 +76,7 @@
           <view v-else class="card-layout">
             <view class="experience-card">
               <view class="card-header">
-                <text class="company-name">{{ exp.company || '未知公司' }}</text>
+                <text class="company-name">{{ exp.company }}</text>
                 <text class="position">{{ exp.position }}</text>
               </view>
 
@@ -92,6 +92,35 @@
               <view v-if="exp.description && showWorkContent" class="card-desc">
                 <text class="desc-text">{{ exp.description }}</text>
               </view>
+
+              <!-- 卡片布局下的成就 -->
+              <view v-if="showAchievements && exp.achievements && exp.achievements.length > 0" class="card-achievements">
+                <text class="achievements-title">主要成就：</text>
+                <view class="achievements-list">
+                  <view
+                    v-for="(achievement, aIndex) in exp.achievements"
+                    :key="aIndex"
+                    class="achievement-item"
+                  >
+                    <text class="achievement-bullet">•</text>
+                    <text class="achievement-text">{{ achievement }}</text>
+                  </view>
+                </view>
+              </view>
+
+              <!-- 卡片布局下的技能 -->
+              <view v-if="showSkills && exp.skills && exp.skills.length > 0" class="card-skills">
+                <text class="skills-title">使用技能：</text>
+                <view class="skills-container">
+                  <text
+                    v-for="(skill, sIndex) in exp.skills"
+                    :key="sIndex"
+                    class="skill-tag"
+                  >
+                    {{ skill }}
+                  </text>
+                </view>
+              </view>
             </view>
           </view>
         </view>
@@ -104,7 +133,7 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  config: {
+  component: {
     type: Object,
     default: () => ({})
   },
@@ -115,12 +144,28 @@ const props = defineProps({
 })
 
 // 提取配置
-const componentProps = computed(() => props.config.props || {})
-const componentStyles = computed(() => props.config.styles || {})
-const defaultConfig = computed(() => props.config.defaultConfig || {})
+const componentProps = computed(() => props.component?.props || {})
+const componentStyles = computed(() => props.component?.styles || {})
+const defaultConfig = computed(() => props.component?.defaultConfig || {})
 
 // 工作经历数据
-const experiences = computed(() => componentProps.value.experiences || [])
+const experiences = computed(() => {
+  const raw = componentProps.value.experiences || []
+  return raw.map(exp => ({
+    id: exp.id || Date.now(),
+    company: exp.company || exp.companyName || '未指定公司',
+    position: exp.position || exp.jobTitle || '职位未填写',
+    description: exp.description || exp.workContent || '',
+    startDate: exp.startDate || exp.startTime || '',
+    endDate: exp.endDate || exp.endTime || '',
+    isCurrent: exp.isCurrent || false,
+    department: exp.department || exp.dept || '',
+    skills: exp.skills || exp.technologies || [],
+    achievements: exp.achievements || exp.accomplishments || [],
+    duration: exp.duration || ''
+  }))
+})
+
 const hasExperienceData = computed(() => experiences.value.length > 0)
 
 // 标题
@@ -132,10 +177,10 @@ const showWorkContent = computed(() => componentProps.value.showWorkContent ?? d
 const showAchievements = computed(() => componentProps.value.showAchievements ?? defaultConfig.value.props?.showAchievements ?? true)
 const showSkills = computed(() => componentProps.value.showSkills ?? defaultConfig.value.props?.showSkills ?? true)
 
-// 布局类型（修复：确保不会访问 undefined 的 layout）
-const computedLayout = computed(() => {
-  // 优先使用 styles.layout，然后是 defaultConfig.props?.layout，最后是默认值
+// 布局
+const layout = computed(() => {
   return componentStyles.value.layout ||
+    componentProps.value.layout ||
     defaultConfig.value.props?.layout ||
     'card'
 })
@@ -148,7 +193,7 @@ const orderDirection = computed(() => componentProps.value.orderDirection || def
 const sortedExperiences = computed(() => {
   const exps = [...experiences.value]
 
-  if (!orderBy.value) return exps
+  if (!orderBy.value || exps.length === 0) return exps
 
   return exps.sort((a, b) => {
     let aValue = a[orderBy.value]
@@ -160,6 +205,10 @@ const sortedExperiences = computed(() => {
       bValue = new Date(bValue).getTime()
     }
 
+    // 处理空值情况
+    if (aValue === undefined || aValue === null) aValue = 0
+    if (bValue === undefined || bValue === null) bValue = 0
+
     if (orderDirection.value === 'asc') {
       return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
     } else {
@@ -169,16 +218,18 @@ const sortedExperiences = computed(() => {
 })
 
 // 样式相关
+const computedStyle = computed(() => ({
+  '--primary-color': componentStyles.value.primaryColor || '#d4af37'
+}))
+
 const itemStyle = computed(() => ({
-  background: componentStyles.value.backgroundColor || '#ffffff',
-  padding: componentStyles.value.padding || '20px'
+  background: componentStyles.value.cardBackground || componentStyles.value.backgroundColor || '#ffffff'
 }))
 
 // 格式化日期
 const formatDate = (dateStr) => {
   if (!dateStr) return ''
 
-  // 简单格式化：2021-07-01 -> 2021.07
   const match = dateStr.match(/^(\d{4})-(\d{2})/)
   if (match) {
     return `${match[1]}.${match[2]}`
@@ -191,7 +242,7 @@ console.log('工作经历组件加载完成', {
   工作经历数量: experiences.value.length,
   排序方式: orderBy.value,
   排序方向: orderDirection.value,
-  配置: props.config
+  布局: layout.value
 })
 </script>
 
@@ -208,6 +259,22 @@ console.log('工作经历组件加载完成', {
       margin-bottom: 24rpx;
       box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
       border: 1rpx solid #f0f0f0;
+
+      .card-achievements,
+      .card-skills {
+        margin-top: 20rpx;
+        padding-top: 20rpx;
+        border-top: 1rpx solid #f0f0f0;
+
+        .achievements-title,
+        .skills-title {
+          color: #666;
+          font-size: 26rpx;
+          font-weight: 500;
+          display: block;
+          margin-bottom: 12rpx;
+        }
+      }
     }
   }
 
@@ -483,10 +550,58 @@ console.log('工作经历组件加载完成', {
       }
 
       .card-desc {
+        margin-bottom: 16rpx;
+
         .desc-text {
           color: #666;
           font-size: 26rpx;
           line-height: 1.6;
+        }
+      }
+
+      .card-achievements {
+        .achievements-list {
+          .achievement-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8rpx;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            .achievement-bullet {
+              color: #d4af37;
+              margin-right: 12rpx;
+              flex-shrink: 0;
+              font-weight: bold;
+              margin-top: 4rpx;
+            }
+
+            .achievement-text {
+              color: #555;
+              font-size: 24rpx;
+              line-height: 1.5;
+              flex: 1;
+            }
+          }
+        }
+      }
+
+      .card-skills {
+        .skills-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12rpx;
+
+          .skill-tag {
+            background: #f5f7fa;
+            color: #555;
+            font-size: 22rpx;
+            padding: 6rpx 12rpx;
+            border-radius: 6rpx;
+            border: 1rpx solid #e4e7ed;
+          }
         }
       }
     }

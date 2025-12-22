@@ -155,7 +155,7 @@
 			}
 		},
 		{
-			"path": "pages/resumes/create",
+			"path": "pages/resumes/edit",
 			"style": {
 				"navigationBarTitleText": "生成简历"
 			}
@@ -167,15 +167,15 @@
 			}
 		},
 		{
-			"path": "pages/editor/editor",
+			"path": "pages/test/resumes",
 			"style": {
 				"navigationBarTitleText": ""
 			}
 		},
 		{
-			"path": "pages/test/resumes",
+			"path": "pages/resumes/detail",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "简历详情"
 			}
 		}
 ],

@@ -102,7 +102,7 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  config: {
+  component: {
     type: Object,
     default: () => ({})
   },
@@ -113,11 +113,27 @@ const props = defineProps({
 })
 
 // 提取配置
-const componentProps = computed(() => props.config.props || {})
-const componentStyles = computed(() => props.config.styles || {})
+const componentProps = computed(() => props.component.props || {})
+const componentStyles = computed(() => props.component.styles || {})
 
 // 项目数据
-const projects = computed(() => componentProps.value.experiences || [])
+// 项目数据适配
+const projects = computed(() => {
+  const raw = componentProps.value.experiences || []
+  return raw.map(project => ({
+    id: project.id || Date.now(),
+    name: project.name || project.projectName || '未指定项目',
+    role: project.role || project.position || '角色未填写',
+    description: project.description || '',
+    startDate: project.startDate || '',
+    endDate: project.endDate || '',
+    company: project.company || '',
+    technologies: project.technologies || project.skills || [],
+    responsibilities: project.responsibilities || [],
+    achievements: project.achievements || [],
+    link: project.link || ''
+  }))
+})
 const hasProjectData = computed(() => projects.value.length > 0)
 
 // 样式相关
@@ -154,7 +170,7 @@ const openLink = (url) => {
 // 组件加载日志
 console.log('项目经历组件加载完成', {
   项目经历数量: projects.value.length,
-  配置: props.config
+  配置: props.component
 })
 </script>
 

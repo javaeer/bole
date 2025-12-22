@@ -171,7 +171,7 @@ const handleEditProfile = () => {
 
 const handleCreateResume = () => {
   uni.navigateTo({
-    url: "/pages/resumes/create",
+    url: "/pages/resumes/edit",
   });
 };
 

@@ -147,7 +147,7 @@ const handleUnfavoriteTemplate = (id: number) => {
 
 const handleUseTemplate = (id: number) => {
   uni.navigateTo({
-    url: `/pages/resumes/create?templateId=${id}`
+    url: `/pages/resumes/edit?templateId=${id}`
   })
 }
 

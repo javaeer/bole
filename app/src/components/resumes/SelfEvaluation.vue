@@ -62,7 +62,7 @@
 import { computed, ref } from 'vue'
 
 const props = defineProps({
-  config: {
+  component: {
     type: Object,
     default: () => ({})
   },
@@ -76,16 +76,29 @@ const showAll = ref(false)
 const maxDisplayItems = ref(2)
 
 // 提取配置
-const componentProps = computed(() => props.config.props || {})
-const componentStyles = computed(() => props.config.styles || {})
-const defaultConfig = computed(() => props.config.defaultConfig || {})
+const componentProps = computed(() => props.component?.props || {})
+const componentStyles = computed(() => props.component?.styles || {})
+const defaultConfig = computed(() => props.component?.defaultConfig || {})
 
 // 标题
 const title = computed(() => componentProps.value.title || defaultConfig.value.props?.title || '自我评价')
 
-// 评价数据
+// 评价数据适配
 const evaluations = computed(() => {
   const rawEvaluations = componentProps.value.evaluations || []
+
+  if (rawEvaluations.length === 0) {
+    // 如果没有数组数据，尝试从单个字段构造
+    const content = componentProps.value.content
+    if (content) {
+      return [{
+        id: 1,
+        content: content,
+        createdAt: componentProps.value.createdAt
+      }]
+    }
+  }
+
   return rawEvaluations.sort((a, b) => {
     // 按ID降序排列，显示最新的评价
     return (b.id || 0) - (a.id || 0)
@@ -104,12 +117,12 @@ const displayEvaluations = computed(() => {
 
 // 默认配置中的性格特点
 const characterTraits = computed(() => {
-  return defaultConfig.value.props?.characterTraits || []
+  return componentProps.value.characterTraits || defaultConfig.value.props?.characterTraits || []
 })
 
 // 显示选项
-const showCharacterTraits = computed(() => defaultConfig.value.props?.showCharacterTraits !== false)
-const showCreateTime = computed(() => componentProps.value.showCreateTime !== false)
+const showCharacterTraits = computed(() => componentProps.value.showCharacterTraits ?? defaultConfig.value.props?.showCharacterTraits ?? true)
+const showCreateTime = computed(() => componentProps.value.showCreateTime ?? defaultConfig.value.props?.showCreateTime ?? true)
 
 // 样式相关
 const computedStyle = computed(() => ({
@@ -117,7 +130,7 @@ const computedStyle = computed(() => ({
 }))
 
 const itemStyle = computed(() => ({
-  background: componentStyles.value.cardBackground || '#ffffff',
+  background: componentStyles.value.cardBackground || componentStyles.value.backgroundColor || '#ffffff',
   padding: componentStyles.value.padding || '20px'
 }))
 
@@ -150,8 +163,7 @@ const toggleShowAll = () => {
 console.log('自我评价组件加载完成', {
   评价数量: evaluations.value.length,
   显示数量: displayEvaluations.value.length,
-  性格特点数量: characterTraits.value.length,
-  配置: props.config
+  性格特点数量: characterTraits.value.length
 })
 </script>
 

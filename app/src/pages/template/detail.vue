@@ -271,7 +271,7 @@ const handleUseTemplate = () => {
   })
   // 导航到使用模板创建简历的页面
   uni.navigateTo({
-    url: `/pages/resumes/create?templateId=${template.value.id}&templateCode=${template.value.code}`,
+    url: `/pages/resumes/edit?templateId=${template.value.id}`,
   })
 }
 

@@ -351,7 +351,7 @@ const handleViewTemplate = (template: TemplateResult) => {
 const handleSelected = (template: TemplateResult) => {
   setCurrentTemplate(template);
   uni.navigateTo({
-    url: `/pages/resumes/create?templateId=${template.id}`,
+    url: `/pages/resumes/edit?templateId=${template.id}`,
   });
 };
 

@@ -111,7 +111,7 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  config: {
+  component: {
     type: Object,
     default: () => ({})
   },
@@ -122,15 +122,31 @@ const props = defineProps({
 })
 
 // 提取配置
-const componentProps = computed(() => props.config.props || {})
-const componentStyles = computed(() => props.config.styles || {})
+const componentProps = computed(() => props.component?.props || {})
+const componentStyles = computed(() => props.component?.styles || {})
 
-// 技能数据
-const skills = computed(() => componentProps.value.skills || [])
+// 技能数据适配
+const skills = computed(() => {
+  const rawSkills = componentProps.value.skills || []
+  return rawSkills.map(skill => ({
+    id: skill.id || Date.now(),
+    name: skill.name || '技能名称',
+    category: skill.category || '其他',
+    proficiencyPercent: skill.proficiencyPercent || 0,
+    level: skill.level || '初级',
+    experienceYears: skill.experienceYears || 0,
+    description: skill.description || '',
+    tags: skill.tags || '',
+    isCertified: skill.isCertified || false,
+    certificateName: skill.certificateName || '',
+    certificateDate: skill.certificateDate || ''
+  }))
+})
+
 const hasSkillsData = computed(() => skills.value.length > 0)
 
 // 显示设置
-const showSkillLevel = computed(() => componentProps.value.skillLevel !== false)
+const showSkillLevel = computed(() => componentProps.value.skillLevel ?? true)
 const skillLevelType = computed(() => componentProps.value.skillLevelType || 'progress')
 const groupByCategory = computed(() => componentProps.value.groupByCategory !== false)
 const showExperienceYears = computed(() => componentProps.value.showExperienceYears !== false)
@@ -154,7 +170,7 @@ const computedStyle = computed(() => ({
 }))
 
 const itemStyle = computed(() => ({
-  background: componentStyles.value.cardBackground || '#ffffff'
+  background: componentStyles.value.cardBackground || componentStyles.value.backgroundColor || '#ffffff'
 }))
 
 // 获取指定分类的技能
@@ -166,13 +182,19 @@ const getSkillsByCategory = (category) => {
 // 获取技能标签
 const getSkillTags = (tags) => {
   if (!tags) return []
+  if (Array.isArray(tags)) return tags
   return tags.split(',').map(tag => tag.trim()).filter(tag => tag)
 }
 
 // 格式化日期
 const formatDate = (dateStr) => {
   if (!dateStr) return ''
-  return dateStr.replace('-', '.')
+
+  const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (match) {
+    return `${match[1]}.${match[2]}.${match[3]}`
+  }
+  return dateStr
 }
 
 // 不分分类时显示的技能
@@ -183,8 +205,7 @@ const displaySkills = computed(() => {
 // 组件加载日志
 console.log('技能专长组件加载完成', {
   技能数量: skills.value.length,
-  分类数量: skillCategories.value.length,
-  配置: props.config
+  分类数量: skillCategories.value.length
 })
 </script>
 

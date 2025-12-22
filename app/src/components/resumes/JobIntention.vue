@@ -1,5 +1,5 @@
 <template>
-  <view :class="['job-intention', `layout-${computedLayout}`, `theme-${theme}`]">
+  <view :class="['job-intention', `layout-${layout}`, `theme-${theme}`]">
     <view class="section-header">
       <text class="section-title">{{ title }}</text>
       <view class="section-divider"></view>
@@ -18,7 +18,7 @@
         <view class="intention-item" :style="itemStyle">
           <!-- 主要求职信息 -->
           <view class="primary-info">
-            <text class="position">{{ intention.position || '待定' }}</text>
+            <text class="position">{{ intention.position }}</text>
             <view class="meta-info">
               <text v-if="intention.city" class="meta-item">
                 <text class="icon">📍</text>
@@ -60,7 +60,7 @@
 import { computed, ref } from 'vue'
 
 const props = defineProps({
-  config: {
+  component: {
     type: Object,
     default: () => ({})
   },
@@ -74,16 +74,32 @@ const showAll = ref(false)
 const maxDisplayItems = ref(2)
 
 // 提取配置
-const componentProps = computed(() => props.config.props || {})
-const componentStyles = computed(() => props.config.styles || {})
-const defaultConfig = computed(() => props.config.defaultConfig || {})
+const componentProps = computed(() => props.component?.props || {})
+const componentStyles = computed(() => props.component?.styles || {})
+const defaultConfig = computed(() => props.component?.defaultConfig || {})
 
 // 标题
 const title = computed(() => componentProps.value.title || defaultConfig.value.props?.title || '求职意向')
 
-// 求职意向数据
+// 求职意向数据适配
 const intentions = computed(() => {
+  // 优先从 intentions 字段获取
   const rawIntentions = componentProps.value.intentions || []
+
+  if (rawIntentions.length === 0) {
+    // 如果没有数组数据，尝试从单个字段构造
+    const position = componentProps.value.position
+    if (position) {
+      return [{
+        id: 1,
+        position: position,
+        salary: componentProps.value.salary,
+        jobType: componentProps.value.jobType || '全职',
+        city: componentProps.value.city || componentProps.value.location || ''
+      }]
+    }
+  }
+
   return rawIntentions.sort((a, b) => {
     // 按ID降序排列，显示最新的意向
     return (b.id || 0) - (a.id || 0)
@@ -102,32 +118,34 @@ const displayIntentions = computed(() => {
 
 // 样式相关
 const itemStyle = computed(() => ({
-  background: componentStyles.value.cardBackground || '#ffffff',
+  background: componentStyles.value.cardBackground || componentStyles.value.backgroundColor || '#ffffff',
   padding: componentStyles.value.padding || '20px'
 }))
 
-// 布局类型（修复：确保不会访问 undefined 的 layout）
-const computedLayout = computed(() => {
-  // 优先使用 styles.layout，然后是 defaultConfig.props?.layout，最后是默认值
+// 布局类型
+const layout = computed(() => {
   return componentStyles.value.layout ||
+    componentProps.value.layout ||
     defaultConfig.value.props?.layout ||
     'card'
 })
 
 // 显示选项
-const showSalary = computed(() => componentProps.value.showSalary !== false)
+const showSalary = computed(() => componentProps.value.showSalary ?? defaultConfig.value.props?.showSalary ?? true)
 
 // 格式化薪资
 const formatSalary = (salary) => {
-  if (!salary) return ''
+  if (!salary || salary === '面议') return '面议'
 
   // 如果薪资是数字字符串，格式化为K为单位
   if (/^\d+$/.test(salary)) {
     const num = parseInt(salary)
     if (num >= 10000) {
-      return `${(num / 10000).toFixed(1)}万`
+      return `${(num / 10000).toFixed(1)}万/月`
+    } else if (num >= 1000) {
+      return `${(num / 1000).toFixed(1)}K/月`
     }
-    return `${salary}元`
+    return `${salary}元/月`
   }
   return salary
 }
@@ -141,7 +159,10 @@ const formatJobType = (jobType) => {
     '兼': '兼职',
     '实': '实习',
     'remote': '远程',
-    'freelance': '自由职业'
+    'freelance': '自由职业',
+    'fulltime': '全职',
+    'parttime': '兼职',
+    'internship': '实习'
   }
 
   return typeMap[jobType] || jobType
@@ -155,8 +176,7 @@ const toggleShowAll = () => {
 // 组件加载日志
 console.log('求职意向组件加载完成', {
   意向数量: intentions.value.length,
-  显示数量: displayIntentions.value.length,
-  配置: props.config
+  显示数量: displayIntentions.value.length
 })
 </script>
 

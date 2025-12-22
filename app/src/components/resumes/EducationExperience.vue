@@ -94,7 +94,7 @@
 import { computed, ref } from 'vue'
 
 const props = defineProps({
-  config: {
+  component: {
     type: Object,
     default: () => ({})
   },
@@ -107,10 +107,27 @@ const props = defineProps({
 const maxCourses = ref(5) // 最多显示的课程数量
 
 // 提取配置
-const componentProps = computed(() => props.config.props || {})
-const componentStyles = computed(() => props.config.styles || {})
+const componentProps = computed(() => props.component.props || {})
+const componentStyles = computed(() => props.component.styles || {})
 
-const experiences = computed(() => componentProps.value.experiences || [])
+// 教育经历数据适配
+const experiences = computed(() => {
+  const raw = componentProps.value.experiences || []
+  return raw.map(edu => ({
+    id: edu.id || Date.now(),
+    school: edu.school || '未知学校',
+    degree: edu.degree || '学历未填写',
+    major: edu.major || '',
+    startDate: edu.startDate || '',
+    endDate: edu.endDate || '',
+    description: edu.description || '',
+    courses: edu.courses || [],
+    achievements: edu.achievements || [],
+    gpa: edu.gpa || '',
+    ranking: edu.ranking || '',
+    duration: edu.duration || ''
+  }))
+})
 const hasEducationData = computed(() => experiences.value.length > 0)
 
 // 样式相关
@@ -147,7 +164,7 @@ const getDisplayCourses = (courses) => {
 // 组件加载日志
 console.log('教育背景组件加载完成', {
   教育经历数量: experiences.value.length,
-  配置: props.config
+  配置: props.component
 })
 </script>
 

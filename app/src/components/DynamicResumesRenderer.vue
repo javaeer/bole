@@ -5,18 +5,18 @@
     :class="[`theme-${currentTheme}`, `layout-${globalLayout.type}`]"
   >
     <!-- 按照指定的顺序渲染组件 -->
-    <block v-for="(componentKey, index) in orderedComponents" :key="index">
+    <block v-for="(component, index) in orderedComponents" :key="component.id || index">
       <component
-        v-if="componentMap[componentKey]"
-        :is="componentMap[componentKey]"
-        :config="getComponentConfig(componentKey)"
+        v-if="componentMap[component.key]"
+        :is="componentMap[component.key]"
+        :component="getComponentConfig(component)"
+        :global-style="globalStyle"
         :theme="currentTheme"
         class="resume-section"
-        :style="getSectionStyle(componentKey)"
+        :style="getSectionStyle(component)"
       />
-      <!-- 未知组件占位符 -->
       <view v-else class="unknown-component">
-        <text class="warning-text">组件 "{{ componentKey }}" 未找到</text>
+        <text class="warning-text">组件 "{{ component.key }}" 未找到</text>
       </view>
     </block>
   </view>
@@ -25,7 +25,7 @@
 <script setup>
 import { computed, defineAsyncComponent, shallowRef, onMounted } from 'vue'
 
-// 异步导入组件（优化首屏加载）
+// 异步导入组件
 const UserBasicInfo = defineAsyncComponent(() =>
   import('@/components/resumes/UserBasicInfo.vue')
 )
@@ -52,14 +52,14 @@ const Skills = defineAsyncComponent(() =>
 )
 
 const props = defineProps({
-  config: {
+  resumeData: {
     type: Object,
     required: true,
     default: () => ({})
   }
 })
 
-// 组件映射表（根据 key 映射）
+// 组件映射表
 const componentMap = shallowRef({
   'UserBasicInfo': UserBasicInfo,
   'JobIntention': JobIntention,
@@ -72,17 +72,14 @@ const componentMap = shallowRef({
 })
 
 // 全局样式
-const globalStyle = computed(() => props.config.globalStyle || {})
-const globalLayout = computed(() => props.config.globalLayout || {})
+const globalStyle = computed(() => props.resumeData.globalStyle || {})
+const globalLayout = computed(() => props.resumeData.globalLayout || {})
 
 // 主题
 const currentTheme = computed(() => globalStyle.value.theme || 'light')
 
 // 所有组件
-const rawComponents = computed(() => props.config.components || [])
-
-// 组件配置缓存
-const componentConfigCache = shallowRef({})
+const rawComponents = computed(() => props.resumeData.components || [])
 
 // 根据 componentOrder 排序的组件
 const orderedComponents = computed(() => {
@@ -91,22 +88,29 @@ const orderedComponents = computed(() => {
 
   if (order.length === 0) {
     // 如果没有指定顺序，按照传入的顺序显示
-    return components.map(comp => comp.key)
+    return components
   }
 
   // 按照指定的顺序排序
-  return order
-    .map(key => {
-      const found = components.find(comp => comp.key === key)
-      return found ? key : null
-    })
-    .filter(Boolean)
-    .concat(
-      // 添加未在 order 中指定的组件
-      components
-        .filter(comp => !order.includes(comp.key))
-        .map(comp => comp.key)
-    )
+  const ordered = []
+  const unordered = []
+
+  // 先按顺序添加
+  order.forEach(key => {
+    const found = components.find(comp => comp.key === key)
+    if (found) {
+      ordered.push(found)
+    }
+  })
+
+  // 添加未在 order 中指定的组件
+  components.forEach(comp => {
+    if (!order.includes(comp.key)) {
+      unordered.push(comp)
+    }
+  })
+
+  return [...ordered, ...unordered]
 })
 
 // 容器样式
@@ -121,8 +125,8 @@ const containerStyle = computed(() => {
     '--background-color': style.backgroundColor || '#ffffff',
     '--text-color': style.textColor || '#333333',
     '--font-family': style.fontFamily || "'Microsoft YaHei', 'PingFang SC', sans-serif",
-    '--font-size-body': style.fontSizes?.body || '14px',
-    '--font-size-h1': style.fontSizes?.h1 || '32px',
+    '--font-size-body': style.fontSizes?.body ? `${style.fontSizes.body}px` : '14px',
+    '--font-size-h1': style.fontSizes?.h1 ? `${style.fontSizes.h1}px` : '32px',
     '--section-margin': spacing.sectionMargin || '20px',
     '--padding': spacing.padding || '15px',
     '--line-height': spacing.lineHeight || '1.6',
@@ -133,39 +137,168 @@ const containerStyle = computed(() => {
   }
 })
 
+// 处理字段值，避免访问错误的属性
+const safeValue = (value, defaultValue = null) => {
+  if (value === null || value === undefined) {
+    return defaultValue
+  }
+  if (typeof value === 'string' && value.includes('~数据超出限制')) {
+    return defaultValue
+  }
+  return value
+}
+
 // 获取组件配置
-const getComponentConfig = (componentKey) => {
-  if (componentConfigCache.value[componentKey]) {
-    return componentConfigCache.value[componentKey]
-  }
-
-  const component = rawComponents.value.find(comp => comp.key === componentKey)
+const getComponentConfig = (component) => {
   if (!component) {
-    console.warn(`组件 ${componentKey} 未找到`)
-    return null
+    return {
+      id: '',
+      name: '未选择组件',
+      key: '',
+      props: {},
+      styles: {}
+    }
   }
 
-  // 合并默认配置和实际配置
-  const config = {
-    props: {
-      ...component.defaultConfig?.props,
-      ...component.props
-    },
-    styles: {
-      ...component.defaultConfig?.styles,
-      ...component.styles
-    },
-    defaultConfig: component.defaultConfig
+  // 处理默认配置
+  const defaultConfig = component.defaultConfig || {}
+  const propsData = component.props || {}
+  const styles = component.styles || {}
+
+  // 特殊处理：根据组件类型转换数据结构
+  const processedProps = processComponentData(component.key, propsData, defaultConfig)
+
+  return {
+    id: component.id,
+    name: component.name,
+    key: component.key,
+    props: { ...defaultConfig.props, ...processedProps },
+    styles: { ...defaultConfig.styles, ...styles },
+    defaultConfig: defaultConfig
+  }
+}
+
+// 处理组件数据，确保数据结构统一
+const processComponentData = (key, propsData, defaultConfig) => {
+  const processed = { ...propsData }
+
+  switch (key) {
+    case 'UserBasicInfo':
+      // 确保基础信息字段存在
+      processed.name = safeValue(processed.name, '')
+      processed.email = safeValue(processed.email, '')
+      processed.phone = safeValue(processed.phone, '')
+      processed.location = safeValue(processed.location, '')
+      processed.avatar = safeValue(processed.avatar, '')
+      processed.title = safeValue(processed.title, '')
+      processed.workYears = safeValue(processed.workYears, 0)
+      break
+
+    case 'WorkExperience':
+    case 'CompanyExperience':
+    case 'ProjectExperience':
+      // 统一 experiences 字段
+      let experiences = safeValue(processed.experiences, [])
+      if (!Array.isArray(experiences)) {
+        experiences = []
+      }
+      processed.experiences = experiences.map(exp => ({
+        ...exp,
+        // 确保必要字段存在
+        id: safeValue(exp.id, Date.now()),
+        company: safeValue(exp.company, '未指定公司'),
+        position: safeValue(exp.position, '职位未填写'),
+        startDate: safeValue(exp.startDate, ''),
+        endDate: safeValue(exp.endDate, exp.isCurrent ? '' : ''),
+        description: safeValue(exp.description, ''),
+        // 转换技能和成就数组
+        skills: Array.isArray(exp.skills) ? exp.skills : [],
+        achievements: Array.isArray(exp.achievements) ? exp.achievements : [],
+        duration: safeValue(exp.duration, ''),
+        department: safeValue(exp.department, '')
+      }))
+      break
+
+    case 'EducationExperience':
+      // 教育经历特殊处理
+      let eduExperiences = safeValue(processed.experiences, [])
+      if (!Array.isArray(eduExperiences)) {
+        eduExperiences = []
+      }
+      processed.experiences = eduExperiences.map(exp => ({
+        ...exp,
+        id: safeValue(exp.id, Date.now()),
+        school: safeValue(exp.school, '未指定学校'),
+        degree: safeValue(exp.degree, '学历未填写'),
+        major: safeValue(exp.major, ''),
+        startDate: safeValue(exp.startDate, ''),
+        endDate: safeValue(exp.endDate, ''),
+        description: safeValue(exp.description, ''),
+        courses: Array.isArray(exp.courses) ? exp.courses : [],
+        achievements: Array.isArray(exp.achievements) ? exp.achievements : [],
+        gpa: safeValue(exp.gpa, ''),
+        ranking: safeValue(exp.ranking, '')
+      }))
+      break
+
+    case 'JobIntention':
+      // 确保 intentions 字段
+      let intentions = safeValue(processed.intentions, [])
+      if (!Array.isArray(intentions)) {
+        intentions = []
+      }
+      processed.intentions = intentions.map(intention => ({
+        ...intention,
+        id: safeValue(intention.id, Date.now()),
+        position: safeValue(intention.position, '职位未填写'),
+        salary: safeValue(intention.salary, '面议'),
+        jobType: safeValue(intention.jobType, '全职'),
+        city: safeValue(intention.city, '')
+      }))
+      break
+
+    case 'SelfEvaluation':
+      // 确保 evaluations 字段
+      let evaluations = safeValue(processed.evaluations, [])
+      if (!Array.isArray(evaluations)) {
+        evaluations = []
+      }
+      processed.evaluations = evaluations.map(evalItem => ({
+        ...evalItem,
+        id: safeValue(evalItem.id, Date.now()),
+        content: safeValue(evalItem.content, ''),
+        createdAt: safeValue(evalItem.createdAt, '')
+      }))
+      break
+
+    case 'Skills':
+      // 确保 skills 字段
+      let skills = safeValue(processed.skills, [])
+      if (!Array.isArray(skills)) {
+        skills = []
+      }
+      processed.skills = skills.map(skill => ({
+        ...skill,
+        id: safeValue(skill.id, Date.now()),
+        name: safeValue(skill.name, '技能名称'),
+        category: safeValue(skill.category, '其他'),
+        proficiencyPercent: safeValue(skill.proficiencyPercent, 0),
+        level: safeValue(skill.level, '初级'),
+        experienceYears: safeValue(skill.experienceYears, 0),
+        description: safeValue(skill.description, ''),
+        tags: safeValue(skill.tags, ''),
+        isCertified: safeValue(skill.isCertified, false),
+        certificateName: safeValue(skill.certificateName, ''),
+        certificateDate: safeValue(skill.certificateDate, '')
+      }))
+      break
   }
 
-  // 缓存配置
-  componentConfigCache.value[componentKey] = config
-  return config
+  return processed
 }
 
 // 获取区块样式
-const getSectionStyle = (componentKey) => {
-  const component = rawComponents.value.find(comp => comp.key === componentKey)
+const getSectionStyle = (component) => {
   const styles = component?.styles || {}
 
   return {
@@ -174,11 +307,10 @@ const getSectionStyle = (componentKey) => {
   }
 }
 
-// 日志和调试
 onMounted(() => {
   console.log('动态渲染器加载完成', {
     组件总数: rawComponents.value.length,
-    排序后组件: orderedComponents.value,
+    排序后组件: orderedComponents.value.map(c => c.key),
     主题: currentTheme.value,
     布局: globalLayout.value.type
   })
@@ -190,7 +322,6 @@ onMounted(() => {
   min-height: 100vh;
   transition: all 0.3s ease;
 
-  // 主题样式变量
   &.theme-light {
     --primary-color: #1890ff;
     --secondary-color: #52c41a;
@@ -205,7 +336,6 @@ onMounted(() => {
     --text-color: #ffffff;
   }
 
-  // 布局样式
   &.layout-single-column {
     max-width: 800px;
     margin: 0 auto;
@@ -221,6 +351,16 @@ onMounted(() => {
     }
   }
 
+  &.layout-three-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--section-margin, 20px);
+
+    .resume-section {
+      margin-bottom: 0;
+    }
+  }
+
   .resume-section {
     transition: transform 0.3s ease, opacity 0.3s ease;
 
@@ -229,7 +369,6 @@ onMounted(() => {
     }
   }
 
-  // 未知组件样式
   .unknown-component {
     padding: 40px;
     background-color: #fff3cd;
@@ -245,12 +384,12 @@ onMounted(() => {
   }
 }
 
-// 响应式设计
 @media (max-width: 768px) {
   .resume-container {
     padding: 15px !important;
 
-    &.layout-two-column {
+    &.layout-two-column,
+    &.layout-three-column {
       grid-template-columns: 1fr;
 
       .resume-section {
@@ -282,7 +421,6 @@ onMounted(() => {
   }
 }
 
-// 打印样式
 @media print {
   .resume-container {
     padding: 0 !important;

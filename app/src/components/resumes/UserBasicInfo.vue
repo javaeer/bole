@@ -31,7 +31,7 @@
               <text v-if="showGender && gender" class="badge gender">
                 {{ gender }}
               </text>
-              <text v-if="showTitle && jobTitle" class="badge title">
+              <text v-if="jobTitle" class="badge title">
                 {{ jobTitle }}
               </text>
             </view>
@@ -62,11 +62,11 @@
         </view>
         <view v-if="birthday" class="info-item">
           <text class="label">出生日期：</text>
-          <text class="value">{{ birthday }}</text>
+          <text class="value">{{ formatDate(birthday) }}</text>
         </view>
         <view v-if="website" class="info-item">
           <text class="label">个人网站：</text>
-          <text class="value link" @click="openLink(website)">{{ website }}</text>
+          <text class="value link" @click="openLink(website)">{{ formatUrl(website) }}</text>
         </view>
         <view v-if="github" class="info-item">
           <text class="label">GitHub：</text>
@@ -82,7 +82,7 @@
     <!-- 简洁布局 -->
     <view v-else class="info-simple">
       <view class="simple-header">
-        <text v-if="showAvatar" class="simple-avatar">
+        <view v-if="showAvatar" class="simple-avatar">
           <image
             v-if="avatar"
             :src="avatar"
@@ -90,7 +90,7 @@
             mode="aspectFill"
           />
           <text v-else class="avatar-text">{{ nameInitial }}</text>
-        </text>
+        </view>
         <text class="simple-name">{{ name }}</text>
       </view>
       <view class="simple-contact">
@@ -106,7 +106,11 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  config: {
+  component: {
+    type: Object,
+    default: () => ({})
+  },
+  globalStyle: {
     type: Object,
     default: () => ({})
   },
@@ -117,12 +121,9 @@ const props = defineProps({
 })
 
 // 提取配置
-const componentProps = computed(() => props.config.props || {})
-const componentStyles = computed(() => props.config.styles || {})
-const defaultConfig = computed(() => props.config.defaultConfig || {})
-
-// 标题
-const title = computed(() => componentProps.value.title || defaultConfig.value.props?.title || '基本信息')
+const componentProps = computed(() => props.component?.props || {})
+const componentStyles = computed(() => props.component?.styles || {})
+const defaultConfig = computed(() => props.component?.defaultConfig || {})
 
 // 用户数据
 const name = computed(() => componentProps.value.name || '')
@@ -136,10 +137,10 @@ const website = computed(() => componentProps.value.website || '')
 const github = computed(() => componentProps.value.github || '')
 const wechat = computed(() => componentProps.value.wechat || '')
 const avatar = computed(() => componentProps.value.avatar || '')
-const jobTitle = computed(() => componentProps.value.title || '')
+const jobTitle = computed(() => componentProps.value.title || componentProps.value.jobTitle || '')
 
 // 显示选项
-const showTitle = computed(() => componentProps.value.showTitle ?? true)
+const showTitle = computed(() => componentProps.value.showTitle ?? defaultConfig.value.props?.showTitle ?? true)
 const showAvatar = computed(() => componentProps.value.showAvatar ?? defaultConfig.value.props?.showAvatar ?? true)
 const showGender = computed(() => componentProps.value.showGender ?? defaultConfig.value.props?.showGender ?? true)
 const showBirthday = computed(() => componentProps.value.showBirthday ?? defaultConfig.value.props?.showBirthday ?? true)
@@ -147,10 +148,18 @@ const showPhone = computed(() => componentProps.value.showPhone ?? defaultConfig
 const showEmail = computed(() => componentProps.value.showEmail ?? defaultConfig.value.props?.showEmail ?? true)
 const showLocation = computed(() => componentProps.value.showLocation ?? defaultConfig.value.props?.showLocation ?? true)
 const showWorkYears = computed(() => componentProps.value.showWorkYears ?? defaultConfig.value.props?.showWorkYears ?? true)
-const showContact = computed(() => componentProps.value.showContact ?? true)
+const showContact = computed(() => componentProps.value.showContact ?? defaultConfig.value.props?.showContact ?? true)
+
+// 标题
+const title = computed(() => componentProps.value.title || defaultConfig.value.props?.title || '基本信息')
 
 // 布局
-const layout = computed(() => componentProps.value.layout || componentStyles.value.layout || 'card')
+const layout = computed(() => {
+  return componentProps.value.layout ||
+    componentStyles.value.layout ||
+    defaultConfig.value.props?.layout ||
+    'card'
+})
 
 // 姓名首字母
 const nameInitial = computed(() => {
@@ -166,27 +175,48 @@ const computedStyle = computed(() => ({
 }))
 
 // 是否显示徽章
-const showBadges = computed(() => showGender.value || jobTitle.value)
+const showBadges = computed(() => (showGender.value && gender.value) || jobTitle.value)
 // 是否显示详细信息
 const showDetails = computed(() => birthday.value || workYears.value || website.value || github.value || wechat.value)
+
+// 格式化日期
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+
+  try {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('zh-CN')
+  } catch (e) {
+    return dateStr
+  }
+}
+
+// 格式化URL
+const formatUrl = (url) => {
+  if (!url) return ''
+  return url.replace(/^https?:\/\//, '')
+}
 
 // 打开链接
 const openLink = (url) => {
   if (url) {
+    // 确保URL有协议
+    const fullUrl = url.startsWith('http') ? url : `https://${url}`
     uni.navigateTo({
-      url: `/pages/webview/webview?url=${encodeURIComponent(url)}`
+      url: `/pages/webview/webview?url=${encodeURIComponent(fullUrl)}`
     })
   }
 }
 
 // 组件加载日志
 console.log('用户基本信息组件加载完成', {
+  组件key: props.component?.key,
   姓名: name.value,
   邮箱: email.value,
-  电话: phone.value,
-  配置: props.config
+  电话: phone.value
 })
 </script>
+
 
 <style lang="scss" scoped>
 .user-basic-info {

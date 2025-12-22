@@ -166,7 +166,7 @@ const enterFormPage = () => {
     if (template) {
       setCurrentTemplate(template)
       uni.navigateTo({
-        url: `/pages/resumes/create?templateId=${selectedTemplate.value}`
+        url: `/pages/resumes/edit?templateId=${selectedTemplate.value}`
       })
     }
   }
