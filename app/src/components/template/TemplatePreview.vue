@@ -1,4 +1,3 @@
-<!-- components/template/TemplatePreview.vue - 修复版本 -->
 <template>
   <view class="template-preview" :class="device" :style="containerStyle">
     <view class="color-preview-bar" v-if="globalStyle?.primaryColor || globalStyle?.accentColor">
@@ -15,11 +14,12 @@
         :style="{ backgroundColor: globalStyle?.accentColor || '#f7ef8a' }"
       >强调色</view>
     </view>
+
     <!-- 根据布局类型渲染不同的布局 -->
-    <view v-if="layout?.type === 'single-column'" class="layout-single-column">
+    <view v-if="globalLayout?.type === 'single-column'" class="layout-single-column">
       <view
-        v-for="(component, index) in components"
-        :key="component.id || component.component || index"
+        v-for="(component, index) in filteredComponents"
+        :key="`component-${index}-${component.componentId || 'empty'}`"
         class="preview-component-wrapper"
         :style="getComponentWrapperStyle(index)"
       >
@@ -31,7 +31,7 @@
       </view>
 
       <!-- 空状态 -->
-      <view v-if="!components || components.length === 0" class="empty-preview">
+      <view v-if="!filteredComponents || filteredComponents.length === 0" class="empty-preview">
         <view class="empty-content">
           <text class="empty-icon">📄</text>
           <text class="empty-title">暂无内容</text>
@@ -40,11 +40,11 @@
       </view>
     </view>
 
-    <view v-else-if="layout?.type === 'two-column'" class="layout-two-column">
+    <view v-else-if="globalLayout?.type === 'two-column'" class="layout-two-column">
       <view class="column-left" :style="{ width: getColumnWidth('left') }">
         <view
           v-for="(component, index) in leftColumnComponents"
-          :key="component.id || component.component || `left-${index}`"
+          :key="`left-${index}-${component.componentId || 'empty'}`"
           class="preview-component-wrapper"
           :style="getComponentWrapperStyle(index, 'left')"
         >
@@ -64,7 +64,7 @@
       <view class="column-right" :style="{ width: getColumnWidth('right') }">
         <view
           v-for="(component, index) in rightColumnComponents"
-          :key="component.id || component.component || `right-${index}`"
+          :key="`right-${index}-${component.componentId || 'empty'}`"
           class="preview-component-wrapper"
           :style="getComponentWrapperStyle(index, 'right')"
         >
@@ -82,11 +82,11 @@
       </view>
     </view>
 
-    <view v-else-if="layout?.type === 'three-column'" class="layout-three-column">
-      <view class="column" v-for="(columnComps, colIndex) in [firstColumnComponents, secondColumnComponents, thirdColumnComponents]" :key="colIndex">
+    <view v-else-if="globalLayout?.type === 'three-column'" class="layout-three-column">
+      <view class="column" v-for="(columnComps, colIndex) in [firstColumnComponents, secondColumnComponents, thirdColumnComponents]" :key="`col-${colIndex}`">
         <view
           v-for="(component, index) in columnComps"
-          :key="component.id || component.component || `col${colIndex}-${index}`"
+          :key="`col${colIndex}-${index}-${component.componentId || 'empty'}`"
           class="preview-component-wrapper"
           :style="getComponentWrapperStyle(index, `col${colIndex}`)"
         >
@@ -107,8 +107,8 @@
     <!-- 默认布局 -->
     <view v-else class="layout-single-column">
       <view
-        v-for="(component, index) in components"
-        :key="component.id || component.component || index"
+        v-for="(component, index) in filteredComponents"
+        :key="`default-${index}-${component.componentId || 'empty'}`"
         class="preview-component-wrapper"
         :style="getComponentWrapperStyle(index)"
       >
@@ -119,7 +119,7 @@
         />
       </view>
 
-      <view v-if="!components || components.length === 0" class="empty-preview">
+      <view v-if="!filteredComponents || filteredComponents.length === 0" class="empty-preview">
         <view class="empty-content">
           <text class="empty-icon">📄</text>
           <text class="empty-title">暂无内容</text>
@@ -133,15 +133,18 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import ComponentPreview from "./ComponentPreview.vue";
+import { COMPONENT_LIBRARY } from "@/constants/component";
 
 interface Props {
   components?: any[];
-  layout?: {
+  globalLayout?: {
     type?: string;
     columns?: {
       left?: number;
       right?: number;
     };
+    orientation?: string;
+    componentOrder?: string[];
   };
   globalStyle?: {
     primaryColor?: string;
@@ -158,13 +161,20 @@ interface Props {
       padding?: string;
       lineHeight?: string;
     };
+    theme?: string;
+    headerColor?: string;
   };
   device?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   components: () => [],
-  layout: () => ({ type: 'single-column', columns: { left: 40, right: 60 } }),
+  globalLayout: () => ({
+    type: 'single-column',
+    columns: { left: 40, right: 60 },
+    orientation: 'portrait',
+    componentOrder: []
+  }),
   globalStyle: () => ({
     primaryColor: '#d4af37',
     secondaryColor: '#f9f3e3',
@@ -172,9 +182,15 @@ const props = withDefaults(defineProps<Props>(), {
     backgroundColor: '#ffffff',
     fontFamily: "'Microsoft YaHei', 'PingFang SC', sans-serif",
     fontSizes: { h1: '24', body: '14' },
-    spacing: { sectionMargin: '20px', padding: '15px', lineHeight: '1.5' }
+    spacing: { sectionMargin: '20px', padding: '15px', lineHeight: '1.5' },
+    theme: 'light'
   }),
   device: 'desktop'
+});
+
+// 过滤掉无效组件（没有 componentId 的组件）
+const filteredComponents = computed(() => {
+  return (props.components || []).filter(comp => comp && comp.componentId);
 });
 
 // 计算属性
@@ -227,8 +243,8 @@ const containerStyle = computed(() => {
 
 // 双栏布局宽度计算
 const getColumnWidth = (side: 'left' | 'right') => {
-  if (props.layout?.type === 'two-column') {
-    const columns = props.layout.columns || { left: 40, right: 60 };
+  if (props.globalLayout?.type === 'two-column') {
+    const columns = props.globalLayout.columns || { left: 40, right: 60 };
     if (side === 'left') {
       return `${columns.left || 40}%`;
     } else {
@@ -238,61 +254,76 @@ const getColumnWidth = (side: 'left' | 'right') => {
   return '50%';
 };
 
-// 组件分配逻辑
+// 组件分配逻辑 - 修正：使用 filteredComponents
 const leftColumnComponents = computed(() => {
-  const components = props.components || [];
+  const components = filteredComponents.value;
   const mid = Math.ceil(components.length / 2);
   return components.slice(0, mid);
 });
 
 const rightColumnComponents = computed(() => {
-  const components = props.components || [];
+  const components = filteredComponents.value;
   const mid = Math.ceil(components.length / 2);
   return components.slice(mid);
 });
 
 // 三栏布局分配
 const firstColumnComponents = computed(() => {
-  const components = props.components || [];
+  const components = filteredComponents.value;
   const part = Math.ceil(components.length / 3);
   return components.slice(0, part);
 });
 
 const secondColumnComponents = computed(() => {
-  const components = props.components || [];
+  const components = filteredComponents.value;
   const part = Math.ceil(components.length / 3);
   return components.slice(part, part * 2);
 });
 
 const thirdColumnComponents = computed(() => {
-  const components = props.components || [];
+  const components = filteredComponents.value;
   const part = Math.ceil(components.length / 3);
   return components.slice(part * 2);
 });
 
-// 获取组件配置
+// 从组件库获取组件信息 - 修正：根据 componentId 查找
+const getComponentFromLibrary = (componentId: number) => {
+  return COMPONENT_LIBRARY.find(comp => comp.id === componentId);
+};
+
+// 获取组件配置 - 修正：处理 TemplateComponentForm 结构
 const getComponentConfig = (component: any) => {
-  if (!component) return { id: '', name: '' };
+  if (!component || !component.componentId) return {
+    id: '',
+    name: '未选择组件',
+    key: '',
+    props: {},
+    styles: {}
+  };
 
-  // 如果组件已有配置，直接返回
-  if (component.component) {
+  // 从组件库获取组件信息
+  const libraryComponent = getComponentFromLibrary(component.componentId);
+
+  if (!libraryComponent) {
     return {
-      id: component.component,
-      name: component.name || component.component
+      id: component.componentId,
+      name: '未知组件',
+      key: '',
+      props: component.props || {},
+      styles: component.styles || {}
     };
   }
 
-  // 如果通过fragment查找
-  if (component.component) {
-    return {
-      id: component.component,
-      name: component.name || component.component
-    };
-  }
+  // 合并默认配置和组件属性
+  const defaultProps = libraryComponent.defaultConfig || {};
+  const componentProps = component.props || {};
 
   return {
-    id: component.name || 'unknown',
-    name: component.name || '未命名区块'
+    id: component.componentId,
+    name: libraryComponent.name,
+    key: libraryComponent.key,
+    props: { ...defaultProps, ...componentProps },
+    styles: component.styles || {}
   };
 };
 
@@ -300,15 +331,16 @@ const getComponentConfig = (component: any) => {
 const getComponentStyle = (component: any) => {
   const style: any = {};
   const globalStyle = props.globalStyle;
+  const componentStyles = component.styles || {};
+
+  // 首先应用组件的自定义样式
+  if (componentStyles) {
+    Object.assign(style, componentStyles);
+  }
 
   // 设置内边距
   if (globalStyle?.spacing?.padding) {
     style.padding = globalStyle.spacing.padding;
-  }
-
-  // 设置边框颜色
-  if (globalStyle?.primaryColor) {
-    style.borderLeftColor = globalStyle.primaryColor;
   }
 
   // 设置字体大小
@@ -316,9 +348,16 @@ const getComponentStyle = (component: any) => {
     style.fontSize = `${globalStyle.fontSizes.body}px`;
   }
 
+  // 设置边框颜色
+  if (globalStyle?.primaryColor) {
+    style.borderLeftColor = globalStyle.primaryColor;
+    style.borderLeftWidth = '4rpx';
+    style.borderLeftStyle = 'solid';
+  }
+
   // 设置背景颜色
   if (globalStyle?.secondaryColor) {
-    style.backgroundColor = globalStyle.secondaryColor + '20'; // 添加透明度
+    style.backgroundColor = `${globalStyle.secondaryColor}20`; // 添加透明度
   }
 
   return style;
@@ -335,7 +374,18 @@ const getComponentWrapperStyle = (index: number, column?: string) => {
     if (index > 0) {
       style.marginTop = margin;
     }
+
+    // 为多栏布局添加水平间距
+    if (column) {
+      style.marginRight = '10rpx';
+      style.marginLeft = '10rpx';
+    }
   }
+
+  // 设置边框和背景
+  style.borderRadius = '8rpx';
+  style.overflow = 'hidden';
+  style.boxShadow = '0 2rpx 8rpx rgba(0, 0, 0, 0.1)';
 
   return style;
 };
@@ -356,16 +406,23 @@ const getComponentWrapperStyle = (index: number, column?: string) => {
     margin: 0 auto;
     font-size: 14px;
     padding: 15rpx;
+    border-radius: 16rpx;
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
   }
 
   &.tablet {
     max-width: 768px;
     margin: 0 auto;
     padding: 25rpx;
+    border-radius: 12rpx;
+    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
   }
 
   &.desktop {
     max-width: 100%;
+    padding: 30rpx;
+    border-radius: 8rpx;
+    box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
   }
 }
 
@@ -434,6 +491,12 @@ const getComponentWrapperStyle = (index: number, column?: string) => {
 
 .preview-component-wrapper {
   transition: all 0.3s ease;
+  background: white;
+
+  &:hover {
+    transform: translateY(-2rpx);
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  }
 }
 
 .empty-preview {
@@ -502,6 +565,10 @@ const getComponentWrapperStyle = (index: number, column?: string) => {
       background-color: var(--accent-color);
       color: #333;
     }
+
+    &:hover {
+      filter: brightness(1.1);
+    }
   }
 }
 
@@ -517,8 +584,30 @@ const getComponentWrapperStyle = (index: number, column?: string) => {
       width: 100% !important;
     }
   }
+
   .empty-preview {
     height: 200rpx;
+
+    .empty-content {
+      .empty-icon {
+        font-size: 48rpx;
+      }
+
+      .empty-title {
+        font-size: 24rpx;
+      }
+
+      .empty-desc {
+        font-size: 20rpx;
+      }
+    }
+  }
+
+  .color-preview-bar {
+    .color-block {
+      height: 32rpx;
+      font-size: 16rpx;
+    }
   }
 }
 </style>

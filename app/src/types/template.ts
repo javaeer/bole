@@ -1,22 +1,24 @@
-import { TemplateComponentResults } from "@/types/template-component";
+//查询参数定义
+import { TemplateComponentForm, TemplateComponentItem } from "@/types/template-component";
 
-export interface TemplateQuery extends BodyParams {
+export interface TemplateQuery extends BodyQuery {
   name?: string;
   code?: string;
 }
 
+//响应类型定义
 export interface TemplateResult {
   id: number;
 
   name: string;
   code: string;
-  description: string;
-  previewImage: string;
+  description?: string;
+  previewImage?: string;
   isActive: boolean;
-  version: string;
-  globalStyle: GlobalStyle;
-  globalLayout: GlobalLayout;
-  components: TemplateComponentResults;
+  version?: string;
+  globalStyle?: TemplateGlobalStyle;
+  globalLayout?: TemplateGlobalLayout;
+  components?: TemplateComponentItem[];
 
   //通用字段
   createdAt?: string;
@@ -28,46 +30,58 @@ export interface TemplateResult {
   tags?: string[];
   category?: string;
   rating?: number;
-
 }
 
-export interface FontSizes {
+// 模板字体大小配置
+export interface TemplateFontSizes {
   h1: string;
   body: string;
 }
 
-export interface Spacing {
+//模板间距配置
+export interface TemplateSpacing {
   sectionMargin: string;
   padding: string;
   lineHeight: string;
 }
 
-export interface GlobalStyle {
-  theme: string;
-  fontSizes: FontSizes;
-  fontFamily: string;
-  headerColor: string;
-  primaryColor: string;
-  accentColor: string;
-  secondaryColor: string;
-  backgroundColor: string;
-  spacing: Spacing;
+// 模板全局样式配置
+export interface TemplateGlobalStyle {
+  theme?: string;
+  fontSizes?: TemplateFontSizes;
+  fontFamily?: string;
+  headerColor?: string;
+  primaryColor?: string;
+  accentColor?: string;
+  secondaryColor?: string;
+  backgroundColor?: string;
+  spacing?: TemplateSpacing;
 }
 
-export interface GlobalLayout {
-  type: string;
-  columns: number;
-  components: Array<{
-    name: string
-  }>;
-  orientation: "portrait" | "landscape";
-  componentOrder: Array<{
-    name: string
-  }>;
+// 布局列配置
+export interface TemplateLayoutColumns {
+  left?: number;
+  right?: number;
 }
 
-export interface ConfigTab {
-  id: string;
-  label: string;
-  icon?: string;
+// 模板全局布局配置
+export interface TemplateGlobalLayout {
+  type?: string;
+  columns?: TemplateLayoutColumns;
+  orientation?: string;
+  componentOrder?: string[];
+}
+
+//模板提交类型
+export interface TemplateForm {
+  id?: number;
+  name: string;
+  code: string;
+  description?: string;
+  previewImage?: string;
+  isActive?: boolean;
+  version?: string;
+  globalStyle?: TemplateGlobalStyle;
+  globalLayout?: TemplateGlobalLayout;
+  components?: TemplateComponentForm[];
 }

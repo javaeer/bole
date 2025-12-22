@@ -1,5 +1,5 @@
 <template>
-  <view :class="['education-section', `theme-${theme}`]" :style="computedStyle">
+  <view :class="['company-section', `theme-${theme}`]" :style="computedStyle">
     <!-- 区块标题 -->
     <view class="section-header">
       <text class="section-title">公司经历</text>
@@ -7,67 +7,45 @@
     </view>
 
     <!-- 空状态 -->
-    <view v-if="!hasEducationData" class="empty-state">
-      <text class="empty-icon">🎓</text>
+    <view v-if="!hasCompanyData" class="empty-state">
+      <text class="empty-icon">🏢</text>
       <text class="empty-text">暂无公司经历信息</text>
     </view>
 
-    <!-- 教育经历列表 -->
-    <view v-else class="education-list">
-      <block v-for="(edu, index) in educations" :key="index">
-        <view class="education-item" :style="itemStyle">
-          <!-- 学校信息 -->
-          <view class="school-header">
-            <view class="school-main">
-              <text class="school-name">{{ edu.school || '未知学校' }}</text>
-              <view class="degree-info">
-                <text class="degree">{{ edu.degree || '学历未填写' }}</text>
-                <text v-if="edu.major" class="major"> · {{ edu.major }}</text>
+    <!-- 公司经历列表 -->
+    <view v-else class="company-list">
+      <block v-for="(company, index) in companies" :key="index">
+        <view class="company-item" :style="itemStyle">
+          <!-- 公司信息 -->
+          <view class="company-header">
+            <view class="company-main">
+              <text class="company-name">{{ company.name || '未知公司' }}</text>
+              <view class="position-info">
+                <text class="position">{{ company.position || '职位未填写' }}</text>
+                <text v-if="company.department" class="department"> · {{ company.department }}</text>
               </view>
             </view>
 
             <!-- 时间信息 -->
-            <view class="education-time">
+            <view class="company-time">
               <text class="duration">
-                {{ formatDate(edu.startDate) }} - {{ formatDate(edu.endDate) || '至今' }}
+                {{ formatDate(company.startDate) }} - {{ formatDate(company.endDate) || '至今' }}
               </text>
-              <text v-if="edu.duration" class="duration-label">({{ edu.duration }})</text>
+              <text v-if="company.duration" class="duration-label">({{ company.duration }})</text>
             </view>
           </view>
 
-          <!-- GPA和排名（可选） -->
-          <view v-if="showGpa || showRanking" class="academic-info">
-            <text v-if="showGpa && edu.gpa" class="gpa">
-              <text class="info-label">GPA: </text>{{ edu.gpa }}
-            </text>
-            <text v-if="showRanking && edu.ranking" class="ranking">
-              <text class="info-label">排名: </text>{{ edu.ranking }}
-            </text>
+          <!-- 工作描述 -->
+          <view v-if="company.description" class="company-description">
+            <text class="description-text">{{ company.description }}</text>
           </view>
 
-          <!-- 所学课程（可选） -->
-          <view v-if="showCourses && edu.courses && edu.courses.length > 0" class="courses-section">
-            <text class="courses-title">相关课程：</text>
-            <view class="course-tags">
-              <text
-                v-for="(course, courseIndex) in getDisplayCourses(edu.courses)"
-                :key="courseIndex"
-                class="course-tag"
-              >
-                {{ course }}
-              </text>
-              <text v-if="edu.courses.length > maxCourses" class="more-courses">
-                等{{ edu.courses.length - maxCourses }}门课程
-              </text>
-            </view>
-          </view>
-
-          <!-- 在校成就 -->
-          <view v-if="showAchievements && edu.achievements && edu.achievements.length > 0" class="achievements">
-            <text class="achievements-title">在校成就：</text>
+          <!-- 工作成就 -->
+          <view v-if="showAchievements && company.achievements && company.achievements.length > 0" class="achievements">
+            <text class="achievements-title">工作成就：</text>
             <view class="achievements-list">
               <view
-                v-for="(achievement, aIndex) in edu.achievements"
+                v-for="(achievement, aIndex) in company.achievements"
                 :key="aIndex"
                 class="achievement-item"
               >
@@ -77,126 +55,79 @@
             </view>
           </view>
 
-          <!-- 详细描述 -->
-          <view v-if="edu.description" class="education-description">
-            <text class="description-text">{{ edu.description }}</text>
+          <!-- 所用技能 -->
+          <view v-if="showSkills && company.skills && company.skills.length > 0" class="skills-section">
+            <text class="skills-title">使用技能：</text>
+            <view class="skill-tags">
+              <text
+                v-for="(skill, skillIndex) in company.skills"
+                :key="skillIndex"
+                class="skill-tag"
+              >
+                {{ skill }}
+              </text>
+            </view>
           </view>
         </view>
 
-        <!-- 分隔线（最后一个项目不显示） -->
-        <view v-if="index < educations.length - 1" class="item-divider"></view>
+        <!-- 分隔线 -->
+        <view v-if="index < companies.length - 1" class="item-divider"></view>
       </block>
     </view>
   </view>
 </template>
 
-<script>
-export default {
-  name: 'CompanyExperience',
+<script setup>
+import { computed } from 'vue'
 
-  props: {
-    config: {
-      type: Object,
-      default: () => ({})
-    },
-    theme: {
-      type: String,
-      default: 'modern'
-    }
+const props = defineProps({
+  config: {
+    type: Object,
+    default: () => ({})
   },
-
-  data() {
-    return {
-      maxCourses: 5 // 最多显示的课程数量
-    };
-  },
-
-  computed: {
-    // 提取props和styles
-    props() {
-      return this.config.props || {};
-    },
-
-    styles() {
-      return this.config.styles || {};
-    },
-
-    // 获取教育经历数据
-    educations() {
-      return this.props.educations || [];
-    },
-
-    // 检查是否有教育数据
-    hasEducationData() {
-      return this.educations.length > 0;
-    },
-
-    // 样式相关计算
-    computedStyle() {
-      return {
-        '--primary-color': this.styles.primaryColor || '#d4af37'
-      };
-    },
-
-    itemStyle() {
-      return {
-        background: this.styles.cardBackground || '#ffffff'
-      };
-    },
-
-    // 是否显示GPA
-    showGpa() {
-      return this.styles.showGPA !== false;
-    },
-
-    // 是否显示排名
-    showRanking() {
-      return this.styles.showRanking !== false;
-    },
-
-    // 是否显示课程
-    showCourses() {
-      return this.styles.showCourses !== false;
-    },
-
-    // 是否显示成就
-    showAchievements() {
-      return this.styles.showAchievements !== false;
-    }
-  },
-
-  mounted() {
-    console.log('教育背景组件加载完成', {
-      '教育经历数量': this.educations.length,
-      '配置': this.config
-    });
-  },
-
-  methods: {
-    // 格式化日期
-    formatDate(dateStr) {
-      if (!dateStr) return '';
-
-      // 简单格式化，如 "2020-09" -> "2020.09"
-      return dateStr.replace('-', '.');
-    },
-
-    // 获取显示的课程列表
-    getDisplayCourses(courses) {
-      if (!courses || !Array.isArray(courses)) return [];
-
-      if (courses.length <= this.maxCourses) {
-        return courses;
-      }
-
-      return courses.slice(0, this.maxCourses);
-    }
+  theme: {
+    type: String,
+    default: 'modern'
   }
-};
+})
+
+// 提取配置
+const componentProps = computed(() => props.config.props || {})
+const componentStyles = computed(() => props.config.styles || {})
+
+// 公司数据
+const companies = computed(() => componentProps.value.experiences || [])
+const hasCompanyData = computed(() => companies.value.length > 0)
+
+// 样式相关
+const computedStyle = computed(() => ({
+  '--primary-color': componentStyles.value.primaryColor || '#d4af37'
+}))
+
+const itemStyle = computed(() => ({
+  background: componentStyles.value.cardBackground || '#ffffff'
+}))
+
+// 是否显示成就
+const showAchievements = computed(() => componentStyles.value.showAchievements !== false)
+// 是否显示技能
+const showSkills = computed(() => componentStyles.value.showSkills !== false)
+
+// 格式化日期
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+  return dateStr.replace('-', '.')
+}
+
+// 组件加载日志
+console.log('公司经历组件加载完成', {
+  公司经历数量: companies.value.length,
+  配置: props.config
+})
 </script>
 
 <style lang="scss" scoped>
-.education-section {
+.company-section {
   margin-bottom: 40rpx;
 
   &.theme-modern {
@@ -215,7 +146,7 @@ export default {
       width: 80rpx;
     }
 
-    .education-item {
+    .company-item {
       background: #ffffff;
       border-radius: 16rpx;
       padding: 30rpx;
@@ -247,17 +178,17 @@ export default {
     }
   }
 
-  // 学校头部信息
-  .school-header {
+  // 公司头部信息
+  .company-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 20rpx;
 
-    .school-main {
+    .company-main {
       flex: 1;
 
-      .school-name {
+      .company-name {
         font-size: 32rpx;
         font-weight: 600;
         color: #333;
@@ -265,21 +196,21 @@ export default {
         margin-bottom: 8rpx;
       }
 
-      .degree-info {
-        .degree {
+      .position-info {
+        .position {
           color: #d4af37;
           font-size: 26rpx;
           font-weight: 500;
         }
 
-        .major {
+        .department {
           color: #666;
           font-size: 26rpx;
         }
       }
     }
 
-    .education-time {
+    .company-time {
       text-align: right;
       min-width: 200rpx;
 
@@ -297,61 +228,23 @@ export default {
     }
   }
 
-  // 学术信息
-  .academic-info {
-    display: flex;
-    gap: 20rpx;
+  // 公司描述
+  .company-description {
     margin-bottom: 20rpx;
+    padding-top: 20rpx;
+    border-top: 1rpx solid #f0f0f0;
 
-    .gpa, .ranking {
-      background: #fef9ed;
-      padding: 6rpx 12rpx;
-      border-radius: 6rpx;
-      font-size: 24rpx;
-
-      .info-label {
-        color: #d4af37;
-        font-weight: 500;
-      }
-    }
-  }
-
-  // 课程相关
-  .courses-section {
-    margin-bottom: 20rpx;
-
-    .courses-title {
+    .description-text {
       color: #666;
       font-size: 26rpx;
-      font-weight: 500;
-      display: block;
-      margin-bottom: 12rpx;
-    }
-
-    .course-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12rpx;
-
-      .course-tag {
-        background: #f5f7fa;
-        color: #555;
-        font-size: 22rpx;
-        padding: 6rpx 12rpx;
-        border-radius: 6rpx;
-        border: 1rpx solid #e4e7ed;
-      }
-
-      .more-courses {
-        color: #999;
-        font-size: 22rpx;
-        align-self: center;
-      }
+      line-height: 1.6;
     }
   }
 
   // 成就列表
   .achievements {
+    margin-bottom: 20rpx;
+
     .achievements-title {
       color: #666;
       font-size: 26rpx;
@@ -387,16 +280,29 @@ export default {
     }
   }
 
-  // 描述文本
-  .education-description {
-    margin-top: 20rpx;
-    padding-top: 20rpx;
-    border-top: 1rpx solid #f0f0f0;
-
-    .description-text {
+  // 技能标签
+  .skills-section {
+    .skills-title {
       color: #666;
       font-size: 26rpx;
-      line-height: 1.6;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 12rpx;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12rpx;
+
+      .skill-tag {
+        background: #f5f7fa;
+        color: #555;
+        font-size: 22rpx;
+        padding: 6rpx 12rpx;
+        border-radius: 6rpx;
+        border: 1rpx solid #e4e7ed;
+      }
     }
   }
 
@@ -410,11 +316,11 @@ export default {
 
 // 响应式调整
 @media (max-width: 375px) {
-  .education-section {
-    .school-header {
+  .company-section {
+    .company-header {
       flex-direction: column;
 
-      .education-time {
+      .company-time {
         text-align: left;
         margin-top: 10rpx;
       }

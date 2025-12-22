@@ -4,7 +4,6 @@ import DictAPI from "@/api/dict";
 import { clearDict, getDict, setDict } from "@/utils/store";
 import { DictData, DictItem, DictNode, DictResult, DictType } from "@/types/dict";
 
-
 export const useDictStore = defineStore("dict", () => {
   // 字典数据（转换后的扁平结构）
   const dict = ref<DictData>(getDict());
@@ -209,7 +208,7 @@ export const useDictStore = defineStore("dict", () => {
               dictType.items.push({
                 value: child.value,
                 label: child.label,
-                code: child.code,
+                key: child.code,
                 state: child.state,
                 sort: child.sort,
               });

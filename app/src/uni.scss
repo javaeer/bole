@@ -465,3 +465,156 @@ $device-btn-padding: 8rpx 16rpx;
     pointer-events: none;
   }
 }
+
+/*  ==================== 基础布局类 ====================  */
+.page-container {
+  min-height: 100vh;
+  background-color: $background-color;
+}
+
+.section-container {
+  padding: $padding-base;
+  background: $background-color-white;
+  border-radius: $border-radius;
+  margin-bottom: $margin-base;
+}
+
+.card-container {
+  background: $background-color-white;
+  border-radius: $border-radius;
+  padding: $padding-base;
+  box-shadow: $box-shadow;
+}
+
+/* 按钮样式 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 32rpx;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast $ease-in-out;
+  border: none;
+  cursor: pointer;
+
+  &-primary {
+    background: $primary-color;
+    color: white;
+
+    &:hover {
+      background: color.adjust($primary-color, $lightness: -10%);
+    }
+  }
+
+  &-secondary {
+    background: $background-color-white;
+    color: $text-primary;
+    border: 1px solid $border-color-light;
+
+    &:hover {
+      background: $background-color;
+    }
+  }
+
+  &-danger {
+    background: $danger-color;
+    color: white;
+
+    &:hover {
+      background: color.adjust($danger-color, $lightness: -10%);
+    }
+  }
+}
+
+/* 表单样式 */
+.form-group {
+  margin-bottom: $margin-base;
+
+  .form-label {
+    display: block;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    margin-bottom: $margin-mini;
+
+    &.required::after {
+      content: '*';
+      color: $danger-color;
+      margin-left: 4rpx;
+    }
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 20rpx;
+    border: 2rpx solid $border-color-lighter;
+    border-radius: $border-radius;
+    font-size: $font-size-base;
+    color: $text-primary;
+    background: $background-color-white;
+    transition: all $transition-fast $ease-in-out;
+
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: $input-focus-shadow;
+      outline: none;
+    }
+
+    &.error {
+      border-color: $danger-color;
+      box-shadow: $input-error-shadow;
+    }
+  }
+}
+
+/* 标签样式 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 12rpx;
+  background: $background-color;
+  border-radius: $border-radius-small;
+  font-size: $font-size-small;
+  color: $text-regular;
+  border: 1px solid $border-color-light;
+}
+
+/* 状态样式 */
+.status {
+  &-success {
+    color: $success-color;
+    background: $success-bg;
+    border-color: $success-border;
+  }
+
+  &-warning {
+    color: $warning-color;
+    background: $warning-bg;
+    border-color: $warning-border;
+  }
+
+  &-danger {
+    color: $danger-color;
+    background: $danger-bg;
+    border-color: $danger-border;
+  }
+
+  &-info {
+    color: $info-color;
+    background: $info-bg;
+    border-color: $info-border;
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: $screen-md) {
+  .section-container {
+    padding: $padding-small;
+  }
+
+  .btn {
+    padding: 16rpx 24rpx;
+  }
+}

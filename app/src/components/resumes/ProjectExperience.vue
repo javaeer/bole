@@ -1,5 +1,5 @@
 <template>
-  <view :class="['education-section', `theme-${theme}`]" :style="computedStyle">
+  <view :class="['project-section', `theme-${theme}`]" :style="computedStyle">
     <!-- 区块标题 -->
     <view class="section-header">
       <text class="section-title">项目经历</text>
@@ -7,196 +7,159 @@
     </view>
 
     <!-- 空状态 -->
-    <view v-if="!hasEducationData" class="empty-state">
-      <text class="empty-icon">🎓</text>
+    <view v-if="!hasProjectData" class="empty-state">
+      <text class="empty-icon">📁</text>
       <text class="empty-text">暂无项目经历信息</text>
     </view>
 
-    <!-- 教育经历列表 -->
-    <view v-else class="education-list">
-      <block v-for="(edu, index) in educations" :key="index">
-        <view class="education-item" :style="itemStyle">
-          <!-- 学校信息 -->
-          <view class="school-header">
-            <view class="school-main">
-              <text class="school-name">{{ edu.school || '未知学校' }}</text>
-              <view class="degree-info">
-                <text class="degree">{{ edu.degree || '学历未填写' }}</text>
-                <text v-if="edu.major" class="major"> · {{ edu.major }}</text>
+    <!-- 项目经历列表 -->
+    <view v-else class="project-list">
+      <block v-for="(project, index) in projects" :key="index">
+        <view class="project-item" :style="itemStyle">
+          <!-- 项目信息 -->
+          <view class="project-header">
+            <view class="project-main">
+              <text class="project-name">{{ project.name || '未知项目' }}</text>
+              <view class="role-info">
+                <text class="role">{{ project.role || '角色未填写' }}</text>
+                <text v-if="project.company" class="company"> · {{ project.company }}</text>
               </view>
             </view>
 
             <!-- 时间信息 -->
-            <view class="education-time">
+            <view class="project-time">
               <text class="duration">
-                {{ formatDate(edu.startDate) }} - {{ formatDate(edu.endDate) || '至今' }}
+                {{ formatDate(project.startDate) }} - {{ formatDate(project.endDate) || '至今' }}
               </text>
-              <text v-if="edu.duration" class="duration-label">({{ edu.duration }})</text>
+              <text v-if="project.duration" class="duration-label">({{ project.duration }})</text>
             </view>
           </view>
 
-          <!-- GPA和排名（可选） -->
-          <view v-if="showGpa || showRanking" class="academic-info">
-            <text v-if="showGpa && edu.gpa" class="gpa">
-              <text class="info-label">GPA: </text>{{ edu.gpa }}
-            </text>
-            <text v-if="showRanking && edu.ranking" class="ranking">
-              <text class="info-label">排名: </text>{{ edu.ranking }}
-            </text>
+          <!-- 项目描述 -->
+          <view v-if="project.description" class="project-description">
+            <text class="description-text">{{ project.description }}</text>
           </view>
 
-          <!-- 所学课程（可选） -->
-          <view v-if="showCourses && edu.courses && edu.courses.length > 0" class="courses-section">
-            <text class="courses-title">相关课程：</text>
-            <view class="course-tags">
+          <!-- 技术栈 -->
+          <view v-if="showTechnologies && project.technologies && project.technologies.length > 0" class="technologies-section">
+            <text class="technologies-title">技术栈：</text>
+            <view class="technology-tags">
               <text
-                v-for="(course, courseIndex) in getDisplayCourses(edu.courses)"
-                :key="courseIndex"
-                class="course-tag"
+                v-for="(tech, techIndex) in project.technologies"
+                :key="techIndex"
+                class="technology-tag"
               >
-                {{ course }}
-              </text>
-              <text v-if="edu.courses.length > maxCourses" class="more-courses">
-                等{{ edu.courses.length - maxCourses }}门课程
+                {{ tech }}
               </text>
             </view>
           </view>
 
-          <!-- 在校成就 -->
-          <view v-if="showAchievements && edu.achievements && edu.achievements.length > 0" class="achievements">
-            <text class="achievements-title">在校成就：</text>
+          <!-- 项目职责 -->
+          <view v-if="showResponsibilities && project.responsibilities && project.responsibilities.length > 0" class="responsibilities">
+            <text class="responsibilities-title">我的职责：</text>
+            <view class="responsibilities-list">
+              <view
+                v-for="(responsibility, rIndex) in project.responsibilities"
+                :key="rIndex"
+                class="responsibility-item"
+              >
+                <text class="responsibility-icon">✅</text>
+                <text class="responsibility-text">{{ responsibility }}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 项目成果 -->
+          <view v-if="showAchievements && project.achievements && project.achievements.length > 0" class="achievements">
+            <text class="achievements-title">项目成果：</text>
             <view class="achievements-list">
               <view
-                v-for="(achievement, aIndex) in edu.achievements"
+                v-for="(achievement, aIndex) in project.achievements"
                 :key="aIndex"
                 class="achievement-item"
               >
-                <text class="achievement-icon">🏆</text>
+                <text class="achievement-icon">🎯</text>
                 <text class="achievement-text">{{ achievement }}</text>
               </view>
             </view>
           </view>
 
-          <!-- 详细描述 -->
-          <view v-if="edu.description" class="education-description">
-            <text class="description-text">{{ edu.description }}</text>
+          <!-- 项目链接 -->
+          <view v-if="project.link" class="project-link">
+            <text class="link-icon">🔗</text>
+            <text class="link-text" @click="openLink(project.link)">查看项目</text>
           </view>
         </view>
 
-        <!-- 分隔线（最后一个项目不显示） -->
-        <view v-if="index < educations.length - 1" class="item-divider"></view>
+        <!-- 分隔线 -->
+        <view v-if="index < projects.length - 1" class="item-divider"></view>
       </block>
     </view>
   </view>
 </template>
 
-<script>
-export default {
-  name: 'ProjectExperience',
+<script setup>
+import { computed } from 'vue'
 
-  props: {
-    config: {
-      type: Object,
-      default: () => ({})
-    },
-    theme: {
-      type: String,
-      default: 'modern'
-    }
+const props = defineProps({
+  config: {
+    type: Object,
+    default: () => ({})
   },
-
-  data() {
-    return {
-      maxCourses: 5 // 最多显示的课程数量
-    };
-  },
-
-  computed: {
-    // 提取props和styles
-    props() {
-      return this.config.props || {};
-    },
-
-    styles() {
-      return this.config.styles || {};
-    },
-
-    // 获取教育经历数据
-    educations() {
-      return this.props.educations || [];
-    },
-
-    // 检查是否有教育数据
-    hasEducationData() {
-      return this.educations.length > 0;
-    },
-
-    // 样式相关计算
-    computedStyle() {
-      return {
-        '--primary-color': this.styles.primaryColor || '#d4af37'
-      };
-    },
-
-    itemStyle() {
-      return {
-        background: this.styles.cardBackground || '#ffffff'
-      };
-    },
-
-    // 是否显示GPA
-    showGpa() {
-      return this.styles.showGPA !== false;
-    },
-
-    // 是否显示排名
-    showRanking() {
-      return this.styles.showRanking !== false;
-    },
-
-    // 是否显示课程
-    showCourses() {
-      return this.styles.showCourses !== false;
-    },
-
-    // 是否显示成就
-    showAchievements() {
-      return this.styles.showAchievements !== false;
-    }
-  },
-
-  mounted() {
-    console.log('教育背景组件加载完成', {
-      教育经历数量: this.educations.length,
-      配置: this.config
-    });
-  },
-
-  methods: {
-    // 格式化日期
-    formatDate(dateStr) {
-      if (!dateStr) return '';
-
-      // 简单格式化，如 "2020-09" -> "2020.09"
-      return dateStr.replace('-', '.');
-    },
-
-    // 获取显示的课程列表
-    getDisplayCourses(courses) {
-      if (!courses || !Array.isArray(courses)) return [];
-
-      if (courses.length <= this.maxCourses) {
-        return courses;
-      }
-
-      return courses.slice(0, this.maxCourses);
-    }
+  theme: {
+    type: String,
+    default: 'modern'
   }
-};
+})
+
+// 提取配置
+const componentProps = computed(() => props.config.props || {})
+const componentStyles = computed(() => props.config.styles || {})
+
+// 项目数据
+const projects = computed(() => componentProps.value.experiences || [])
+const hasProjectData = computed(() => projects.value.length > 0)
+
+// 样式相关
+const computedStyle = computed(() => ({
+  '--primary-color': componentStyles.value.primaryColor || '#d4af37'
+}))
+
+const itemStyle = computed(() => ({
+  background: componentStyles.value.cardBackground || '#ffffff'
+}))
+
+// 是否显示技术栈
+const showTechnologies = computed(() => componentStyles.value.showTechnologies !== false)
+// 是否显示职责
+const showResponsibilities = computed(() => componentStyles.value.showResponsibilities !== false)
+// 是否显示成就
+const showAchievements = computed(() => componentStyles.value.showAchievements !== false)
+
+// 格式化日期
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+  return dateStr.replace('-', '.')
+}
+
+// 打开链接
+const openLink = (url) => {
+  if (url) {
+    uni.navigateTo({
+      url: `/pages/webview/webview?url=${encodeURIComponent(url)}`
+    })
+  }
+}
+
+// 组件加载日志
+console.log('项目经历组件加载完成', {
+  项目经历数量: projects.value.length,
+  配置: props.config
+})
 </script>
 
 <style lang="scss" scoped>
-.education-section {
+.project-section {
   margin-bottom: 40rpx;
 
   &.theme-modern {
@@ -215,7 +178,7 @@ export default {
       width: 80rpx;
     }
 
-    .education-item {
+    .project-item {
       background: #ffffff;
       border-radius: 16rpx;
       padding: 30rpx;
@@ -247,17 +210,17 @@ export default {
     }
   }
 
-  // 学校头部信息
-  .school-header {
+  // 项目头部信息
+  .project-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 20rpx;
 
-    .school-main {
+    .project-main {
       flex: 1;
 
-      .school-name {
+      .project-name {
         font-size: 32rpx;
         font-weight: 600;
         color: #333;
@@ -265,21 +228,21 @@ export default {
         margin-bottom: 8rpx;
       }
 
-      .degree-info {
-        .degree {
+      .role-info {
+        .role {
           color: #d4af37;
           font-size: 26rpx;
           font-weight: 500;
         }
 
-        .major {
+        .company {
           color: #666;
           font-size: 26rpx;
         }
       }
     }
 
-    .education-time {
+    .project-time {
       text-align: right;
       min-width: 200rpx;
 
@@ -297,30 +260,24 @@ export default {
     }
   }
 
-  // 学术信息
-  .academic-info {
-    display: flex;
-    gap: 20rpx;
+  // 项目描述
+  .project-description {
     margin-bottom: 20rpx;
+    padding-top: 20rpx;
+    border-top: 1rpx solid #f0f0f0;
 
-    .gpa, .ranking {
-      background: #fef9ed;
-      padding: 6rpx 12rpx;
-      border-radius: 6rpx;
-      font-size: 24rpx;
-
-      .info-label {
-        color: #d4af37;
-        font-weight: 500;
-      }
+    .description-text {
+      color: #666;
+      font-size: 26rpx;
+      line-height: 1.6;
     }
   }
 
-  // 课程相关
-  .courses-section {
+  // 技术栈标签
+  .technologies-section {
     margin-bottom: 20rpx;
 
-    .courses-title {
+    .technologies-title {
       color: #666;
       font-size: 26rpx;
       font-weight: 500;
@@ -328,30 +285,66 @@ export default {
       margin-bottom: 12rpx;
     }
 
-    .course-tags {
+    .technology-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 12rpx;
 
-      .course-tag {
-        background: #f5f7fa;
-        color: #555;
+      .technology-tag {
+        background: #e8f4ff;
+        color: #409eff;
         font-size: 22rpx;
         padding: 6rpx 12rpx;
         border-radius: 6rpx;
-        border: 1rpx solid #e4e7ed;
+        border: 1rpx solid #b3d8ff;
       }
+    }
+  }
 
-      .more-courses {
-        color: #999;
-        font-size: 22rpx;
-        align-self: center;
+  // 职责列表
+  .responsibilities {
+    margin-bottom: 20rpx;
+
+    .responsibilities-title {
+      color: #666;
+      font-size: 26rpx;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 12rpx;
+    }
+
+    .responsibilities-list {
+      .responsibility-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 12rpx;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .responsibility-icon {
+          margin-right: 12rpx;
+          font-size: 24rpx;
+          flex-shrink: 0;
+          margin-top: 4rpx;
+          color: #52c41a;
+        }
+
+        .responsibility-text {
+          color: #555;
+          font-size: 24rpx;
+          line-height: 1.4;
+          flex: 1;
+        }
       }
     }
   }
 
   // 成就列表
   .achievements {
+    margin-bottom: 20rpx;
+
     .achievements-title {
       color: #666;
       font-size: 26rpx;
@@ -375,6 +368,7 @@ export default {
           font-size: 24rpx;
           flex-shrink: 0;
           margin-top: 4rpx;
+          color: #faad14;
         }
 
         .achievement-text {
@@ -387,16 +381,27 @@ export default {
     }
   }
 
-  // 描述文本
-  .education-description {
-    margin-top: 20rpx;
+  // 项目链接
+  .project-link {
+    display: flex;
+    align-items: center;
     padding-top: 20rpx;
     border-top: 1rpx solid #f0f0f0;
 
-    .description-text {
-      color: #666;
-      font-size: 26rpx;
-      line-height: 1.6;
+    .link-icon {
+      margin-right: 8rpx;
+      font-size: 24rpx;
+      color: #1890ff;
+    }
+
+    .link-text {
+      color: #1890ff;
+      font-size: 24rpx;
+      text-decoration: underline;
+
+      &:active {
+        opacity: 0.7;
+      }
     }
   }
 
@@ -410,11 +415,11 @@ export default {
 
 // 响应式调整
 @media (max-width: 375px) {
-  .education-section {
-    .school-header {
+  .project-section {
+    .project-header {
       flex-direction: column;
 
-      .education-time {
+      .project-time {
         text-align: left;
         margin-top: 10rpx;
       }

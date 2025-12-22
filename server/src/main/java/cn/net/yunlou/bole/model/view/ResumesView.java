@@ -2,11 +2,9 @@ package cn.net.yunlou.bole.model.view;
 
 import cn.net.yunlou.bole.common.BaseView;
 import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
-import java.util.List;
-import java.util.Map;
-
 import cn.net.yunlou.bole.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.entity.ResumesTemplateStyle;
+import java.util.List;
 import lombok.*;
 
 /**

@@ -1,6 +1,5 @@
 <template>
   <view class="template-select-page">
-
     <view class="select-header">
       <text class="header-title">选择适合您的简历模板</text>
       <text class="header-subtitle">模板将决定简历的整体风格和布局</text>
@@ -42,7 +41,7 @@
         <view class="template-preview" :style="getPreviewStyle(template)">
           <!-- 预览头部 -->
           <view class="preview-header">
-            <view class="preview-avatar" v-if="template.globalLayout?.showPhoto">
+            <view class="preview-avatar" v-if="showPhotoPreview(template)">
               <text class="avatar-placeholder">👤</text>
             </view>
             <view class="preview-title">
@@ -62,27 +61,27 @@
           </view>
 
           <!-- 使用人数 -->
-          <view class="template-stats" v-if="template.usedCount > 0">
+          <view class="template-stats" v-if="(template.users || 0) > 0">
             <text class="stats-icon">👥</text>
-            <text class="stats-text">{{ template.usedCount }}人使用</text>
+            <text class="stats-text">{{ template.users }}人使用</text>
           </view>
         </view>
 
         <!-- 模板信息 -->
         <view class="template-info">
-          <text class="template-name">{{ template.name }}</text>
-          <text class="template-desc">{{ template.description || '经典简约设计' }}</text>
+          <text class="template-name text-truncate">{{ template.name }}</text>
+          <text class="template-desc text-multi-truncate">{{ template.description || '经典简约设计' }}</text>
           <view class="template-tags">
-            <text class="tag-item" v-if="template.globalLayout?.columns === 2">双栏</text>
-            <text class="tag-item" v-if="template.globalLayout?.showPhoto">带照片</text>
-            <text class="tag-item">{{ template.globalLayout?.pageSize || 'A4' }}</text>
+            <text class="tag-item" v-if="isTwoColumn(template)">双栏</text>
+            <text class="tag-item" v-if="showPhotoPreview(template)">带照片</text>
+            <text class="tag-item">{{ template.category || '通用' }}</text>
           </view>
         </view>
       </view>
     </view>
 
     <!-- 加载更多 -->
-    <view v-if="hasMore && !loading" class="load-more" @click="loadMore">
+    <view v-if="hasMore && !loading" class="load-more" @click="handleLoadMore">
       <text class="load-more-text">加载更多</text>
     </view>
 
@@ -99,7 +98,7 @@
     </view>
 
     <!-- 加载状态 -->
-    <view v-if="loading" class="loading-overlay">
+    <view v-if="loading" class="loading-overlay flex-center">
       <view class="loading-content">
         <view class="loading-spinner"></view>
         <text class="loading-text">加载中...</text>
@@ -108,134 +107,121 @@
   </view>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { useTemplate } from '@/composables/useTemplate'
+import type { TemplateResult } from '@/types/template'
 
-export default defineComponent({
-  name: 'TemplateSelectPage',
+// 使用组合式函数
+const {
+  templateList,
+  loading,
+  hasMore,
+  loadListTemplates,
+  loadMore,
+  setCurrentTemplate,
+} = useTemplate()
 
-  setup() {
-    const { templateList, loading, hasMore, loadListTemplates, loadMore, setCurrentTemplate } = useTemplate()
+// 响应式状态
+const selectedTemplate = ref<number | null>(null)
+const activeCategory = ref<string>('all')
+const scrollLeft = ref(0)
 
-    const selectedTemplate = ref<number | null>(null)
-    const activeCategory = ref<string>('all')
-    const scrollLeft = ref(0)
+// 模板分类
+const categories = computed(() => {
+  const categorySet = new Set<string>()
+  templateList.value.forEach(template => {
+    if (template.category) {
+      categorySet.add(template.category)
+    }
+  })
+  return Array.from(categorySet)
+})
 
-    // 模板分类
-    const categories = computed(() => {
-      const themes = new Set<string>()
-      templateList.value.forEach(template => {
-        const theme = template.globalStyle?.theme
-        if (theme) {
-          themes.add(theme)
-        }
+// 过滤模板
+const filteredTemplates = computed(() => {
+  if (activeCategory.value === 'all') {
+    return templateList.value
+  }
+  return templateList.value.filter(template =>
+    template.category === activeCategory.value
+  )
+})
+
+// 分类切换
+const changeCategory = (category: string) => {
+  activeCategory.value = category
+  scrollLeft.value = 0
+}
+
+// 选择模板
+const selectTemplate = (id: number) => {
+  selectedTemplate.value = id
+}
+
+// 进入表单页面
+const enterFormPage = () => {
+  if (selectedTemplate.value) {
+    const template = templateList.value.find(t => t.id === selectedTemplate.value)
+    if (template) {
+      setCurrentTemplate(template)
+      uni.navigateTo({
+        url: `/pages/resumes/create?templateId=${selectedTemplate.value}`
       })
-      return Array.from(themes)
-    })
-
-    // 过滤模板
-    const filteredTemplates = computed(() => {
-      if (activeCategory.value === 'all') {
-        return templateList.value
-      }
-      return templateList.value.filter(template =>
-        template.globalStyle?.theme === activeCategory.value
-      )
-    })
-
-    // 分类切换
-    const changeCategory = (category: string) => {
-      activeCategory.value = category
-      scrollLeft.value = 0
-    }
-
-    // 选择模板
-    const selectTemplate = (id: number) => {
-      selectedTemplate.value = id
-    }
-
-    // 进入表单页面
-    const enterFormPage = () => {
-      if (selectedTemplate.value) {
-        const template = templateList.value.find(t => t.id === selectedTemplate.value)
-        if (template) {
-          setCurrentTemplate(template)
-          uni.navigateTo({
-            url: `/pages/resumes/create?templateId=${selectedTemplate.value}`
-          })
-        }
-      }
-    }
-
-    // 返回
-    const handleBack = () => {
-      uni.navigateBack()
-    }
-
-    // 获取预览样式
-    const getPreviewStyle = (template: TemplateResult) => {
-      const style: Record<string, string> = {
-        backgroundColor: template.globalStyle?.backgroundColor || '#ffffff'
-      }
-
-      if (template.globalStyle?.primaryColor) {
-        style.borderColor = template.globalStyle.primaryColor
-      }
-
-      return style
-    }
-
-    // 获取徽章类
-    const getBadgeClass = (template: TemplateResult) => {
-      const theme = template.globalStyle?.theme || 'classic'
-      return `badge-${theme}`
-    }
-
-    // 加载模板列表
-    const loadTemplates = async () => {
-      await loadListTemplates(1, { isActive: true })
-    }
-
-    // 初始化
-    onMounted(async () => {
-      await loadTemplates()
-    })
-
-    return {
-      // 状态
-      selectedTemplate,
-      activeCategory,
-      scrollLeft,
-      templateList,
-      loading,
-      hasMore,
-
-      // 计算属性
-      categories,
-      filteredTemplates,
-
-      // 方法
-      changeCategory,
-      selectTemplate,
-      enterFormPage,
-      handleBack,
-      getPreviewStyle,
-      getBadgeClass,
-      loadMore
     }
   }
+}
+
+// 获取预览样式
+const getPreviewStyle = (template: TemplateResult) => {
+  const style: Record<string, string> = {
+    backgroundColor: template.globalStyle?.backgroundColor || '#ffffff'
+  }
+
+  if (template.globalStyle?.primaryColor) {
+    style.borderColor = template.globalStyle.primaryColor
+  }
+
+  return style
+}
+
+// 获取徽章类
+const getBadgeClass = (template: TemplateResult) => {
+  const theme = template.globalStyle?.theme || 'classic'
+  return `badge-${theme}`
+}
+
+// 检查是否双栏布局
+const isTwoColumn = (template: TemplateResult) => {
+  return template.globalLayout?.type === 'two-column'
+}
+
+// 检查是否显示照片
+const showPhotoPreview = (template: TemplateResult) => {
+  // 这里可以根据实际需求调整
+  return template.globalLayout?.type === 'single-column'
+}
+
+// 加载更多
+const handleLoadMore = async () => {
+  if (!loading.value && hasMore.value) {
+    await loadMore()
+  }
+}
+
+// 初始化加载
+onMounted(async () => {
+  await loadListTemplates(1, { isActive: true })
 })
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 
 .template-select-page {
   min-height: 100vh;
   background: linear-gradient(135deg, $primary-lighter 0%, $background-color-white 100%);
   padding-bottom: 160rpx;
 }
-
 
 /* 头部区域 */
 .select-header {
@@ -248,7 +234,7 @@ export default defineComponent({
   font-size: $font-size-extra-large;
   font-weight: $font-weight-bold;
   color: $text-primary;
-  margin-bottom: math.div($uni-spacing-col-sm, 2);
+  margin-bottom: calc($uni-spacing-col-sm / 2);
 }
 
 .header-subtitle {
@@ -276,7 +262,7 @@ export default defineComponent({
 }
 
 .tab-item {
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-base;
+  padding: calc($uni-spacing-col-sm / 2) $uni-spacing-col-base;
   border-radius: $uni-border-radius-circle;
   font-size: $uni-font-size-base;
   color: $text-regular;
@@ -291,10 +277,6 @@ export default defineComponent({
     color: $uni-bg-color;
     font-weight: $font-weight-medium;
   }
-}
-
-.tab-text {
-  font-size: $uni-font-size-base;
 }
 
 /* 模板网格 */
@@ -327,7 +309,7 @@ export default defineComponent({
 
 .template-preview {
   height: 320rpx;
-  border-radius: math.div($border-radius-large, 2) math.div($border-radius-large, 2) 0 0;
+  border-radius: calc($border-radius-large / 2) calc($border-radius-large / 2) 0 0;
   padding: $uni-spacing-col-base;
   position: relative;
   border-bottom: 1rpx solid $border-color-extra-light;
@@ -358,7 +340,7 @@ export default defineComponent({
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: math.div($uni-spacing-col-sm, 2);
+  gap: calc($uni-spacing-col-sm / 2);
 }
 
 .preview-name-line {
@@ -396,7 +378,7 @@ export default defineComponent({
   position: absolute;
   top: 20rpx;
   right: 20rpx;
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  padding: calc($uni-spacing-col-sm / 2) $uni-spacing-col-sm;
   border-radius: $uni-border-radius-circle;
   font-size: $uni-font-size-sm;
   font-weight: $font-weight-medium;
@@ -429,56 +411,39 @@ export default defineComponent({
   right: 20rpx;
   display: flex;
   align-items: center;
-  gap: math.div($uni-spacing-col-sm, 2);
+  gap: calc($uni-spacing-col-sm / 2);
   background: rgba($uni-bg-color, 0.8);
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  padding: calc($uni-spacing-col-sm / 2) $uni-spacing-col-sm;
   border-radius: $uni-border-radius-sm;
   font-size: $uni-font-size-sm;
   color: $text-secondary;
-}
-
-.stats-icon {
-  font-size: $uni-font-size-sm;
-}
-
-.stats-text {
-  font-size: $uni-font-size-sm;
 }
 
 .template-info {
   padding: $uni-spacing-col-base;
   display: flex;
   flex-direction: column;
-  gap: math.div($uni-spacing-col-sm, 2);
-}
-
-.template-name {
-  font-size: $uni-font-size-base;
-  color: $text-primary;
-  font-weight: $font-weight-medium;
-  @extend .text-truncate;
+  gap: calc($uni-spacing-col-sm / 2);
 }
 
 .template-desc {
   font-size: $uni-font-size-sm;
   color: $text-regular;
   line-height: 1.4;
-  @extend .text-multi-truncate;
-  -webkit-line-clamp: 2;
 }
 
 .template-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: math.div($uni-spacing-col-sm, 2);
-  margin-top: math.div($uni-spacing-col-sm, 2);
+  gap: calc($uni-spacing-col-sm / 2);
+  margin-top: calc($uni-spacing-col-sm / 2);
 }
 
 .tag-item {
   font-size: $uni-font-size-sm;
   color: $text-secondary;
   background: $background-color;
-  padding: math.div($uni-spacing-col-sm, 4) math.div($uni-spacing-col-sm, 2);
+  padding: calc($uni-spacing-col-sm / 4) calc($uni-spacing-col-sm / 2);
   border-radius: $uni-border-radius-sm;
   border: 1rpx solid $border-color-light;
 }
@@ -546,7 +511,6 @@ export default defineComponent({
   right: 0;
   bottom: 0;
   background: rgba($uni-bg-color, 0.8);
-  @extend .flex-center;
   z-index: $z-index-modal;
 }
 
@@ -582,7 +546,7 @@ export default defineComponent({
 }
 
 /* 响应式调整 */
-@media (max-width: $breakpoint-sm) {
+@media (max-width: $screen-md) {
   .template-grid {
     grid-template-columns: 1fr;
   }
@@ -590,24 +554,5 @@ export default defineComponent({
   .tabs-container {
     gap: $uni-spacing-col-sm;
   }
-}
-
-/* 工具类 */
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.text-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.text-multi-truncate {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 </style>

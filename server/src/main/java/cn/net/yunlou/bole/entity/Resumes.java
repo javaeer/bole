@@ -25,9 +25,7 @@ public class Resumes extends BaseEntity {
 
     private Integer downloadCount;
 
-    /**
-     * 来自模板
-     */
+    /** 来自模板 */
 
     /** 样式配置 */
     @TableField(typeHandler = JsonbTypeHandler.class)
@@ -37,7 +35,7 @@ public class Resumes extends BaseEntity {
     @TableField(typeHandler = JsonbTypeHandler.class)
     private ResumesTemplateLayout globalLayout;
 
-    //替换真实数据
+    // 替换真实数据
     @TableField(typeHandler = JsonbTypeHandler.class)
     private List<ResumesTemplateComponent> components;
 

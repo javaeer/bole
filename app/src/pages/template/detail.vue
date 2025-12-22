@@ -1,28 +1,23 @@
 <template>
-  <view class="template-detail-container">
+  <view class="template-detail-container page-container">
     <!-- 模板基本信息 -->
-    <view class="template-header">
-      <view class="header-main">
+    <view class="template-header card-container">
+      <view class="header-main flex-between">
         <view class="template-badge" :style="{ backgroundColor: getAvatarColor(template?.id || 0) }">
           <text class="badge-text">{{ getTemplateInitial(template?.name || "") }}</text>
         </view>
         <view class="template-info">
-          <text class="template-name">{{ template?.name || "未知模板" }}</text>
-          <text class="template-description">{{ template?.description || "暂无描述" }}</text>
-          <view class="template-meta">
-            <view class="meta-item">
-              <text class="meta-label">版本：</text>
-              <text class="meta-value">{{ template?.version || "1.0.0" }}</text>
+          <text class="template-name text-truncate">{{ template?.name || "未知模板" }}</text>
+          <text class="template-description text-multi-truncate">{{ template?.description || "暂无描述" }}</text>
+          <view class="template-meta flex-between">
+            <view class="meta-item flex-center">
+              <text class="meta-label">编码：</text>
+              <text class="meta-value text-ellipsis">{{ template?.code || "未设置" }}</text>
             </view>
             <view class="meta-item">
-              <text class="meta-label">状态：</text>
               <view class="status-tag" :class="template?.isActive ? 'active' : 'inactive'">
                 <text class="status-text">{{ template?.isActive ? "已启用" : "未启用" }}</text>
               </view>
-            </view>
-            <view class="meta-item">
-              <text class="meta-label">编码：</text>
-              <text class="meta-value">{{ template?.code || "未设置" }}</text>
             </view>
           </view>
         </view>
@@ -30,205 +25,155 @@
     </view>
 
     <!-- 操作按钮 -->
-    <view class="action-buttons">
-      <button class="action-btn primary" @click="handleUseTemplate">
-        <text class="btn-icon">🎨</text>
+    <view class="action-buttons flex-between">
+      <button class="action-btn btn btn-primary" @click="handleUseTemplate">
         <text class="btn-text">使用此模板</text>
       </button>
-      <button class="action-btn secondary" @click="handleShare">
-        <text class="btn-icon">💯</text>
-        <text class="btn-text">分享</text>
+      <button class="action-btn btn btn-secondary" @click="handleEdit">
+        <text class="btn-text">编辑模板</text>
       </button>
     </view>
 
     <!-- 模板预览 -->
-    <view class="preview-section">
-      <view class="section-header">
+    <view class="preview-section section-container">
+      <view class="section-header flex-between">
         <text class="section-title">模板预览</text>
-        <view class="device-switch">
-          <view class="switch-buttons">
-            <button
-              v-for="device in deviceOptions"
-              :key="device.value"
-              :class="['device-btn', { active: previewDevice === device.value }]"
-              @click="previewDevice = device.value"
-            >
-              <text class="device-icon">{{ device.icon }}</text>
-              <text class="device-name">{{ device.name }}</text>
-            </button>
-          </view>
+        <view class="device-switch flex-center">
+          <button
+            v-for="device in deviceOptions"
+            :key="device.value"
+            :class="['device-btn', { active: previewDevice === device.value }]"
+            @click="handleDeviceSwitch(device.value)"
+          >
+            <text class="device-icon">{{ device.icon }}</text>
+            <text class="device-name">{{ device.name }}</text>
+          </button>
         </view>
       </view>
-      <view class="preview-card">
-        <!-- 使用统一的预览组件 -->
-        <view class="preview-content" :class="previewDevice">
-          <template-preview
-            :key="previewKey"
-            :components="template.components || []"
-            :layout="template.globalLayout"
-            :global-style="template.globalStyle"
-            :device="previewDevice"
-            class="template-preview-container"
-          />
-        </view>
+      <view class="preview-card" :class="previewDevice">
+        <template-preview
+          :key="previewKey"
+          :components="templateComponents"
+          :global-layout="template?.globalLayout"
+          :global-style="template?.globalStyle"
+          :device="previewDevice"
+        />
+      </view>
 
-        <!-- 预览信息 -->
-        <view class="preview-info">
-          <view class="info-item">
-            <text class="info-label">布局类型：</text>
-            <text class="info-value">{{ getLayoutTypeLabel(template?.globalLayout?.type) }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">颜色主题：</text>
-            <view class="color-theme-preview">
-              <view class="color-dot" :style="{ backgroundColor: template?.globalStyle?.primaryColor || '#d4af37' }"></view>
-              <view class="color-dot" :style="{ backgroundColor: template?.globalStyle?.secondaryColor || '#f9f3e3' }"></view>
-              <view class="color-dot" :style="{ backgroundColor: template?.globalStyle?.accentColor || '#f7ef8a' }"></view>
-            </view>
-          </view>
-          <view class="info-item">
-            <text class="info-label">字体：</text>
-            <text class="info-value">{{ template?.globalStyle?.fontFamily || '默认字体' }}</text>
-          </view>
+      <!-- 预览信息 -->
+      <view class="preview-info flex-between">
+        <view class="info-item">
+          <text class="info-label">布局类型：</text>
+          <text class="info-value">{{ getLayoutTypeLabel(template?.globalLayout?.type) }}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">组件数量：</text>
+          <text class="info-value">{{ templateComponents.length }}个</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">创建时间：</text>
+          <text class="info-value">{{ formatDateTime(template?.createdAt) }}</text>
         </view>
       </view>
     </view>
 
     <!-- 模板配置详情 -->
     <view class="config-section">
-      <view class="section-header">
-        <text class="section-title">配置详情</text>
-      </view>
-
       <!-- 全局样式配置 -->
-      <view class="config-card" v-if="template?.globalStyle">
-        <view class="config-header">
+      <view class="config-card card-container" v-if="template?.globalStyle">
+        <view class="config-header flex-between">
           <text class="config-title">全局样式</text>
         </view>
         <view class="config-content">
-          <view class="config-item">
-            <text class="config-label">主色调</text>
-            <view class="config-value">
-              <view class="color-value" :style="{ backgroundColor: template.globalStyle.primaryColor }">
-                {{ template.globalStyle.primaryColor || '#d4af37' }}
+          <view class="config-row">
+            <text class="config-label">颜色主题：</text>
+            <view class="color-theme flex-between">
+              <view
+                class="color-item flex-center"
+                v-for="color in colorItems"
+                :key="color.label"
+              >
+                <view
+                  class="color-dot"
+                  :style="{ backgroundColor: color.value }"
+                ></view>
+                <text class="color-label">{{ color.label }}</text>
+                <text class="color-value">{{ color.value }}</text>
               </view>
             </view>
           </view>
-          <view class="config-item">
-            <text class="config-label">辅色调</text>
-            <view class="config-value">
-              <view class="color-value" :style="{ backgroundColor: template.globalStyle.secondaryColor }">
-                {{ template.globalStyle.secondaryColor || '#f9f3e3' }}
-              </view>
+          <view class="config-row">
+            <text class="config-label">字体设置：</text>
+            <text class="config-value">{{ template.globalStyle.fontFamily || "默认字体" }}</text>
+          </view>
+          <view class="config-row" v-if="template.globalStyle.fontSizes">
+            <text class="config-label">字体大小：</text>
+            <view class="font-sizes flex-between">
+              <text class="font-size-item">标题: {{ template.globalStyle.fontSizes.h1 || 24 }}px</text>
+              <text class="font-size-item">正文: {{ template.globalStyle.fontSizes.body || 14 }}px</text>
             </view>
-          </view>
-          <view class="config-item">
-            <text class="config-label">强调色</text>
-            <view class="config-value">
-              <view class="color-value" :style="{ backgroundColor: template.globalStyle.accentColor }">
-                {{ template.globalStyle.accentColor || '#f7ef8a' }}
-              </view>
-            </view>
-          </view>
-          <view class="config-item">
-            <text class="config-label">字体家族</text>
-            <text class="config-value">{{ template.globalStyle.fontFamily || "'Microsoft YaHei', 'PingFang SC', sans-serif" }}</text>
-          </view>
-          <view class="config-item">
-            <text class="config-label">标题字体</text>
-            <text class="config-value">{{ template.globalStyle.fontSizes?.h1 || '24' }}px</text>
-          </view>
-          <view class="config-item">
-            <text class="config-label">正文字体</text>
-            <text class="config-value">{{ template.globalStyle.fontSizes?.body || '14' }}px</text>
           </view>
         </view>
       </view>
 
       <!-- 布局配置 -->
-      <view class="config-card" v-if="template?.globalLayout">
+      <view class="config-card card-container" v-if="template?.globalLayout">
         <view class="config-header">
           <text class="config-title">布局配置</text>
         </view>
         <view class="config-content">
-          <view class="config-item">
-            <text class="config-label">布局类型</text>
+          <view class="config-row">
+            <text class="config-label">布局类型：</text>
             <text class="config-value">{{ getLayoutTypeLabel(template.globalLayout.type) }}</text>
           </view>
-          <view v-if="template.globalLayout.type === 'two-column'" class="config-item">
-            <text class="config-label">左侧宽度</text>
-            <text class="config-value">{{ template.globalLayout.columns?.left || 40 }}%</text>
-          </view>
-          <view v-if="template.globalLayout.type === 'two-column'" class="config-item">
-            <text class="config-label">右侧宽度</text>
-            <text class="config-value">{{ template.globalLayout.columns?.right || 60 }}%</text>
-          </view>
-          <view class="config-item">
-            <text class="config-label">页面方向</text>
-            <text class="config-value">{{ template.globalLayout.orientation === 'portrait' ? '纵向' : '横向' }}</text>
+          <view class="config-row" v-if="template.globalLayout.type === 'two-column'">
+            <text class="config-label">栏位宽度：</text>
+            <view class="column-widths flex-between">
+              <text>左侧: {{ template.globalLayout.columns?.left || 40 }}%</text>
+              <text>右侧: {{ template.globalLayout.columns?.right || 60 }}%</text>
+            </view>
           </view>
         </view>
       </view>
 
       <!-- 组件列表 -->
-      <view class="config-card">
-        <view class="config-header">
-          <text class="config-title">启用组件</text>
-          <text class="config-count">{{ template?.components?.length || 0 }}个</text>
+      <view class="config-card card-container">
+        <view class="config-header flex-between">
+          <text class="config-title">包含组件</text>
+          <text class="config-count">{{ templateComponents.length }}个</text>
         </view>
-        <view class="components-list" v-if="template?.components?.length > 0">
-          <view class="component-item" v-for="(component, index) in template.components" :key="component.id || index">
-            <view class="component-index">
+        <view class="components-list">
+          <view
+            class="component-item flex-between"
+            v-for="(component, index) in templateComponents"
+            :key="component.componentId || index"
+          >
+            <view class="component-index flex-center">
               <text class="index-text">{{ index + 1 }}</text>
             </view>
             <view class="component-info">
-              <text class="component-name">{{ component.name || '未命名区块' }}</text>
-              <text class="component-type">{{ getComponentTypeLabel(component.fragment) }}</text>
-            </view>
-            <view class="component-actions">
-              <text class="component-action" @click.stop="viewComponentDetail(component)">查看</text>
+              <text class="component-name text-truncate">{{ getComponentName(component) }}</text>
+              <text class="component-desc text-multi-truncate">{{ getComponentDescription(component) }}</text>
             </view>
           </view>
         </view>
-        <view v-else class="empty-components">
+        <view v-if="templateComponents.length === 0" class="empty-state flex-center">
+          <text class="empty-icon">📄</text>
           <text class="empty-text">暂无组件配置</text>
-        </view>
-      </view>
-
-      <!-- 时间信息 -->
-      <view class="config-card" v-if="template?.createdAt || template?.updatedAt">
-        <view class="config-header">
-          <text class="config-title">时间信息</text>
-        </view>
-        <view class="config-content">
-          <view class="config-item" v-if="template?.createdAt">
-            <text class="config-label">创建时间</text>
-            <text class="config-value">{{ formatDateTime(template.createdAt) }}</text>
-          </view>
-          <view class="config-item" v-if="template?.updatedAt">
-            <text class="config-label">更新时间</text>
-            <text class="config-value">{{ formatDateTime(template.updatedAt) }}</text>
-          </view>
         </view>
       </view>
     </view>
 
     <!-- 底部操作栏 -->
-    <view class="bottom-actions">
-      <button class="bottom-btn delete" @click="handleDelete" v-if="!template?.deleted">
-        <text class="btn-text">删除模板</text>
-      </button>
-      <button class="bottom-btn toggle-status" @click="handleToggleStatus">
+    <view class="bottom-actions flex-center">
+      <button class="bottom-btn btn btn-danger" @click="handleToggleStatus">
         <text class="btn-text">{{ template?.isActive ? "停用模板" : "启用模板" }}</text>
-      </button>
-      <button class="bottom-btn primary" @click="handleEdit">
-        <text class="btn-text">编辑模板</text>
       </button>
     </view>
 
     <!-- 加载状态 -->
-    <view v-if="loading" class="loading-overlay">
-      <view class="loading-content">
+    <view v-if="loading" class="loading-overlay flex-center">
+      <view class="loading-content flex-center">
         <view class="loading-spinner"></view>
         <text class="loading-text">加载中...</text>
       </view>
@@ -236,246 +181,207 @@
   </view>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, onMounted } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
-import TemplatePreview from "@/components/template/TemplatePreview.vue";
-import type { TemplateResult } from "@/types/template";
-import { useTemplate } from "@/composables/useTemplate";
+<script setup lang="ts">
+import { computed, ref } from "vue"
+import { onLoad } from "@dcloudio/uni-app"
+import TemplatePreview from "@/components/template/TemplatePreview.vue"
+import { TemplateResult } from "@/types/template"
+import { TemplateComponentItem } from "@/types/template-component"
+import { COMPONENT_LIBRARY } from "@/constants/component"
+import { DEVICE_OPTIONS, LAYOUT_TYPES } from "@/constants/template"
+import { useTemplateStore } from "@/stores/template"
+import TemplateAPI from "@/api/template"
 
-interface DeviceOption {
-  value: string;
-  name: string;
-  icon: string;
+// 响应式数据
+const template = ref<TemplateResult | null>(null)
+const loading = ref(true)
+const previewKey = ref(0)
+const previewDevice = ref("desktop")
+
+// 使用 store
+const templateStore = useTemplateStore()
+
+// 设备选项
+const deviceOptions = ref(DEVICE_OPTIONS)
+
+// 计算属性
+const templateComponents = computed(() => {
+  if (!template.value?.components) return []
+  return template.value.components
+})
+
+const colorItems = computed(() => {
+  if (!template.value?.globalStyle) return []
+  const style = template.value.globalStyle
+  return [
+    { label: "主色", value: style.primaryColor || "#d4af37" },
+    { label: "辅色", value: style.secondaryColor || "#f9f3e3" },
+    { label: "强调色", value: style.accentColor || "#f7ef8a" },
+  ]
+})
+
+// 加载模板数据
+const loadTemplateDetail = async (id: string) => {
+  try {
+    loading.value = true
+    const templateId = parseInt(id)
+    if (isNaN(templateId)) {
+      throw new Error("无效的模板ID")
+    }
+
+    // 使用 store 中的方法或直接调用 API
+    const response = await TemplateAPI.getById(templateId)
+    if (response) {
+      template.value = response as TemplateResult
+      templateStore.setCurrentTemplate(template.value)
+    } else {
+      uni.showToast({
+        title: "模板不存在",
+        icon: "none",
+      })
+      setTimeout(() => {
+        uni.navigateBack()
+      }, 1500)
+    }
+    previewKey.value += 1
+  } catch (error) {
+    console.error("加载模板详情失败:", error)
+    uni.showToast({
+      title: "加载失败",
+      icon: "none",
+    })
+  } finally {
+    loading.value = false
+  }
 }
 
-export default defineComponent({
-  name: "TemplateDetail",
+// 导航处理
+const handleEdit = () => {
+  if (!template.value) return
+  uni.navigateTo({
+    url: `/pages/template/edit?id=${template.value.id}`,
+  })
+}
 
-  components: {
-    TemplatePreview
-  },
+const handleUseTemplate = () => {
+  if (!template.value) return
+  uni.showToast({
+    title: "开始使用此模板",
+    icon: "success",
+  })
+  // 导航到使用模板创建简历的页面
+  uni.navigateTo({
+    url: `/pages/resumes/create?templateId=${template.value.id}&templateCode=${template.value.code}`,
+  })
+}
 
-  setup() {
-    const template = ref<TemplateResult | null>(null);
-    const loading = ref(true);
-    const previewKey = ref(0);
-    const previewDevice = ref("desktop");
-    const { fetchTemplateDetail, setCurrentTemplate } = useTemplate();
+const handleToggleStatus = async () => {
+  if (!template.value) return
 
-    // 设备选项
-    const deviceOptions: DeviceOption[] = [
-      { value: "desktop", name: "桌面", icon: "🖥️" },
-      { value: "tablet", name: "平板", icon: "📱" },
-      { value: "mobile", name: "手机", icon: "📲" },
-    ];
+  const newStatus = !template.value.isActive
+  const action = newStatus ? "启用" : "停用"
 
-    // 模拟加载模板数据
-    const loadTemplateDetail = async (id: string) => {
-      try {
-        loading.value = true;
-        const result = await fetchTemplateDetail(id);
-        if (result) {
-          template.value = result;
-        } else {
+  uni.showModal({
+    title: `确认${action}`,
+    content: `确定要${action}这个模板吗？`,
+    success: async (res) => {
+      if (res.confirm) {
+        try {
+          // 调用API更新状态
+          // 注意：这里需要根据实际API进行调用
+          // await TemplateAPI.updateStatus(template.value!.id, newStatus)
+
+          // 更新本地状态
+          template.value!.isActive = newStatus
+          previewKey.value += 1
+
           uni.showToast({
-            title: "模板不存在",
-            icon: "error",
-          });
-          setTimeout(() => {
-            uni.navigateBack();
-          }, 1500);
+            title: `${action}成功`,
+            icon: "success",
+          })
+        } catch (error) {
+          console.error(`${action}模板失败:`, error)
+          uni.showToast({
+            title: `${action}失败`,
+            icon: "none",
+          })
         }
-        previewKey.value += 1;
-      } catch (error) {
-        console.error("加载模板详情失败:", error);
-        uni.showToast({
-          title: "加载失败",
-          icon: "error",
-        });
-      } finally {
-        loading.value = false;
       }
-    };
+    },
+  })
+}
 
-    // 导航处理
-    const handleBack = () => {
-      uni.navigateBack();
-    };
+// 设备切换
+const handleDeviceSwitch = (device: string) => {
+  previewDevice.value = device
+  previewKey.value += 1
+}
 
-    const handleEdit = () => {
-      if (!template.value) return;
-      uni.navigateTo({
-        url: `/pages/template/create?id=${template.value.id}`,
-      });
-    };
+// 工具函数
+const getTemplateInitial = (name: string) => {
+  if (!name) return "T"
+  return name.charAt(0).toUpperCase()
+}
 
-    const handleShare = () => {
-      if (!template.value) return;
-      uni.share({
-        title: template.value.name,
-        content: template.value.description || "这是一个优秀的简历模板",
-        href: `https://example.com/template/${template.value.id}`,
-        success: () => {
-          uni.showToast({ title: "分享成功" });
-        },
-      });
-    };
+const getAvatarColor = (id: number) => {
+  const colors = [
+    "#3498db",
+    "#2ecc71",
+    "#e74c3c",
+    "#f39c12",
+    "#9b59b6",
+    "#1abc9c",
+    "#d35400",
+    "#c0392b",
+  ]
+  return colors[id % colors.length]
+}
 
-    // 模板操作
-    const handleUseTemplate = () => {
-      if (!template.value) return;
-      uni.showToast({
-        title: "开始使用此模板",
-        icon: "success",
-      });
-      // 这里应该导航到使用模板创建简历的页面
-      uni.navigateTo({
-        url: `/pages/resumes/create?templateId=${template.value.id}`,
-      });
-    };
+const getLayoutTypeLabel = (type?: string) => {
+  const layout = LAYOUT_TYPES.find(item => item.value === type)
+  return layout?.label || "单栏"
+}
 
-    const handleDelete = () => {
-      if (!template.value) return;
+const getComponentName = (component: TemplateComponentItem) => {
+  if (!component.componentId) return "未命名组件"
+  const libComponent = COMPONENT_LIBRARY.find(
+    (c) => c.id === component.componentId,
+  )
+  return libComponent?.name || "未知组件"
+}
 
-      uni.showModal({
-        title: "确认删除",
-        content: "确定要删除这个模板吗？删除后无法恢复。",
-        success: (res) => {
-          if (res.confirm) {
-            uni.showLoading({ title: "删除中..." });
-            setTimeout(() => {
-              uni.hideLoading();
-              uni.showToast({
-                title: "删除成功",
-                icon: "success",
-              });
-              setTimeout(() => {
-                uni.navigateBack();
-              }, 1500);
-            }, 1500);
-          }
-        },
-      });
-    };
+const getComponentDescription = (component: TemplateComponentItem) => {
+  if (!component.componentId) return ""
+  const libComponent = COMPONENT_LIBRARY.find(
+    (c) => c.id === component.componentId,
+  )
+  return libComponent?.description || ""
+}
 
-    const handleToggleStatus = () => {
-      if (!template.value) return;
+const formatDateTime = (dateStr?: string) => {
+  if (!dateStr) return "未知"
+  try {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString("zh-CN")
+  } catch {
+    return dateStr
+  }
+}
 
-      const newStatus = !template.value.isActive;
-      const action = newStatus ? "启用" : "停用";
-
-      uni.showModal({
-        title: `确认${action}`,
-        content: `确定要${action}这个模板吗？`,
-        success: (res) => {
-          if (res.confirm) {
-            template.value!.isActive = newStatus;
-            previewKey.value += 1;
-            uni.showToast({
-              title: `${action}成功`,
-              icon: "success",
-            });
-          }
-        },
-      });
-    };
-
-    const viewComponentDetail = (component: any) => {
-      uni.showModal({
-        title: component.name,
-        content: `组件类型: ${getComponentTypeLabel(component.fragment)}\n组件代码: ${component.fragment}`,
-        showCancel: false,
-        confirmText: "关闭",
-      });
-    };
-
-    // 工具函数
-    const getTemplateInitial = (name: string) => {
-      if (!name) return "R";
-      return name.charAt(0).toUpperCase();
-    };
-
-    const getAvatarColor = (id: number) => {
-      const colors = [
-        "#3498db", "#2ecc71", "#e74c3c", "#f39c12",
-        "#9b59b6", "#1abc9c", "#d35400", "#c0392b",
-      ];
-      return colors[id % colors.length];
-    };
-
-    const getLayoutTypeLabel = (type?: string) => {
-      const typeMap: Record<string, string> = {
-        "single-column": "单栏",
-        "two-column": "双栏",
-        "three-column": "三栏",
-        "creative": "创意布局"
-      };
-      return type ? (typeMap[type] || type) : "单栏";
-    };
-
-    const getComponentTypeLabel = (fragment?: string) => {
-      const typeMap: Record<string, string> = {
-        "UserBasicInfo": "基本信息",
-        "EducationExperience": "教育背景",
-        "WorkExperience": "工作经历",
-        "Skills": "技能专长",
-        "ProjectExperience": "项目经验",
-        "SelfEvaluation": "自我评价",
-        "JobIntention": "求职意向"
-      };
-      return fragment ? (typeMap[fragment] || fragment) : "未知类型";
-    };
-
-    const formatDateTime = (dateStr?: string) => {
-      if (!dateStr) return "未知";
-      try {
-        const date = new Date(dateStr);
-        return date.toLocaleString("zh-CN", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      } catch {
-        return "未知";
-      }
-    };
-
-    // 生命周期
-    onLoad((options) => {
-      if (options.id) {
-        loadTemplateDetail(options.id);
-      }
-    });
-
-    return {
-      // 状态
-      template,
-      loading,
-      previewDevice,
-      deviceOptions,
-      previewKey,
-
-      // 方法
-      handleBack,
-      handleEdit,
-      handleShare,
-      handleUseTemplate,
-      handleDelete,
-      handleToggleStatus,
-      viewComponentDetail,
-
-      // 工具函数
-      getTemplateInitial,
-      getAvatarColor,
-      getLayoutTypeLabel,
-      getComponentTypeLabel,
-      formatDateTime,
-    };
-  },
-});
+// 生命周期
+onLoad((options) => {
+  if (options.id) {
+    loadTemplateDetail(options.id)
+  } else {
+    uni.showToast({
+      title: "缺少模板参数",
+      icon: "none",
+    })
+    setTimeout(() => {
+      uni.navigateBack()
+    }, 1500)
+  }
+})
 </script>
 
 <style scoped lang="scss">

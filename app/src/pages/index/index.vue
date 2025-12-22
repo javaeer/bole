@@ -227,10 +227,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.page-container {
-  background-color: $background-color;
-  min-height: 100vh;
-}
 
 .brand-header {
   padding: $padding-small $padding-base;

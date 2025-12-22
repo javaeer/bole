@@ -1,5 +1,5 @@
 <template>
-  <view class="agreement-container">
+  <view class="page-container">
     <!-- 内容区域 -->
     <scroll-view class="agreement-content" scroll-y>
       <view class="content-wrapper">

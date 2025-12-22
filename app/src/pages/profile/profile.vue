@@ -123,7 +123,7 @@ const resumeStats = ref({
 
 // 菜单列表
 const menuList = ref([
-  { id: 1, name: "模板发布", icon: "📤", path: "/pages/template/create" },
+  { id: 1, name: "模板发布", icon: "📤", path: "/pages/template/edit" },
   { id: 2, name: "浏览记录", icon: "👀", path: "/pages/history/history" },
   { id: 3, name: "申请管理", icon: "📅", path: "/pages/application/list" },
 ]);
@@ -246,11 +246,11 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.page-container {
-  background-color: $background-color;
-  min-height: 100vh;
-  padding-bottom: 50rpx;
-}
+//.page-container {
+//  background-color: $background-color;
+//  min-height: 100vh;
+//  padding-bottom: 50rpx;
+//}
 
 .user-header {
   background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);

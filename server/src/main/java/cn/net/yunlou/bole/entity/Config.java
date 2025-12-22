@@ -11,8 +11,10 @@ import lombok.*;
  * Modified At
  */
 @Data
-@TableName(value = "t_config")
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@TableName(value = "t_config")
 public class Config implements Serializable {
 
     @TableId(type = IdType.INPUT)

@@ -415,10 +415,6 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-.page-container {
-  background-color: $background-color;
-  min-height: 100vh;
-}
 
 /* 搜索区域 */
 .search-section {

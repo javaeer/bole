@@ -3,7 +3,6 @@ import { StoreKey } from "@/constants/store-key";
 import { LoginResult, UserInfo } from "@/types/user";
 import { ConfigResult } from "@/types/config";
 
-
 /**
  * 将配置列表存入本地存储
  */

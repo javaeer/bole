@@ -180,11 +180,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.page-container {
-  background-color: $background-color;
-  min-height: 100vh;
-  position: relative;
-}
 
 /* 消息标签页 */
 .message-tabs {

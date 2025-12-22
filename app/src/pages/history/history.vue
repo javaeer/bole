@@ -288,11 +288,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.page-container {
-  background-color: $background-color;
-  min-height: 100vh;
-  padding-bottom: 50rpx;
-}
 
 .btn-clear {
   padding: $padding-mini $padding-small;

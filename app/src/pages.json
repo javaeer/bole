@@ -65,7 +65,7 @@
 			}
 		},
 		{
-			"path": "pages/template/create",
+			"path": "pages/template/edit",
 			"style": {
 				"navigationBarTitleText": ""
 			}
@@ -73,7 +73,7 @@
 		{
 			"path": "pages/template/list",
 			"style": {
-				"navigationBarTitleText": "模板列表"
+				"navigationBarTitleText": "模板市场"
 			}
 		},
 		{

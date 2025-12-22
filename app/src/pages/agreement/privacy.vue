@@ -1,12 +1,12 @@
 <template>
-  <view class="agreement-container">
+  <view class="page-container">
 
     <!-- 内容区域 -->
-    <scroll-view class="agreement-content" scroll-y>
+    <scroll-view class="agreement-content" scroll-y="true">
       <view class="content-wrapper">
         <!-- 协议标题 -->
         <view class="agreement-title">
-          <text class="title-main">隐私政策</text>
+          <text class="title-main">隐私策略</text>
           <text class="title-sub">最后更新日期：{{ updateDate }}</text>
         </view>
 

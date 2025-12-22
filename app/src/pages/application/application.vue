@@ -478,10 +478,6 @@ const showHistorySection = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-.page-container {
-  background-color: $background-color;
-  min-height: 100vh;
-}
 
 /* 顶部标题栏 */
 .review-header {

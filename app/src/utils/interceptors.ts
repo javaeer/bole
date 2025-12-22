@@ -46,6 +46,12 @@ class Interceptors {
         Authorization: `Bearer ${token}`,
       };
     }
+	
+	console.log("请求body参数：" + JSON.stringify(config.data))
+	
+	console.log("请求头参数：" + JSON.stringify(config.header))
+	
+	console.log("请求参数" + JSON.stringify(config.params))
 
     return config;
   }

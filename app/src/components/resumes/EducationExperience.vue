@@ -1,4 +1,3 @@
-<!-- /components/resume/EducationExperience.vue -->
 <template>
   <view :class="['education-section', `theme-${theme}`]" :style="computedStyle">
     <!-- 区块标题 -->
@@ -15,7 +14,7 @@
 
     <!-- 教育经历列表 -->
     <view v-else class="education-list">
-      <block v-for="(edu, index) in educations" :key="index">
+      <block v-for="(edu, index) in experiences" :key="index">
         <view class="education-item" :style="itemStyle">
           <!-- 学校信息 -->
           <view class="school-header">
@@ -37,8 +36,8 @@
           </view>
 
           <!-- GPA和排名（可选） -->
-          <view v-if="showGpa || showRanking" class="academic-info">
-            <text v-if="showGpa && edu.gpa" class="gpa">
+          <view v-if="showGpa && edu.gpa" class="academic-info">
+            <text class="gpa">
               <text class="info-label">GPA: </text>{{ edu.gpa }}
             </text>
             <text v-if="showRanking && edu.ranking" class="ranking">
@@ -85,115 +84,71 @@
         </view>
 
         <!-- 分隔线（最后一个项目不显示） -->
-        <view v-if="index < educations.length - 1" class="item-divider"></view>
+        <view v-if="index < experiences.length - 1" class="item-divider"></view>
       </block>
     </view>
   </view>
 </template>
 
-<script>
-export default {
-  name: 'EducationExperience',
+<script setup>
+import { computed, ref } from 'vue'
 
-  props: {
-    config: {
-      type: Object,
-      default: () => ({})
-    },
-    theme: {
-      type: String,
-      default: 'modern'
-    }
+const props = defineProps({
+  config: {
+    type: Object,
+    default: () => ({})
   },
-
-  data() {
-    return {
-      maxCourses: 5 // 最多显示的课程数量
-    };
-  },
-
-  computed: {
-    // 提取props和styles
-    props() {
-      return this.config.props || {};
-    },
-
-    styles() {
-      return this.config.styles || {};
-    },
-
-    // 获取教育经历数据
-    educations() {
-      return this.props.educations || [];
-    },
-
-    // 检查是否有教育数据
-    hasEducationData() {
-      return this.educations.length > 0;
-    },
-
-    // 样式相关计算
-    computedStyle() {
-      return {
-        '--primary-color': this.styles.primaryColor || '#d4af37'
-      };
-    },
-
-    itemStyle() {
-      return {
-        background: this.styles.cardBackground || '#ffffff'
-      };
-    },
-
-    // 是否显示GPA
-    showGpa() {
-      return this.styles.showGPA !== false;
-    },
-
-    // 是否显示排名
-    showRanking() {
-      return this.styles.showRanking !== false;
-    },
-
-    // 是否显示课程
-    showCourses() {
-      return this.styles.showCourses !== false;
-    },
-
-    // 是否显示成就
-    showAchievements() {
-      return this.styles.showAchievements !== false;
-    }
-  },
-
-  mounted() {
-    console.log('教育背景组件加载完成', {
-      教育经历数量: this.educations.length,
-      配置: this.config
-    });
-  },
-
-  methods: {
-    // 格式化日期
-    formatDate(dateStr) {
-      if (!dateStr) return '';
-
-      // 简单格式化，如 "2020-09" -> "2020.09"
-      return dateStr.replace('-', '.');
-    },
-
-    // 获取显示的课程列表
-    getDisplayCourses(courses) {
-      if (!courses || !Array.isArray(courses)) return [];
-
-      if (courses.length <= this.maxCourses) {
-        return courses;
-      }
-
-      return courses.slice(0, this.maxCourses);
-    }
+  theme: {
+    type: String,
+    default: 'modern'
   }
-};
+})
+
+const maxCourses = ref(5) // 最多显示的课程数量
+
+// 提取配置
+const componentProps = computed(() => props.config.props || {})
+const componentStyles = computed(() => props.config.styles || {})
+
+const experiences = computed(() => componentProps.value.experiences || [])
+const hasEducationData = computed(() => experiences.value.length > 0)
+
+// 样式相关
+const computedStyle = computed(() => ({
+  '--primary-color': componentStyles.value.primaryColor || '#d4af37'
+}))
+
+const itemStyle = computed(() => ({
+  background: componentStyles.value.cardBackground || '#ffffff'
+}))
+
+// 是否显示GPA
+const showGpa = computed(() => componentProps.value.showGPA !== false)
+// 是否显示排名
+const showRanking = computed(() => componentProps.value.showRanking !== false)
+// 是否显示课程
+const showCourses = computed(() => componentProps.value.showCourses !== false)
+// 是否显示成就
+const showAchievements = computed(() => componentProps.value.showAchievements !== false)
+
+// 格式化日期
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+  return dateStr.replace('-', '.')
+}
+
+// 获取显示的课程列表
+const getDisplayCourses = (courses) => {
+  if (!courses || !Array.isArray(courses)) return []
+  if (courses.length <= maxCourses.value) return courses
+  return courses.slice(0, maxCourses.value)
+}
+
+// 组件加载日志
+console.log('教育背景组件加载完成', {
+  教育经历数量: experiences.value.length,
+  配置: props.config
+})
 </script>
 
 <style lang="scss" scoped>

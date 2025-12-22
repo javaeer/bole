@@ -19,6 +19,9 @@ import cn.net.yunlou.bole.service.ResumesTemplateComponentService;
 import cn.net.yunlou.bole.service.ResumesTemplateService;
 import cn.net.yunlou.bole.struct.ResumesStructMapper;
 import com.google.common.collect.Lists;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -26,10 +29,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * FileName: ResumesServiceImpl Description: Created By MR. WANG Created At 2025/11/24 22:00
@@ -39,13 +38,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ResumesServiceImpl
         extends BaseService<
-        ResumesMapper,
-        Resumes,
-        ResumesCreate,
-        ResumesView,
-        ResumesEdit,
-        ResumesQuery,
-        ResumesStructMapper>
+                ResumesMapper,
+                Resumes,
+                ResumesCreate,
+                ResumesView,
+                ResumesEdit,
+                ResumesQuery,
+                ResumesStructMapper>
         implements ResumesService {
 
     private final ComponentDataPopulatorFactory populatorFactory;
@@ -97,7 +96,6 @@ public class ResumesServiceImpl
         }
 
         entity.setComponents(realComponents);
-
 
         return structMapper.toView(entity);
     }

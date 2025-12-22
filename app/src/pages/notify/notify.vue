@@ -370,11 +370,6 @@ const handleReport = () => {
 </script>
 
 <style scoped lang="scss">
-.page-container {
-  background-color: $background-color;
-  min-height: 100vh;
-  padding-bottom: calc($tabbar-height + $padding-base);
-}
 
 /* 自定义导航栏 */
 .custom-navbar {

@@ -44,7 +44,7 @@ declare global {
   /**
    * 查询条件 将实例化到 body中
    */
-  interface BodyParams {
+  interface BodyQuery {
     /*查询开始于 */
     queryStartAt?: string;
     /*查询止于 */
@@ -65,7 +65,7 @@ declare global {
   interface LoadParams {
     page?: number;           // 页码
     size?: number;          // 每页数量
-    query?: BodyParams & Record<string, any>;  // 查询条件
+    query?: BodyQuery & Record<string, any>;  // 查询条件
     append?: boolean;       // 是否追加数据（用于加载更多）
     showToast?: boolean;    // 是否显示错误提示
     sortBy?: string;        // 排序字段
@@ -75,10 +75,10 @@ declare global {
   /**
    * 缓存中的 查询参数
    */
-  interface CacheKeyParams {
+  interface CacheKeyQuery {
     page: number;
     size: number;
-    query: BodyParams & Record<string, any>;
+    query: BodyQuery & Record<string, any>;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }

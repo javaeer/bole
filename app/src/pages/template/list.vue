@@ -1,4 +1,5 @@
 <template>
+  <!-- 模板部分保持不变 -->
   <view class="list-page-container">
     <!-- 搜索栏 -->
     <view class="search-bar">
@@ -6,7 +7,7 @@
         <text class="search-icon">🔍</text>
         <input
           class="search-input"
-          placeholder="搜索简历模板名称、职位或技能"
+          placeholder="搜索简历模板名称"
           placeholder-class="search-placeholder"
           v-model="searchKeyword"
           @input="handleSearch"
@@ -61,11 +62,11 @@
         </view>
         <view
           class="sort-tab"
-          :class="{ active: sortField === 'version' }"
-          @click="changeSort('version')"
+          :class="{ active: sortField === 'price' }"
+          @click="changeSort('price')"
         >
-          <text class="sort-text">版本</text>
-          <view v-if="sortField === 'version'" class="sort-arrow">
+          <text class="sort-text">价格</text>
+          <view v-if="sortField === 'price'" class="sort-arrow">
             <text>{{ sortOrder === "desc" ? "↓" : "↑" }}</text>
           </view>
         </view>
@@ -117,8 +118,8 @@
               <text class="avatar-text">{{ getTemplateInitial(template.name) }}</text>
             </view>
             <view class="template-main-info">
-              <text class="template-name">{{ template.name }}</text>
-              <text class="template-description">{{ template.description || "经典简约设计" }}</text>
+              <text class="template-name text-ellipsis">{{ template.name }}</text>
+              <text class="template-description text-ellipsis">{{ template.description || "经典简约设计" }}</text>
             </view>
             <view class="template-status">
               <view class="status-badge" :class="template.isActive ? 'active' : 'inactive'">
@@ -135,17 +136,17 @@
               </view>
               <view class="meta-item">
                 <text class="meta-icon">📊</text>
-                <text class="meta-text">v{{ template.version }}</text>
+                <text class="meta-text">v{{ template.version || '1.0.0' }}</text>
               </view>
               <view class="meta-item">
-                <text class="meta-icon">📐</text>
-                <text class="meta-text">{{ template.layout?.pageSize || "A4" }}</text>
+                <text class="meta-icon">👥</text>
+                <text class="meta-text">{{ template.users || 0 }}人使用</text>
               </view>
             </view>
 
             <view class="template-features">
               <text
-                class="feature-tag"
+                class="feature-tag tag"
                 v-for="(feature, index) in getTemplateFeatures(template)"
                 :key="index"
               >
@@ -154,13 +155,16 @@
             </view>
           </view>
 
-          <view class="template-item-actions">
-            <button class="btn-action primary" @click.stop="handleSelected(template)">
-              <text class="action-text">使用模板</text>
-            </button>
-            <button class="btn-action secondary" @click.stop="handlePreview(template)">
-              <text class="action-text">预览</text>
-            </button>
+          <view class="template-item-actions flex-between">
+            <view class="price-info">
+              <text class="price-label">价格:</text>
+              <text class="price-value">¥{{ template.price || 0 }}</text>
+            </view>
+            <view class="action-buttons">
+              <button class="btn-action btn btn-primary" @click.stop="handleSelected(template)">
+                <text class="action-text">使用模板</text>
+              </button>
+            </view>
           </view>
         </view>
       </view>
@@ -168,19 +172,19 @@
       <!-- 网格视图 -->
       <view v-if="viewMode === 'grid'" class="grid-view">
         <view
-          class="template-card"
+          class="template-card card-container"
           v-for="template in displayList"
           :key="template.id"
           @click="handleViewTemplate(template)"
         >
-          <view class="card-header">
+          <view class="card-header flex-between">
             <view class="card-avatar" :style="{ backgroundColor: getAvatarColor(template.id) }">
               <text class="avatar-text">{{ getTemplateInitial(template.name) }}</text>
             </view>
             <view class="card-title">
-              <text class="card-name">{{ template.name }}</text>
+              <text class="card-name text-ellipsis">{{ template.name }}</text>
               <view class="card-status">
-                <view class="status-badge" :class="template.isActive ? 'active' : 'inactive'">
+                <view class="status-badge tag" :class="template.isActive ? 'active' : 'inactive'">
                   <text class="status-text">{{ template.isActive ? "启用" : "停用" }}</text>
                 </view>
               </view>
@@ -188,31 +192,37 @@
           </view>
 
           <view class="card-description">
-            <text class="description-text">{{ template.description || "经典简约设计" }}</text>
+            <text class="description-text text-multi-truncate">{{ template.description || "经典简约设计" }}</text>
           </view>
 
           <view class="card-features">
             <text
-              class="feature-chip"
-              v-for="(feature, index) in getTemplateFeatures(template).slice(0, 2)"
+              class="feature-chip tag"
+              v-for="(feature, index) in getTemplateFeatures(template).slice(0, 3)"
               :key="index"
             >
               {{ feature }}
             </text>
           </view>
 
-          <view class="card-footer">
-            <text class="update-time">v{{ template.version }} • {{ formatRelativeTime(template.updatedAt) }}</text>
-            <view class="card-actions">
-              <text class="card-action use" @click.stop="handleSelected(template)">使用</text>
-              <text class="card-action preview" @click.stop="handlePreview(template)">预览</text>
+          <view class="card-footer flex-between">
+            <view class="price-info">
+              <text class="price-label">价格:</text>
+              <text class="price-value text-primary">¥{{ template.price || 0 }}</text>
             </view>
+            <text class="update-time">{{ formatRelativeTime(template.updatedAt) }}</text>
+          </view>
+
+          <view class="card-actions flex-between">
+            <button class="btn-action btn btn-primary" @click.stop="handleSelected(template)">
+              <text class="action-text">使用</text>
+            </button>
           </view>
         </view>
       </view>
 
       <!-- 加载更多 -->
-      <view v-if="hasMore && !loading" class="load-more" @click="loadMore">
+      <view v-if="hasMore && !loading" class="load-more" @click="loadMoreTemplates">
         <text class="load-more-text">加载更多</text>
       </view>
     </view>
@@ -226,370 +236,318 @@
   </view>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
-import { TemplateResult, useTemplate } from "@/composables/useTemplate";
+<script setup lang="ts">
+import { computed, onMounted, ref } from "vue";
+import { useTemplate } from "@/composables/useTemplate";
+import type { TemplateResult } from "@/types/template";
 
 interface Filter {
   label: string;
   value: string;
 }
 
-export default defineComponent({
-  name: "TemplateList",
+// 使用组合式函数
+const {
+  templateList,
+  loading,
+  hasMore,
+  loadListTemplates,
+  loadMore,
+  searchTemplates,
+  sortTemplates,
+  setCurrentTemplate,
+} = useTemplate();
 
-  setup() {
-    const {
-      templateList,
-      loading,
-      hasMore,
-      loadListTemplates,
-      loadMore,
-      searchTemplates,
-      sortTemplates,
-      currentTemplate,
-      setCurrentTemplate,
-    } = useTemplate();
+// 响应式状态
+const searchKeyword = ref("");
+const activeFilters = ref<Filter[]>([]);
+const sortField = ref("updatedAt");
+const sortOrder = ref<"asc" | "desc">("desc");
+const viewMode = ref<"list" | "grid">("list");
+const showFilter = ref(false);
 
-    // 搜索和筛选状态
-    const searchKeyword = ref("");
-    const activeFilters = ref<Filter[]>([]);
-    const sortField = ref("updatedAt");
-    const sortOrder = ref<"asc" | "desc">("desc");
-    const viewMode = ref<"list" | "grid">("list");
-    const showFilter = ref(false);
+// 计算属性
+const displayList = computed(() => {
+  let list = [...templateList.value];
 
-    // 计算显示列表（包含搜索和排序）
-    const displayList = computed(() => {
-      let list = [...templateList.value];
+  // 搜索过滤
+  if (searchKeyword.value.trim()) {
+    const keyword = searchKeyword.value.toLowerCase();
+    list = list.filter(
+      (template: TemplateResult) =>
+        template.name.toLowerCase().includes(keyword) ||
+        template.description?.toLowerCase().includes(keyword) ||
+        template.code?.toLowerCase().includes(keyword),
+    );
+  }
 
-      // 搜索过滤
-      if (searchKeyword.value.trim()) {
-        const keyword = searchKeyword.value.toLowerCase();
-        list = list.filter(
-          (template: TemplateResult) =>
-            template.name.toLowerCase().includes(keyword) ||
-            template.description?.toLowerCase().includes(keyword) ||
-            template.code?.toLowerCase().includes(keyword),
-        );
-      }
+  // 排序
+  list.sort((a: TemplateResult, b: TemplateResult) => {
+    const order = sortOrder.value === "asc" ? 1 : -1;
 
-      // 排序
-      list.sort((a: TemplateResult, b: TemplateResult) => {
-        const order = sortOrder.value === "asc" ? 1 : -1;
+    if (sortField.value === "updatedAt") {
+      const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+      const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+      return (dateB - dateA) * order;
+    }
 
-        if (sortField.value === "updatedAt") {
-          const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
-          const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
-          return (dateB - dateA) * order;
-        }
+    if (sortField.value === "name") {
+      return (a.name || "").localeCompare(b.name || "") * order;
+    }
 
-        if (sortField.value === "name") {
-          return (a.name || "").localeCompare(b.name || "") * order;
-        }
+    if (sortField.value === "price") {
+      return ((a.price || 0) - (b.price || 0)) * order;
+    }
 
-        if (sortField.value === "version") {
-          const verA = parseVersion(a.version || "0.0.0");
-          const verB = parseVersion(b.version || "0.0.0");
-          return (verB - verA) * order;
-        }
+    return 0;
+  });
 
-        return 0;
-      });
+  return list;
+});
 
-      return list;
-    });
+// 搜索处理
+const handleSearch = () => {
+  if (searchKeyword.value.trim()) {
+    searchTemplates(searchKeyword.value);
+  } else {
+    loadListTemplates(1, { isActive: true });
+  }
+};
 
-    // 搜索处理
-    const handleSearch = () => {
-      if (searchKeyword.value.trim()) {
-        searchTemplates(searchKeyword.value);
-      } else {
-        loadListTemplates(1, { isActive: true });
-      }
+const clearSearch = () => {
+  searchKeyword.value = "";
+  loadListTemplates(1, { isActive: true });
+};
+
+// 筛选处理
+const removeFilter = (index: number) => {
+  activeFilters.value.splice(index, 1);
+};
+
+const clearAllFilters = () => {
+  activeFilters.value = [];
+};
+
+// 排序处理
+const changeSort = (field: string) => {
+  if (sortField.value === field) {
+    sortOrder.value = sortOrder.value === "desc" ? "asc" : "desc";
+  } else {
+    sortField.value = field;
+    sortOrder.value = "desc";
+  }
+
+  // 调用排序API
+  sortTemplates(sortField.value, sortOrder.value);
+};
+
+// 操作处理
+const handleViewTemplate = (template: TemplateResult) => {
+  uni.navigateTo({
+    url: `/pages/template/detail?id=${template.id}`,
+  });
+};
+
+const handleSelected = (template: TemplateResult) => {
+  setCurrentTemplate(template);
+  uni.navigateTo({
+    url: `/pages/resumes/create?templateId=${template.id}`,
+  });
+};
+
+const handlePreview = (template: TemplateResult) => {
+  uni.navigateTo({
+    url: `/pages/template/preview?id=${template.id}`,
+  });
+};
+
+const handleCreateTemplate = () => {
+  uni.navigateTo({
+    url: "/pages/template/edit",
+  });
+};
+
+const loadMoreTemplates = async () => {
+  if (!loading.value && hasMore.value) {
+    await loadMore();
+  }
+};
+
+// 工具函数
+const getTemplateInitial = (name: string) => {
+  if (!name) return "R";
+  return name.charAt(0).toUpperCase();
+};
+
+const getAvatarColor = (id: number) => {
+  const colors = [
+    "#d4af37", // 主色调
+    "#3498db",
+    "#2ecc71",
+    "#e74c3c",
+    "#f39c12",
+    "#9b59b6",
+    "#1abc9c",
+    "#d35400",
+  ];
+  return colors[id % colors.length];
+};
+
+const getTemplateFeatures = (template: TemplateResult) => {
+  const features: string[] = [];
+
+  // 根据布局添加特征
+  if (template.globalLayout?.type) {
+    const layoutMap: Record<string, string> = {
+      'single-column': '单栏',
+      'two-column': '双栏',
+      'three-column': '三栏',
+      'creative': '创意'
     };
+    const layoutName = layoutMap[template.globalLayout.type] || template.globalLayout.type;
+    features.push(layoutName);
+  }
 
-    const clearSearch = () => {
-      searchKeyword.value = "";
-      loadListTemplates(1, { isActive: true });
+  // 根据全局样式添加特征
+  if (template.globalStyle?.theme) {
+    const themeMap: Record<string, string> = {
+      classic: "经典",
+      modern: "现代",
+      creative: "创意",
+      professional: "专业",
+      simple: "简约",
+      light: "明亮",
+      dark: "深色"
     };
+    const themeName = themeMap[template.globalStyle.theme] || template.globalStyle.theme;
+    features.push(themeName);
+  }
 
-    // 筛选处理
-    const removeFilter = (index: number) => {
-      activeFilters.value.splice(index, 1);
-    };
+  // 添加组件数量特征
+  if (template.components?.length) {
+    features.push(`${template.components.length}模块`);
+  }
 
-    const clearAllFilters = () => {
-      activeFilters.value = [];
-    };
+  // 根据分类添加特征
+  if (template.category) {
+    features.push(template.category);
+  }
 
-    // 排序处理
-    const changeSort = (field: string) => {
-      if (sortField.value === field) {
-        sortOrder.value = sortOrder.value === "desc" ? "asc" : "desc";
-      } else {
-        sortField.value = field;
-        sortOrder.value = "desc";
-      }
-    };
+  return features.slice(0, 3); // 最多显示3个特征
+};
 
-    // 操作处理
-    const handleViewTemplate = (template: TemplateResult) => {
-      uni.navigateTo({
-        url: `/pages/template/detail?id=${template.id}`,
-      });
-    };
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return "未知";
+  try {
+    const date = new Date(dateStr);
+    return `${date.getMonth() + 1}-${date.getDate()}`;
+  } catch {
+    return "未知";
+  }
+};
 
-    const handleSelected = (template: TemplateResult) => {
-      setCurrentTemplate(template);
-      uni.navigateTo({
-        url: `/pages/resumes/create?templateId=${template.id}`,
-      });
-    };
+const formatRelativeTime = (dateStr?: string) => {
+  if (!dateStr) return "未知";
+  try {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    const handlePreview = (template: TemplateResult) => {
-      uni.navigateTo({
-        url: `/pages/template/preview?id=${template.id}`,
-      });
-    };
+    if (diffDays === 0) return "今天";
+    if (diffDays === 1) return "昨天";
+    if (diffDays < 7) return `${diffDays}天前`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}周前`;
+    return `${Math.floor(diffDays / 30)}月前`;
+  } catch {
+    return "未知";
+  }
+};
 
-    const handleCreateTemplate = () => {
-      uni.navigateTo({
-        url: "/pages/template/create",
-      });
-    };
-
-    // 工具函数
-    const getTemplateInitial = (name: string) => {
-      if (!name) return "R";
-      return name.charAt(0).toUpperCase();
-    };
-
-    const getAvatarColor = (id: number) => {
-      const colors = [
-        "#3498db",
-        "#2ecc71",
-        "#e74c3c",
-        "#f39c12",
-        "#9b59b6",
-        "#1abc9c",
-        "#d35400",
-        "#c0392b",
-      ];
-      return colors[id % colors.length];
-    };
-
-    const getTemplateFeatures = (template: TemplateResult) => {
-      const features: string[] = [];
-
-      // 根据布局添加特征
-      if (template.globalLayout) {
-        if (template.globalLayout.columns === 2) {
-          features.push("双栏");
-        } else {
-          features.push("单栏");
-        }
-
-        if (template.globalLayout.showPhoto) {
-          features.push("带照片");
-        }
-
-        const orientation = template.globalLayout.orientation === "portrait" ? "竖向" : "横向";
-        features.push(orientation);
-      }
-
-      // 根据全局样式添加特征
-      if (template.globalStyle?.theme) {
-        const themeMap: Record<string, string> = {
-          classic: "经典",
-          modern: "现代",
-          creative: "创意",
-          professional: "专业",
-          simple: "简约",
-        };
-        const themeName = themeMap[template.globalStyle.theme] || template.globalStyle.theme;
-        features.push(themeName);
-      }
-
-      // 添加组件数量特征
-      if (template.components?.length) {
-        features.push(`${template.components.length}模块`);
-      }
-
-      return features.slice(0, 4); // 最多显示4个特征
-    };
-
-    const formatDate = (dateStr: string) => {
-      if (!dateStr) return "未知";
-      try {
-        const date = new Date(dateStr);
-        return `${date.getMonth() + 1}-${date.getDate()}`;
-      } catch {
-        return "未知";
-      }
-    };
-
-    const formatRelativeTime = (dateStr: string) => {
-      if (!dateStr) return "未知";
-      try {
-        const date = new Date(dateStr);
-        const now = new Date();
-        const diffTime = Math.abs(now.getTime() - date.getTime());
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) return "今天";
-        if (diffDays === 1) return "昨天";
-        if (diffDays < 7) return `${diffDays}天前`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)}周前`;
-        return `${Math.floor(diffDays / 30)}月前`;
-      } catch {
-        return "未知";
-      }
-    };
-
-    const parseVersion = (version: string) => {
-      const parts = version.split(".").map(Number);
-      return parts[0] * 10000 + (parts[1] || 0) * 100 + (parts[2] || 0);
-    };
-
-    // 初始化加载
-    onMounted(async () => {
-      await loadListTemplates(1, { isActive: true });
-    });
-
-    return {
-      // 状态
-      templateList,
-      loading,
-      hasMore,
-      searchKeyword,
-      activeFilters,
-      sortField,
-      sortOrder,
-      viewMode,
-      showFilter,
-      displayList,
-
-      // 方法
-      loadMore,
-      handleSearch,
-      clearSearch,
-      removeFilter,
-      clearAllFilters,
-      changeSort,
-      handleViewTemplate,
-      handleSelected,
-      handlePreview,
-      handleCreateTemplate,
-
-      // 工具函数
-      getTemplateInitial,
-      getAvatarColor,
-      getTemplateFeatures,
-      formatDate,
-      formatRelativeTime,
-    };
-  },
+// 初始化加载
+onMounted(async () => {
+  await loadListTemplates(1, { isActive: true });
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
+
 .list-page-container {
-  background-color: $uni-bg-color-grey;
   min-height: 100vh;
+  background-color: $background-color;
   padding-bottom: $tabbar-height;
 }
 
-/* 搜索栏 */
 .search-bar {
-  background: $uni-bg-color;
-  padding: $uni-spacing-col-sm $uni-spacing-row-base;
   display: flex;
   align-items: center;
-  gap: $uni-spacing-col-sm;
-  position: sticky;
-  top: 0;
-  z-index: $z-index-base;
-  box-shadow: $box-shadow-light;
-  border-bottom: 1rpx solid $border-color-light;
+  padding: $padding-small $padding-base;
+  background-color: $background-color-white;
+  border-bottom: 1px solid $border-color-light;
 }
 
 .search-input-wrapper {
   flex: 1;
   position: relative;
-  background: $background-color;
-  border-radius: $uni-border-radius-lg;
-  border: 1rpx solid $border-color-light;
   display: flex;
   align-items: center;
-  padding: 0 $uni-spacing-col-sm;
-  height: $input-height;
-  transition: all $transition-fast;
-
-  &:focus-within {
-    border-color: $focus-border-color;
-    box-shadow: $input-focus-shadow;
-    background: $uni-bg-color;
-  }
+  background-color: $background-color;
+  border-radius: $border-radius-large;
+  padding: 12rpx 20rpx;
+  margin-right: $margin-small;
 }
 
 .search-icon {
-  font-size: $uni-font-size-base;
-  color: $uni-text-color-grey;
-  margin-right: $uni-spacing-col-sm;
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin-right: 8rpx;
 }
 
 .search-input {
   flex: 1;
-  height: $input-height - 10rpx;
-  font-size: $uni-font-size-base;
-  color: $uni-text-color;
+  font-size: $font-size-base;
+  color: $text-primary;
   background: transparent;
   border: none;
   outline: none;
 }
 
 .search-placeholder {
-  color: $uni-text-color-placeholder;
-  font-size: $uni-font-size-base;
+  color: $text-placeholder;
+  font-size: $font-size-small;
 }
 
 .search-clear {
-  width: 36rpx;
-  height: 36rpx;
-  border-radius: $uni-border-radius-circle;
-  background: $border-color;
-  @extend .flex-center;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32rpx;
+  height: 32rpx;
+  background-color: $border-color;
+  border-radius: 50%;
+  margin-left: 8rpx;
 }
 
 .clear-icon {
-  font-size: $uni-font-size-lg;
-  color: $uni-text-color-grey;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-large;
+  color: $text-secondary;
+  line-height: 1;
 }
 
 .btn-filter {
-  height: $input-height;
-  background: $background-color;
-  border: 1rpx solid $border-color-light;
-  border-radius: $uni-border-radius-lg;
-  padding: 0 $uni-spacing-col-sm;
-  font-size: $uni-font-size-base;
-  color: $uni-text-color-grey;
+  padding: 12rpx 20rpx;
+  background-color: $primary-light;
+  border: 1px solid $border-color-light;
+  border-radius: $border-radius-small;
+  font-size: $font-size-small;
+  color: $text-primary;
   white-space: nowrap;
-  @extend .flex-center;
 }
 
-.filter-icon {
-  font-size: $uni-font-size-base;
-}
-
-/* 筛选标签 */
 .filter-tags {
-  background: $uni-bg-color;
-  padding: $uni-spacing-col-sm $uni-spacing-row-base;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding: $padding-mini $padding-base;
+  background-color: $background-color-white;
+  border-bottom: 1px solid $border-color-light;
 }
 
 .tags-scroll {
@@ -600,112 +558,104 @@ export default defineComponent({
 .tags-container {
   display: inline-flex;
   align-items: center;
-  gap: $uni-spacing-col-sm;
 }
 
 .filter-tag {
   display: inline-flex;
   align-items: center;
-  background: $primary-light;
-  border-radius: $uni-border-radius-sm;
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  gap: math.div($uni-spacing-col-sm, 2);
-  border: 1rpx solid color.adjust($primary-color, $lightness: 20%);
+  padding: 4rpx 12rpx;
+  background-color: $primary-light;
+  border-radius: $border-radius-small;
+  margin-right: $margin-mini;
+  border: 1px solid $border-color-light;
 }
 
 .tag-text {
-  font-size: $uni-font-size-sm;
-  color: $primary-color;
+  font-size: $font-size-extra-small;
+  color: $text-primary;
+  margin-right: 4rpx;
 }
 
 .tag-remove {
-  font-size: $uni-font-size-sm;
-  color: $primary-color;
-  font-weight: $font-weight-bold;
-  cursor: pointer;
-  padding-left: math.div($uni-spacing-col-sm, 2);
+  font-size: $font-size-large;
+  color: $text-secondary;
+  line-height: 1;
+  margin-left: 4rpx;
 }
 
 .clear-all {
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
+  padding: 4rpx 12rpx;
+  background-color: $background-color;
+  border-radius: $border-radius-small;
+  border: 1px solid $border-color-light;
 }
 
 .clear-all-text {
-  font-size: $uni-font-size-sm;
-  color: $uni-text-color-grey;
-  cursor: pointer;
+  font-size: $font-size-extra-small;
+  color: $text-secondary;
 }
 
-/* 排序栏 */
 .sort-bar {
-  background: $uni-bg-color;
-  padding: $uni-spacing-col-sm $uni-spacing-row-base;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding: $padding-mini $padding-base;
+  background-color: $background-color-white;
+  border-bottom: 1px solid $border-color-light;
 }
 
 .sort-tabs {
   display: flex;
-  gap: $uni-spacing-row-lg;
+  align-items: center;
 }
 
 .sort-tab {
   display: flex;
   align-items: center;
-  gap: math.div($uni-spacing-col-sm, 2);
-  cursor: pointer;
-  padding: math.div($uni-spacing-col-sm, 2) 0;
-  transition: all $transition-fast;
+  padding: 8rpx 16rpx;
+  margin-right: $margin-mini;
+  border-radius: $border-radius-small;
+  font-size: $font-size-small;
+  color: $text-secondary;
 
   &.active {
-    .sort-text {
-      color: $primary-color;
-      font-weight: $font-weight-medium;
-    }
+    background-color: $primary-light;
+    color: $primary-color;
   }
 }
 
 .sort-text {
-  font-size: $uni-font-size-base;
-  color: $text-regular;
-  transition: color $transition-fast;
+  margin-right: 4rpx;
 }
 
 .sort-arrow {
-  font-size: $uni-font-size-sm;
-  color: $primary-color;
+  font-size: $font-size-extra-small;
 }
 
 .view-mode {
   display: flex;
-  gap: $uni-spacing-col-sm;
-  background: $background-color;
-  border-radius: $uni-border-radius-sm;
-  padding: math.div($uni-spacing-col-sm, 2);
+  align-items: center;
 }
 
 .view-mode-btn {
-  font-size: $uni-font-size-lg;
-  color: $text-placeholder;
-  cursor: pointer;
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  border-radius: $uni-border-radius-sm;
-  transition: all $transition-fast;
+  padding: 8rpx;
+  font-size: $font-size-large;
+  color: $text-secondary;
+  margin-left: $margin-mini;
 
   &.active {
     color: $primary-color;
-    background: $uni-bg-color;
-    box-shadow: $box-shadow-light;
+    background-color: $primary-light;
+    border-radius: $border-radius-small;
   }
 }
 
-/* 加载状态 */
 .loading-state {
-  @extend .flex-center;
+  display: flex;
   flex-direction: column;
-  padding: $uni-spacing-row-base * 2 $uni-spacing-row-base;
+  align-items: center;
+  justify-content: center;
+  padding: $padding-large * 2 $padding-base;
 }
 
 .loading-spinner {
@@ -713,9 +663,9 @@ export default defineComponent({
   height: 60rpx;
   border: 4rpx solid $border-color-light;
   border-top-color: $primary-color;
-  border-radius: $uni-border-radius-circle;
+  border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: $uni-spacing-col-sm;
+  margin-bottom: $margin-small;
 }
 
 @keyframes spin {
@@ -725,447 +675,327 @@ export default defineComponent({
 }
 
 .loading-text {
-  font-size: $uni-font-size-base;
-  color: $uni-text-color-grey;
+  font-size: $font-size-small;
+  color: $text-secondary;
 }
 
-/* 空状态 */
 .empty-state {
-  @extend .flex-center;
+  display: flex;
   flex-direction: column;
-  padding: $uni-spacing-row-base * 3 $uni-spacing-row-base;
+  align-items: center;
+  justify-content: center;
+  padding: $padding-large * 2 $padding-base;
+  text-align: center;
 }
 
 .empty-icon {
   font-size: 80rpx;
-  margin-bottom: $uni-spacing-row-base;
-  opacity: 0.3;
+  margin-bottom: $margin-base;
 }
 
 .empty-text {
-  font-size: $uni-font-size-lg;
-  color: $uni-text-color;
-  margin-bottom: $uni-spacing-col-sm;
+  font-size: $font-size-large;
+  color: $text-primary;
   font-weight: $font-weight-medium;
+  margin-bottom: $margin-mini;
 }
 
 .empty-subtext {
-  font-size: $uni-font-size-sm;
-  color: $uni-text-color-grey;
-  margin-bottom: $uni-spacing-row-base * 2;
+  font-size: $font-size-base;
+  color: $text-secondary;
+  margin-bottom: $margin-base;
 }
 
 .btn-create {
-  background: $primary-color;
-  color: $uni-bg-color;
-  border: none;
-  border-radius: $uni-border-radius-lg;
-  padding: $uni-spacing-col-sm $uni-spacing-row-base * 1.5;
-  font-size: $uni-font-size-base;
+  padding: 16rpx 32rpx;
+  background-color: $primary-color;
+  border-radius: $border-radius;
+  font-size: $font-size-base;
+  color: white;
   font-weight: $font-weight-medium;
 }
 
-.create-text {
-  color: $uni-bg-color;
-}
-
-/* 简历模板列表 */
 .templates-list {
-  padding: $uni-spacing-row-base;
+  padding: $padding-base;
 }
 
-/* 列表视图 */
 .list-view {
   display: flex;
   flex-direction: column;
-  gap: $uni-spacing-row-base;
+  gap: $margin-base;
 }
 
 .template-item {
-  background: $uni-bg-color;
-  border-radius: $border-radius-large;
-  padding: $card-padding;
-  box-shadow: $card-shadow;
-  transition: all $transition-normal;
-  border: 1rpx solid transparent;
+  background-color: $background-color-white;
+  border-radius: $border-radius;
+  padding: $padding-base;
+  box-shadow: $box-shadow-light;
+  transition: all $transition-fast $ease-in-out;
 
   &:active {
-    background: color.adjust($uni-bg-color, $lightness: -2%);
-    box-shadow: $card-hover-shadow;
-    border-color: $border-color-light;
     transform: translateY(-2rpx);
+    box-shadow: $box-shadow;
   }
 }
 
 .template-item-header {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: $uni-spacing-row-base;
+  align-items: center;
+  margin-bottom: $margin-small;
 }
 
 .template-avatar {
   width: $avatar-size;
   height: $avatar-size;
-  border-radius: $avatar-border-radius;
-  @extend .flex-center;
-  margin-right: $uni-spacing-col-sm;
+  border-radius: $border-radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $margin-small;
   flex-shrink: 0;
-  box-shadow: $box-shadow-light;
 }
 
 .avatar-text {
-  font-size: $uni-font-size-lg;
-  color: $uni-text-color-inverse;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-large;
+  color: white;
+  font-weight: $font-weight-medium;
 }
 
 .template-main-info {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: math.div($uni-spacing-col-sm, 2);
   min-width: 0;
 }
 
 .template-name {
-  font-size: $uni-font-size-lg;
+  font-size: $font-size-medium;
   color: $text-primary;
   font-weight: $font-weight-medium;
-  line-height: 1.4;
-  @extend .text-truncate;
+  margin-bottom: 4rpx;
+  display: block;
 }
 
 .template-description {
-  font-size: $uni-font-size-base;
-  color: $text-regular;
-  line-height: 1.4;
-  @extend .text-multi-truncate;
+  font-size: $font-size-small;
+  color: $text-secondary;
+  display: block;
 }
 
 .template-status {
-  margin-left: $uni-spacing-col-sm;
   flex-shrink: 0;
 }
 
 .status-badge {
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  border-radius: $badge-border-radius;
-  font-size: $uni-font-size-sm;
-  font-weight: $font-weight-medium;
+  padding: 4rpx 12rpx;
+  border-radius: $border-radius-small;
+  font-size: $font-size-extra-small;
 
   &.active {
-    background: $success-bg;
+    background-color: $success-bg;
     color: $success-color;
-    border: 1rpx solid $success-border;
+    border: 1px solid $success-border;
   }
 
   &.inactive {
-    background: $background-color;
-    color: $uni-text-color-grey;
-    border: 1rpx solid $border-color-light;
+    background-color: $background-color;
+    color: $text-secondary;
+    border: 1px solid $border-color-light;
   }
 }
 
 .status-text {
-  font-size: $uni-font-size-sm;
+  font-size: $font-size-extra-small;
   font-weight: $font-weight-medium;
 }
 
 .template-item-content {
-  margin-bottom: $uni-spacing-row-base;
+  margin-bottom: $margin-small;
 }
 
 .template-meta {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: $uni-spacing-col-base;
-  margin-bottom: $uni-spacing-col-base;
+  gap: $margin-small;
+  margin-bottom: $margin-small;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  gap: math.div($uni-spacing-col-sm, 2);
+  font-size: $font-size-extra-small;
+  color: $text-secondary;
 }
 
 .meta-icon {
-  font-size: $uni-font-size-sm;
-  color: $uni-text-color-grey;
-}
-
-.meta-text {
-  font-size: $uni-font-size-sm;
-  color: $text-regular;
+  margin-right: 4rpx;
 }
 
 .template-features {
   display: flex;
   flex-wrap: wrap;
-  gap: $uni-spacing-col-sm;
+  gap: $margin-mini;
 }
 
 .feature-tag {
-  background: $background-color;
-  border-radius: $uni-border-radius-sm;
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  font-size: $uni-font-size-sm;
-  color: $text-regular;
-  border: 1rpx solid $border-color-light;
+  font-size: $font-size-extra-small;
 }
 
 .template-item-actions {
+  padding-top: $padding-small;
+  border-top: 1px solid $border-color-light;
+}
+
+.price-info {
   display: flex;
-  gap: $uni-spacing-col-sm;
-  padding-top: $uni-spacing-row-base;
-  border-top: 1rpx solid $border-color-extra-light;
+  align-items: center;
+}
+
+.price-label {
+  font-size: $font-size-small;
+  color: $text-secondary;
+  margin-right: 4rpx;
+}
+
+.price-value {
+  font-size: $font-size-medium;
+  color: $danger-color;
+  font-weight: $font-weight-medium;
+}
+
+.action-buttons {
+  display: flex;
+  gap: $margin-mini;
 }
 
 .btn-action {
-  flex: 1;
-  border-radius: $uni-border-radius-lg;
-  padding: $uni-spacing-col-base 0;
-  font-size: $uni-font-size-base;
+  padding: 12rpx 24rpx;
+  font-size: $font-size-small;
   font-weight: $font-weight-medium;
-  transition: all $transition-fast;
-
-  &.primary {
-    background: $primary-color;
-    color: $uni-bg-color;
-    border: none;
-
-    &:active {
-      background: color.adjust($primary-color, $lightness: -10%);
-      opacity: 0.9;
-    }
-  }
-
-  &.secondary {
-    background: $uni-bg-color;
-    color: $text-regular;
-    border: 1rpx solid $border-color-light;
-
-    &:active {
-      background: $background-color;
-      border-color: $border-color;
-    }
-  }
+  min-width: 120rpx;
 }
 
-.action-text {
-  font-size: $uni-font-size-base;
-  font-weight: $font-weight-medium;
-}
-
-/* 网格视图 */
 .grid-view {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $uni-spacing-row-base;
+  gap: $margin-base;
+
+  @media (max-width: $screen-md) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .template-card {
-  background: $uni-bg-color;
-  border-radius: $border-radius-large;
-  padding: $card-padding;
-  box-shadow: $card-shadow;
-  transition: all $transition-normal;
-  border: 1rpx solid transparent;
   display: flex;
   flex-direction: column;
-  height: 320rpx;
+  transition: all $transition-fast $ease-in-out;
 
   &:active {
-    background: color.adjust($uni-bg-color, $lightness: -2%);
+    transform: translateY(-4rpx);
     box-shadow: $card-hover-shadow;
-    border-color: $border-color-light;
-    transform: translateY(-2rpx);
   }
 }
 
 .card-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: $uni-spacing-col-base;
+  margin-bottom: $margin-small;
 }
 
 .card-avatar {
   width: 60rpx;
   height: 60rpx;
-  border-radius: $avatar-border-radius;
-  @extend .flex-center;
-  margin-right: $uni-spacing-col-sm;
+  border-radius: $border-radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $margin-small;
   flex-shrink: 0;
-  box-shadow: $box-shadow-light;
 }
 
 .card-title {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: math.div($uni-spacing-col-sm, 2);
   min-width: 0;
 }
 
 .card-name {
-  font-size: $uni-font-size-lg;
+  font-size: $font-size-base;
   color: $text-primary;
   font-weight: $font-weight-medium;
-  @extend .text-truncate;
+  margin-bottom: 4rpx;
+  display: block;
 }
 
 .card-description {
-  margin-bottom: $uni-spacing-col-base;
-  flex: 1;
+  margin-bottom: $margin-small;
+  min-height: 80rpx;
 }
 
 .description-text {
-  font-size: $uni-font-size-base;
-  color: $text-regular;
+  font-size: $font-size-small;
+  color: $text-secondary;
   line-height: 1.4;
-  @extend .text-multi-truncate;
 }
 
 .card-features {
   display: flex;
   flex-wrap: wrap;
-  gap: $uni-spacing-col-sm;
-  margin-bottom: $uni-spacing-col-base;
+  gap: 8rpx;
+  margin-bottom: $margin-small;
 }
 
 .feature-chip {
-  background: $background-color;
-  border-radius: $uni-border-radius-sm;
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  font-size: $uni-font-size-sm;
-  color: $text-regular;
-  border: 1rpx solid $border-color-light;
-  @extend .text-truncate;
-  max-width: 120rpx;
+  font-size: $font-size-extra-small;
 }
 
 .card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: $uni-spacing-col-base;
-  border-top: 1rpx solid $border-color-extra-light;
-  margin-top: auto;
+  margin-bottom: $margin-small;
 }
 
 .update-time {
-  font-size: $uni-font-size-sm;
-  color: $uni-text-color-grey;
+  font-size: $font-size-extra-small;
+  color: $text-secondary;
 }
 
 .card-actions {
-  display: flex;
-  gap: $uni-spacing-col-sm;
+  padding-top: $padding-small;
+  border-top: 1px solid $border-color-light;
 }
 
-.card-action {
-  font-size: $uni-font-size-base;
-  font-weight: $font-weight-medium;
-  cursor: pointer;
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  border-radius: $uni-border-radius-sm;
-  transition: all $transition-fast;
-
-  &.use {
-    color: $primary-color;
-    background: $primary-light;
-
-    &:active {
-      background: color.adjust($primary-light, $lightness: -5%);
-    }
-  }
-
-  &.preview {
-    color: $text-regular;
-    background: $background-color;
-
-    &:active {
-      background: color.adjust($background-color, $lightness: -5%);
-    }
-  }
-}
-
-/* 加载更多 */
 .load-more {
-  @extend .flex-center;
-  padding: $uni-spacing-row-base $uni-spacing-row-base;
-  margin-top: $uni-spacing-row-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $padding-base;
+  margin-top: $margin-base;
+  background-color: $background-color-white;
+  border-radius: $border-radius;
+  border: 1px solid $border-color-light;
+  font-size: $font-size-base;
+  color: $text-primary;
+  font-weight: $font-weight-medium;
 }
 
-.load-more-text {
-  font-size: $uni-font-size-base;
-  color: $primary-color;
-  cursor: pointer;
-  padding: $uni-spacing-col-sm $uni-spacing-row-base;
-  border: 1rpx solid $primary-color;
-  border-radius: $uni-border-radius-lg;
-  transition: all $transition-fast;
-
-  &:active {
-    background: $primary-light;
-    opacity: 0.8;
-  }
-}
-
-/* 悬浮按钮 */
 .floating-action {
   position: fixed;
-  bottom: calc($tabbar-height + 40rpx);
-  right: $uni-spacing-row-base;
+  right: $margin-base;
+  bottom: calc($tabbar-height + $margin-base);
   z-index: $z-index-dropdown;
 }
 
 .btn-fab {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: $uni-border-radius-circle;
-  background: $primary-color;
-  color: $uni-bg-color;
-  border: none;
-  box-shadow: $box-shadow-dark;
-  @extend .flex-center;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: $primary-color;
+  color: white;
   font-size: $font-size-extra-large;
-  font-weight: $font-weight-light;
-  transition: all $transition-normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $box-shadow-dark;
+  transition: all $transition-fast $ease-in-out;
 
   &:active {
     transform: scale(0.95);
-    box-shadow: $button-active-shadow;
+    background-color: color.adjust($primary-color, $lightness: -10%);
   }
-}
-
-.fab-text {
-  color: $uni-bg-color;
-  font-size: $font-size-extra-large;
-  line-height: 1;
-  font-weight: $font-weight-light;
-}
-
-/* 响应式调整 */
-@media (max-width: $breakpoint-sm) {
-  .grid-view {
-    grid-template-columns: 1fr;
-  }
-
-  .sort-tabs {
-    gap: $uni-spacing-row-base;
-  }
-}
-
-/* 使用通用样式类 */
-.flex-center {
-  @extend .flex-center;
-}
-
-.text-truncate {
-  @extend .text-truncate;
-}
-
-.text-multi-truncate {
-  @extend .text-multi-truncate;
 }
 </style>

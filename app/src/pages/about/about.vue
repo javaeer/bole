@@ -1,5 +1,5 @@
 <template>
-  <view class="about-container">
+  <view class="page-container">
     <!-- 顶部品牌展示 -->
     <view class="brand-header">
       <image src="/static/logo.png" class="brand-logo" mode="aspectFit" />

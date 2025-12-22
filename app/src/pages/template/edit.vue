@@ -41,7 +41,7 @@
             <view class="form-group">
               <text class="form-label required">模板编码</text>
               <input
-                v-model="template.code"
+                v-model="templateForm.code"
                 :disabled="isEditMode"
                 placeholder="英文、数字、下划线，如: resume_tech"
                 :class="['form-input', { disabled: isEditMode }]"
@@ -54,7 +54,7 @@
             <view class="form-group">
               <text class="form-label required">模板名称</text>
               <input
-                v-model="template.name"
+                v-model="templateForm.name"
                 placeholder="如: 科技风格简历"
                 class="form-input"
                 @focus="onInputFocus"
@@ -65,7 +65,7 @@
             <view class="form-group">
               <text class="form-label">描述</text>
               <textarea
-                v-model="template.description"
+                v-model="templateForm.description"
                 placeholder="请输入模板描述..."
                 class="form-textarea"
                 maxlength="200"
@@ -74,7 +74,7 @@
               />
               <view class="textarea-footer flex-between">
                 <text class="textarea-tip">简要描述模板用途和特点</text>
-                <text class="textarea-count">{{ template.description?.length || 0 }}/200</text>
+                <text class="textarea-count">{{ templateForm.description?.length || 0 }}/200</text>
               </view>
             </view>
           </view>
@@ -92,8 +92,8 @@
                 <view
                   v-for="type in LAYOUT_TYPES"
                   :key="type.value"
-                  :class="['layout-type-item', { active: template.globalLayout.type === type.value }]"
-                  @click="template.globalLayout.type = type.value"
+                  :class="['layout-type-item', { active: templateForm.globalLayout.type === type.value }]"
+                  @click="templateForm.globalLayout.type = type.value"
                 >
                   <view :class="['layout-icon', type.icon]"></view>
                   <text class="layout-name">{{ type.label }}</text>
@@ -102,7 +102,7 @@
             </view>
 
             <!-- 双栏布局配置 -->
-            <view v-if="template.globalLayout.type === 'two-column'" class="layout-config">
+            <view v-if="templateForm.globalLayout.type === 'two-column'" class="layout-config">
               <view class="layout-preview-container">
                 <text class="preview-title">布局预览</text>
                 <view class="two-column-preview">
@@ -123,30 +123,30 @@
 
               <view class="width-controls">
                 <view class="control-group">
-                  <text class="control-label">左侧宽度: {{ template.globalLayout.columns.left }}%</text>
+                  <text class="control-label">左侧宽度: {{ templateForm.globalLayout.columns.left }}%</text>
                   <slider
-                    :value="template.globalLayout.columns.left"
+                    :value="templateForm.globalLayout.columns.left"
                     min="20"
                     max="80"
                     step="5"
                     @changing="onColumnWidthChanging"
                     data-side="left"
-                    :active-color="primaryColor"
-                    :background-color="borderColorLighter"
+                    active-color="#d4af37"
+                    background-color="#ebeef5"
                     class="form-slider"
                   />
                 </view>
                 <view class="control-group">
-                  <text class="control-label">右侧宽度: {{ template.globalLayout.columns.right }}%</text>
+                  <text class="control-label">右侧宽度: {{ templateForm.globalLayout.columns.right }}%</text>
                   <slider
-                    :value="template.globalLayout.columns.right"
+                    :value="templateForm.globalLayout.columns.right"
                     min="20"
                     max="80"
                     step="5"
                     @changing="onColumnWidthChanging"
                     data-side="right"
-                    :active-color="primaryColor"
-                    :background-color="borderColorLighter"
+                    active-color="#d4af37"
+                    background-color="#ebeef5"
                     class="form-slider"
                   />
                 </view>
@@ -160,10 +160,25 @@
                 <text class="component-desc">选择区块后使用上下按钮调整顺序</text>
               </view>
 
+              <!-- 组件推荐区域 -->
+              <view v-if="getRecommendedComponents.length > 0" class="component-recommendation">
+                <text class="recommendation-title">常用组件推荐</text>
+                <view class="recommendation-list">
+                  <view
+                    v-for="component in getRecommendedComponents"
+                    :key="component.id"
+                    class="recommendation-item"
+                    @click="addSectionWithComponent(component)"
+                  >
+                    <text>{{ component.name }}</text>
+                  </view>
+                </view>
+              </view>
+
               <view class="component-list">
                 <view
-                  v-for="(component, index) in template.components"
-                  :key="component.id || index"
+                  v-for="(component, index) in templateForm.components"
+                  :key="`component-${component.componentId || 'empty'}-${index}`"
                   :class="['component-item', { 'selected': selectedIndex === index }]"
                   @click="selectComponent(index)"
                 >
@@ -172,23 +187,33 @@
                       <text class="index-text">{{ index + 1 }}</text>
                     </view>
                     <view class="component-info">
-                      <input
-                        v-model="component.name"
-                        placeholder="区块名称"
-                        class="component-input"
-                        @focus="onSectionInputFocus(index)"
-                      />
+                      <!-- 组件信息显示区域 -->
+                      <view class="component-name-display">
+                        <text class="component-name">
+                          {{ getComponentName(component.componentId) || "未选择组件" }}
+                        </text>
+                        <text v-if="component.componentId" class="component-key">
+                          {{ getComponentKey(component.componentId) }}
+                        </text>
+                      </view>
+
+                      <!-- 组件选择器 -->
                       <picker
-                        :value="getComponentIndex(component.component)"
-                        :range="componentOptionLabels"
+                        :value="getComponentIndex(component.componentId)"
+                        :range="componentOptions"
                         @change="(e) => onComponentChange(index, e)"
                         class="component-picker"
                       >
                         <view class="picker-display flex-between">
-                          <text>{{ getComponentName(component.component) || "选择片段" }}</text>
+                          <text>{{ getSelectedComponentLabel(component.componentId) }}</text>
                           <text class="picker-arrow">▼</text>
                         </view>
                       </picker>
+
+                      <!-- 组件描述 -->
+                      <view v-if="component.componentId" class="component-description">
+                        <text class="desc-text">{{ getComponentDescription(component.componentId) }}</text>
+                      </view>
                     </view>
                     <view class="component-actions">
                       <button
@@ -200,8 +225,8 @@
                       </button>
                       <button
                         @click.stop="moveComponentDown(index)"
-                        :class="['action-btn move-down-btn', { disabled: index === template.components.length - 1 }]"
-                        :disabled="index === template.components.length - 1"
+                        :class="['action-btn move-down-btn', { disabled: index === templateForm.components.length - 1 }]"
+                        :disabled="index === templateForm.components.length - 1"
                       >
                         <text class="action-icon">↓</text>
                       </button>
@@ -213,11 +238,21 @@
                       </button>
                     </view>
                   </view>
+
+                  <!-- 组件详情按钮 -->
+                  <view v-if="component.componentId" class="component-details-container">
+                    <button @click.stop="showComponentDetails(component.componentId)" class="component-details-btn">
+                      <text class="details-icon">ℹ️</text>
+                      <text class="details-text">查看组件详情</text>
+                    </button>
+                  </view>
                 </view>
               </view>
 
-              <view class="sort-controls" v-if="selectedIndex !== -1 && template.components.length > 0">
-                <text class="sort-hint">当前选中: {{ template.components[selectedIndex]?.name }}</text>
+              <view class="sort-controls" v-if="selectedIndex !== -1 && templateForm.components.length > 0">
+                <text class="sort-hint">
+                  当前选中: {{ getComponentName(templateForm.components[selectedIndex]?.componentId) || "未命名区块" }}
+                </text>
                 <view class="sort-buttons">
                   <button
                     @click="moveSelectedToTop"
@@ -229,8 +264,8 @@
                   </button>
                   <button
                     @click="moveSelectedToBottom"
-                    :class="['sort-btn', { disabled: selectedIndex === template.components.length - 1 }]"
-                    :disabled="selectedIndex === template.components.length - 1"
+                    :class="['sort-btn', { disabled: selectedIndex === templateForm.components.length - 1 }]"
+                    :disabled="selectedIndex === templateForm.components.length - 1"
                   >
                     <text class="sort-icon">⏬</text>
                     移到底部
@@ -240,8 +275,22 @@
 
               <button @click="addSection" class="add-component-btn">
                 <text class="add-icon">+</text>
-                添加区块
+                添加空区块
               </button>
+
+              <!-- 组件计数显示 -->
+              <view class="component-count">
+                <text class="count-label">区块总数: {{ templateForm.components.length }}</text>
+                <text class="count-valid">有效区块: {{ validComponentsCount }}</text>
+              </view>
+
+              <!-- 添加组件选择帮助提示 -->
+              <view class="component-help">
+                <text class="help-icon">💡</text>
+                <text class="help-text">
+                  从下拉列表中选择组件，系统会自动填充组件的默认配置
+                </text>
+              </view>
             </view>
           </view>
 
@@ -266,17 +315,16 @@
                     <text class="color-desc">用于标题和重要元素</text>
                   </view>
                   <view class="color-controls">
-                    <!-- 修复：使用正确的 v-model 和事件处理 -->
                     <input
                       type="text"
-                      :value="template.globalStyle.primaryColor"
+                      :value="templateForm.globalStyle.primaryColor"
                       @input="onColorInput($event, 'primaryColor')"
                       class="color-input"
                       placeholder="#d4af37"
                     />
                     <view
                       class="color-preview"
-                      :style="{ backgroundColor: template.globalStyle.primaryColor }"
+                      :style="{ backgroundColor: templateForm.globalStyle.primaryColor }"
                       @click="showColorPicker('primaryColor')"
                     />
                   </view>
@@ -290,14 +338,14 @@
                   <view class="color-controls">
                     <input
                       type="text"
-                      :value="template.globalStyle.secondaryColor"
+                      :value="templateForm.globalStyle.secondaryColor"
                       @input="onColorInput($event, 'secondaryColor')"
                       class="color-input"
                       placeholder="#f9f3e3"
                     />
                     <view
                       class="color-preview"
-                      :style="{ backgroundColor: template.globalStyle.secondaryColor }"
+                      :style="{ backgroundColor: templateForm.globalStyle.secondaryColor }"
                       @click="showColorPicker('secondaryColor')"
                     />
                   </view>
@@ -311,14 +359,14 @@
                   <view class="color-controls">
                     <input
                       type="text"
-                      :value="template.globalStyle.accentColor"
+                      :value="templateForm.globalStyle.accentColor"
                       @input="onColorInput($event, 'accentColor')"
                       class="color-input"
                       placeholder="#f7ef8a"
                     />
                     <view
                       class="color-preview"
-                      :style="{ backgroundColor: template.globalStyle.accentColor }"
+                      :style="{ backgroundColor: templateForm.globalStyle.accentColor }"
                       @click="showColorPicker('accentColor')"
                     />
                   </view>
@@ -349,7 +397,7 @@
               <view class="form-group">
                 <text class="form-label">字体家族</text>
                 <input
-                  v-model="template.globalStyle.fontFamily"
+                  v-model="templateForm.globalStyle.fontFamily"
                   placeholder="如: 'Microsoft YaHei', sans-serif"
                   class="form-input"
                 />
@@ -361,7 +409,7 @@
                   <view class="size-controls">
                     <input
                       type="number"
-                      v-model="template.globalStyle.fontSizes.h1"
+                      v-model="templateForm.globalStyle.fontSizes.h1"
                       class="size-input"
                       min="12"
                       max="72"
@@ -369,13 +417,13 @@
                     <text class="size-unit">px</text>
                     <view class="size-slider">
                       <slider
-                        :value="template.globalStyle.fontSizes.h1"
+                        :value="Number(templateForm.globalStyle.fontSizes.h1)"
                         min="12"
                         max="72"
                         step="2"
                         @changing="onFontSizeChanging"
                         data-type="h1"
-                        :active-color="primaryColor"
+                        active-color="#d4af37"
                         class="size-slider-bar"
                       />
                     </view>
@@ -387,7 +435,7 @@
                   <view class="size-controls">
                     <input
                       type="number"
-                      v-model="template.globalStyle.fontSizes.body"
+                      v-model="templateForm.globalStyle.fontSizes.body"
                       class="size-input"
                       min="10"
                       max="36"
@@ -395,13 +443,13 @@
                     <text class="size-unit">px</text>
                     <view class="size-slider">
                       <slider
-                        :value="template.globalStyle.fontSizes.body"
+                        :value="Number(templateForm.globalStyle.fontSizes.body)"
                         min="10"
                         max="36"
                         step="1"
                         @changing="onFontSizeChanging"
                         data-type="body"
-                        :active-color="primaryColor"
+                        active-color="#d4af37"
                         class="size-slider-bar"
                       />
                     </view>
@@ -424,7 +472,7 @@
                   </view>
                   <input
                     type="text"
-                    v-model="template.globalStyle.spacing.sectionMargin"
+                    v-model="templateForm.globalStyle.spacing.sectionMargin"
                     placeholder="如: 20px"
                     class="spacing-input"
                   />
@@ -437,7 +485,7 @@
                   </view>
                   <input
                     type="text"
-                    v-model="template.globalStyle.spacing.padding"
+                    v-model="templateForm.globalStyle.spacing.padding"
                     placeholder="如: 15px"
                     class="spacing-input"
                   />
@@ -450,7 +498,7 @@
                   </view>
                   <input
                     type="text"
-                    v-model="template.globalStyle.spacing.lineHeight"
+                    v-model="templateForm.globalStyle.spacing.lineHeight"
                     placeholder="如: 1.5"
                     class="spacing-input"
                   />
@@ -496,9 +544,9 @@
           <!-- 实时预览组件 -->
           <template-preview
             :key="previewKey"
-            :components="template.components"
-            :layout="template.globalLayout"
-            :global-style="template.globalStyle"
+            :components="templateForm.components"
+            :globalLayout="templateForm.globalLayout"
+            :global-style="templateForm.globalStyle"
             :device="previewDevice"
             class="template-preview-container"
           />
@@ -508,7 +556,7 @@
             <view class="info-items">
               <view class="info-item">
                 <text class="info-label">名称:</text>
-                <text class="info-value">{{ template.name || "未命名" }}</text>
+                <text class="info-value">{{ templateForm.name || "未命名" }}</text>
               </view>
               <view class="info-item">
                 <text class="info-label">布局:</text>
@@ -516,7 +564,11 @@
               </view>
               <view class="info-item">
                 <text class="info-label">区块数:</text>
-                <text class="info-value">{{ template.components.length }}</text>
+                <text class="info-value">{{ templateForm.components.length }}</text>
+              </view>
+              <view class="info-item">
+                <text class="info-label">有效组件:</text>
+                <text class="info-value">{{ validComponentsCount }}</text>
               </view>
             </view>
           </view>
@@ -530,6 +582,9 @@
         <text class="footer-status">
           {{ isEditMode ? "正在编辑模板" : "正在创建新模板" }}
         </text>
+        <text v-if="componentErrors.length > 0" class="footer-error">
+          ⚠️ 有 {{ componentErrors.length }} 个组件未配置
+        </text>
       </view>
       <view class="footer-right">
         <button @click="cancel" class="footer-btn secondary">取消</button>
@@ -541,133 +596,123 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
-import { COMPONENT_LIBRARY, LAYOUT_TYPES } from "@/constants/resumes-components";
+import { computed, onMounted, ref, watch } from "vue";
 import TemplatePreview from "@/components/template/TemplatePreview.vue";
-import { ConfigTab, TemplateResult } from "@/types/template";
-import { TemplateComponentResult } from "@/types/template-component";
+import { TemplateForm } from "@/types/template";
+import { TemplateComponentForm } from "@/types/template-component";
+import TemplateAPI from "@/api/template";
+import { COLOR_PRESETS, CONFIG_TABS, DEVICE_OPTIONS, LAYOUT_TYPES } from "@/constants/template";
+import { COMPONENT_LIBRARY } from "@/constants/component";
+import { useTemplateStore } from "@/stores/template";
 
-// 样式变量导入
-const primaryColor = "#d4af37";
-const secondaryColor = "#f7ef8a";
-const successColor = "#67c23a";
-const dangerColor = "#f56c6c";
-const warningColor = "#e6a23c";
-const infoColor = "#909399";
-const borderColorLighter = "#ebeef5";
-const textPrimary = "#303133";
-const textSecondary = "#909399";
-const backgroundColor = "#f8f8f8";
-const backgroundColorWhite = "#ffffff";
+// 使用模板 store
+const templateStore = useTemplateStore();
 
 // 响应式数据
 const isEditMode = ref(false);
 const activeTab = ref("basic");
 const previewDevice = ref("desktop");
 const previewKey = ref(0);
-const categoryIndex = ref(0);
-const styleIndex = ref(0);
-const layoutTypeIndex = ref(0);
 const scrollTop = ref(0);
-const draggingSection = ref<number | null>(null);
 const showColorPresets = ref(false);
-const currentColorField = ref("primaryColor");
-const colorPresets = ref([
-  "#d4af37", // 主色调
-  "#f9f3e3", // 辅色调
-  "#f7ef8a", // 强调色
-  "#67c23a", // 成功色
-  "#e6a23c", // 警告色
-  "#f56c6c", // 危险色
-  "#909399", // 信息色
-  "#409eff", // 蓝色
-  "#303133", // 主要文字色
-  "#606266", // 常规文字色
-  "#909399", // 次要文字色
-  "#c0c4cc", // 占位文字色
-  "#dcdfe6", // 边框色
-  "#e4e7ed", // 边框色2
-  "#ebeef5", // 边框色3
-  "#f2f6fc",  // 边框色4
-]);
-
-// 选择排序相关
+const currentColorField = ref<"primaryColor" | "secondaryColor" | "accentColor">("primaryColor");
 const selectedIndex = ref(-1);
 
-// 拖拽相关数据
-const dragStartY = ref(0);
-const dragOffsetY = ref(0);
+const colorPresets = ref(COLOR_PRESETS);
 
-// 配置数据
-const template = reactive<TemplateResult>({
-  id: 0,
-  code: "",
-  name: "",
-  description: "",
-  previewImage: "",
-  isActive: true,
-  version: "1.0.0",
-  globalLayout: {
-    type: "single-column",
-    columns: {
-      left: 40,
-      right: 60,
-    },
-    components: [],
-    orientation: "portrait",
-    componentOrder: [],
-  },
-  globalStyle: {
-    theme: "light",
-    fontSizes: {
-      h1: "24",
-      body: "14",
-    },
-    fontFamily: "'Microsoft YaHei', 'PingFang SC', sans-serif",
-    headerColor: "",
-    primaryColor: "#d4af37",
-    accentColor: "#f7ef8a",
-    secondaryColor: "#f9f3e3",
-    backgroundColor: "",
-    spacing: {
-      sectionMargin: "20px",
-      padding: "15px",
-      lineHeight: "1.5",
-    },
-  },
-  components: [],
-  price: 0,
-  users: 0,
-  tags: [],
-  category: "",
-  rating: 0,
-});
+// 使用 store 中的 editForm
+const templateForm = templateStore.editForm;
 
 // 选项数据
-const configTabs: ConfigTab[] = [
-  { id: "basic", label: "基础配置", icon: "⚙️" },
-  { id: "layout", label: "布局配置", icon: "📐" },
-  { id: "style", label: "样式配置", icon: "🎨" },
-];
-
-const deviceOptions: DeviceOption[] = [
-  { value: "desktop", name: "桌面", icon: "🖥️" },
-  { value: "tablet", name: "平板", icon: "📱" },
-  { value: "mobile", name: "手机", icon: "📲" },
-];
-
+const configTabs = ref(CONFIG_TABS);
+const deviceOptions = ref(DEVICE_OPTIONS);
 const availableComponents = ref(COMPONENT_LIBRARY);
 
+// 组件选择历史（用于推荐）
+const componentSelectionHistory = ref<number[]>([]);
+
 // 计算属性
-const componentOptionLabels = computed(() => availableComponents.value.map(f => f.name));
+const componentOptions = computed(() =>
+  availableComponents.value.map(c => `${c.name} (${c.key})`),
+);
+
 const layoutTypeLabel = computed(() => {
-  const type = LAYOUT_TYPES.find(t => t.value === template.globalLayout.type);
+  const type = LAYOUT_TYPES.find(t => t.value === templateForm.globalLayout?.type);
   return type ? type.label : "单栏";
+});
+
+const validComponentsCount = computed(() => {
+  return (templateForm.components || []).filter(c => c.componentId > 0).length;
+});
+
+// 获取组件名称（根据 componentId）
+const getComponentName = (componentId: number): string => {
+  if (!componentId) return "";
+  const component = availableComponents.value.find(c => c.id === componentId);
+  return component ? component.name : "";
+};
+
+// 获取组件 Key（根据 componentId）
+const getComponentKey = (componentId: number): string => {
+  if (!componentId) return "";
+  const component = availableComponents.value.find(c => c.id === componentId);
+  return component ? component.key : "";
+};
+
+// 获取组件描述（根据 componentId）
+const getComponentDescription = (componentId: number): string => {
+  if (!componentId) return "";
+  const component = availableComponents.value.find(c => c.id === componentId);
+  return component ? component.description : "";
+};
+
+// 获取组件索引（根据 componentId）
+const getComponentIndex = (componentId: number): number => {
+  if (!componentId) return -1;
+  return availableComponents.value.findIndex(c => c.id === componentId);
+};
+
+// 获取选择器显示的标签
+const getSelectedComponentLabel = (componentId: number): string => {
+  if (!componentId) return "选择组件";
+  const component = availableComponents.value.find(c => c.id === componentId);
+  return component ? `${component.name} (${component.key})` : "选择组件";
+};
+
+// 获取推荐组件（基于选择历史）
+const getRecommendedComponents = computed(() => {
+  const historyMap = new Map<number, number>();
+  componentSelectionHistory.value.forEach(id => {
+    historyMap.set(id, (historyMap.get(id) || 0) + 1);
+  });
+
+  return [...availableComponents.value]
+    .sort((a, b) => {
+      const freqA = historyMap.get(a.id) || 0;
+      const freqB = historyMap.get(b.id) || 0;
+      return freqB - freqA;
+    })
+    .slice(0, 3); // 返回最常用的3个组件
+});
+
+// 验证组件配置完整性
+const componentErrors = computed(() => {
+  const components = templateForm.components || [];
+  const errors: string[] = [];
+
+  components.forEach((component, index) => {
+    if (!component.componentId) {
+      errors.push(`第 ${index + 1} 个区块未选择组件`);
+    }
+  });
+
+  return errors;
 });
 
 // 方法
 const refreshPreview = () => {
   previewKey.value += 1;
+  templateStore.refreshPreview();
   uni.showToast({
     title: "预览已刷新",
     icon: "success",
@@ -681,7 +726,7 @@ const saveAsDraft = () => {
     title: "保存草稿",
     content: "确定要将模板保存为草稿吗？",
     confirmText: "保存",
-    confirmColor: primaryColor,
+    confirmColor: "#d4af37",
     success: (res) => {
       if (res.confirm) {
         uni.showLoading({ title: "保存中..." });
@@ -698,28 +743,78 @@ const saveAsDraft = () => {
   });
 };
 
-const saveTemplate = () => {
+const saveTemplate = async () => {
   if (!validateRequiredFields()) return;
 
+  // 验证组件配置
+  if (componentErrors.value.length > 0) {
+    uni.showModal({
+      title: "组件未配置",
+      content: `有 ${componentErrors.value.length} 个区块未选择组件，是否继续保存？`,
+      confirmText: "继续保存",
+      cancelText: "去配置",
+      confirmColor: "#e6a23c",
+      success: async (res) => {
+        if (res.confirm) {
+          await performSave();
+        } else {
+          activeTab.value = "layout";
+        }
+      },
+    });
+  } else {
+    await performSave();
+  }
+};
+
+const performSave = async () => {
   uni.showModal({
     title: "保存模板",
     content: "确定要保存模板吗？模板将发布到模板库",
     confirmText: "发布",
-    confirmColor: primaryColor,
-    success: (res) => {
+    confirmColor: "#d4af37",
+    success: async (res) => {
       if (res.confirm) {
         uni.showLoading({ title: "发布中..." });
-        setTimeout(() => {
+        try {
+          // 确保组件数组存在
+          if (!templateForm.components) {
+            templateForm.components = [];
+          }
+
+          // 准备提交数据 - 确保数据结构正确
+          const submitData: TemplateForm = {
+            ...templateForm,
+            components: templateForm.components.map(comp => ({
+              componentId: comp.componentId,
+              props: comp.props || {},
+              styles: comp.styles || {},
+            })),
+          };
+
+          console.log("提交数据:", JSON.stringify(submitData, null, 2));
+          console.log("组件数量:", submitData.components?.length);
+
+          await TemplateAPI.addTemplate(submitData);
           uni.hideLoading();
           uni.showToast({
             title: "模板发布成功",
             icon: "success",
             duration: 2000,
           });
+
           setTimeout(() => {
             uni.navigateBack();
           }, 2000);
-        }, 2000);
+        } catch (error) {
+          uni.hideLoading();
+          uni.showToast({
+            title: "保存失败，请重试",
+            icon: "error",
+            duration: 2000,
+          });
+          console.error("保存模板失败:", error);
+        }
       }
     },
   });
@@ -730,7 +825,7 @@ const cancel = () => {
     title: "确认离开",
     content: "离开后未保存的更改将会丢失",
     confirmText: "离开",
-    confirmColor: dangerColor,
+    confirmColor: "#f56c6c",
     success: (res) => {
       if (res.confirm) {
         uni.navigateBack();
@@ -740,7 +835,7 @@ const cancel = () => {
 };
 
 const validateRequiredFields = (): boolean => {
-  if (!template.code) {
+  if (!templateForm.code) {
     uni.showToast({
       title: "请填写模板编码",
       icon: "none",
@@ -748,7 +843,7 @@ const validateRequiredFields = (): boolean => {
     return false;
   }
 
-  if (!template.name) {
+  if (!templateForm.name) {
     uni.showToast({
       title: "请填写模板名称",
       icon: "none",
@@ -760,120 +855,43 @@ const validateRequiredFields = (): boolean => {
 };
 
 const getColumnWidth = (side: "left" | "right") => {
-  return `${template.globalLayout.columns[side]}%`;
+  return `${templateForm.globalLayout?.columns?.[side] || 50}%`;
 };
 
 const onColumnWidthChanging = (e: any) => {
   const value = e.detail.value;
   const side = e.currentTarget.dataset.side;
-  if (side === "left") {
-    template.globalLayout.columns.left = value;
-    template.globalLayout.columns.right = 100 - value;
-  } else {
-    template.globalLayout.columns.right = value;
-    template.globalLayout.columns.left = 100 - value;
+  if (templateForm.globalLayout?.columns) {
+    if (side === "left") {
+      templateForm.globalLayout.columns.left = value;
+      templateForm.globalLayout.columns.right = 100 - value;
+    } else {
+      templateForm.globalLayout.columns.right = value;
+      templateForm.globalLayout.columns.left = 100 - value;
+    }
+    previewKey.value += 1;
   }
-  previewKey.value += 1;
 };
 
 // 选择组件
 const selectComponent = (index: number) => {
   selectedIndex.value = index;
-  console.log("选择组件:", index, template.components[index]?.name);
+  templateStore.selectComponent(index);
 };
 
-// 上移组件
-const moveComponentUp = (index: number) => {
-  if (index <= 0) return;
-
-  const components = [...template.components];
-  const temp = components[index];
-  components[index] = components[index - 1];
-  components[index - 1] = temp;
-
-  template.components = components;
-  selectedIndex.value = index - 1;
-  previewKey.value += 1;
-
-  uni.showToast({
-    title: "已上移",
-    icon: "success",
-    duration: 800,
-  });
-};
-
-// 下移组件
-const moveComponentDown = (index: number) => {
-  if (index >= template.components.length - 1) return;
-
-  const components = [...template.components];
-  const temp = components[index];
-  components[index] = components[index + 1];
-  components[index + 1] = temp;
-
-  template.components = components;
-  selectedIndex.value = index + 1;
-  previewKey.value += 1;
-
-  uni.showToast({
-    title: "已下移",
-    icon: "success",
-    duration: 800,
-  });
-};
-
-// 移到顶部
-const moveSelectedToTop = () => {
-  if (selectedIndex.value <= 0) return;
-
-  const components = [...template.components];
-  const selected = components[selectedIndex.value];
-  components.splice(selectedIndex.value, 1);
-  components.unshift(selected);
-
-  template.components = components;
-  selectedIndex.value = 0;
-  previewKey.value += 1;
-
-  uni.showToast({
-    title: "已移到顶部",
-    icon: "success",
-    duration: 1000,
-  });
-};
-
-// 移到底部
-const moveSelectedToBottom = () => {
-  if (selectedIndex.value >= template.components.length - 1) return;
-
-  const components = [...template.components];
-  const selected = components[selectedIndex.value];
-  components.splice(selectedIndex.value, 1);
-  components.push(selected);
-
-  template.components = components;
-  selectedIndex.value = components.length - 1;
-  previewKey.value += 1;
-
-  uni.showToast({
-    title: "已移到底部",
-    icon: "success",
-    duration: 1000,
-  });
-};
-
-// 添加区块
+// 添加区块 - 修复：确保正确添加并更新store
 const addSection = () => {
-  const newComponent: TemplateComponentResult = {
-    name: `区块${template.components.length + 1}`,
-    component: "",
-    props: "",
-    styles: "",
-    id: Date.now(),
+  const newComponent: TemplateComponentForm = {
+    componentId: 0,
+    props: {},
+    styles: {},
   };
-  template.components.push(newComponent);
-  selectedIndex.value = template.components.length - 1;
-  previewKey.value += 1;
+
+  // 使用store的方法添加组件
+  templateStore.addComponent(newComponent);
+  selectedIndex.value = (templateForm.components || []).length - 1;
+
+  console.log("添加区块后，组件数量:", templateForm.components.length);
 
   uni.showToast({
     title: "已添加区块",
@@ -882,15 +900,74 @@ const addSection = () => {
   });
 };
 
-// 删除区块
+// 添加带指定组件的区块 - 修复：确保正确添加
+const addSectionWithComponent = (component: any) => {
+  const newComponent: TemplateComponentForm = {
+    componentId: component.id,
+    props: { ...component.defaultConfig },
+    styles: {},
+  };
+
+  // 使用store的方法添加组件
+  templateStore.addComponent(newComponent);
+  selectedIndex.value = (templateForm.components || []).length - 1;
+
+  // 记录选择历史
+  if (!componentSelectionHistory.value.includes(component.id)) {
+    componentSelectionHistory.value.push(component.id);
+  }
+
+  console.log("添加带组件区块后，组件数量:", templateForm.components.length);
+
+  uni.showToast({
+    title: `已添加: ${component.name}`,
+    icon: "success",
+    duration: 1000,
+  });
+
+  previewKey.value += 1;
+};
+
+// 组件选择变更处理
+const onComponentChange = (sectionIndex: number, e: any) => {
+  const componentIndex = parseInt(e.detail.value);
+  if (componentIndex >= 0 && componentIndex < availableComponents.value.length) {
+    const selectedComponent = availableComponents.value[componentIndex];
+    const components = templateForm.components || [];
+
+    if (components[sectionIndex]) {
+      components[sectionIndex].componentId = selectedComponent.id;
+      components[sectionIndex].props = { ...selectedComponent.defaultConfig };
+
+      // 更新store
+      templateStore.updateEditForm({ components: [...components] });
+
+      uni.showToast({
+        title: `已选择: ${selectedComponent.name}`,
+        icon: "success",
+        duration: 1000,
+      });
+
+      // 记录组件选择历史
+      if (!componentSelectionHistory.value.includes(selectedComponent.id)) {
+        componentSelectionHistory.value.push(selectedComponent.id);
+      }
+
+      previewKey.value += 1;
+    }
+  }
+};
+
+// 删除区块 - 修复：确保正确删除
 const removeSection = (index: number) => {
   uni.showModal({
     title: "删除区块",
     content: "确定要删除这个区块吗？",
-    confirmColor: dangerColor,
+    confirmColor: "#f56c6c",
     success: (res) => {
       if (res.confirm) {
-        template.components.splice(index, 1);
+        // 使用store的方法删除组件
+        templateStore.removeComponent(index);
 
         // 调整选中索引
         if (selectedIndex.value === index) {
@@ -898,6 +975,8 @@ const removeSection = (index: number) => {
         } else if (selectedIndex.value > index) {
           selectedIndex.value -= 1;
         }
+
+        console.log("删除区块后，组件数量:", templateForm.components.length);
 
         previewKey.value += 1;
         uni.showToast({
@@ -909,26 +988,91 @@ const removeSection = (index: number) => {
   });
 };
 
-// 片段选择相关方法
-const getComponentIndex = (componentCode: string) => {
-  if (!componentCode) return -1;
-  return availableComponents.value.findIndex(f => f.code === componentCode);
+// 上移组件 - 修复：确保正确移动
+const moveComponentUp = (index: number) => {
+  if (index <= 0 || !templateForm.components) return;
+
+  // 使用store的方法移动组件
+  templateStore.moveComponent(index, index - 1);
+  selectedIndex.value = index - 1;
+  previewKey.value += 1;
+
+  uni.showToast({
+    title: "已上移",
+    icon: "success",
+    duration: 800,
+  });
 };
 
-const getComponentName = (componentCode: string) => {
-  if (!componentCode) return "";
-  const component = availableComponents.value.find(f => f.code === componentCode);
-  return component ? component.name : "";
+// 下移组件 - 修复：确保正确移动
+const moveComponentDown = (index: number) => {
+  if (!templateForm.components || index >= templateForm.components.length - 1) return;
+
+  // 使用store的方法移动组件
+  templateStore.moveComponent(index, index + 1);
+  selectedIndex.value = index + 1;
+  previewKey.value += 1;
+
+  uni.showToast({
+    title: "已下移",
+    icon: "success",
+    duration: 800,
+  });
 };
 
-const onComponentChange = (sectionIndex: number, e: any) => {
-  const fragmentIndex = parseInt(e.detail.value);
-  if (fragmentIndex >= 0 && fragmentIndex < availableComponents.value.length) {
-    const selectedComponent = availableComponents.value[fragmentIndex];
-    template.components[sectionIndex].component = selectedComponent.code;
-    template.components[sectionIndex].component = selectedComponent.code;
-    template.components[sectionIndex].name = template.components[sectionIndex].name || selectedComponent.name;
-    previewKey.value += 1;
+// 移到顶部 - 修复：确保正确移动
+const moveSelectedToTop = () => {
+  if (selectedIndex.value <= 0 || !templateForm.components) return;
+
+  const components = [...templateForm.components];
+  const selected = components.splice(selectedIndex.value, 1)[0];
+  components.unshift(selected);
+  templateStore.updateEditForm({ components });
+  selectedIndex.value = 0;
+  previewKey.value += 1;
+
+  uni.showToast({
+    title: "已移到顶部",
+    icon: "success",
+    duration: 1000,
+  });
+};
+
+// 移到底部 - 修复：确保正确移动
+const moveSelectedToBottom = () => {
+  if (!templateForm.components || selectedIndex.value >= templateForm.components.length - 1) return;
+
+  const components = [...templateForm.components];
+  const selected = components.splice(selectedIndex.value, 1)[0];
+  components.push(selected);
+  templateStore.updateEditForm({ components });
+  selectedIndex.value = components.length - 1;
+  previewKey.value += 1;
+
+  uni.showToast({
+    title: "已移到底部",
+    icon: "success",
+    duration: 1000,
+  });
+};
+
+// 显示组件详情
+const showComponentDetails = (componentId: number) => {
+  if (!componentId) return;
+
+  const component = availableComponents.value.find(c => c.id === componentId);
+  if (component) {
+    uni.showModal({
+      title: `组件详情: ${component.name}`,
+      content: `
+组件标识: ${component.key}
+描述: ${component.description}
+分类: ${component.category}
+默认配置: ${JSON.stringify(component.defaultConfig, null, 2)}
+      `,
+      showCancel: false,
+      confirmText: "确定",
+    });
   }
 };
 
@@ -952,51 +1096,44 @@ const onTextareaBlur = () => {
   // 文本域失焦处理
 };
 
-
 const onFontSizeChanging = (e: any) => {
   const value = e.detail.value;
   const type = e.currentTarget.dataset.type;
-  if (type === "h1") {
-    template.globalStyle.fontSizes.h1 = value.toString();
-  } else {
-    template.globalStyle.fontSizes.body = value.toString();
+  if (templateForm.globalStyle?.fontSizes) {
+    if (type === "h1") {
+      templateForm.globalStyle.fontSizes.h1 = value.toString();
+    } else {
+      templateForm.globalStyle.fontSizes.body = value.toString();
+    }
+    previewKey.value += 1;
   }
-  previewKey.value += 1;
 };
 
-// 修复：颜色输入处理
+// 颜色输入处理
 const onColorInput = (event: any, field: string) => {
   const value = event.detail?.value || event.target?.value;
-  if (value) {
-    // 格式化颜色值
+  if (value && templateForm.globalStyle) {
     let formattedValue = value.trim();
 
-    // 如果以#开头但长度不正确
     if (formattedValue.startsWith("#") && formattedValue.length !== 4 && formattedValue.length !== 7) {
-      // 尝试修复常见的3位或6位十六进制颜色
       if (formattedValue.length === 4) {
-        // 格式 #rgb 转换为 #rrggbb
         formattedValue = "#" + formattedValue[1] + formattedValue[1] +
           formattedValue[2] + formattedValue[2] +
           formattedValue[3] + formattedValue[3];
       }
     }
 
-    // 如果没有#开头，添加#
     if (!formattedValue.startsWith("#")) {
-      // 检查是否是有效的十六进制
       const hexRegex = /^[0-9A-Fa-f]{3}$|^[0-9A-Fa-f]{6}$/;
       if (hexRegex.test(formattedValue)) {
         formattedValue = "#" + formattedValue;
       }
     }
 
-    // 验证颜色
     if (validateColorHex(formattedValue)) {
-      template.globalStyle[field] = formattedValue;
+      ;(templateForm.globalStyle as any)[field] = formattedValue;
       previewKey.value += 1;
     } else {
-      // 显示错误提示
       uni.showToast({
         title: `颜色格式无效: ${formattedValue}`,
         icon: "none",
@@ -1006,171 +1143,194 @@ const onColorInput = (event: any, field: string) => {
   }
 };
 
-// 修复：验证十六进制颜色
+// 验证十六进制颜色
 const validateColorHex = (color: string): boolean => {
   const hexRegex = /^#([0-9A-Fa-f]{3}){1,2}$/i;
   return hexRegex.test(color);
 };
 
-// 修复：显示颜色选择器
-const showColorPicker = (field: string) => {
+// 显示颜色选择器
+const showColorPicker = (field: "primaryColor" | "secondaryColor" | "accentColor") => {
   currentColorField.value = field;
+  templateStore.componentState.currentColorField = field;
+  templateStore.componentState.showColorPicker = true;
 
-  // 在 uni-app 中，可以使用 uni.chooseColor 调起原生颜色选择器
   if (uni.chooseColor) {
     uni.chooseColor({
-      color: template.globalStyle[field],
+      color: (templateForm.globalStyle as any)[field] || "#d4af37",
       success: (res) => {
-        template.globalStyle[field] = res.color;
-        previewKey.value += 1;
+        if (templateForm.globalStyle) {
+          ;(templateForm.globalStyle as any)[field] = res.color;
+          previewKey.value += 1;
+        }
       },
       fail: (err) => {
         console.log("颜色选择失败:", err);
-        // 如果原生选择器失败，显示自定义预设
         showColorPresets.value = !showColorPresets.value;
       },
     });
   } else {
-    // 如果没有原生选择器，显示自定义预设
     showColorPresets.value = !showColorPresets.value;
   }
 };
 
-// 修复：设置颜色
+// 设置颜色
 const setColor = (field: string, color: string) => {
-  template.globalStyle[field] = color;
-  previewKey.value += 1;
-  showColorPresets.value = false;
-
-  uni.showToast({
-    title: `${field} 已设置为 ${color}`,
-    icon: "success",
-    duration: 1000,
-  });
-};
-
-// 修复：重置颜色
-const resetColors = () => {
-  template.globalStyle.primaryColor = "#d4af37";
-  template.globalStyle.secondaryColor = "#f9f3e3";
-  template.globalStyle.accentColor = "#f7ef8a";
-  previewKey.value += 1;
-  showColorPresets.value = false;
-
-  uni.showToast({
-    title: "颜色已重置为默认值",
-    icon: "success",
-  });
-};
-
-
-const onSectionInputFocus = (index: number) => {
-  // 区块输入框聚焦处理
-  selectedIndex.value = index;
-};
-
-// 监听模板变化，自动更新预览
-watch(
-  () => [
-    template.name,
-    template.code,
-    template.description,
-    template.globalLayout.type,
-    template.globalStyle.primaryColor,
-    template.globalStyle.secondaryColor,
-    template.globalStyle.accentColor,
-    template.globalStyle.fontFamily,
-    template.globalStyle.fontSizes.h1,
-    template.globalStyle.fontSizes.body,
-    template.globalStyle.spacing.sectionMargin,
-    template.globalStyle.spacing.padding,
-    template.globalStyle.spacing.lineHeight,
-  ],
-  () => {
-    setTimeout(() => {
-      previewKey.value += 1;
-    }, 100);
-  },
-  { deep: false },
-);
-
-// 监听组件数组变化
-watch(
-  () => template.components,
-  () => {
+  if (templateForm.globalStyle) {
+    ;(templateForm.globalStyle as any)[field] = color;
     previewKey.value += 1;
-  },
-  { deep: true },
-);
+    showColorPresets.value = false;
+
+    uni.showToast({
+      title: `${field} 已设置为 ${color}`,
+      icon: "success",
+      duration: 1000,
+    });
+  }
+};
+
+// 重置颜色
+const resetColors = () => {
+  if (templateForm.globalStyle) {
+    templateForm.globalStyle.primaryColor = "#d4af37";
+    templateForm.globalStyle.secondaryColor = "#f9f3e3";
+    templateForm.globalStyle.accentColor = "#f7ef8a";
+    previewKey.value += 1;
+    showColorPresets.value = false;
+
+    uni.showToast({
+      title: "颜色已重置为默认值",
+      icon: "success",
+    });
+  }
+};
 
 // 生命周期
 onMounted(() => {
-  // 初始化逻辑
   const pages = getCurrentPages();
   const currentPage = pages[pages.length - 1];
   const options = currentPage.options;
 
   if (options.id) {
     isEditMode.value = true;
-    // 加载现有模板数据
-    loadTemplateData(options.id);
+    loadTemplateData(parseInt(options.id));
   } else {
-    // 初始化一个示例组件
     initExampleComponents();
   }
 });
 
+// 初始化示例组件
 const initExampleComponents = () => {
-  // 添加示例组件
-  template.components = [
+  const exampleComponents: TemplateComponentForm[] = [
     {
-      id: Date.now() + 1,
-      name: "个人信息",
-      component: "UserBasicInfo",
-      props: "",
-      styles: "",
+      componentId: 1, // UserBasicInfo
+      props: { showAvatar: true, showContact: true },
+      styles: {},
     },
     {
-      id: Date.now() + 2,
-      name: "工作经历",
-      component: "WorkExperience",
-      props: "",
-      styles: "",
+      componentId: 3, // WorkExperience
+      props: { showDuration: true, showCompany: true },
+      styles: {},
     },
     {
-      id: Date.now() + 3,
-      name: "教育背景",
-      component: "EducationExperience",
-      props: "",
-      styles: "",
+      componentId: 4, // EducationExperience
+      props: { showTime: true, showDegree: true },
+      styles: {},
     },
   ];
+
+  templateStore.updateEditForm({ components: exampleComponents });
+
+  // 初始化选择历史
+  componentSelectionHistory.value = exampleComponents.map(c => c.componentId);
+
   previewKey.value += 1;
+
+  console.log("初始化示例组件，数量:", exampleComponents.length);
+
+  uni.showToast({
+    title: "示例组件已加载",
+    icon: "success",
+    duration: 1500,
+  });
 };
 
-const loadTemplateData = (id: string) => {
-  console.log("加载模板数据:", id);
-  // 模拟加载数据
-  setTimeout(() => {
-    template.code = "resume_tech";
-    template.name = "科技风格简历";
-    template.category = "resume";
-    template.description = "专业的科技行业简历模板";
+const loadTemplateData = async (id: number) => {
+  try {
+    console.log("加载模板数据:", id);
+    uni.showLoading({ title: "加载模板数据..." });
 
-    // 重置并添加示例组件
-    template.components = [];
+    // 调用 API 加载模板数据
+    const response = await TemplateAPI.getById(id);
 
-    exampleComponents.forEach(comp => {
-      template.components.push(comp);
-    });
+    if (response) {
+      // 更新 store 中的表单数据
+      templateStore.updateEditForm(response);
+      console.log("模板数据加载成功，组件数量:", response.components?.length);
+
+      uni.showToast({
+        title: "模板加载成功",
+        icon: "success",
+        duration: 1500,
+      });
+    } else {
+      console.warn("未找到模板数据");
+      uni.showToast({
+        title: "模板不存在",
+        icon: "error",
+        duration: 2000,
+      });
+    }
 
     previewKey.value += 1;
-  }, 500);
+  } catch (error) {
+    console.error("加载模板数据失败:", error);
+    uni.showToast({
+      title: "加载失败，请重试",
+      icon: "error",
+      duration: 2000,
+    });
+  } finally {
+    uni.hideLoading();
+  }
 };
+
+// 监听组件数组变化
+watch(
+  () => templateForm.components,
+  (newComponents) => {
+    console.log("组件数组变化，新数量:", newComponents?.length);
+    previewKey.value += 1;
+  },
+  { deep: true },
+);
+
+// 响应式适配：监听窗口尺寸变化
+const updateLayoutForScreen = () => {
+  const systemInfo = uni.getSystemInfoSync();
+  const windowWidth = systemInfo.windowWidth;
+
+  // 根据屏幕宽度调整布局
+  if (windowWidth < 375) {
+    // 小屏幕设备
+    previewDevice.value = "mobile";
+  } else if (windowWidth < 768) {
+    // 中等屏幕设备
+    previewDevice.value = "tablet";
+  }
+};
+
+onMounted(() => {
+  updateLayoutForScreen();
+
+  // 监听窗口变化
+  uni.onWindowResize && uni.onWindowResize(() => {
+    updateLayoutForScreen();
+  });
+});
 </script>
 
 <style scoped lang="scss">
-
 .template-editor {
   min-height: 100vh;
   background-color: $background-color;
@@ -1580,7 +1740,56 @@ const loadTemplateData = (id: string) => {
 
 .form-slider {
   margin: 0;
+}
 
+/* 组件推荐区域 */
+.component-recommendation {
+  margin-bottom: $margin-base;
+  padding: $padding-base;
+  background: rgba($success-color, 0.05);
+  border-radius: $border-radius;
+  border: 1px solid rgba($success-color, 0.2);
+
+  .recommendation-title {
+    font-size: $font-size-small;
+    color: $success-color;
+    font-weight: $font-weight-medium;
+    margin-bottom: $padding-small;
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+
+    &:before {
+      content: '⭐';
+    }
+  }
+
+  .recommendation-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8rpx;
+
+    .recommendation-item {
+      padding: 12rpx 16rpx;
+      background: white;
+      border: 1px solid $border-color-lighter;
+      border-radius: var(--border-radius-small);
+      font-size: $font-size-small;
+      color: $text-primary;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:active {
+        background: $background-color;
+        transform: translateY(1rpx);
+      }
+
+      &:hover {
+        border-color: $primary-color;
+        background: rgba($primary-color, 0.05);
+      }
+    }
+  }
 }
 
 /* 区块管理 */
@@ -1610,17 +1819,6 @@ const loadTemplateData = (id: string) => {
         .component-index {
           background: $primary-color;
           color: white;
-        }
-
-        .component-info {
-          .component-input {
-            border-color: $primary-color;
-          }
-
-          .component-picker .picker-display {
-            border-color: $primary-color;
-            background: rgba($primary-color, 0.02);
-          }
         }
       }
 
@@ -1653,18 +1851,36 @@ const loadTemplateData = (id: string) => {
           flex-direction: column;
           gap: 8rpx;
 
-          .component-input {
-            width: 100%;
-            padding: 12rpx;
-            border: 1px solid $border-color-lighter;
-            border-radius: var(--border-radius-small);
-            font-size: $font-size-base;
-            background: $background-color-white;
-            transition: all 0.2s ease;
+          .component-name-display {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8rpx;
 
-            &:focus {
-              border-color: $primary-color;
-              outline: none;
+            .component-name {
+              font-size: $font-size-base;
+              font-weight: $font-weight-medium;
+              color: $text-primary;
+              display: block;
+            }
+
+            .component-key {
+              font-size: $font-size-small;
+              color: $text-secondary;
+              font-family: monospace;
+              background: rgba($primary-color, 0.05);
+              padding: 2rpx 8rpx;
+              border-radius: 4rpx;
+            }
+          }
+
+          .component-description {
+            margin-top: 4rpx;
+
+            .desc-text {
+              font-size: $font-size-small;
+              color: $text-secondary;
+              font-style: italic;
             }
           }
 
@@ -1755,6 +1971,38 @@ const loadTemplateData = (id: string) => {
           }
         }
       }
+
+      /* 组件详情按钮 */
+      .component-details-container {
+        padding: 0 $padding-small $padding-small;
+
+        .component-details-btn {
+          width: 100%;
+          padding: 8rpx;
+          background: rgba($info-color, 0.05);
+          border: 1px solid rgba($info-color, 0.2);
+          border-radius: var(--border-radius-small);
+          color: $info-color;
+          font-size: $font-size-small;
+          text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4rpx;
+
+          &:active {
+            background: rgba($info-color, 0.1);
+          }
+
+          .details-icon {
+            font-size: $font-size-base;
+          }
+
+          .details-text {
+            font-size: $font-size-small;
+          }
+        }
+      }
     }
   }
 
@@ -1816,6 +2064,27 @@ const loadTemplateData = (id: string) => {
     }
   }
 
+  .component-help {
+    margin-top: $margin-base;
+    padding: 12rpx;
+    background: rgba($info-color, 0.05);
+    border-radius: var(--border-radius-small);
+    font-size: $font-size-small;
+    color: $text-secondary;
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+
+    .help-icon {
+      color: $info-color;
+      font-size: $font-size-base;
+    }
+
+    .help-text {
+      flex: 1;
+    }
+  }
+
   .add-component-btn {
     width: 100%;
     padding: 24rpx;
@@ -1830,6 +2099,8 @@ const loadTemplateData = (id: string) => {
     justify-content: center;
     gap: 8rpx;
     transition: all $transition-fast $ease-in-out;
+    position: relative;
+    overflow: hidden;
 
     &:hover {
       background: rgba($primary-color, 0.1);
@@ -1844,38 +2115,6 @@ const loadTemplateData = (id: string) => {
       font-size: $font-size-large;
       font-weight: $font-weight-bold;
     }
-  }
-
-  // 操作提示
-  .operation-hint {
-    margin-top: $margin-small;
-    padding: 12rpx;
-    background: rgba($info-color, 0.05);
-    border-radius: var(--border-radius-small);
-    font-size: $font-size-small;
-    color: $text-secondary;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8rpx;
-
-    .hint-icon {
-      color: $info-color;
-      font-size: $font-size-base;
-    }
-  }
-}
-
-// 在区块管理标题下添加操作说明
-.component-management .component-desc {
-  display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
-  margin-top: 4rpx;
-
-  &:before {
-    content: '💡 ';
   }
 }
 
@@ -1905,6 +2144,11 @@ const loadTemplateData = (id: string) => {
       border: 1px solid $danger-color;
       border-radius: var(--border-radius-small);
       font-size: $font-size-small;
+      transition: all 0.2s ease;
+
+      &:active {
+        background: rgba($danger-color, 0.2);
+      }
     }
   }
 
@@ -1943,21 +2187,79 @@ const loadTemplateData = (id: string) => {
         gap: $padding-small;
 
         .color-input {
-          width: 120rpx;
+          width: 160rpx;
           padding: 12rpx;
           border: 1px solid $border-color-lighter;
           border-radius: var(--border-radius-small);
           font-size: $font-size-base;
           text-align: center;
           font-family: monospace;
+          background: white;
+          transition: all 0.2s ease;
+
+          &:focus {
+            border-color: $primary-color;
+            box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+            outline: none;
+          }
+
+          &::placeholder {
+            color: #c0c4cc;
+          }
         }
 
         .color-preview {
-          width: 40rpx;
-          height: 40rpx;
+          width: 48rpx;
+          height: 48rpx;
           border-radius: var(--border-radius-small);
           border: 2rpx solid $border-color-lighter;
           cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+          }
+
+          &:active {
+            transform: scale(0.95);
+          }
+        }
+      }
+    }
+  }
+
+  .color-presets {
+    margin-top: $margin-base;
+    padding-top: $padding-base;
+    border-top: 1px solid $border-color-lighter;
+
+    .presets-title {
+      font-size: $font-size-small;
+      color: $text-secondary;
+      margin-bottom: $padding-small;
+    }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8rpx;
+
+      .preset-color {
+        width: 36rpx;
+        height: 36rpx;
+        border-radius: 4rpx;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+
+        &:hover {
+          transform: scale(1.2);
+          box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+        }
+
+        &:active {
+          transform: scale(0.9);
         }
       }
     }
@@ -2279,9 +2581,19 @@ const loadTemplateData = (id: string) => {
   box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
 
   .footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4rpx;
+
     .footer-status {
       font-size: $font-size-base;
       color: $text-primary;
+      font-weight: $font-weight-medium;
+    }
+
+    .footer-error {
+      font-size: $font-size-small;
+      color: $danger-color;
       font-weight: $font-weight-medium;
     }
   }
@@ -2411,153 +2723,6 @@ const loadTemplateData = (id: string) => {
   height: 100%;
 }
 
-.color-config {
-  background: $background-color;
-  border-radius: $border-radius;
-  padding: $padding-base;
-  margin-bottom: $margin-base;
-
-  .config-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $margin-base;
-
-    .config-title {
-      font-size: $font-size-base;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
-    }
-
-    .reset-btn {
-      padding: 8rpx 16rpx;
-      background: rgba($danger-color, 0.1);
-      color: $danger-color;
-      border: 1px solid $danger-color;
-      border-radius: var(--border-radius-small);
-      font-size: $font-size-small;
-      transition: all 0.2s ease;
-
-      &:active {
-        background: rgba($danger-color, 0.2);
-      }
-    }
-  }
-
-  .color-group {
-    .color-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: $padding-small 0;
-      border-bottom: 1px solid $border-color-lighter;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      .color-info {
-        flex: 1;
-
-        .color-label {
-          display: block;
-          font-size: $font-size-base;
-          font-weight: $font-weight-medium;
-          color: $text-primary;
-          margin-bottom: 4rpx;
-        }
-
-        .color-desc {
-          font-size: $font-size-small;
-          color: $text-secondary;
-        }
-      }
-
-      .color-controls {
-        display: flex;
-        align-items: center;
-        gap: $padding-small;
-
-        .color-input {
-          width: 160rpx;
-          padding: 12rpx;
-          border: 1px solid $border-color-lighter;
-          border-radius: var(--border-radius-small);
-          font-size: $font-size-base;
-          text-align: center;
-          font-family: monospace;
-          background: white;
-          transition: all 0.2s ease;
-
-          &:focus {
-            border-color: $primary-color;
-            box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
-            outline: none;
-          }
-
-          &::placeholder {
-            color: #c0c4cc;
-          }
-        }
-
-        .color-preview {
-          width: 48rpx;
-          height: 48rpx;
-          border-radius: var(--border-radius-small);
-          border: 2rpx solid $border-color-lighter;
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            transform: scale(1.1);
-            box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
-          }
-
-          &:active {
-            transform: scale(0.95);
-          }
-        }
-      }
-    }
-  }
-
-  .color-presets {
-    margin-top: $margin-base;
-    padding-top: $padding-base;
-    border-top: 1px solid $border-color-lighter;
-
-    .presets-title {
-      font-size: $font-size-small;
-      color: $text-secondary;
-      margin-bottom: $padding-small;
-    }
-
-    .presets-grid {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 8rpx;
-
-      .preset-color {
-        width: 36rpx;
-        height: 36rpx;
-        border-radius: 4rpx;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-
-        &:hover {
-          transform: scale(1.2);
-          box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
-        }
-
-        &:active {
-          transform: scale(0.9);
-        }
-      }
-    }
-  }
-}
-
 @media (max-width: 480px) {
   .preview-mode-switch {
     flex-direction: column;
@@ -2624,6 +2789,18 @@ const loadTemplateData = (id: string) => {
           margin-bottom: 8rpx;
         }
 
+        .component-info {
+          .component-name-display {
+            flex-direction: column;
+            align-items: flex-start;
+
+            .component-key {
+              margin-left: 0;
+              margin-top: 4rpx;
+            }
+          }
+        }
+
         .component-actions {
           flex-direction: row;
           justify-content: flex-end;
@@ -2637,6 +2814,16 @@ const loadTemplateData = (id: string) => {
               font-size: 14rpx;
             }
           }
+        }
+      }
+    }
+
+    .component-recommendation {
+      .recommendation-list {
+        flex-direction: column;
+
+        .recommendation-item {
+          width: 100%;
         }
       }
     }

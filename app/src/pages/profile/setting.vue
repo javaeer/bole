@@ -349,11 +349,6 @@ onMounted(() => {
   color: $primary-color !important;
 }
 
-.page-container {
-  background-color: $background-color;
-  min-height: 100vh;
-}
-
 /* 顶部导航 */
 .edit-header {
   background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);

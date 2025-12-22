@@ -6,7 +6,6 @@ import { interceptors } from "@/utils/interceptors";
 
 
 class Upload {
-
   async upload<T = any>(config: UploadConfig): Promise<T> {
     return new Promise(async (resolve, reject) => {
       try {
