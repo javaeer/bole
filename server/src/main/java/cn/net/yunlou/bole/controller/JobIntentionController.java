@@ -60,7 +60,6 @@ public class JobIntentionController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody JobIntentionQuery request) {
-        return BusinessResponse.success(
-                jobIntentionService.pageViewByQuery(page, size, request));
+        return BusinessResponse.success(jobIntentionService.pageViewByQuery(page, size, request));
     }
 }

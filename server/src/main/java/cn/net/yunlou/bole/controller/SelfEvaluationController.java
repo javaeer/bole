@@ -60,7 +60,6 @@ public class SelfEvaluationController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody SelfEvaluationQuery request) {
-        return BusinessResponse.success(
-                selfEvaluationService.pageViewByQuery(page, size, request));
+        return BusinessResponse.success(selfEvaluationService.pageViewByQuery(page, size, request));
     }
 }
