@@ -1948,7 +1948,7 @@ onShow(() => {
     border: 1rpx solid #e2e8f0;
     border-radius: 8rpx;
     padding: 0 20rpx;
-    display: flex;
+display: flex;
     align-items: center;
     font-size: 28rpx;
     color: #333;
@@ -2407,4 +2407,16 @@ onShow(() => {
   align-items: center;
   justify-content: center;
 }
+.form-input {
+  @extend .form-input; // 使用uni.scss中的表单样式
+  // 特定样式覆盖
+  border-radius: $border-radius-small;
+}
+
+.item-label {
+  font-size: $font-size-base;
+  color: $text-primary;
+  font-weight: $font-weight-medium;
+}
+
 </style>

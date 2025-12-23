@@ -6,78 +6,78 @@ import { errorHandles } from "@/utils/error-handles";
 
 class Request {
 
-	async request<T = any>(config : RequestConfig) : Promise<T> {
-		return new Promise(async (resolve, reject) => {
-			try {
-				// 合并配置
-				const mergedConfig : RequestConfig = mergeConfig(config);
+	async request<T = any>(config: RequestConfig): Promise<T> {
+		console.log("=== 开始请求流程 ===");
 
-				// 请求拦截，自动刷新token
-				const finalConfig = await interceptors.requestInterceptor(mergedConfig);
+		// 不再使用 Promise 构造函数中的 async
+		return new Promise((resolve, reject) => {
+			console.log("Promise 构造函数开始执行");
 
-				
+			// 将异步逻辑放到 setTimeout 中，确保事件循环
+			setTimeout(async () => {
+				try {
 
-				// 构建完整 URL（包含查询参数）
-				const url = buildUrl(`${finalConfig.baseURL}${finalConfig.url}`, finalConfig.params);
+					// 合并配置
+					const mergedConfig: RequestConfig = mergeConfig(config);
 
-				console.log("请求地址：" + url);
+					// 请求拦截
+					const finalConfig = await interceptors.requestInterceptor(mergedConfig);
 
-				const requestTask = uni.request({
-					...finalConfig,
-					url: url,
-					success: (response) => {
-						console.log("[原始数据]请求成功:", response);
-						try {
-							const data = interceptors.responseInterceptor<T, RequestConfig>(response, finalConfig);
-							resolve(data);
-						} catch (error) {
-							reject(error);
-						}
-					},
-					fail: (error) => {
-						console.log("请求失败:", error);
-						try {
-							// 如果定义了网络错误处理，则调用
-							const handledError = errorHandles?.handleNetworkError
-								? errorHandles.handleNetworkError(error, finalConfig)
-								: error;
-							reject(handledError);
-						} catch (handlerError) {
-							reject(handlerError);
-						}
-					},
-					complete: () => {
-						console.log("请求完成");
-					},
-				});
+					// 构建完整 URL
+					const url = buildUrl(`${finalConfig.baseURL}${finalConfig.url}`, finalConfig.params);
 
-				// 支持请求取消
-				if (finalConfig.signal) {
-					const signal = finalConfig.signal as any;
-					const abortHandler = () => {
-						requestTask.abort();
-						reject(new Error("请求已取消"));
-					};
+					console.log("准备调用 uni.request:", url);
 
-					if (signal.addEventListener) {
-						signal.addEventListener("abort", abortHandler);
-					} else if (signal.onabort !== undefined) {
-						// 保存原始 onabort 处理函数
-						const originalOnAbort = signal.onabort;
-						signal.onabort = () => {
-							if (originalOnAbort) originalOnAbort();
-							abortHandler();
-						};
+					// 检查 uni.request 是否存在
+					if (typeof uni.request !== 'function') {
+						console.error("uni.request 不存在！");
+						reject(new Error("uni.request 不存在"));
+						return;
 					}
-				}
 
-			} catch (error) {
-				reject(error);
-			}
+					// 直接调用 uni.request
+					uni.request({
+						url: url,
+						method: finalConfig.method,
+						data: finalConfig.data,
+						header: finalConfig.header,
+						timeout: finalConfig.timeout,
+						success: (response: any) => {
+							console.log("=== SUCCESS 回调触发 ===", response.statusCode);
+							try {
+								const data = interceptors.responseInterceptor<T, RequestConfig>(response, finalConfig);
+								resolve(data);
+							} catch (error) {
+								console.error("响应拦截器错误:", error);
+								reject(error);
+							}
+						},
+						fail: (error: any) => {
+							console.log("=== FAIL 回调触发 ===", error);
+							try {
+								// 如果定义了网络错误处理，则调用
+								const handledError = errorHandles?.handleNetworkError
+									? errorHandles.handleNetworkError(error, finalConfig)
+									: error;
+								reject(handledError);
+							} catch (handlerError) {
+								reject(handlerError);
+							}
+						},
+						complete: () => {
+							console.log("=== COMPLETE 回调触发 ===");
+						}
+					});
+
+
+
+				} catch (error) {
+					console.error("请求准备阶段出错:", error);
+					reject(error);
+				}
+			}, 0); // 使用 setTimeout 确保异步
 		});
 	}
-
-
 	// 便捷方法 - 支持查询参数
 	get<T = any>(url : string, params ?: any, config ?: Partial<RequestConfig>) : Promise<T> {
 		return this.request<T>({

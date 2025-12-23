@@ -5,21 +5,21 @@ const RESUMES_BASE_URL = "/resumes";
 
 const ResumesAPI = {
 
-  getById(id: number) {
-    return request.get<ResumesResult>({ url: `${RESUMES_BASE_URL}/${id}` });
-  },
+	getById(id : number) {
+		return request.get<ResumesResult>(`${RESUMES_BASE_URL}/${id}`);
+	},
 
-  getPreview(templateId: number) {
-    return request.get<ResumesResult>(`${RESUMES_BASE_URL}/preview/${templateId}`);
-  },
+	getPreview(templateId : number) {
+		return request.get<ResumesResult>(`${RESUMES_BASE_URL}/preview/${templateId}`);
+	},
 
-  addResumes(resumesForm: ResumesForm) {
-    return request.post(`${RESUMES_BASE_URL}/add`, resumesForm);
-  },
+	add(form : ResumesForm) {
+		return request.post(`${RESUMES_BASE_URL}/add`, form);
+	},
 
-  page(params: PageQuery, query?: ResumesQuery) {
-    return request.page<PageResult<ResumesResult>>(`${RESUMES_BASE_URL}/page`, params, query);
-  },
+	page(params : PageQuery, query ?: ResumesQuery) {
+		return request.page<PageResult<ResumesResult>>(`${RESUMES_BASE_URL}/page`, params, query);
+	},
 
 };
 

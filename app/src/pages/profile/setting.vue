@@ -20,24 +20,6 @@
 
     <!-- 表单内容 -->
     <scroll-view class="edit-content" scroll-y="true">
-      <!-- 头像上传 -->
-      <view class="form-section">
-        <text class="section-label">头像</text>
-        <view class="avatar-upload">
-          <view class="avatar-preview" @click="handleAvatarUpload">
-            <image
-              :src="formData.avatar || '/static/default-avatar.png'"
-              class="avatar-image"
-              mode="aspectFill"
-            />
-            <view class="avatar-overlay">
-              <text class="upload-icon">📷</text>
-              <text class="upload-text">点击更换</text>
-            </view>
-          </view>
-        </view>
-      </view>
-
       <!-- 基本信息 -->
       <view class="form-section">
         <text class="section-label">基本信息</text>
@@ -146,7 +128,7 @@
       </view>
 
       <!-- 隐私设置 -->
-      <view class="form-section">
+<!--      <view class="form-section">
         <text class="section-label">隐私设置</text>
 
         <view class="form-item">
@@ -172,7 +154,7 @@
           </view>
           <text class="switch-hint">根据您的简历内容为您推荐合适职位</text>
         </view>
-      </view>
+      </view>-->
 
       <!-- 危险操作区 -->
       <view class="form-section danger-section">
@@ -191,19 +173,24 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
-import AuthAPI from "@/api/auth";
+import { useUserStore } from "@/stores/user";
+import { getUserInfo } from "@/utils/store";
 
 const pageTitle = ref("编辑资料");
 const saving = ref(false);
 
+const userStore = useUserStore();
+
+const info = getUserInfo();
+
 // 表单数据
 const originalData = {
-  avatar: "/static/default-avatar.png",
-  name: "张三",
-  title: "前端开发工程师",
-  bio: "专注前端开发5年，精通Vue/React技术栈",
-  phone: "13800138000",
-  email: "zhangsan@example.com",
+  avatar: info?.avatar,
+  name: info?.name,
+  title: info?.title,
+  bio: info?.bio,
+  phone: info?.phone,
+  email: info?.email,
   region: ["广东省", "深圳市", "南山区"],
   resumePublic: true,
   receiveJobRecommend: true,
@@ -427,53 +414,6 @@ onMounted(() => {
   border-bottom: 1rpx solid $border-color-extra-light;
 }
 
-/* 头像上传 */
-.avatar-upload {
-  @extend .flex-center;
-  padding: $padding-base 0;
-}
-
-.avatar-preview {
-  position: relative;
-  width: 150rpx;
-  height: 150rpx;
-  border-radius: $border-radius-round;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.avatar-image {
-  width: 100%;
-  height: 100%;
-}
-
-.avatar-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba($text-primary, 0.6);
-  @extend .flex-center;
-  flex-direction: column;
-  opacity: 0;
-  transition: opacity $transition-fast;
-
-  .avatar-preview:active & {
-    opacity: 1;
-  }
-}
-
-.upload-icon {
-  font-size: $font-size-large;
-  color: $background-color-white;
-  margin-bottom: $margin-mini;
-}
-
-.upload-text {
-  font-size: $font-size-small;
-  color: $background-color-white;
-}
 
 /* 表单项 */
 .form-item {

@@ -24,7 +24,7 @@
     </swiper>
 
     <!-- 功能入口 -->
-    <view class="function-grid">
+<!--    <view class="function-grid">
       <view
         class="grid-item"
         v-for="item in functionList"
@@ -36,13 +36,13 @@
         </view>
         <text class="grid-text">{{ item.name }}</text>
       </view>
-    </view>
+    </view>-->
 
     <!-- 推荐模板 -->
     <view class="section">
       <view class="section-header">
         <text class="section-title">热门简历模板</text>
-        <text class="section-more" @click="handleMoreTemplates">查看更多</text>
+<!--        <text class="section-more" @click="handleMoreTemplates">查看更多</text>-->
       </view>
       <scroll-view class="template-scroll" scroll-x="true">
         <view class="template-list">
@@ -52,7 +52,7 @@
             :key="template.id"
             @click="handleTemplateClick(template)"
           >
-            <image :src="template.cover" class="template-cover" mode="aspectFill" />
+            <image :src="template.previewImage" class="template-cover" mode="aspectFill" />
             <view class="template-info">
               <text class="template-name">{{ template.name }}</text>
               <text class="template-desc">{{ template.description }}</text>
@@ -82,6 +82,14 @@
         </view>
       </view>
     </view>
+
+    <!-- 创建按钮 -->
+    <view class="floating-action">
+      <button class="btn-fab" @click="handleCreateResumes">
+        <text class="fab-text">+</text>
+      </button>
+    </view>
+
   </view>
 </template>
 
@@ -214,6 +222,12 @@ const handleTemplateClick = (template: any) => {
 const handleMoreTemplates = () => {
   uni.navigateTo({
     url: "/pages/template/list",
+  });
+};
+
+const handleCreateResumes = () => {
+  uni.navigateTo({
+    url: "/pages/template/select",
   });
 };
 
@@ -477,5 +491,32 @@ onMounted(() => {
   display: block;
   font-size: $font-size-small;
   color: $text-secondary;
+}
+
+
+.floating-action {
+  position: fixed;
+  right: $margin-base;
+  bottom: calc($tabbar-height + $margin-base);
+  z-index: $z-index-dropdown;
+}
+
+.btn-fab {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: $primary-color;
+  color: white;
+  font-size: $font-size-extra-large;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $box-shadow-dark;
+  transition: all $transition-fast $ease-in-out;
+
+  &:active {
+    transform: scale(0.95);
+    background-color: color.adjust($primary-color, $lightness: -10%);
+  }
 }
 </style>

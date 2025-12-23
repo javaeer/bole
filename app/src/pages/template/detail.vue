@@ -24,16 +24,6 @@
       </view>
     </view>
 
-    <!-- 操作按钮 -->
-    <view class="action-buttons flex-between">
-      <button class="action-btn btn btn-primary" @click="handleUseTemplate">
-        <text class="btn-text">使用此模板</text>
-      </button>
-      <button class="action-btn btn btn-secondary" @click="handleEdit">
-        <text class="btn-text">编辑模板</text>
-      </button>
-    </view>
-
     <!-- 模板预览 -->
     <view class="preview-section section-container">
       <view class="section-header flex-between">
@@ -166,8 +156,15 @@
 
     <!-- 底部操作栏 -->
     <view class="bottom-actions flex-center">
-      <button class="bottom-btn btn btn-danger" @click="handleToggleStatus">
+<!--      <button class="bottom-btn btn btn-danger" @click="handleToggleStatus">
         <text class="btn-text">{{ template?.isActive ? "停用模板" : "启用模板" }}</text>
+      </button>-->
+<!--      <button class="action-btn btn btn-secondary" @click="handleEdit">
+        <text class="btn-text">编辑模板</text>
+      </button>-->
+
+      <button class="action-btn btn btn-primary" @click="handleUseTemplate">
+        <text class="btn-text">使用此模板</text>
       </button>
     </view>
 

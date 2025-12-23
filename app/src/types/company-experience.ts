@@ -8,7 +8,7 @@ export interface CompanyExperienceForm {
   achievements?: string[]
 }
 
-export interface CompanyExperienceQuery extends PageQuery {
+export interface CompanyExperienceQuery extends BodyQuery {
 
 }
 

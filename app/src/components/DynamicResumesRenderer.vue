@@ -6,15 +6,87 @@
   >
     <!-- 按照指定的顺序渲染组件 -->
     <block v-for="(component, index) in orderedComponents" :key="component.id || index">
-      <component
-        v-if="componentMap[component.key]"
-        :is="componentMap[component.key]"
+      <!-- UserBasicInfo -->
+      <UserBasicInfo
+        v-if="component.key === 'UserBasicInfo'"
         :component="getComponentConfig(component)"
         :global-style="globalStyle"
         :theme="currentTheme"
         class="resume-section"
         :style="getSectionStyle(component)"
       />
+
+      <!-- JobIntention -->
+      <JobIntention
+        v-else-if="component.key === 'JobIntention'"
+        :component="getComponentConfig(component)"
+        :global-style="globalStyle"
+        :theme="currentTheme"
+        class="resume-section"
+        :style="getSectionStyle(component)"
+      />
+
+      <!-- CompanyExperience -->
+      <CompanyExperience
+        v-else-if="component.key === 'CompanyExperience'"
+        :component="getComponentConfig(component)"
+        :global-style="globalStyle"
+        :theme="currentTheme"
+        class="resume-section"
+        :style="getSectionStyle(component)"
+      />
+
+      <!-- WorkExperience -->
+      <WorkExperience
+        v-else-if="component.key === 'WorkExperience'"
+        :component="getComponentConfig(component)"
+        :global-style="globalStyle"
+        :theme="currentTheme"
+        class="resume-section"
+        :style="getSectionStyle(component)"
+      />
+
+      <!-- ProjectExperience -->
+      <ProjectExperience
+        v-else-if="component.key === 'ProjectExperience'"
+        :component="getComponentConfig(component)"
+        :global-style="globalStyle"
+        :theme="currentTheme"
+        class="resume-section"
+        :style="getSectionStyle(component)"
+      />
+
+      <!-- EducationExperience -->
+      <EducationExperience
+        v-else-if="component.key === 'EducationExperience'"
+        :component="getComponentConfig(component)"
+        :global-style="globalStyle"
+        :theme="currentTheme"
+        class="resume-section"
+        :style="getSectionStyle(component)"
+      />
+
+      <!-- SelfEvaluation -->
+      <SelfEvaluation
+        v-else-if="component.key === 'SelfEvaluation'"
+        :component="getComponentConfig(component)"
+        :global-style="globalStyle"
+        :theme="currentTheme"
+        class="resume-section"
+        :style="getSectionStyle(component)"
+      />
+
+      <!-- Skills -->
+      <Skills
+        v-else-if="component.key === 'Skills'"
+        :component="getComponentConfig(component)"
+        :global-style="globalStyle"
+        :theme="currentTheme"
+        class="resume-section"
+        :style="getSectionStyle(component)"
+      />
+
+      <!-- 未知组件 -->
       <view v-else class="unknown-component">
         <text class="warning-text">组件 "{{ component.key }}" 未找到</text>
       </view>
@@ -23,33 +95,17 @@
 </template>
 
 <script setup>
-import { computed, defineAsyncComponent, shallowRef, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
-// 异步导入组件
-const UserBasicInfo = defineAsyncComponent(() =>
-  import('@/components/resumes/UserBasicInfo.vue')
-)
-const JobIntention = defineAsyncComponent(() =>
-  import('@/components/resumes/JobIntention.vue')
-)
-const CompanyExperience = defineAsyncComponent(() =>
-  import('@/components/resumes/CompanyExperience.vue')
-)
-const WorkExperience = defineAsyncComponent(() =>
-  import('@/components/resumes/WorkExperience.vue')
-)
-const ProjectExperience = defineAsyncComponent(() =>
-  import('@/components/resumes/ProjectExperience.vue')
-)
-const EducationExperience = defineAsyncComponent(() =>
-  import('@/components/resumes/EducationExperience.vue')
-)
-const SelfEvaluation = defineAsyncComponent(() =>
-  import('@/components/resumes/SelfEvaluation.vue')
-)
-const Skills = defineAsyncComponent(() =>
-  import('@/components/resumes/Skills.vue')
-)
+// 导入所有组件（微信小程序不支持异步组件，需要同步导入）
+import UserBasicInfo from '@/components/resumes/UserBasicInfo.vue'
+import JobIntention from '@/components/resumes/JobIntention.vue'
+import CompanyExperience from '@/components/resumes/CompanyExperience.vue'
+import WorkExperience from '@/components/resumes/WorkExperience.vue'
+import ProjectExperience from '@/components/resumes/ProjectExperience.vue'
+import EducationExperience from '@/components/resumes/EducationExperience.vue'
+import SelfEvaluation from '@/components/resumes/SelfEvaluation.vue'
+import Skills from '@/components/resumes/Skills.vue'
 
 const props = defineProps({
   resumeData: {
@@ -57,18 +113,6 @@ const props = defineProps({
     required: true,
     default: () => ({})
   }
-})
-
-// 组件映射表
-const componentMap = shallowRef({
-  'UserBasicInfo': UserBasicInfo,
-  'JobIntention': JobIntention,
-  'CompanyExperience': CompanyExperience,
-  'WorkExperience': WorkExperience,
-  'ProjectExperience': ProjectExperience,
-  'EducationExperience': EducationExperience,
-  'SelfEvaluation': SelfEvaluation,
-  'Skills': Skills
 })
 
 // 全局样式

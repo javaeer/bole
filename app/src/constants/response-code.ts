@@ -1,4 +1,4 @@
-export const ResultCode = {
+export const ResponseCode = {
   SUCCESS: 200,
   CREATED: 201,
   ACCEPTED: 202,
@@ -21,4 +21,4 @@ export const ResultCode = {
 
 } as const;
 
-export type ResultCode = typeof ResultCode[keyof typeof ResultCode];
+export type ResponseCode = typeof ResponseCode[keyof typeof ResponseCode];

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("template")
-@Tag(name = "08.简历模板管理", description = "简历模板相关接口")
+@Tag(name = "22.简历模板管理", description = "简历模板相关接口")
 @RequiredArgsConstructor
 public class ResumesTemplateController {
 

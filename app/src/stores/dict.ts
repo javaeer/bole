@@ -132,10 +132,29 @@ export const useDictStore = defineStore("dict", () => {
    * 检查字典是否已加载
    */
   const isDictLoaded = (type?: string): boolean => {
-    if (type) {
-      return !!dict.value[type];
+    try {
+      // 安全地获取字典值
+      const dictValue = dict.value;
+
+      // 如果 dictValue 不存在或不是对象
+      if (!dictValue || typeof dictValue !== 'object') {
+        console.warn('字典数据未初始化或无效，返回 false');
+        return false;
+      }
+
+      // 如果指定了类型，检查该类型是否存在
+      if (type) {
+        // 确保安全访问，避免 undefined 错误
+        return dictValue[type] !== undefined && dictValue[type] !== null;
+      }
+
+      // 安全地获取键的数量
+      const keys = Object.keys(dictValue);
+      return keys.length > 0;
+    } catch (error) {
+      console.error('检查字典加载状态时出错:', error);
+      return false;
     }
-    return Object.keys(dict.value).length > 0;
   };
 
   /**

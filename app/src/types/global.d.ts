@@ -54,9 +54,9 @@ declare global {
     /*查询行 */
     keyField?: string;
     /*排序行 */
-    sortBy?: string;
+    sortBy?: SortBy;
     /*查询方式 */
-    sortOrder?: "asc" | "desc";
+    sortOrder?: SortOrder;
   }
 
   /**
@@ -115,6 +115,11 @@ declare global {
     name: string;
     icon: string;
   }
+
+
+  export type SortBy = "createdAt" | "updatedAt"
+
+  export type SortOrder = "asc" | "desc"
 
   // 自定义错误类
   class RequestError extends Error {

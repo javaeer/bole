@@ -6,7 +6,7 @@ export const PAGE_AUTH_CONFIG: PageAuthConfig[] = [
   { path: "/pages/index/index", auth: false },
   { path: "/pages/auth/auth", auth: false },
   { path: "/pages/register/index", auth: false },
-  { path: "/pages/product/list", auth: false },
+  { path: "/pages/template/list", auth: false },
 
   // 需登录页面
   { path: "/pages/follow/follow", auth: true },

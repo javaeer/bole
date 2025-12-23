@@ -29,6 +29,8 @@ export interface RequestConfig {
   retryCount?: number;
   /** 当前重试次数 */
   _retryCount?: number;
+  /** 取消 */
+  signal?: AbortSignal;
 }
 
 // 请求选项（外部使用）
@@ -44,7 +46,6 @@ export interface UploadConfig extends RequestConfig {
   formData?: Record<string, any>;
   showProgress?: boolean;
   onProgressUpdate?: (event: UploadProgressEvent) => void;
-  signal?: AbortSignal;
   taskId?: string;
   stopOnError?: boolean;
 }

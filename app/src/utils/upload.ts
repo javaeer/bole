@@ -6,19 +6,17 @@ import { interceptors } from "@/utils/interceptors";
 
 
 class Upload {
+
   async upload<T = any>(config: UploadConfig): Promise<T> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const mergedUploadConfig = mergeUploadConfig(config);
+    try {
+      const mergedUploadConfig = mergeUploadConfig(config);
 
-        // 请求拦截
-        const finalUploadConfig = await interceptors.requestInterceptor(mergedUploadConfig);
+      // 请求拦截
+      const finalUploadConfig = await interceptors.requestInterceptor(mergedUploadConfig);
+      const url = buildUrl(`${finalUploadConfig.baseURL}${finalUploadConfig.url}`, finalUploadConfig.params);
 
-        // console.log(JSON.stringify(finalUploadConfig));
-
-        // 构建完整 URL（包含查询参数）
-        const url = buildUrl(`${finalUploadConfig.baseURL}${finalUploadConfig.url}`, finalUploadConfig.params);
-
+      // 直接返回 Promise，不使用额外的 Promise 包装
+      return new Promise<T>((resolve, reject) => {
         const uploadTask = uni.uploadFile({
           ...finalUploadConfig,
           url: url,
@@ -33,7 +31,6 @@ class Upload {
           fail: (error) => {
             console.log("请求失败:", error);
             try {
-              // 如果定义了网络错误处理，则调用
               const handledError = errorHandles?.handleNetworkError
                 ? errorHandles.handleNetworkError(error, finalUploadConfig)
                 : error;
@@ -86,11 +83,11 @@ class Upload {
             };
           }
         }
-
-      } catch (error) {
-        reject(error);
-      }
-    });
+      });
+    } catch (error) {
+      // 捕获请求拦截器或其他初始化阶段的错误
+      return Promise.reject(error);
+    }
   }
 
   // 多文件上传

@@ -2,58 +2,118 @@
   <view class="page-container">
     <!-- 用户信息头部 -->
     <view class="user-header">
+      <!-- 背景装饰元素 -->
+      <view class="background-decoration"></view>
+
       <view class="user-avatar-section">
-        <image :src="userInfo.avatar" class="user-avatar" mode="aspectFit" @click="handleEditAvatar" />
-        <view class="user-info">
-          <text class="user-name">{{ userInfo.name }}</text>
-          <text class="user-title">{{ userInfo.title }}</text>
-          <view class="user-stats">
-            <view class="stat-item">
-              <text class="stat-number">{{ userInfo.followers }}</text>
-              <text class="stat-label">关注</text>
-            </view>
-            <view class="stat-item">
-              <text class="stat-number">{{ userInfo.fans }}</text>
-              <text class="stat-label">粉丝</text>
-            </view>
-            <view class="stat-item">
-              <text class="stat-number">{{ userInfo.likes }}</text>
-              <text class="stat-label">获赞</text>
+        <view class="avatar-wrapper">
+          <image
+            :src="userInfo.avatar"
+            class="user-avatar"
+            mode="aspectFit"
+            @click="handleEditAvatar"
+          />
+          <view class="avatar-edit-badge" @click="handleEditAvatar">
+            <text class="icon-camera">📷</text>
+          </view>
+        </view>
+
+        <view class="user-info-wrapper">
+          <view class="user-info">
+            <text class="user-name">{{ userInfo.name }}</text>
+            <text class="user-title">{{ userInfo.title }}</text>
+          </view>
+
+          <!-- 编辑按钮 -->
+          <view class="edit-icon-wrapper" @click="handleEditProfile">
+            <view class="btn-content">
+              <text class="btn-icon">✏️</text>
+              <text class="btn-text">编辑资料</text>
             </view>
           </view>
         </view>
       </view>
-      <button class="btn-edit" @click="handleEditProfile">编辑资料</button>
     </view>
 
-    <!-- 简历管理 -->
-    <view class="section">
+    <!-- 管理卡片区域 -->
+    <view class="section management-section">
       <view class="section-header">
-        <text class="section-title">简历管理</text>
-        <text class="section-more" @click="handleViewAllResumes">查看全部</text>
+        <text class="section-title">信息管理</text>
+        <text class="section-subtitle">完善信息，可提升简历质量</text>
       </view>
-      <view class="resumes-stats">
-        <view class="stat-card" @click="handleCreateResume">
-          <text class="stat-icon">📝</text>
-          <text class="stat-title">创建简历</text>
+
+      <view class="stats">
+        <!-- 简历管理 -->
+        <view class="stat-card" @click="handleResumes">
+          <view class="stat-card-inner">
+            <text class="stat-icon">📝</text>
+            <text class="stat-title">简历管理</text>
+            <view class="stat-badge" v-if="resumeStats.total > 0">
+              {{ resumeStats.total }}
+            </view>
+          </view>
         </view>
-        <view class="stat-card" @click="handleMyResumes">
-          <text class="stat-number">{{ resumeStats.total }}</text>
-          <text class="stat-title">我的简历</text>
+
+        <!-- 学历管理 -->
+        <view class="stat-card" @click="handleEducationExperiences">
+          <view class="stat-card-inner">
+            <text class="stat-icon">🎓</text>
+            <text class="stat-title">学历管理</text>
+          </view>
         </view>
-        <view class="stat-card" @click="handleViewedResumes">
-          <text class="stat-number">{{ resumeStats.viewed }}</text>
-          <text class="stat-title">被查看</text>
+
+        <!-- 求职意向 -->
+        <view class="stat-card" @click="handleJobIntentions">
+          <view class="stat-card-inner">
+            <text class="stat-icon">🎯</text>
+            <text class="stat-title">求职意向</text>
+          </view>
         </view>
-        <view class="stat-card" @click="handleDownloadResumes">
-          <text class="stat-number">{{ resumeStats.downloaded }}</text>
-          <text class="stat-title">已下载</text>
+
+        <!-- 工作经历 -->
+        <view class="stat-card" @click="handleWorkExperiences">
+          <view class="stat-card-inner">
+            <text class="stat-icon">💼</text>
+            <text class="stat-title">工作经历</text>
+          </view>
+        </view>
+
+        <!-- 公司里程 -->
+        <view class="stat-card" @click="handleCompanyExperiences">
+          <view class="stat-card-inner">
+            <text class="stat-icon">🏢</text>
+            <text class="stat-title">公司里程</text>
+          </view>
+        </view>
+
+        <!-- 项目经验 -->
+        <view class="stat-card" @click="handleProjectExperiences">
+          <view class="stat-card-inner">
+            <text class="stat-icon">📂</text>
+            <text class="stat-title">项目经验</text>
+          </view>
+        </view>
+
+        <!-- 技能专长 -->
+        <view class="stat-card" @click="handleSkills">
+          <view class="stat-card-inner">
+            <text class="stat-icon">🛠️</text>
+            <text class="stat-title">技能专长</text>
+          </view>
+        </view>
+
+        <!-- 自我评价 -->
+        <view class="stat-card" @click="handleSelfEvaluations">
+          <view class="stat-card-inner">
+            <text class="stat-icon">👤</text>
+            <text class="stat-title">自我评价</text>
+          </view>
         </view>
       </view>
     </view>
 
     <!-- 功能菜单 -->
-    <view class="section">
+    <!-- <view class="section">
       <view class="menu-list">
         <view class="menu-item" v-for="item in menuList" :key="item.id" @click="handleMenuClick(item)">
           <view class="menu-left">
@@ -63,28 +123,38 @@
           <text class="menu-arrow">›</text>
         </view>
       </view>
-    </view>
+    </view> -->
 
     <!-- 设置入口 -->
-    <view class="section">
+    <view class="section settings-section">
+      <view class="section-header">
+        <text class="section-title">设置</text>
+      </view>
+
       <view class="menu-list">
         <view class="menu-item" @click="handleFeedback">
           <view class="menu-left">
-            <text class="menu-icon">💬</text>
+            <view class="menu-icon-wrapper" style="background: rgba(33, 150, 243, 0.1);">
+              <text class="menu-icon" style="color: #2196F3;">💬</text>
+            </view>
             <text class="menu-text">意见反馈</text>
           </view>
           <text class="menu-arrow">›</text>
         </view>
         <view class="menu-item" @click="handleAbout">
           <view class="menu-left">
-            <text class="menu-icon">ℹ️</text>
+            <view class="menu-icon-wrapper" style="background: rgba(76, 175, 80, 0.1);">
+              <text class="menu-icon" style="color: #4CAF50;">ℹ️</text>
+            </view>
             <text class="menu-text">关于我们</text>
           </view>
           <text class="menu-arrow">›</text>
         </view>
         <view class="menu-item" @click="handleLogout">
           <view class="menu-left">
-            <text class="menu-icon">⏰</text>
+            <view class="menu-icon-wrapper" style="background: rgba(244, 67, 54, 0.1);">
+              <text class="menu-icon" style="color: #F44336;">🚪</text>
+            </view>
             <text class="menu-text">退出登录</text>
           </view>
           <text class="menu-arrow">›</text>
@@ -108,7 +178,7 @@ const info = getUserInfo();
 const userInfo = ref({
   name: info.name,
   title: info.title,
-  avatar: "/static/avatar/default-avatar.jpg",
+  avatar: "/static/logo.png",
   followers: 24,
   fans: 18,
   likes: 156,
@@ -133,17 +203,17 @@ const handleEditAvatar = async () => {
   try {
     // 1. 调用系统接口选择图片
     const chooseRes = await uni.chooseImage({
-      count: 1, // 最多选择数量，默认9
-      sizeType: ["compressed"], // 指定为压缩图，可选['original', 'compressed']
-      sourceType: ["album", "camera"], // 来源：相册和相机
+      count: 1,
+      sizeType: ["compressed"],
+      sourceType: ["album", "camera"],
     });
 
-    const tempFilePath = chooseRes.tempFilePaths[0]; // 获取临时路径
+    const tempFilePath = chooseRes.tempFilePaths[0];
 
     // 2. 调用上传接口
     const uploadResult = await FileAPI.upload({
       filePath: tempFilePath,
-      formData: { userId: info.id }, // 额外的表单数据
+      formData: { userId: info.id },
       onProgress: (progress) => {
         console.log("上传进度:", progress);
       },
@@ -171,31 +241,55 @@ const handleEditProfile = () => {
 
 const handleCreateResume = () => {
   uni.navigateTo({
-    url: "/pages/resumes/edit",
+    url: "/pages/template/select",
   });
 };
 
-const handleMyResumes = () => {
+const handleResumes = () => {
   uni.navigateTo({
     url: "/pages/resumes/list",
   });
 };
 
-const handleViewedResumes = () => {
+const handleEducationExperiences = () => {
   uni.navigateTo({
-    url: "/pages/resumes/viewed",
+    url: "/pages/education/list",
   });
 };
 
-const handleDownloadResumes = () => {
+const handleJobIntentions = () => {
   uni.navigateTo({
-    url: "/pages/resumes/downloaded",
+    url: "/pages/intention/list",
   });
 };
 
-const handleViewAllResumes = () => {
+const handleWorkExperiences = () => {
   uni.navigateTo({
-    url: "/pages/resumes/list",
+    url: "/pages/work/list",
+  });
+};
+
+const handleCompanyExperiences = () => {
+  uni.navigateTo({
+    url: "/pages/company/list",
+  });
+};
+
+const handleProjectExperiences = () => {
+  uni.navigateTo({
+    url: "/pages/project/list",
+  });
+};
+
+const handleSkills = () => {
+  uni.navigateTo({
+    url: "/pages/skill/list",
+  });
+};
+
+const handleSelfEvaluations = () => {
+  uni.navigateTo({
+    url: "/pages/evaluation/list",
   });
 };
 
@@ -216,7 +310,6 @@ const handleAbout = () => {
     url: "/pages/about/about",
   });
 };
-
 
 // 退出登录
 const handleLogout = () => {
@@ -246,186 +339,350 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-//.page-container {
-//  background-color: $background-color;
-//  min-height: 100vh;
-//  padding-bottom: 50rpx;
-//}
+.page-container {
+  background: linear-gradient(to bottom, #f5f7fa 0%, #f5f7fa 60%, #ffffff 100%);
+  min-height: 100vh;
+  padding-bottom: 80rpx;
+}
 
+// 用户头部样式
 .user-header {
   background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-  padding: 60rpx $padding-base 40rpx;
+  padding: 80rpx $padding-base 40rpx;
   color: $background-color-white;
   position: relative;
+  overflow: hidden;
+
+  .background-decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200rpx;
+    height: 200rpx;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+    z-index: 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 60rpx;
+      left: -80rpx;
+      width: 150rpx;
+      height: 150rpx;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 50%;
+    }
+  }
 }
 
 .user-avatar-section {
   display: flex;
-  align-items: center;
-  margin-bottom: $margin-base;
+  align-items: flex-start;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
 }
 
-.user-avatar {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: $border-radius-round;
-  border: 4rpx solid $background-color-white;
-  margin-right: $margin-base;
+.avatar-wrapper {
+  position: relative;
+  margin-right: 30rpx;
+  flex-shrink: 0;
+
+  .user-avatar {
+    width: 140rpx;
+    height: 140rpx;
+    border-radius: $border-radius-round;
+    border: 4rpx solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+
+    &:active {
+      transform: scale(0.95);
+      box-shadow: 0 5rpx 15rpx rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .avatar-edit-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 48rpx;
+    height: 48rpx;
+    background: $primary-color;
+    border-radius: 50%;
+    border: 3rpx solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.9);
+      background: darken($primary-color, 10%);
+    }
+
+    .icon-camera {
+      font-size: 24rpx;
+    }
+  }
+}
+
+.user-info-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
 }
 
 .user-info {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-name {
-  display: block;
-  font-size: $font-size-large;
-  font-weight: $font-weight-bold;
-  margin-bottom: 10rpx;
+  font-size: 44rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+  letter-spacing: -0.5rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
 }
 
 .user-title {
-  display: block;
-  font-size: 26rpx;
+  font-size: 28rpx;
   opacity: 0.9;
-  margin-bottom: 20rpx;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.user-stats {
-  display: flex;
-  gap: 40rpx;
+// 编辑按钮
+.edit-icon-wrapper {
+  .btn-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 12rpx;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 16rpx 28rpx;
+    border-radius: 50rpx;
+    border: 1rpx solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:active {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(0.96);
+      box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-icon {
+      font-size: 28rpx;
+      animation: pulse 2s infinite;
+    }
+
+    .btn-text {
+      font-size: 26rpx;
+      font-weight: 500;
+      color: white;
+    }
+  }
 }
 
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-.stat-number {
-  font-size: $font-size-base;
-  font-weight: $font-weight-bold;
-  margin-bottom: 5rpx;
-}
-
-.stat-label {
-  font-size: 22rpx;
-  opacity: 0.8;
-}
-
-.btn-edit {
-  position: absolute;
-  top: 60rpx;
-  right: $padding-base;
-  background: rgba($background-color-white, 0.2);
-  color: $background-color-white;
-  border: 2rpx solid $background-color-white;
-  border-radius: 25rpx;
-  padding: 12rpx $margin-base;
-  font-size: $font-size-extra-small;
-}
-
-.section {
+// 管理卡片区域
+.management-section {
+  margin: -20rpx $margin-base $margin-base;
+  padding: 40rpx 30rpx;
+  border-radius: 24rpx;
   background: $background-color-white;
-  margin: $margin-base;
-  border-radius: $border-radius;
-  padding: $padding-base;
-  box-shadow: $box-shadow;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.08);
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40rpx;
+  }
+
+  .section-title {
+    font-size: 36rpx;
+    font-weight: 700;
+    color: $text-primary;
+  }
+
+  .section-subtitle {
+    font-size: 24rpx;
+    color: $text-secondary;
+    opacity: 0.8;
+  }
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $margin-base;
-}
-
-.section-title {
-  font-size: $font-size-medium;
-  font-weight: $font-weight-bold;
-  color: $text-primary;
-}
-
-.section-more {
-  font-size: 26rpx;
-  color: $primary-color;
-}
-
-.resumes-stats {
+.stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: $margin-small;
+  gap: 24rpx;
 }
 
 .stat-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: $padding-base $margin-small;
-  background: $background-color;
-  border-radius: $border-radius;
-  transition: all $transition-duration;
+  .stat-card-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30rpx 0;
+    background: $background-color;
+    border-radius: 16rpx;
+    transition: all 0.3s ease;
+    position: relative;
+    border: 1rpx solid rgba(0, 0, 0, 0.05);
+
+    &:active {
+      background: color.adjust($background-color, $lightness: -5%);
+      transform: translateY(-4rpx);
+      box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .stat-icon {
+    font-size: 48rpx;
+    margin-bottom: 16rpx;
+    display: block;
+  }
+
+  .stat-title {
+    font-size: 24rpx;
+    color: $text-primary;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .stat-badge {
+    position: absolute;
+    top: -8rpx;
+    right: -8rpx;
+    background: $primary-color;
+    color: white;
+    width: 36rpx;
+    height: 36rpx;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20rpx;
+    font-weight: 600;
+  }
 }
 
-.stat-card:active {
-  background: color.adjust($background-color, $lightness: - 5%);
-  transform: scale(0.95);
-}
+// 设置区域
+.settings-section {
+  margin: 0 $margin-base;
+  padding: 40rpx 30rpx;
+  border-radius: 24rpx;
+  background: $background-color-white;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.08);
 
-.stat-icon,
-.stat-number {
-  font-size: $font-size-medium;
-  font-weight: $font-weight-bold;
-  margin-bottom: $margin-mini;
-  color: $primary-color;
-}
+  .section-header {
+    margin-bottom: 30rpx;
+  }
 
-.stat-title {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  .section-title {
+    font-size: 36rpx;
+    font-weight: 700;
+    color: $text-primary;
+  }
 }
 
 .menu-list {
   display: flex;
   flex-direction: column;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 16rpx;
+  overflow: hidden;
 }
 
 .menu-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: $padding-base 0;
-  border-bottom: 1rpx solid $border-color-extra-light;
-  transition: all $transition-duration;
-}
+  padding: 30rpx;
+  background: $background-color-white;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 
-.menu-item:active {
-  background: $background-color;
-}
+  &:active {
+    background: rgba(0, 0, 0, 0.02);
+  }
 
-.menu-item:last-child {
-  border-bottom: none;
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .menu-left {
   display: flex;
   align-items: center;
+  gap: 20rpx;
+}
+
+.menu-icon-wrapper {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu-icon {
-  font-size: $font-size-medium;
-  margin-right: 25rpx;
-  width: 40rpx;
-  text-align: center;
+  font-size: 32rpx;
 }
 
 .menu-text {
-  font-size: $font-size-base;
+  font-size: 30rpx;
   color: $text-primary;
+  font-weight: 500;
 }
 
 .menu-arrow {
-  font-size: $font-size-medium;
-  color: $text-placeholder;
+  font-size: 40rpx;
+  color: rgba(0, 0, 0, 0.3);
+  font-weight: 300;
+}
+
+// 响应式调整
+@media (max-width: 400rpx) {
+  .user-avatar-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .avatar-wrapper {
+    margin-right: 0;
+    margin-bottom: 20rpx;
+  }
+
+  .user-info-wrapper {
+    align-items: center;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20rpx;
+  }
 }
 </style>

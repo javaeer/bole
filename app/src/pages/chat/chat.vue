@@ -103,7 +103,7 @@
 
         <!-- 发送按钮 -->
         <button
-          class="btn-send"
+class="btn-send"
           :class="{ 'btn-send--active': canSend }"
           :disabled="!canSend"
           @click="sendMessage"
@@ -635,19 +635,41 @@ onMounted(() => {
   }
 }
 
-/* 响应式调整 */
-@media (max-width: 375px) {
-  .chat-header {
-    padding: 0 $padding-small;
-  }
+.chat-container {
+  // 响应式调整
+  @media (max-width: 375px) {
+    .chat-header {
+      padding: 0 $padding-small;
+    }
 
-  .message-avatar {
-    width: 70rpx;
-    height: 70rpx;
-  }
+    .message-avatar {
+      width: 70rpx;
+      height: 70rpx;
+    }
 
-  .input-area {
-    padding: $padding-mini;
+    .input-area {
+      padding: $padding-mini;
+    }
+  }
+  
+  // 添加响应式
+  @media (max-width: $screen-md) {
+    .message-list {
+      padding: $padding-small;
+    }
+    
+    .input-area {
+      padding: $padding-mini;
+    }
   }
 }
+.message-wrapper {
+  transition: all $transition-fast $ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2rpx);
+    box-shadow: $box-shadow-light;
+  }
+}
+
 </style>

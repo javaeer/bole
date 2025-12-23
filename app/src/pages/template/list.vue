@@ -227,12 +227,6 @@
       </view>
     </view>
 
-    <!-- 创建按钮 -->
-    <view class="floating-action">
-      <button class="btn-fab" @click="handleCreateTemplate">
-        <text class="fab-text">+</text>
-      </button>
-    </view>
   </view>
 </template>
 
@@ -361,11 +355,6 @@ const handlePreview = (template: TemplateResult) => {
   });
 };
 
-const handleCreateTemplate = () => {
-  uni.navigateTo({
-    url: "/pages/template/edit",
-  });
-};
 
 const loadMoreTemplates = async () => {
   if (!loading.value && hasMore.value) {
@@ -785,20 +774,12 @@ onMounted(async () => {
 }
 
 .status-badge {
-  padding: 4rpx 12rpx;
-  border-radius: $border-radius-small;
-  font-size: $font-size-extra-small;
-
   &.active {
-    background-color: $success-bg;
-    color: $success-color;
-    border: 1px solid $success-border;
+    @extend .status-success;
   }
-
+  
   &.inactive {
-    background-color: $background-color;
-    color: $text-secondary;
-    border: 1px solid $border-color-light;
+    @extend .status-info;
   }
 }
 
@@ -927,7 +908,6 @@ onMounted(async () => {
   margin-bottom: $margin-small;
   min-height: 80rpx;
 }
-
 .description-text {
   font-size: $font-size-small;
   color: $text-secondary;
@@ -971,31 +951,5 @@ onMounted(async () => {
   font-size: $font-size-base;
   color: $text-primary;
   font-weight: $font-weight-medium;
-}
-
-.floating-action {
-  position: fixed;
-  right: $margin-base;
-  bottom: calc($tabbar-height + $margin-base);
-  z-index: $z-index-dropdown;
-}
-
-.btn-fab {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  background-color: $primary-color;
-  color: white;
-  font-size: $font-size-extra-large;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: $box-shadow-dark;
-  transition: all $transition-fast $ease-in-out;
-
-  &:active {
-    transform: scale(0.95);
-    background-color: color.adjust($primary-color, $lightness: -10%);
-  }
 }
 </style>

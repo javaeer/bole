@@ -330,8 +330,14 @@ onMounted(() => {
   }
 }
 
-.icon-system {
+.message-avatar .icon-system {
   font-size: $font-size-large;
+  color: $message-system-color;
+}
+
+.empty-icon {
+  font-size: $empty-icon-size;
+  color: $empty-text-color;
 }
 
 /* 消息内容区域 */
@@ -541,4 +547,15 @@ onMounted(() => {
     color: color.adjust($text-regular, $lightness:  60%);
   }
 }*/
+// 优化颜色使用
+.tab-item.active {
+  color: $tab-active-color; // 使用统一的主色
+  border-bottom-color: $primary-color;
+}
+
+.badge {
+  background: $badge-bg-color;
+  color: $badge-text-color;
+}
+
 </style>
