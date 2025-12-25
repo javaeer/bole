@@ -34,6 +34,8 @@ public class CompanyView extends BaseView {
 
     private Integer likes;
 
+    private boolean followed;
+
     /** 企业内部评论 */
     @TableField(exist = false)
     private List<CompanyCommentView> companyComments;

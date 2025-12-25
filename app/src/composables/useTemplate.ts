@@ -1,468 +1,490 @@
 import TemplateAPI from "@/api/template";
-import type { PageQuery, TemplateQuery, TemplateResult } from "@/types/template";
+import { debounce } from 'lodash-es';
+import type {TemplateQuery, TemplateResult } from "@/types/template";
+
+// 缓存配置
+const CACHE_CONFIG = {
+  DURATION: 5 * 60 * 1000, // 5分钟
+  ENABLED_PAGES: [1, 2, 3], // 缓存前3页
+  MAX_SIZE: 100, // 最大缓存项数
+} as const;
 
 export function useTemplate() {
-  // 模板列表状态
-  const templateList = ref<TemplateResult[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+  // 状态
+  const templateList = ref<TemplateResult[]>([]);
+  const loading = ref(false);
+  const error = ref<string | null>(null);
   const pagination = reactive<PaginationState>({
     current: 1,
     pageSize: 10,
     total: 0,
     pages: 1,
-  })
+  });
+  const currentTemplate = ref<TemplateResult | null>(null);
 
-  // 当前选中的模板详情
-  const currentTemplate = ref<TemplateResult | null>(null)
+  // 缓存状态
+  const lastQuery = ref<TemplateQuery & Record<string, any>>({});
+  const lastSort = ref<{ sortBy?: string; sortOrder?: "asc" | "desc" }>({});
+  const cache = ref<Map<string, { data: TemplateResult[]; timestamp: number }>>(
+    new Map()
+  );
 
-  // 缓存最近一次查询条件
-  const lastQuery = ref<TemplateQuery & Record<string, any>>({})
-  const lastSort = ref<{ sortBy?: string; sortOrder?: "asc" | "desc" }>({})
+  // ============ 工具函数 ============
 
-  // 缓存管理
-  const cache = new Map<string, TemplateResult[]>()
-  const CACHE_DURATION = 5 * 60 * 1000 // 5分钟缓存
-  const cacheTimestamps = new Map<string, number>()
-
-  // 生成缓存键
+  /**
+   * 生成缓存键
+   */
   const generateCacheKey = (params: CacheKeyQuery): string => {
-    const { page, size, query, sortBy, sortOrder } = params
-    const queryStr = JSON.stringify(query || {})
-    const sortStr = `${sortBy || ""}_${sortOrder || ""}`
-    return `template_${page}_${size}_${queryStr}_${sortStr}`
-  }
+    const { page, size, query, sortBy, sortOrder } = params;
+    return `template_${page}_${size}_${JSON.stringify(query || {})}_${sortBy || ""}_${sortOrder || ""}`;
+  };
 
-  // 清理过期缓存
+  /**
+   * 清理过期缓存
+   */
   const cleanupExpiredCache = () => {
-    const now = Date.now()
-    for (const [key, timestamp] of cacheTimestamps.entries()) {
-      if (now - timestamp > CACHE_DURATION) {
-        cache.delete(key)
-        cacheTimestamps.delete(key)
+    const now = Date.now();
+    for (const [key, value] of cache.value.entries()) {
+      if (now - value.timestamp > CACHE_CONFIG.DURATION) {
+        cache.value.delete(key);
       }
     }
-  }
+  };
 
-  // 防抖相关
-  let debounceTimer: NodeJS.Timeout | null = null
+  /**
+   * 限制缓存大小
+   */
+  const limitCacheSize = () => {
+    while (cache.value.size > CACHE_CONFIG.MAX_SIZE) {
+      const firstKey = cache.value.keys().next().value;
+      if (firstKey) cache.value.delete(firstKey);
+    }
+  };
+
+  /**
+   * 数据映射函数
+   */
+  const mapTemplateData = (item: any): TemplateResult => ({
+    id: item.id,
+    name: item.name,
+    code: item.code,
+    description: item.description,
+    previewImage: item.previewImage,
+    isActive: item.isActive,
+    version: item.version,
+    globalStyle: item.globalStyle,
+    globalLayout: item.globalLayout,
+    components: item.components || [],
+    price: item.price || 0,
+    users: item.users || 0,
+    tags: item.tags || [],
+    category: item.category || "",
+    rating: item.rating || 0,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  });
+
+  /**
+   * 处理分页响应
+   */
+  const handlePaginationResponse = (response: any, size: number): void => {
+    Object.assign(pagination, {
+      current: response.current || response.page || 1,
+      pageSize: response.size || response.pageSize || size,
+      total: response.total || 0,
+      pages: response.pages || Math.ceil((response.total || 0) / (response.size || size)),
+    });
+  };
+
+  /**
+   * 显示错误提示
+   */
+  const showErrorToast = (message: string = "加载失败") => {
+    if (typeof uni !== "undefined") {
+      uni.showToast({
+        title: message,
+        icon: "error",
+        duration: 2000,
+      });
+    }
+  };
+
+  /**
+   * 缓存数据
+   */
+  const cacheData = (key: string, data: TemplateResult[]) => {
+    if (CACHE_CONFIG.ENABLED_PAGES.some(page => key.includes(`_${page}_`))) {
+      cache.value.set(key, { data, timestamp: Date.now() });
+      limitCacheSize();
+    }
+  };
+
+  /**
+   * 处理API响应
+   */
+  const processApiResponse = (
+    response: any,
+    page: number,
+    append: boolean,
+    cacheKey?: string
+  ): TemplateResult[] => {
+    if (!response?.records) {
+      throw new RequestError("数据格式不正确");
+    }
+
+    const mappedData = response.records.map(mapTemplateData);
+
+    if (append && page > 1) {
+      templateList.value = [...templateList.value, ...mappedData];
+    } else {
+      templateList.value = mappedData;
+    }
+
+    if (cacheKey) {
+      cacheData(cacheKey, mappedData);
+    }
+
+    return mappedData;
+  };
+
+  // ============ 核心加载方法 ============
 
   /**
    * 通用加载模板方法
    */
-  const loadTemplates = async (params: LoadParams = {}): Promise<TemplateResult[]> => {
-    const {
-      page = 1,
-      size = 10,
-      query = {},
-      append = false,
-      showToast = true,
-      sortBy,
-      sortOrder,
-    } = params
+  const loadTemplates = debounce(
+    async (params: LoadParams = {}): Promise<TemplateResult[]> => {
+      const {
+        page = 1,
+        size = 10,
+        query = {},
+        append = false,
+        showToast = true,
+        sortBy,
+        sortOrder,
+        useIndexApi = false,
+      } = params;
 
-    // 保存查询和排序条件
-    lastQuery.value = query
-    if (sortBy || sortOrder) {
-      lastSort.value = { sortBy, sortOrder }
-    }
+      // 更新查询状态
+      lastQuery.value = query;
+      if (sortBy || sortOrder) {
+        lastSort.value = { sortBy, sortOrder };
+      }
 
-    // 防抖处理
-    if (debounceTimer) {
-      clearTimeout(debounceTimer)
-    }
+      loading.value = true;
+      error.value = null;
 
-    return new Promise((resolve, reject) => {
-      debounceTimer = setTimeout(async () => {
-        loading.value = true
-        error.value = null
+      try {
+        cleanupExpiredCache();
 
-        try {
-          // 清理过期缓存
-          cleanupExpiredCache()
+        const cacheKey = generateCacheKey({ page, size, query, sortBy, sortOrder });
 
-          // 构建缓存键
-          const cacheKey = generateCacheKey({
-            page,
-            size,
-            query,
-            sortBy,
-            sortOrder,
-          })
-
-          // 检查缓存
-          if (!append && cache.has(cacheKey)) {
-            const cachedData = cache.get(cacheKey)!
-            templateList.value = cachedData
-            resolve(cachedData)
-            loading.value = false
-            return
-          }
-
-          // 构建 API 请求参数
-          const pageQuery: PageQuery = {
-            page,
-            size,
-            ...(sortBy && { sortBy }),
-            ...(sortOrder && { sortOrder }),
-          }
-
-          // 调用 API - 注意：根据接口，第二个参数是 TemplateQuery
-          const response = await TemplateAPI.page(pageQuery, query)
-
-          if (!response?.records) {
-            throw new RequestError("数据格式不正确")
-          }
-
-          // 直接使用 API 返回的数据，确保类型匹配
-          const mappedData: TemplateResult[] = response.records.map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            code: item.code,
-            description: item.description,
-            previewImage: item.previewImage,
-            isActive: item.isActive,
-            version: item.version,
-            globalStyle: item.globalStyle,
-            globalLayout: item.globalLayout, // 使用 globalLayout 而非 layout
-            components: item.components || [],
-            price: item.price || 0,
-            users: item.users || 0,
-            tags: item.tags || [],
-            category: item.category || '',
-            rating: item.rating || 0,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-          }))
-
-          // 处理数据
-          if (append && page > 1) {
-            templateList.value = [...templateList.value, ...mappedData]
-          } else {
-            templateList.value = mappedData
-            // 缓存第一页数据
-            if (page === 1) {
-              cache.set(cacheKey, mappedData)
-              cacheTimestamps.set(cacheKey, Date.now())
-            }
-          }
-
-          // 更新分页信息 - 使用 response 中的字段
-          Object.assign(pagination, {
-            current: response.current || response.page || 1,
-            pageSize: response.size || response.pageSize || size,
-            total: response.total,
-            pages: response.pages || Math.ceil(response.total / (response.size || size)),
-          })
-
-          resolve(mappedData)
-        } catch (err) {
-          console.error("加载模板失败:", err)
-          error.value = err instanceof Error ? err.message : "加载失败"
-
-          // 错误处理
-          if (showToast && typeof uni !== "undefined") {
-            uni.showToast({
-              title: "加载失败",
-              icon: "error",
-            })
-          }
-          reject(err)
-        } finally {
-          loading.value = false
+        // 尝试从缓存获取
+        if (!append && cache.value.has(cacheKey)) {
+          const cached = cache.value.get(cacheKey)!;
+          templateList.value = cached.data;
+          return cached.data;
         }
-      }, 300) // 300ms 防抖
-    })
-  }
+
+        // 构建API参数
+        const pageQuery: PageQuery = {
+          page,
+          size,
+          ...(sortBy && { sortBy }),
+          ...(sortOrder && { sortOrder }),
+        };
+
+        // 调用API
+        const response = useIndexApi
+          ? await TemplateAPI.pageIndex(pageQuery, query)
+          : await TemplateAPI.page(pageQuery, query);
+
+        const result = processApiResponse(response, page, append, cacheKey);
+        handlePaginationResponse(response, size);
+
+        return result;
+      } catch (err) {
+        error.value = err instanceof Error ? err.message : "加载失败";
+        showToast && showErrorToast();
+        throw err;
+      } finally {
+        loading.value = false;
+      }
+    },
+    300,
+    { leading: false, trailing: true }
+  );
+
+  // ============ 专用加载方法 ============
 
   /**
-   * 加载首页模板（固定5条）
+   * 加载首页模板
    */
   const loadHomeTemplates = async (): Promise<TemplateResult[]> => {
-    return await loadTemplates({
+    return loadTemplates({
       page: 1,
       size: 8,
       query: { isActive: true },
-      showToast: false, // 首页加载失败不显示 toast
-    })
-  }
+      showToast: false,
+      useIndexApi: true,
+    });
+  };
 
   /**
-   * 加载列表页模板（分页）
+   * 加载列表页模板
    */
   const loadListTemplates = async (
     page: number = 1,
     query: TemplateQuery & Record<string, any> = {},
+    useIndexApi: boolean = false
   ): Promise<TemplateResult[]> => {
-    return await loadTemplates({
+    return loadTemplates({
       page,
       size: pagination.pageSize,
       query,
       append: page > 1,
-    })
-  }
+      useIndexApi,
+    });
+  };
 
   /**
    * 刷新模板数据
    */
-  const refreshTemplates = async (params: Omit<LoadParams, "page" | "append"> = {}): Promise<TemplateResult[]> => {
-    // 清除相关缓存
-    const cacheKeys = Array.from(cache.keys())
-    cacheKeys.forEach(key => {
-      if (key.includes("template_")) {
-        cache.delete(key)
-        cacheTimestamps.delete(key)
-      }
-    })
+  const refreshTemplates = async (
+    params: Omit<LoadParams, "page" | "append"> = {}
+  ): Promise<TemplateResult[]> => {
+    // 清理相关缓存
+    Array.from(cache.value.keys())
+      .filter(key => key.includes("template_"))
+      .forEach(key => cache.value.delete(key));
 
-    return await loadTemplates({
+    return loadTemplates({
       page: 1,
       size: params.size || pagination.pageSize,
       query: params.query || lastQuery.value,
-      append: false,
       sortBy: params.sortBy || lastSort.value.sortBy,
       sortOrder: params.sortOrder || lastSort.value.sortOrder,
-    })
-  }
+      useIndexApi: params.useIndexApi || false,
+    });
+  };
+
+  // ============ 详情相关方法 ============
 
   /**
-   * 根据ID获取模板详情
+   * 根据ID获取模板
    */
   const getTemplateById = (id: number): TemplateResult | undefined => {
-    return templateList.value.find(template => template.id === id)
-  }
+    return templateList.value.find(template => template.id === id);
+  };
 
   /**
-   * 获取模板详情（从API重新获取）
+   * 获取模板详情
    */
   const fetchTemplateDetail = async (id: number): Promise<TemplateResult> => {
     try {
-      const detail = await TemplateAPI.getById(id)
-
-      // 更新列表中的对应项
-      const index = templateList.value.findIndex(item => item.id === id)
-      if (index !== -1 && detail) {
-        const updatedItem: TemplateResult = {
-          ...templateList.value[index],
-          ...detail,
-          components: detail.components || [],
-          // 保留列表中的扩展字段
-          price: templateList.value[index].price,
-          users: templateList.value[index].users,
-          tags: templateList.value[index].tags,
-          category: templateList.value[index].category,
-          rating: templateList.value[index].rating,
-        }
-        templateList.value[index] = updatedItem
-
-        // 更新当前选中的模板
-        if (currentTemplate.value?.id === id) {
-          currentTemplate.value = updatedItem
-        }
-      }
-
-      return detail
+      const detail = await TemplateAPI.getById(id);
+      updateTemplateInList(id, detail);
+      return detail;
     } catch (err) {
-      console.error("获取模板详情失败:", err)
-      throw err
+      showErrorToast("获取详情失败");
+      throw err;
     }
-  }
+  };
+
+  /**
+   * 更新列表中的模板
+   */
+  const updateTemplateInList = (id: number, detail: any): void => {
+    const index = templateList.value.findIndex(item => item.id === id);
+    if (index !== -1 && detail) {
+      const updatedItem: TemplateResult = {
+        ...mapTemplateData(detail),
+        price: templateList.value[index].price,
+        users: templateList.value[index].users,
+        tags: templateList.value[index].tags,
+        category: templateList.value[index].category,
+        rating: templateList.value[index].rating,
+      };
+
+      templateList.value[index] = updatedItem;
+
+      if (currentTemplate.value?.id === id) {
+        currentTemplate.value = updatedItem;
+      }
+    }
+  };
+
+  // ============ 查询操作方法 ============
 
   /**
    * 搜索模板
    */
-  const searchTemplates = async (keyword: string): Promise<TemplateResult[]> => {
-    return await loadTemplates({
+  const searchTemplates = async (
+    keyword: string,
+    useIndexApi: boolean = false
+  ): Promise<TemplateResult[]> => {
+    return loadTemplates({
       page: 1,
       query: { ...lastQuery.value, name: keyword },
-    })
-  }
+      useIndexApi,
+    });
+  };
 
   /**
    * 过滤模板
    */
-  const filterTemplates = async (filters: TemplateQuery & Record<string, any>): Promise<TemplateResult[]> => {
-    return await loadTemplates({
+  const filterTemplates = async (
+    filters: TemplateQuery & Record<string, any>,
+    useIndexApi: boolean = false
+  ): Promise<TemplateResult[]> => {
+    return loadTemplates({
       page: 1,
       query: { ...lastQuery.value, ...filters },
-    })
-  }
+      useIndexApi,
+    });
+  };
 
   /**
    * 排序模板
    */
-  const sortTemplates = async (sortBy: string, sortOrder: "asc" | "desc" = "asc"): Promise<TemplateResult[]> => {
-    return await loadTemplates({
+  const sortTemplates = async (
+    sortBy: string,
+    sortOrder: SortOrder = "asc",
+    useIndexApi: boolean = false
+  ): Promise<TemplateResult[]> => {
+    return loadTemplates({
       page: 1,
       query: lastQuery.value,
       sortBy,
       sortOrder,
-    })
-  }
+      useIndexApi,
+    });
+  };
 
   /**
    * 加载更多
    */
-  const loadMore = async (): Promise<TemplateResult[]> => {
+  const loadMore = async (useIndexApi: boolean = false): Promise<TemplateResult[]> => {
     if (pagination.current >= pagination.pages) {
-      return Promise.reject(new Error("没有更多数据"))
+      throw new Error("没有更多数据");
     }
 
-    return await loadTemplates({
+    return loadTemplates({
       page: pagination.current + 1,
       append: true,
       query: lastQuery.value,
       sortBy: lastSort.value.sortBy,
       sortOrder: lastSort.value.sortOrder,
       showToast: false,
-    })
-  }
-
-  /**
-   * 获取活跃模板数量
-   */
-  const activeTemplatesCount = computed(() => {
-    return templateList.value.filter(t => t.isActive).length
-  })
-
-  /**
-   * 是否有更多数据
-   */
-  const hasMore = computed(() => pagination.current < pagination.pages)
-
-  /**
-   * 是否为空
-   */
-  const isEmpty = computed(() => !loading.value && templateList.value.length === 0)
-
-  /**
-   * 模板总数
-   */
-  const totalTemplates = computed(() => pagination.total)
-
-  /**
-   * 当前页数据
-   */
-  const currentPageData = computed(() => {
-    const start = (pagination.current - 1) * pagination.pageSize
-    const end = start + pagination.pageSize
-    return templateList.value.slice(start, end)
-  })
-
-  /**
-   * 活跃模板列表
-   */
-  const activeTemplates = computed(() => {
-    return templateList.value.filter(t => t.isActive)
-  })
-
-  /**
-   * 按分类分组
-   */
-  const templatesByCategory = computed(() => {
-    const groups: Record<string, TemplateResult[]> = {}
-    templateList.value.forEach(template => {
-      const category = template.category || "未分类"
-      if (!groups[category]) {
-        groups[category] = []
-      }
-      groups[category].push(template)
-    })
-    return groups
-  })
+      useIndexApi,
+    });
+  };
 
   /**
    * 预加载下一页
    */
-  const prefetchNextPage = async (): Promise<void> => {
-    if (pagination.current >= pagination.pages) return
+  const prefetchNextPage = async (useIndexApi: boolean = false): Promise<void> => {
+    if (pagination.current >= pagination.pages) return;
 
-    try {
-      const nextPage = pagination.current + 1
-      const cacheKey = generateCacheKey({
-        page: nextPage,
-        size: pagination.pageSize,
-        query: lastQuery.value,
-        sortBy: lastSort.value.sortBy,
-        sortOrder: lastSort.value.sortOrder,
-      })
+    const nextPage = pagination.current + 1;
+    const cacheKey = generateCacheKey({
+      page: nextPage,
+      size: pagination.pageSize,
+      query: lastQuery.value,
+      sortBy: lastSort.value.sortBy,
+      sortOrder: lastSort.value.sortOrder,
+    });
 
-      if (!cache.has(cacheKey)) {
+    if (!cache.value.has(cacheKey)) {
+      try {
         const pageQuery: PageQuery = {
           page: nextPage,
           size: pagination.pageSize,
           ...(lastSort.value.sortBy && { sortBy: lastSort.value.sortBy }),
           ...(lastSort.value.sortOrder && { sortOrder: lastSort.value.sortOrder }),
-        }
+        };
 
-        const response = await TemplateAPI.page(pageQuery, lastQuery.value)
+        const response = useIndexApi
+          ? await TemplateAPI.pageIndex(pageQuery, lastQuery.value)
+          : await TemplateAPI.page(pageQuery, lastQuery.value);
+
         if (response?.records) {
-          const mappedData: TemplateResult[] = response.records.map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            code: item.code,
-            description: item.description,
-            previewImage: item.previewImage,
-            isActive: item.isActive,
-            version: item.version,
-            globalStyle: item.globalStyle,
-            globalLayout: item.globalLayout,
-            components: item.components || [],
-            price: item.price || 0,
-            users: item.users || 0,
-            tags: item.tags || [],
-            category: item.category || '',
-            rating: item.rating || 0,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-          }))
-          cache.set(cacheKey, mappedData)
-          cacheTimestamps.set(cacheKey, Date.now())
+          const mappedData = response.records.map(mapTemplateData);
+          cacheData(cacheKey, mappedData);
         }
+      } catch (err) {
+        console.debug("预加载失败:", err);
       }
-    } catch (err) {
-      // 静默失败，不影响主流程
-      console.log("预加载失败:", err)
     }
-  }
+  };
+
+  // ============ 状态操作方法 ============
 
   /**
-   * 设置当前选中的模板
+   * 设置当前模板
    */
   const setCurrentTemplate = (template: TemplateResult | number): void => {
-    if (typeof template === "number") {
-      currentTemplate.value = getTemplateById(template) || null
-    } else {
-      currentTemplate.value = template
-    }
-  }
+    currentTemplate.value = typeof template === "number"
+      ? getTemplateById(template) || null
+      : template;
+  };
 
   /**
    * 清除缓存
    */
   const clearCache = (): void => {
-    cache.clear()
-    cacheTimestamps.clear()
-  }
+    cache.value.clear();
+  };
 
   /**
    * 重置状态
    */
   const reset = (): void => {
-    templateList.value = []
-    loading.value = false
-    error.value = null
-    currentTemplate.value = null
+    templateList.value = [];
+    loading.value = false;
+    error.value = null;
+    currentTemplate.value = null;
     Object.assign(pagination, {
       current: 1,
       pageSize: 10,
       total: 0,
       pages: 1,
-    })
-    lastQuery.value = {}
-    lastSort.value = {}
-    clearCache()
-  }
+    });
+    lastQuery.value = {};
+    lastSort.value = {};
+    clearCache();
+  };
+
+  // ============ 计算属性 ============
+
+  const activeTemplatesCount = computed(() =>
+    templateList.value.filter(t => t.isActive).length
+  );
+
+  const hasMore = computed(() => pagination.current < pagination.pages);
+
+  const isEmpty = computed(() => !loading.value && templateList.value.length === 0);
+
+  const totalTemplates = computed(() => pagination.total);
+
+  const currentPageData = computed(() => {
+    const start = (pagination.current - 1) * pagination.pageSize;
+    return templateList.value.slice(start, start + pagination.pageSize);
+  });
+
+  const activeTemplates = computed(() =>
+    templateList.value.filter(t => t.isActive)
+  );
+
+  const templatesByCategory = computed(() => {
+    const groups: Record<string, TemplateResult[]> = {};
+    templateList.value.forEach(template => {
+      const category = template.category || "未分类";
+      groups[category] = groups[category] || [];
+      groups[category].push(template);
+    });
+    return groups;
+  });
 
   return {
     // 状态
@@ -496,8 +518,5 @@ export function useTemplate() {
     setCurrentTemplate,
     clearCache,
     reset,
-  }
+  };
 }
-
-// 导出类型供外部使用
-export type { TemplateResult, PaginationState, LoadParams }

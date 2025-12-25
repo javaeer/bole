@@ -498,6 +498,9 @@ const handleSendCode = () => {
     if (registerError.phone) return;
   }
 
+
+  // CodeAPI.sendSms(smsForm);
+
   // 开始倒计时
   codeCountdown.value = 60;
   uni.showToast({

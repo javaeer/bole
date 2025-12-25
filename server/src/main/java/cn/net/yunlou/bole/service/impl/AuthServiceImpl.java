@@ -5,9 +5,13 @@ import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.UserStatus;
 import cn.net.yunlou.bole.common.security.AuthenticationService;
 import cn.net.yunlou.bole.common.security.CustomUserDetails;
+import cn.net.yunlou.bole.entity.Email;
+import cn.net.yunlou.bole.entity.Sms;
 import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.model.*;
 import cn.net.yunlou.bole.service.AuthService;
+import cn.net.yunlou.bole.service.EmailService;
+import cn.net.yunlou.bole.service.SmsService;
 import cn.net.yunlou.bole.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
+
+    private final SmsService smsService;
+
+    private final EmailService emailService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -64,17 +72,77 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(BusinessStatus.ALREADY_EXISTS, "用户名已存在");
         }
 
-        // 检查邮箱是否已存在
-        if (userService.existsByEmail(registerDTO.getEmail())) {
-            throw new BusinessException(BusinessStatus.ALREADY_EXISTS, "邮箱已存在");
-        }
-
         // 创建用户
         User user = new User();
         user.setUsername(registerDTO.getUsername());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user.setEmail(registerDTO.getEmail());
         user.setPhone(registerDTO.getPhone());
+        user.setStatus(UserStatus.ACTIVE.getValue());
+        user.setFollowers(0);
+        user.setFans(0);
+        user.setLikes(0);
+
+        if (!userService.save(user)) {
+            throw new BusinessException(BusinessStatus.GONE_DATA_INVALID, "注册失败,请稍后");
+        }
+
+        return authenticationService.login(user);
+    }
+
+    @Override
+    public AccessTokenDTO registerPhone(RegisterPhoneDTO request) {
+
+        Sms sms = Sms.builder()
+                .areaCode(request.getArea())
+                .phone(request.getPhone())
+                .content(request.getCode())
+                .build();
+        if (!smsService.verify(sms)) {
+            throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
+        }
+
+        // 检查手机号是否已存在
+        if (userService.existsByPhone(request.getPhone())) {
+            throw new BusinessException(BusinessStatus.ALREADY_EXISTS, "手机号已存在");
+        }
+
+        // 创建用户
+        User user = new User();
+        user.setPhone(request.getPhone());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setStatus(UserStatus.ACTIVE.getValue());
+        user.setFollowers(0);
+        user.setFans(0);
+        user.setLikes(0);
+
+        if (!userService.save(user)) {
+            throw new BusinessException(BusinessStatus.GONE_DATA_INVALID, "注册失败,请稍后");
+        }
+
+        return authenticationService.login(user);
+    }
+
+    @Override
+    public AccessTokenDTO registerEmail(RegisterEmailDTO request) {
+
+        Email email = Email.builder()
+                .address(request.getEmail())
+                .content(request.getCode())
+                .build();
+        if (!emailService.verify(email)) {
+            throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
+        }
+
+        // 检查邮箱是否已存在
+        if (userService.existsByEmail(request.getEmail())) {
+            throw new BusinessException(BusinessStatus.ALREADY_EXISTS, "邮箱已存在");
+        }
+
+        // 创建用户
+        User user = new User();
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
         user.setStatus(UserStatus.ACTIVE.getValue());
         user.setFollowers(0);
         user.setFans(0);

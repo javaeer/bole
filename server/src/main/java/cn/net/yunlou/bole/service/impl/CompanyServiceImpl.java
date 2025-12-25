@@ -13,6 +13,7 @@ import cn.net.yunlou.bole.model.view.CompanyView;
 import cn.net.yunlou.bole.service.CompanyService;
 import cn.net.yunlou.bole.struct.CompanyStructMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

@@ -21,6 +21,10 @@ const TemplateAPI = {
     return request.page<PageResult<TemplateResult>>(`${TEMPLATE_BASE_URL}/page`, params, query);
   },
 
+  pageIndex(params: PageQuery, query?: TemplateQuery) {
+    return request.page<PageResult<TemplateResult>>(`${TEMPLATE_BASE_URL}/index`, params, query);
+  },
+
 };
 
 export default TemplateAPI;

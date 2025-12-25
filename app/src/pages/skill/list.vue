@@ -4,7 +4,7 @@
     <view class="filter-container card-container">
       <!-- 搜索框 -->
       <view class="search-box">
-        <uni-icons type="search" size="20" color="#999" />
+        <text class="icon">🔍</text>
         <input
           v-model="searchKeyword"
           class="search-input"
@@ -13,7 +13,7 @@
           @input="handleSearch"
         />
         <button v-if="searchKeyword" class="clear-btn" @click="clearSearch">
-          <uni-icons type="clear" size="18" color="#999" />
+          <text class="icon">×</text>
         </button>
       </view>
 
@@ -29,7 +29,7 @@
           >
             <view class="filter-select">
               {{ selectedCategory || '全部' }}
-              <uni-icons type="arrowdown" size="14" color="#999" />
+              <text class="icon">▼</text>
             </view>
           </picker>
         </view>
@@ -44,7 +44,7 @@
           >
             <view class="filter-select">
               {{ selectedLevel || '全部' }}
-              <uni-icons type="arrowdown" size="14" color="#999" />
+              <text class="icon">▼</text>
             </view>
           </picker>
         </view>
@@ -59,7 +59,7 @@
           >
             <view class="filter-select">
               {{ sortOptions[sortIndex] }}
-              <uni-icons type="arrowdown" size="14" color="#999" />
+              <text class="icon">▼</text>
             </view>
           </picker>
         </view>
@@ -71,12 +71,7 @@
       <view class="tags-container">
         <view class="tag-filter" v-for="tag in filterTags" :key="tag">
           <text class="tag-text">{{ tag }}</text>
-          <uni-icons
-            type="close"
-            size="12"
-            color="#999"
-            @click="removeTag(tag)"
-          />
+          <text class="icon" @click="removeTag(tag)">×</text>
         </view>
         <view class="tag-clear" v-if="filterTags.length > 0" @click="clearTags">
           <text>清除标签</text>
@@ -97,7 +92,7 @@
       </view>
 
       <view v-else-if="!loading && listData.length === 0" class="empty-state">
-        <uni-icons type="info" size="60" color="#c0c4cc" />
+        <text class="icon">ℹ️</text>
         <text class="empty-text">暂无技能数据</text>
         <button class="btn btn-primary" @click="addNewSkill">添加新技能</button>
       </view>
@@ -134,10 +129,10 @@
           <!-- 技能信息 -->
           <view class="skill-info">
             <view class="info-row">
-              <uni-icons type="folder" size="16" color="#909399" />
+              <text class="icon">📁</text>
               <text class="info-text">{{ item.category }}</text>
               <text class="info-separator">|</text>
-              <uni-icons type="calendar" size="16" color="#909399" />
+              <text class="icon">📅</text>
               <text class="info-text">{{ item.experienceYears }} 年经验</text>
             </view>
 
@@ -486,7 +481,6 @@ const loadData = (reset = false) => {
         item.description.toLowerCase().includes(keyword)
       )
     }
-
     // 分类筛选
     if (selectedCategory.value) {
       filtered = filtered.filter(item => item.category === selectedCategory.value)

@@ -13,11 +13,12 @@ import cn.net.yunlou.bole.model.view.UserView;
 import cn.net.yunlou.bole.service.UserService;
 import cn.net.yunlou.bole.struct.UserStructMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 /**
  * FileName: UserServiceImpl Description: Created By MR. WANG Created At 2025/11/19 13:49 Modified
@@ -28,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl
         extends BaseService<
-                UserMapper, User, UserCreate, UserView, UserEdit, UserQuery, UserStructMapper>
+        UserMapper, User, UserCreate, UserView, UserEdit, UserQuery, UserStructMapper>
         implements UserService {
 
     @Override
@@ -65,6 +66,13 @@ public class UserServiceImpl
     public boolean existsByEmail(String email) {
         User entity = new User();
         entity.setEmail(email);
+        return exist(entity);
+    }
+
+    @Override
+    public boolean existsByPhone(String phone) {
+        User entity = new User();
+        entity.setPhone(phone);
         return exist(entity);
     }
 

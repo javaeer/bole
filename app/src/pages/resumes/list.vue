@@ -5,7 +5,7 @@
       <view class="status-bar"></view>
       <!-- 搜索框 -->
       <view class="search-box">
-        <view class="search-icon">🔍</view>
+        <text class="icon">🔍</text>
         <input
           class="search-input"
           :value="searchText"
@@ -48,11 +48,7 @@
 
       <view class="sort-dropdown" @click="showSortPanel = !showSortPanel">
         <text>{{ currentSort.label }}</text>
-        <uni-icons
-          :type="showSortPanel ? 'top' : 'bottom'"
-          size="16"
-          color="#666"
-        ></uni-icons>
+        <text class="icon">{{ showSortPanel ? '▲' : '▼' }}</text>
       </view>
     </view>
 
@@ -67,12 +63,7 @@
           @click="onSortChange(option.value)"
         >
           <text class="option-text">{{ option.label }}</text>
-          <uni-icons
-            v-if="sortBy === option.value"
-            type="checkmark"
-            size="18"
-            color="#d4af37"
-          ></uni-icons>
+          <text v-if="sortBy === option.value" class="icon">✓</text>
         </view>
       </view>
     </view>
@@ -92,7 +83,7 @@
       </view>
 
       <view v-else-if="filteredResumes.length === 0" class="empty-state">
-        <uni-icons type="file" size="80" color="#c0c4cc"></uni-icons>
+        <text class="icon">📄</text>
         <text class="empty-text">暂无简历</text>
         <text v-if="searchKeyword" class="empty-hint">未找到匹配的简历</text>
       </view>
@@ -109,11 +100,11 @@
               <text class="resume-name">{{ resume.name || '未命名简历' }}</text>
               <view class="resume-meta">
                 <text class="meta-item">
-                  <uni-icons type="calendar" size="14"></uni-icons>
+                  <text class="icon">📅</text>
                   {{ formatDate(resume.createdAt) }}
                 </text>
                 <text class="meta-item">
-                  <uni-icons type="refresh" size="14"></uni-icons>
+                  <text class="icon">🔄</text>
                   {{ formatDate(resume.updatedAt) }}
                 </text>
               </view>
@@ -148,11 +139,11 @@
           <view class="resume-actions flex-between">
             <view class="view-stats">
               <text class="stat-item">
-                <uni-icons type="eye" size="14"></uni-icons>
+                <text class="icon">👁️</text>
                 {{ resume.viewCount || 0 }} 次查看
               </text>
               <text class="stat-item">
-                <uni-icons type="download" size="14"></uni-icons>
+                <text class="icon">⬇️</text>
                 {{ resume.downloadCount || 0 }} 次下载
               </text>
             </view>
@@ -190,7 +181,7 @@
     <!-- 创建按钮 -->
     <view class="fab-container">
       <button class="fab-btn btn-primary" @click="createNewResume">
-        <uni-icons type="plus" size="24"></uni-icons>
+        <text class="icon">➕</text>
         <text>新建简历</text>
       </button>
     </view>

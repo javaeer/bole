@@ -3,15 +3,13 @@ package cn.net.yunlou.bole.model;
 import cn.net.yunlou.bole.common.BaseDTO;
 import cn.net.yunlou.bole.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * FileName: UserResponse Description: Created By MR. WANG Created At 2025/11/19 13:48 Modified By
  * Modified At
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @AllArgsConstructor

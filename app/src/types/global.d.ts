@@ -70,6 +70,7 @@ declare global {
     showToast?: boolean;    // 是否显示错误提示
     sortBy?: string;        // 排序字段
     sortOrder?: "asc" | "desc"; // 排序方向
+    useIndexApi?: boolean; // 新增：区分使用哪个API
   }
 
   /**

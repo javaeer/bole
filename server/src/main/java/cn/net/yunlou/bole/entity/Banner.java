@@ -3,6 +3,7 @@ package cn.net.yunlou.bole.entity;
 import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: Banner Description: Created By laughtiger Created At 2025/11/28 11:10 Modified By

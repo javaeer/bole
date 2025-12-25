@@ -32,6 +32,8 @@ public class ResumesTemplateView extends BaseView {
     /** 版本号 */
     private String version;
 
+    private boolean collected;
+
     /** 样式配置 */
     private ResumesTemplateStyle globalStyle;
 

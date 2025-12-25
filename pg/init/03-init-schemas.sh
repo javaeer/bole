@@ -1119,6 +1119,146 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_file.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_file.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
+    -- 收藏模板关联表
+    CREATE TABLE IF NOT EXISTS bole_app.t_favorite_template (
+        -- 主键字段（联合主键）
+        user_id BIGINT NOT NULL,
+        template_id BIGINT NOT NULL,
+        
+        -- 添加联合主键约束
+        PRIMARY KEY (user_id, template_id),
+        
+        -- 添加外键约束
+        CONSTRAINT fk_favorite_template_user 
+        FOREIGN KEY (user_id) 
+        REFERENCES bole_app.t_user(id) 
+        ON DELETE CASCADE,
+        
+        CONSTRAINT fk_favorite_template_template 
+        FOREIGN KEY (template_id) 
+        REFERENCES bole_app.t_resumes_template(id) 
+        ON DELETE CASCADE
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_favorite_template_user_id ON bole_app.t_favorite_template(user_id);
+    CREATE INDEX IF NOT EXISTS idx_favorite_template_template_id ON bole_app.t_favorite_template(template_id);
+    CREATE INDEX IF NOT EXISTS idx_favorite_template_user_template ON bole_app.t_favorite_template(user_id, template_id);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_favorite_template IS '用户收藏模板关联表';
+    COMMENT ON COLUMN bole_app.t_favorite_template.user_id IS '用户ID';
+    COMMENT ON COLUMN bole_app.t_favorite_template.template_id IS '简历模板ID';
+
+    -- 关注公司表
+    CREATE TABLE IF NOT EXISTS bole_app.t_follow_company (
+        user_id BIGINT NOT NULL,
+        company_id BIGINT NOT NULL,
+        -- 可选：创建时间，用于记录关注的时间
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        -- 设置联合主键
+        PRIMARY KEY (user_id, company_id)
+    );
+
+    -- 创建索引（根据查询需求，可能需要为company_id创建索引，因为可能会根据公司查找关注用户）
+    CREATE INDEX IF NOT EXISTS idx_follow_company_user_id ON bole_app.t_follow_company(user_id);
+    CREATE INDEX IF NOT EXISTS idx_follow_company_company_id ON bole_app.t_follow_company(company_id);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_follow_company IS '关注公司表';
+    COMMENT ON COLUMN bole_app.t_follow_company.user_id IS '用户ID';
+    COMMENT ON COLUMN bole_app.t_follow_company.company_id IS '公司ID';
+    COMMENT ON COLUMN bole_app.t_follow_company.created_at IS '创建时间（关注时间）';
+
+    -- 消息模板表
+    CREATE TABLE IF NOT EXISTS bole_app.t_msg_template (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        
+        -- 消息模板业务字段
+        subject VARCHAR(500) NOT NULL,
+        template TEXT,
+        tc_template TEXT,
+        en_template TEXT,
+        website VARCHAR(500),
+        is_verify BOOLEAN DEFAULT FALSE,
+        length INTEGER,
+        duration INTEGER,
+        
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0,
+        
+        -- 约束
+        CONSTRAINT chk_msg_template_length CHECK (length > 0),
+        CONSTRAINT chk_msg_template_duration CHECK (duration > 0)
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_msg_template_deleted ON bole_app.t_msg_template(deleted);
+    CREATE INDEX IF NOT EXISTS idx_msg_template_created_at ON bole_app.t_msg_template(created_at);
+    CREATE INDEX IF NOT EXISTS idx_msg_template_is_verify ON bole_app.t_msg_template(is_verify);
+    CREATE INDEX IF NOT EXISTS idx_msg_template_subject ON bole_app.t_msg_template(subject);
+    CREATE INDEX IF NOT EXISTS idx_msg_template_updated_at ON bole_app.t_msg_template(updated_at);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_msg_template IS '消息模板表';
+    COMMENT ON COLUMN bole_app.t_msg_template.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_msg_template.subject IS '主题';
+    COMMENT ON COLUMN bole_app.t_msg_template.template IS '中文模板';
+    COMMENT ON COLUMN bole_app.t_msg_template.tc_template IS '繁体中文模板';
+    COMMENT ON COLUMN bole_app.t_msg_template.en_template IS '英文内容模板';
+    COMMENT ON COLUMN bole_app.t_msg_template.website IS '模板对应APP下载地址或站点地址';
+    COMMENT ON COLUMN bole_app.t_msg_template.is_verify IS '是否需要校验(需要则将校验主要内容(content)的准确性与有效时间)';
+    COMMENT ON COLUMN bole_app.t_msg_template.length IS '验证码的长度(当typeId为1时不可为空)';
+    COMMENT ON COLUMN bole_app.t_msg_template.duration IS '有效时长(单位根据业务确定，如：分钟、秒等)';
+    COMMENT ON COLUMN bole_app.t_msg_template.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_msg_template.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_msg_template.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
+
+
+    -- 邮件表
+    CREATE TABLE IF NOT EXISTS bole_app.t_ems (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        address VARCHAR(255) NOT NULL,
+        text TEXT,
+        content TEXT,
+        template_id BIGINT,
+        state INTEGER DEFAULT 0,
+        
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_ems_address ON bole_app.t_ems(address);
+    CREATE INDEX IF NOT EXISTS idx_ems_template_id ON bole_app.t_ems(template_id);
+    CREATE INDEX IF NOT EXISTS idx_ems_state ON bole_app.t_ems(state);
+    CREATE INDEX IF NOT EXISTS idx_ems_created_at ON bole_app.t_ems(created_at);
+
+    -- 添加外键约束（如果存在模板表）
+    -- ALTER TABLE bole_app.t_ems ADD CONSTRAINT fk_ems_template 
+    -- FOREIGN KEY (template_id) REFERENCES bole_app.t_message_template(id);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_ems IS '邮件发送记录表';
+    COMMENT ON COLUMN bole_app.t_ems.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_ems.address IS '收件人邮箱地址';
+    COMMENT ON COLUMN bole_app.t_ems.text IS '邮件文本内容';
+    COMMENT ON COLUMN bole_app.t_ems.content IS '核心内容（如验证码）';
+    COMMENT ON COLUMN bole_app.t_ems.template_id IS '邮件模板ID';
+    COMMENT ON COLUMN bole_app.t_ems.state IS '发送状态（0:待发送,1:发送中,2:发送成功,3:发送失败）';
+    COMMENT ON COLUMN bole_app.t_ems.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_ems.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_ems.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
     -- 审计日志表
     CREATE TABLE IF NOT EXISTS bole_audit.audit_logs (

@@ -4,6 +4,7 @@ import cn.net.yunlou.bole.common.BaseTreeEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: City Description: Created By MR. WANG Created At 2025/11/25 21:57 Modified By Modified

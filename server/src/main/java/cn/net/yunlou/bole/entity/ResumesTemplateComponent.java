@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Map;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: ComponentConfig Description: Created By laughtiger Created At 2025/12/13 02:26 Modified

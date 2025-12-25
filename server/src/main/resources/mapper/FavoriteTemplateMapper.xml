@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.net.yunlou.bole.mapper.FavoriteTemplateMapper">
+
+    <select id="selectListLeft" resultType="cn.net.yunlou.bole.entity.User">
+        select l.*
+        from t_user as l
+                 left join t_favorite_template as et on et.user_id = l.id
+        where et.template_id = #{et.templateId}
+    </select>
+
+
+    <select id="selectListRight" resultType="cn.net.yunlou.bole.entity.ResumesTemplate">
+        select r.*
+        from t_resumes_template as r
+                 left join t_favorite_template as et on et.template_id = r.id
+        where et.user_id = #{et.userId}
+    </select>
+
+
+</mapper>

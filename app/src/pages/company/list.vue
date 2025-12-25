@@ -3,12 +3,7 @@
     <!-- 搜索栏 -->
     <view class="search-container">
       <view class="search-bar" :class="{ active: showSearch }">
-        <uni-icons
-          type="search"
-          size="20"
-          color="$text-secondary"
-          class="search-icon"
-        />
+        <text class="icon">🔍</text>
         <input
           v-model="searchKeyword"
           class="search-input"
@@ -19,12 +14,7 @@
           @focus="showSearch = true"
         />
         <view v-if="searchKeyword" class="search-actions">
-          <uni-icons
-            type="clear"
-            size="18"
-            color="$text-placeholder"
-            @click="resetSearch"
-          />
+          <text class="icon" @click="resetSearch">×</text>
         </view>
       </view>
       <view class="search-btn" @click="handleSearch">
@@ -47,11 +37,12 @@
             @click="toggleSort(option.value as SortField)"
           >
             <text>{{ option.label }}</text>
-            <uni-icons
+            <text
               v-if="listParams.sortField === option.value"
-              :type="listParams.sortOrder === 'asc' ? 'arrowup' : 'arrowdown'"
-              size="14"
-            />
+              class="icon"
+            >
+              {{ listParams.sortOrder === 'asc' ? '▲' : '▼' }}
+            </text>
           </view>
         </view>
       </scroll-view>
@@ -81,11 +72,9 @@
           </view>
           <view class="card-actions">
             <view class="follow-btn" @click.stop="toggleFollow(company)">
-              <uni-icons
-                :type="company.isFollowed ? 'heart-filled' : 'heart'"
-                size="20"
-                :color="company.isFollowed ? '$danger-color' : '$text-secondary'"
-              />
+              <text class="icon" :style="{ color: company.isFollowed ? '$danger-color' : '$text-secondary' }">
+                {{ company.isFollowed ? '❤️' : '♡' }}
+              </text>
             </view>
           </view>
         </view>
@@ -93,15 +82,15 @@
         <view class="card-content">
           <view class="company-basic">
             <view class="info-row">
-              <uni-icons type="person" size="16" color="$text-secondary" />
+              <text class="icon">👤</text>
               <text class="info-text">负责人：{{ company.holder }}</text>
             </view>
             <view class="info-row">
-              <uni-icons type="location" size="16" color="$text-secondary" />
+              <text class="icon">📍</text>
               <text class="info-text">所在地：{{ company.location }}</text>
             </view>
             <view class="info-row">
-              <uni-icons type="email" size="16" color="$text-secondary" />
+              <text class="icon">✉️</text>
               <text class="info-text">{{ company.email }}</text>
             </view>
           </view>
@@ -147,7 +136,7 @@
 
       <!-- 空状态 -->
       <view v-if="!loading && companyList.length === 0" class="empty-container">
-        <uni-icons type="contact" size="80" color="$empty-text-color" />
+        <text class="icon">👤</text>
         <text class="empty-text">暂无数据</text>
       </view>
     </scroll-view>
@@ -329,8 +318,9 @@ onPullDownRefresh(() => {
       background: $background-color-white;
     }
 
-    .search-icon {
+    .icon {
       margin-right: 12rpx;
+      font-size: 20rpx;
     }
 
     .search-input {
@@ -348,6 +338,11 @@ onPullDownRefresh(() => {
     .search-actions {
       display: flex;
       align-items: center;
+      
+      .icon {
+        font-size: 18rpx;
+        color: $text-placeholder;
+      }
     }
   }
 
@@ -392,15 +387,16 @@ onPullDownRefresh(() => {
           border-color: $primary-color;
 
           &.desc {
-            .uni-icons {
+            .icon {
               transform: rotate(180deg);
             }
           }
         }
 
-        .uni-icons {
+        .icon {
           margin-left: 4rpx;
           transition: transform $transition-fast;
+          font-size: 14rpx;
         }
       }
     }
@@ -447,6 +443,10 @@ onPullDownRefresh(() => {
           @extend .flex-center;
           border-radius: $border-radius-round;
           background: $background-color;
+          
+          .icon {
+            font-size: 20rpx;
+          }
         }
       }
     }
@@ -464,8 +464,10 @@ onPullDownRefresh(() => {
             margin-bottom: 0;
           }
 
-          .uni-icons {
+          .icon {
             margin-right: 12rpx;
+            font-size: 16rpx;
+            color: $text-secondary;
           }
 
           .info-text {
@@ -552,11 +554,22 @@ onPullDownRefresh(() => {
     flex-direction: column;
     padding: 100rpx 0;
 
+    .icon {
+      font-size: 80rpx;
+      color: $empty-text-color;
+    }
+
     .empty-text {
       margin-top: 20rpx;
       font-size: $font-size-base;
       color: $empty-text-color;
     }
   }
+}
+
+// 图标样式
+.icon {
+  display: inline-block;
+  line-height: 1;
 }
 </style>

@@ -6,6 +6,7 @@ import cn.net.yunlou.bole.model.create.UserCreate;
 import cn.net.yunlou.bole.model.edit.UserEdit;
 import cn.net.yunlou.bole.model.query.UserQuery;
 import cn.net.yunlou.bole.model.view.UserView;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * FileName: IUserService Description: Created By MR. WANG Created At 2025/11/19 13:48 Modified By
@@ -21,4 +22,6 @@ public interface UserService extends IBaseService<User, UserCreate, UserView, Us
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    boolean existsByPhone(String phone);
 }

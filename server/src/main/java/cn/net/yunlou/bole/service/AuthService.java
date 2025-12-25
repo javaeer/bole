@@ -1,11 +1,6 @@
 package cn.net.yunlou.bole.service;
 
-import cn.net.yunlou.bole.model.AccessTokenDTO;
-import cn.net.yunlou.bole.model.ChangePasswordDTO;
-import cn.net.yunlou.bole.model.LoginDTO;
-import cn.net.yunlou.bole.model.RefreshTokenViewDTO;
-import cn.net.yunlou.bole.model.RegisterDTO;
-import cn.net.yunlou.bole.model.ResetPasswordDTO;
+import cn.net.yunlou.bole.model.*;
 import jakarta.validation.Valid;
 
 /**
@@ -18,6 +13,10 @@ public interface AuthService {
 
     AccessTokenDTO register(@Valid RegisterDTO registerDTO);
 
+    AccessTokenDTO registerPhone(@Valid RegisterPhoneDTO request);
+
+    AccessTokenDTO registerEmail(@Valid RegisterEmailDTO request);
+
     RefreshTokenViewDTO refreshToken(@Valid String refreshToken);
 
     void logout();
@@ -25,4 +24,6 @@ public interface AuthService {
     Boolean changePassword(@Valid ChangePasswordDTO request);
 
     Boolean resetPassword(@Valid ResetPasswordDTO request);
+
+
 }

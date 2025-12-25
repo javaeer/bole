@@ -6,10 +6,12 @@ import cn.net.yunlou.bole.model.create.CompanyCreate;
 import cn.net.yunlou.bole.model.edit.CompanyEdit;
 import cn.net.yunlou.bole.model.query.CompanyQuery;
 import cn.net.yunlou.bole.model.view.CompanyView;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * FileName: CompanyService Description: Created By MR. WANG Created At 2025/11/24 21:29 Modified By
  * Modified At
  */
 public interface CompanyService
-        extends IBaseService<Company, CompanyCreate, CompanyView, CompanyEdit, CompanyQuery> {}
+        extends IBaseService<Company, CompanyCreate, CompanyView, CompanyEdit, CompanyQuery> {
+}

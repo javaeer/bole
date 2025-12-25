@@ -3,6 +3,7 @@ package cn.net.yunlou.bole.entity;
 import cn.net.yunlou.bole.common.BaseTreeEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: Dict Description: Created By laughtiger Created At 2025/11/30 21:33 Modified By

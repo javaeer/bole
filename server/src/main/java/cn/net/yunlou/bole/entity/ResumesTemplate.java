@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.List;
 import lombok.*;
 import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: ResumeTemplate Description: 简历模板 Created By MR. WANG Created At 2025/11/24 20:00

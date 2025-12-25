@@ -28,9 +28,21 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    @Operation(summary = "用户注册")
+    @Operation(summary = "用户名注册")
     public BusinessResponse<AccessTokenDTO> register(@Valid @RequestBody RegisterDTO dto) {
         return BusinessResponse.success(authService.register(dto));
+    }
+
+    @PostMapping("register-phone")
+    @Operation(summary = "手机号注册")
+    public BusinessResponse<AccessTokenDTO> registerPhone(@Valid @RequestBody RegisterPhoneDTO dto) {
+        return BusinessResponse.success(authService.registerPhone(dto));
+    }
+
+    @PostMapping("register-email")
+    @Operation(summary = "邮件注册")
+    public BusinessResponse<AccessTokenDTO> registerEmail(@Valid @RequestBody RegisterEmailDTO dto) {
+        return BusinessResponse.success(authService.registerEmail(dto));
     }
 
     @PostMapping("refresh")
