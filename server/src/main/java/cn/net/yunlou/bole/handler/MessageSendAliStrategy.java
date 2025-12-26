@@ -4,12 +4,8 @@ import cn.net.yunlou.bole.common.MessageEntity;
 import cn.net.yunlou.bole.common.constant.MessageSendType;
 
 /**
- * FileName: MessageSendAliStrategy
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 00:01
- * Modified By
- * Modified At
+ * FileName: MessageSendAliStrategy Description: Created By laughtiger Created At 2025/12/25 00:01
+ * Modified By Modified At
  */
 public class MessageSendAliStrategy implements IMessageSendStrategy {
     @Override

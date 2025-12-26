@@ -12,21 +12,17 @@ import cn.net.yunlou.bole.struct.MessageTemplateStructMapper;
 import org.springframework.stereotype.Service;
 
 /**
- * FileName: MessageTemplateServiceImpl
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 02:23
- * Modified By
- * Modified At
+ * FileName: MessageTemplateServiceImpl Description: Created By laughtiger Created At 2025/12/25
+ * 02:23 Modified By Modified At
  */
 @Service
-public class MessageTemplateServiceImpl extends BaseService<
-        MessageTemplateMapper,
-        MessageTemplate,
-        MessageTemplateCreate,
-        MessageTemplateView,
-        MessageTemplateEdit,
-        MessageTemplateQuery,
-        MessageTemplateStructMapper
-        > implements MessageTemplateService {
-}
+public class MessageTemplateServiceImpl
+        extends BaseService<
+                MessageTemplateMapper,
+                MessageTemplate,
+                MessageTemplateCreate,
+                MessageTemplateView,
+                MessageTemplateEdit,
+                MessageTemplateQuery,
+                MessageTemplateStructMapper>
+        implements MessageTemplateService {}

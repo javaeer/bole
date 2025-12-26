@@ -1,6 +1,6 @@
-package cn.net.yunlou.bole.model.create;
+package cn.net.yunlou.bole.model;
 
-import cn.net.yunlou.bole.common.BaseCreate;
+import cn.net.yunlou.bole.common.BaseDTO;
 import jakarta.validation.constraints.NotNull;
 import java.util.Map;
 import lombok.Data;
@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ResumesTemplateComponentCreate extends BaseCreate {
+public class ResumesTemplateComponentDTO extends BaseDTO {
 
     private Long templateId;
 

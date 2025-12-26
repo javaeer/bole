@@ -12,8 +12,7 @@ import jakarta.validation.Valid;
  * FileName: SmsService Description: Created By MR. WANG Created At 2025/11/26 01:02 Modified By
  * Modified At
  */
-public interface SmsService
-        extends IBaseService<Sms, SmsCreate, SmsView, SmsEdit, SmsQuery> {
+public interface SmsService extends IBaseService<Sms, SmsCreate, SmsView, SmsEdit, SmsQuery> {
 
     boolean send(@Valid SmsCreate create);
 

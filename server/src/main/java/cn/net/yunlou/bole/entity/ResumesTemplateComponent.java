@@ -1,13 +1,12 @@
 package cn.net.yunlou.bole.entity;
 
-import cn.net.yunlou.bole.common.BaseEntity;
+import cn.net.yunlou.bole.common.MultiEntity;
 import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Map;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: ComponentConfig Description: Created By laughtiger Created At 2025/12/13 02:26 Modified
@@ -22,7 +21,7 @@ import lombok.experimental.SuperBuilder;
         value = "t_resumes_template_component",
         autoResultMap = true,
         resultMap = "BaseResultMap")
-public class ResumesTemplateComponent extends BaseEntity {
+public class ResumesTemplateComponent extends MultiEntity {
 
     private Long templateId;
 

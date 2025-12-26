@@ -10,17 +10,14 @@ import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 
 /**
- * FileName: MessageTemplateStructMapper
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 02:25
- * Modified By
- * Modified At
+ * FileName: MessageTemplateStructMapper Description: Created By laughtiger Created At 2025/12/25
+ * 02:25 Modified By Modified At
  */
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
-public interface MessageTemplateStructMapper extends BaseStructMapper<MessageTemplate,
-        MessageTemplateCreate,
-        MessageTemplateView,
-        MessageTemplateEdit,
-        MessageTemplateQuery> {
-}
+public interface MessageTemplateStructMapper
+        extends BaseStructMapper<
+                MessageTemplate,
+                MessageTemplateCreate,
+                MessageTemplateView,
+                MessageTemplateEdit,
+                MessageTemplateQuery> {}

@@ -15,12 +15,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 /**
  * FileName: CompanyController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
@@ -61,7 +60,8 @@ public class CompanyController {
     public BusinessResponse<Boolean> follow(@PathVariable(value = "id") Long id) {
         Company company = new Company();
         company.setId(id);
-        return BusinessResponse.success(followCompanyService.bind(SecurityContextUtils.getCurrentUser(), company));
+        return BusinessResponse.success(
+                followCompanyService.bind(SecurityContextUtils.getCurrentUser(), company));
     }
 
     @PutMapping("unfollow/{id}")
@@ -79,7 +79,9 @@ public class CompanyController {
         CompanyView view = companyService.getViewById(id);
         if (ObjectUtils.isNotEmpty(view)) {
             Long currentUserId = SecurityContextUtils.getCurrentUserId();
-            view.setFollowed(followCompanyService.exists(FollowCompany.builder().userId(currentUserId).companyId(id).build()));
+            view.setFollowed(
+                    followCompanyService.exists(
+                            FollowCompany.builder().userId(currentUserId).companyId(id).build()));
         }
         return BusinessResponse.success(view);
     }
@@ -94,14 +96,23 @@ public class CompanyController {
         Long currentUserId = SecurityContextUtils.getCurrentUserId();
         Page<CompanyView> viewPage;
         if (request.isFollowed()) {
-            viewPage = companyService.toViewPage(followCompanyService.pageRight(page, size, FollowCompany.builder().userId(currentUserId).build()));
+            viewPage =
+                    companyService.toViewPage(
+                            followCompanyService.pageRight(
+                                    page,
+                                    size,
+                                    FollowCompany.builder().userId(currentUserId).build()));
         } else {
             viewPage = companyService.pageViewByQuery(page, size, request);
             if (currentUserId != null) {
-                Set<Long> followedIds = followCompanyService.listRightIds(FollowCompany.builder().userId(currentUserId).build());
-                viewPage.getRecords().forEach(view -> {
-                    view.setFollowed(followedIds.contains(view.getId()));
-                });
+                Set<Long> followedIds =
+                        followCompanyService.listRightIds(
+                                FollowCompany.builder().userId(currentUserId).build());
+                viewPage.getRecords()
+                        .forEach(
+                                view -> {
+                                    view.setFollowed(followedIds.contains(view.getId()));
+                                });
             }
         }
 

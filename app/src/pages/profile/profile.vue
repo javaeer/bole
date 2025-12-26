@@ -422,7 +422,7 @@ onMounted(() => {
 
     &:active {
       transform: scale(0.9);
-      background: darken($primary-color, 10%);
+      background: color.adjust($primary-color, $lightness: -10%)
     }
 
     .icon-camera {

@@ -16,26 +16,21 @@ import lombok.EqualsAndHashCode;
 public class RegisterPhoneDTO extends BaseDTO {
 
     @NotBlank(message = "手机区号不得为空")
-    @Schema(description = "手机区号",
-            example = "86",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "手机区号", example = "86", requiredMode = Schema.RequiredMode.REQUIRED)
     private String area;
 
     @NotBlank(message = "手机号不得为空")
-    @Schema(description = "手机号",
+    @Schema(
+            description = "手机号",
             example = "18888888888",
             requiredMode = Schema.RequiredMode.REQUIRED)
     private String phone;
 
     @NotBlank(message = "密码不得为空")
-    @Schema(description = "密码",
-            example = "123456",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "密码", example = "123456", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
     @NotBlank(message = "验证码不得为空")
-    @Schema(description = "验证码",
-            example = "6666",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "验证码", example = "6666", requiredMode = Schema.RequiredMode.REQUIRED)
     private String code;
 }

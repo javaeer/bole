@@ -24,6 +24,4 @@ public interface AuthService {
     Boolean changePassword(@Valid ChangePasswordDTO request);
 
     Boolean resetPassword(@Valid ResetPasswordDTO request);
-
-
 }

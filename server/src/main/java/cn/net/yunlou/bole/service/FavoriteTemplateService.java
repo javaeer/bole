@@ -6,12 +6,8 @@ import cn.net.yunlou.bole.entity.ResumesTemplate;
 import cn.net.yunlou.bole.entity.User;
 
 /**
- * FileName: FollowCompanyService
- * Description:
- * Created By laughtiger
- * Created At 2025/12/24 19:43
- * Modified By
- * Modified At
+ * FileName: FollowCompanyService Description: Created By laughtiger Created At 2025/12/24 19:43
+ * Modified By Modified At
  */
-public interface FavoriteTemplateService extends IMultiService<FavoriteTemplate, User, ResumesTemplate> {
-}
+public interface FavoriteTemplateService
+        extends IMultiService<FavoriteTemplate, User, ResumesTemplate> {}

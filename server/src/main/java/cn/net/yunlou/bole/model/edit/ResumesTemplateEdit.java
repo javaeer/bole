@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.model.edit;
 
 import cn.net.yunlou.bole.common.BaseEdit;
-import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
 import cn.net.yunlou.bole.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.entity.ResumesTemplateStyle;
+import cn.net.yunlou.bole.model.ResumesTemplateComponentDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.*;
@@ -41,5 +41,5 @@ public class ResumesTemplateEdit extends BaseEdit {
     /** 布局配置 */
     private ResumesTemplateLayout globalLayout;
 
-    private List<ResumesTemplateComponent> components;
+    private List<ResumesTemplateComponentDTO> components;
 }

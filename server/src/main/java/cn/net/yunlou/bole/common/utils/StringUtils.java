@@ -20,10 +20,6 @@
 package cn.net.yunlou.bole.common.utils;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.text.StringSubstitutor;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -33,104 +29,73 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringSubstitutor;
 
 /**
- * <p>
- * </p>
- *
- * @Author javaeer(javaeer @ aliyun.com)
- * @Date 2018/11/27 13:50
- * @Version 1.0
+ * @Author javaeer(javaeer @ aliyun.com) @Date 2018/11/27 13:50 @Version 1.0
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
-    /**
-     * 字符常量：斜杠 {@code '/'}
-     */
+    /** 字符常量：斜杠 {@code '/'} */
     public static final String SLASH = "/";
-    /**
-     * 字符常量：反斜杠 {@code '\\'}
-     */
+
+    /** 字符常量：反斜杠 {@code '\\'} */
     public static final String BACKSLASH = "\\";
 
-    /**
-     * 字符常量：冒号 {@code ':'}
-     */
+    /** 字符常量：冒号 {@code ':'} */
     public static final String COLONS = ":";
 
-    /**
-     * 字符常量：井号 {@code '#'}
-     */
+    /** 字符常量：井号 {@code '#'} */
     public static final String POUND = "#";
 
-    /**
-     * 字符常量：单引号 {@code '\''}
-     */
+    /** 字符常量：单引号 {@code '\''} */
     public static final String SINGLE_QUOTE = "'\''";
-    /**
-     * 字符常量：与 {@code '&'}
-     */
+
+    /** 字符常量：与 {@code '&'} */
     public static final String AMP = "&";
-    /**
-     * 字符常量：艾特 {@code '@'}
-     */
+
+    /** 字符常量：艾特 {@code '@'} */
     public static final String AT = "@";
-    /**
-     * 字符常量：逗号 {@code ','}
-     */
+
+    /** 字符常量：逗号 {@code ','} */
     public static final String COMMA = ",";
 
-    /**
-     * 字符常量：下划线 {@code '_'}
-     */
+    /** 字符常量：下划线 {@code '_'} */
     public static final String UNDERLINE = "_";
-    /**
-     * 字符常量：点 {@code '.'}
-     */
+
+    /** 字符常量：点 {@code '.'} */
     public static final String DOT = ".";
 
-    /**
-     * 字符常量：大括号（左） <code>'{'</code>
-     */
+    /** 字符常量：大括号（左） <code>'{'</code> */
     public static final String BRACE_START = "{";
-    /**
-     * 字符常量：花括号（右） <code>'}'</code>
-     */
+
+    /** 字符常量：花括号（右） <code>'}'</code> */
     public static final String BRACE_END = "}";
-    /**
-     * 字符常量：中括号（左） {@code '['}
-     */
+
+    /** 字符常量：中括号（左） {@code '['} */
     public static final String BRACKET_START = "[";
-    /**
-     * 字符常量：中括号（右） {@code ']'}
-     */
+
+    /** 字符常量：中括号（右） {@code ']'} */
     public static final String BRACKET_END = "]";
-    /**
-     * 字符常量：小括号（左） {@code '('}
-     */
+
+    /** 字符常量：小括号（左） {@code '('} */
     public static final String PARENTHESIS_START = "(";
-    /**
-     * 字符常量：小括号（右） {@code ')'}
-     */
+
+    /** 字符常量：小括号（右） {@code ')'} */
     public static final String PARENTHESIS_END = ")";
-    /**
-     * 字符常量：加号 {@code '+'}
-     */
+
+    /** 字符常量：加号 {@code '+'} */
     public static final String PLUS = "+";
-    /**
-     * 字符常量：减号 {@code '-'}
-     */
+
+    /** 字符常量：减号 {@code '-'} */
     public static final String MINUS = "-";
 
     public static final String CHARSET_UTF_8 = "UTF-8";
     private static final String CHARSET_GBK = "GBK";
 
-    /**
-     * <p>
-     * 构造函数
-     * </p>
-     * 防止创建对象
-     */
+    /** 构造函数 防止创建对象 */
     public StringUtils() {
         super();
     }
@@ -147,14 +112,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
-     * 缩略字符串（不区分中英文字符）
-     * 自动识别 html 包含 脚本
+     * 缩略字符串（不区分中英文字符） 自动识别 html 包含 脚本
      *
-     * <p>
-     *    <div>abcdefg</div> => <di...
-     * </p>
+     * <p><div>abcdefg</div> => <di...
      *
-     * @param str      目标字符串
+     * @param str 目标字符串
      * @param maxWidth 保留长度
      * @return
      */
@@ -181,19 +143,15 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return null;
     }
 
-
     /**
-     * 缩略字符串（不区分中英文字符）
-     * 自动识别 html 只针对 文本内容
-     * <p>
-     *    <div>abcdefg</div> => <div>abc...</div>
-     * </p>
+     * 缩略字符串（不区分中英文字符） 自动识别 html 只针对 文本内容
+     *
+     * <p><div>abcdefg</div> => <div>abc...</div>
      *
      * @param param
      * @param length
      * @return
      */
-
     public static String smartAbbreviatePlus(final String param, final int length) {
         if (param == null) {
             return null;
@@ -235,16 +193,14 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             }
         }
         // 取出截取字符串中的HTML标记
-        String temp_result = result.toString().replaceAll("(>)[^<>]*(<?)",
-                "$1$2");
+        String temp_result = result.toString().replaceAll("(>)[^<>]*(<?)", "$1$2");
         // 去掉不需要结素标记的HTML标记
-        temp_result = temp_result
-                .replaceAll(
+        temp_result =
+                temp_result.replaceAll(
                         "</?(AREA|BASE|BASEFONT|BODY|BR|COL|COLGROUP|DD|DT|FRAME|HEAD|HR|HTML|IMG|INPUT|ISINDEX|LI|LINK|META|OPTION|P|PARAM|TBODY|TD|TFOOT|TH|THEAD|TR|area|base|basefont|body|br|col|colgroup|dd|dt|frame|head|hr|html|img|input|isindex|li|link|meta|option|p|param|tbody|td|tfoot|th|thead|tr)[^<>]*/?>",
                         "");
         // 去掉成对的HTML标记
-        temp_result = temp_result.replaceAll("<([a-zA-Z]+)[^<>]*>(.*?)</\\1>",
-                "$2");
+        temp_result = temp_result.replaceAll("<([a-zA-Z]+)[^<>]*>(.*?)</\\1>", "$2");
         // 用正则表达式取出标记
         Pattern p = Pattern.compile("<([a-zA-Z]+)[^<>]*>");
         Matcher m = p.matcher(temp_result);
@@ -356,14 +312,16 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
-     * @param src    预备替换字符串
+     * @param src 预备替换字符串
      * @param prefix 前缀
      * @param suffix 后缀
-     * @param map    参数列表
+     * @param map 参数列表
      * @return
      */
-    public static String replaceMaps(String src, String prefix, String suffix, HashMap<String, Object> map) {
-        StringSubstitutor substitutor = new StringSubstitutor(map, prefix, suffix, StringSubstitutor.DEFAULT_ESCAPE);
+    public static String replaceMaps(
+            String src, String prefix, String suffix, HashMap<String, Object> map) {
+        StringSubstitutor substitutor =
+                new StringSubstitutor(map, prefix, suffix, StringSubstitutor.DEFAULT_ESCAPE);
         return substitutor.replace(src);
     }
 
@@ -400,7 +358,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
         return src;
     }
-
 
     /**
      * 隐藏手机号码中间4位
@@ -445,13 +402,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         if (src == null) {
             return null;
         }
-        return replace(replace(EncoderUtils.escapeHtml(src), "\n", "<br/>"), "\t", "&nbsp; &nbsp; ");
+        return replace(
+                replace(EncoderUtils.escapeHtml(src), "\n", "<br/>"), "\t", "&nbsp; &nbsp; ");
     }
 
-
-    /**
-     * 转换为Double类型
-     */
+    /** 转换为Double类型 */
     public static Double toDouble(Object o) {
         if (o == null) {
             return 0D;
@@ -487,34 +442,26 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
     }
 
-    /**
-     * 转换为Float类型
-     */
+    /** 转换为Float类型 */
     public static Float toFloat(Object o) {
         return toDouble(o).floatValue();
     }
 
-    /**
-     * 转换为Long类型
-     */
+    /** 转换为Long类型 */
     public static Long toLong(Object o) {
         return toDouble(o).longValue();
     }
 
-    /**
-     * 转换为Integer类型
-     */
+    /** 转换为Integer类型 */
     public static Integer toInteger(Object o) {
         return toLong(o).intValue();
     }
 
-
     /**
      * 驼峰命名法工具
      *
-     * @return toCamelCase(" hello_world ") == "helloWorld"
-     * toCapitalizeCamelCase("hello_world") == "HelloWorld"
-     * toUnderScoreCase("helloWorld") = "hello_world"
+     * @return toCamelCase(" hello_world ") == "helloWorld" toCapitalizeCamelCase("hello_world") ==
+     *     "HelloWorld" toUnderScoreCase("helloWorld") = "hello_world"
      */
     public static String toCamelCase(String s) {
         if (s == null) {
@@ -544,9 +491,8 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 驼峰命名法工具
      *
-     * @return toCamelCase(" hello_world ") == "helloWorld"
-     * toCapitalizeCamelCase("hello_world") == "HelloWorld"
-     * toUnderScoreCase("helloWorld") = "hello_world"
+     * @return toCamelCase(" hello_world ") == "helloWorld" toCapitalizeCamelCase("hello_world") ==
+     *     "HelloWorld" toUnderScoreCase("helloWorld") = "hello_world"
      */
     public static String toCapitalizeCamelCase(String s) {
         if (s == null) {
@@ -559,9 +505,8 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 驼峰命名法工具
      *
-     * @return toCamelCase(" hello_world ") == "helloWorld"
-     * toCapitalizeCamelCase("hello_world") == "HelloWorld"
-     * toUnderScoreCase("helloWorld") = "hello_world"
+     * @return toCamelCase(" hello_world ") == "helloWorld" toCapitalizeCamelCase("hello_world") ==
+     *     "HelloWorld" toUnderScoreCase("helloWorld") = "hello_world"
      */
     public static String toUnderScoreCase(String s) {
         if (s == null) {
@@ -594,7 +539,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return sb.toString();
     }
 
-
     /**
      * @param i
      * @return
@@ -618,9 +562,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 转换为JS获取对象值，生成三目运算返回结果
      *
-     * @param src 对象串
-     *            例如：row.user.id
-     *            返回：!row?'':!row.user?'':!row.user.id?'':row.user.id
+     * @param src 对象串 例如：row.user.id 返回：!row?'':!row.user?'':!row.user.id?'':row.user.id
      */
     public static String jsGetVal(String src) {
         StringBuilder result = new StringBuilder();
@@ -633,7 +575,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         result.append(sb.substring(1));
         return result.toString();
     }
-
 
     /**
      * 功能:使用urldecode对字符串解码
@@ -694,7 +635,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             char ch = (char) Integer.parseInt(code, 16);
 
             src = src.replace(arrayList.get(i), String.valueOf(ch));
-
         }
 
         return src;
@@ -718,24 +658,21 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
                 sb.append("\\u");
                 j = (c >>> 8);
                 tmp = Integer.toHexString(j);
-                if (tmp.length() == 1)
-                    sb.append("0");
+                if (tmp.length() == 1) sb.append("0");
                 sb.append(tmp);
                 j = (c & 0xFF);
                 tmp = Integer.toHexString(j);
-                if (tmp.length() == 1)
-                    sb.append("0");
+                if (tmp.length() == 1) sb.append("0");
                 sb.append(tmp);
             } else {
                 sb.append(c);
             }
-
         }
         return (new String(sb));
     }
 
-
-    public static String spliceMetadata(List<String> list, String delimiter, String prefix, String suffix) {
+    public static String spliceMetadata(
+            List<String> list, String delimiter, String prefix, String suffix) {
         return list.stream().collect(Collectors.joining(delimiter, prefix, suffix));
     }
 
@@ -785,9 +722,12 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * @param ignoreCase
      * @return
      */
-    public static boolean startWith(CharSequence src, CharSequence prefix, boolean ignoreCase, boolean ignoreEquals) {
+    public static boolean startWith(
+            CharSequence src, CharSequence prefix, boolean ignoreCase, boolean ignoreEquals) {
         if (null != src && null != prefix) {
-            boolean isStartWith = src.toString().regionMatches(ignoreCase, 0, prefix.toString(), 0, prefix.length());
+            boolean isStartWith =
+                    src.toString()
+                            .regionMatches(ignoreCase, 0, prefix.toString(), 0, prefix.length());
             if (!isStartWith) {
                 return false;
             } else {
@@ -803,7 +743,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 去掉字符包装，如果未被包装则返回原字符串
      *
-     * @param src    字符串
+     * @param src 字符串
      * @param prefix 前置字符
      * @param suffix 后置字符
      * @return 去掉包装字符的字符串
@@ -819,11 +759,10 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return src.toString();
     }
 
-
     /**
      * 去掉字符包装，如果未被包装则返回原字符串
      *
-     * @param src    字符串
+     * @param src 字符串
      * @param prefix 前置字符串
      * @param suffix 后置字符串
      * @return 去掉包装字符的字符串
@@ -839,7 +778,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 指定字符串是否被包装
      *
-     * @param src    字符串
+     * @param src 字符串
      * @param prefix 前缀
      * @param suffix 后缀
      * @return 是否被包装
@@ -852,7 +791,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return str2.startsWith(prefix) && str2.endsWith(suffix);
     }
 
-
     /**
      * 改进JDK subString<br>
      * index从0开始计算，最后一个字符为-1<br>
@@ -862,9 +800,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * abcdefgh 2 3 =》 c <br>
      * abcdefgh 2 -3 =》 cde <br>
      *
-     * @param src   String
+     * @param src String
      * @param start 开始的index（包括）
-     * @param end   结束的index（不包括）
+     * @param end 结束的index（不包括）
      * @return 字串
      */
     public static String substring(CharSequence src, int start, int end) {
@@ -907,8 +845,8 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 比较两个字符是否相同
      *
-     * @param cs1        字符1
-     * @param cs2        字符2
+     * @param cs1 字符1
+     * @param cs2 字符2
      * @param ignoreCase 是否忽略大小写
      * @return 是否相同
      */
@@ -918,10 +856,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         } else if (null == cs2) {
             return false;
         } else {
-            return ignoreCase ? cs1.toString().equalsIgnoreCase(cs2.toString()) : cs1.toString().contentEquals(cs2);
+            return ignoreCase
+                    ? cs1.toString().equalsIgnoreCase(cs2.toString())
+                    : cs1.toString().contentEquals(cs2);
         }
     }
-
 
     /**
      * 去掉字符串头尾部的空白，如果结果字符串是空字符串，则返回 null
@@ -936,8 +875,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             int beginIndex = 0;
 
             int endIndex;
-            for (endIndex = str.length() - 1; beginIndex <= endIndex && Character.isWhitespace(str.charAt(beginIndex)); ++beginIndex) {
-            }
+            for (endIndex = str.length() - 1;
+                    beginIndex <= endIndex && Character.isWhitespace(str.charAt(beginIndex));
+                    ++beginIndex) {}
 
             while (endIndex > beginIndex && Character.isWhitespace(str.charAt(endIndex))) {
                 --endIndex;
@@ -992,8 +932,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             return str;
         } else {
             int beginIdx;
-            for (beginIdx = 0; beginIdx < str.length() && Character.isWhitespace(str.charAt(beginIdx)); ++beginIdx) {
-            }
+            for (beginIdx = 0;
+                    beginIdx < str.length() && Character.isWhitespace(str.charAt(beginIdx));
+                    ++beginIdx) {}
 
             return str.substring(beginIdx);
         }
@@ -1010,8 +951,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             return str;
         } else {
             int endIdx;
-            for (endIdx = str.length() - 1; endIdx >= 0 && Character.isWhitespace(str.charAt(endIdx)); --endIdx) {
-            }
+            for (endIdx = str.length() - 1;
+                    endIdx >= 0 && Character.isWhitespace(str.charAt(endIdx));
+                    --endIdx) {}
 
             return str.substring(0, endIdx + 1);
         }
@@ -1020,7 +962,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 去掉字符串头部的指定字符，如果字符串为<code>null</code>，则返回<code>null</code>。
      *
-     * @param str              字符串
+     * @param str 字符串
      * @param leadingCharacter 需要去掉的字符
      * @return 切掉后的字符串，若字符串为<code>null</code>，则返回<code>null</code>
      */
@@ -1029,8 +971,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             return str;
         } else {
             int beginIdx;
-            for (beginIdx = 0; beginIdx < str.length() && leadingCharacter == str.charAt(beginIdx); ++beginIdx) {
-            }
+            for (beginIdx = 0;
+                    beginIdx < str.length() && leadingCharacter == str.charAt(beginIdx);
+                    ++beginIdx) {}
 
             return str.substring(beginIdx);
         }
@@ -1039,7 +982,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 去掉字符串尾部的指定字符，如果字符串为<code>null</code>，则返回<code>null</code>。
      *
-     * @param str               字符串
+     * @param str 字符串
      * @param trailingCharacter 需要去掉的字符
      * @return 切掉后的字符串，若字符串为<code>null</code>，则返回<code>null</code>
      */
@@ -1048,52 +991,55 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             return str;
         } else {
             int endIdx;
-            for (endIdx = str.length() - 1; endIdx >= 0 && trailingCharacter == str.charAt(endIdx); --endIdx) {
-            }
+            for (endIdx = str.length() - 1;
+                    endIdx >= 0 && trailingCharacter == str.charAt(endIdx);
+                    --endIdx) {}
 
             return str.substring(0, endIdx + 1);
         }
     }
 
-
     public static void main(String[] args) {
-        //System.out.println(urlEncode("$你好"));
+        // System.out.println(urlEncode("$你好"));
 
-        //System.out.println(replaceIgnoreCase(SmsConstants.VALIDATE_CODE_SMS_TEXT, "#code#", "128768909876"));
+        // System.out.println(replaceIgnoreCase(SmsConstants.VALIDATE_CODE_SMS_TEXT, "#code#",
+        // "128768909876"));
 
-        //System.out.println(replaceIgnoreCase(SmsConstants.DEALER_CONTINUED_SMS_TEXT, "#contant#", SmsConstants.WEB_DEALER));
+        // System.out.println(replaceIgnoreCase(SmsConstants.DEALER_CONTINUED_SMS_TEXT, "#contant#",
+        // SmsConstants.WEB_DEALER));
 
-        //HashMap<String, Object> map = Maps.newHashMap();
-        //map.put("name", "大魔王");
-        //map.put("mobile", "18610880038");
-        //System.out.println(replaceMaps("我的电话是#mobile#,我是#name#", map));
+        // HashMap<String, Object> map = Maps.newHashMap();
+        // map.put("name", "大魔王");
+        // map.put("mobile", "18610880038");
+        // System.out.println(replaceMaps("我的电话是#mobile#,我是#name#", map));
 
-       /* ArrayList<String> src = Lists.newArrayList();
+        /* ArrayList<String> src = Lists.newArrayList();
         src.add(1, "1");
         src.add(0, "2");
         src.add(2, "3");
         System.out.println(spliceMetadata(src));*/
 
-        //String s = "+8618610880038";
-        //System.out.println(s.startsWith("+"));
-        //String s = "http://dealer.yunlousoho.com/submit/?productType=PRODUCT_TYPE&dealerId=DEALER_ID&tenantId=TENANT_ID";
-        //s = s.replace("PRODUCT_TYPE", "1").replace("DEALER_ID", "2").replace("TENANT_ID", "9");
-        //System.out.println(s);
+        // String s = "+8618610880038";
+        // System.out.println(s.startsWith("+"));
+        // String s =
+        // "http://dealer.yunlousoho.com/submit/?productType=PRODUCT_TYPE&dealerId=DEALER_ID&tenantId=TENANT_ID";
+        // s = s.replace("PRODUCT_TYPE", "1").replace("DEALER_ID", "2").replace("TENANT_ID", "9");
+        // System.out.println(s);
 
-        //System.out.println(replaceEndingCharacter("1", "*"));
+        // System.out.println(replaceEndingCharacter("1", "*"));
 
-        //System.out.println(addFirst("你", "我爱"));
+        // System.out.println(addFirst("你", "我爱"));
 
-        //System.out.println(toCamelCase("hello_http"));
+        // System.out.println(toCamelCase("hello_http"));
 
-        //System.out.println(smartAbbreviate("<html><div>okhttps</div><html>",5));
-        //System.out.println(smartAbbreviatePlus("<html><div>okhttps</div><html>",5));
+        // System.out.println(smartAbbreviate("<html><div>okhttps</div><html>",5));
+        // System.out.println(smartAbbreviatePlus("<html><div>okhttps</div><html>",5));
 
-        //System.out.println(trimAllWhitespace(" abc exc"));
+        // System.out.println(trimAllWhitespace(" abc exc"));
 
-        //System.out.println(unicodeEncode("新用户账号密码以短信形式发送"));
-        System.out.println(unicodeDecode("\u65b0\u7528\u6237\u8d26\u53f7\u5bc6\u7801\u4ee5\u77ed\u4fe1\u5f62\u5f0f\u53d1\u9001"));
+        // System.out.println(unicodeEncode("新用户账号密码以短信形式发送"));
+        System.out.println(
+                unicodeDecode(
+                        "\u65b0\u7528\u6237\u8d26\u53f7\u5bc6\u7801\u4ee5\u77ed\u4fe1\u5f62\u5f0f\u53d1\u9001"));
     }
-
-
 }

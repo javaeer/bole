@@ -21,34 +21,30 @@ import cn.net.yunlou.bole.service.EmailService;
 import cn.net.yunlou.bole.service.MessageTemplateService;
 import cn.net.yunlou.bole.struct.EmailStructMapper;
 import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
 /**
- * FileName: EmailServiceImpl
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 01:22
- * Modified By
- * Modified At
+ * FileName: EmailServiceImpl Description: Created By laughtiger Created At 2025/12/25 01:22
+ * Modified By Modified At
  */
 @Service
 @RequiredArgsConstructor
-public class EmailServiceImpl extends BaseService<
-        EmailMapper,
-        Email,
-        EmailCreate,
-        EmailView,
-        EmailEdit,
-        EmailQuery,
-        EmailStructMapper
-        > implements EmailService {
+public class EmailServiceImpl
+        extends BaseService<
+                EmailMapper,
+                Email,
+                EmailCreate,
+                EmailView,
+                EmailEdit,
+                EmailQuery,
+                EmailStructMapper>
+        implements EmailService {
 
     private final MessageSendStrategyFactory messageSendStrategyFactory;
 
@@ -56,22 +52,28 @@ public class EmailServiceImpl extends BaseService<
 
     private final RedisCacheUtils redisCacheUtils;
 
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean send(EmailCreate create) {
 
         Email generated = generate(create);
 
-        boolean send = messageSendStrategyFactory.getMessageSendStrategy(MessageSendType.EMAIL)
-                .send(MessageEntity.builder()
-                        .to(create.getAddress())
-                        .subject(generated.getTemplate().getSubject())
-                        .text(generated.getText())
-                        .build());
+        boolean send =
+                messageSendStrategyFactory
+                        .getMessageSendStrategy(MessageSendType.EMAIL)
+                        .send(
+                                MessageEntity.builder()
+                                        .to(create.getAddress())
+                                        .subject(generated.getTemplate().getSubject())
+                                        .text(generated.getText())
+                                        .build());
 
         if (send) {
-            redisCacheUtils.putObject(Sms.SMS_CACHE_KEY + create.getAddress(), generated.getContent(), generated.getTemplate().getDuration(), TimeUnit.MINUTES);
+            redisCacheUtils.putObject(
+                    Sms.SMS_CACHE_KEY + create.getAddress(),
+                    generated.getContent(),
+                    generated.getTemplate().getDuration(),
+                    TimeUnit.MINUTES);
             generated.setState(1);
         }
 

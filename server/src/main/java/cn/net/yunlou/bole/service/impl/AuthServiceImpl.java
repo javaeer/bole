@@ -93,11 +93,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AccessTokenDTO registerPhone(RegisterPhoneDTO request) {
 
-        Sms sms = Sms.builder()
-                .areaCode(request.getArea())
-                .phone(request.getPhone())
-                .content(request.getCode())
-                .build();
+        Sms sms =
+                Sms.builder()
+                        .areaCode(request.getArea())
+                        .phone(request.getPhone())
+                        .content(request.getCode())
+                        .build();
         if (!smsService.verify(sms)) {
             throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
         }
@@ -126,10 +127,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AccessTokenDTO registerEmail(RegisterEmailDTO request) {
 
-        Email email = Email.builder()
-                .address(request.getEmail())
-                .content(request.getCode())
-                .build();
+        Email email =
+                Email.builder().address(request.getEmail()).content(request.getCode()).build();
         if (!emailService.verify(email)) {
             throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
         }

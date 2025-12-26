@@ -5,7 +5,7 @@ echo "=== 插入示例数据 ==="
 
 # 等待PostgreSQL启动
 until pg_isready -U postgres; do
-    sleep 2
+  sleep 2
 done
 
 echo "插入bole数据库示例数据..."
@@ -15,9 +15,9 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 插入系统配置测试数据
     INSERT INTO bole_app.t_config (config_key, config_value, config_desc, created_by_id, updated_by_id) VALUES
-    ('system.name', '伯乐简历', '系统名称', 1, 1),
-    ('system.version', '2.1.0', '系统版本号', 1, 1),
-    ('system.copyright', 'Copyright © 2025 云楼科技 All Rights Reserved.', '系统版权信息', 1, 1),
+    ('system.name', '伯乐简历大师', '系统名称', 1, 1),
+    ('system.version', '1.0.0', '系统版本号', 1, 1),
+    ('system.copyright', 'Copyright © 2025 伯乐简历大师 All Rights Reserved.', '系统版权信息', 1, 1),
     ('system.logo', '/static/images/logo.png', '系统Logo路径', 1, 1),
     ('system.favicon', '/static/images/favicon.ico', '网站图标路径', 1, 1),
     ('upload.max-size', '10485760', '文件上传最大大小(字节)', 1, 1),
@@ -26,7 +26,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     ('email.smtp.port', '465', 'SMTP服务器端口', 1, 1),
     ('email.smtp.ssl', 'true', '是否启用SSL加密', 1, 1),
     ('sms.provider', 'aliyun', '短信服务提供商', 1, 1),
-    ('sms.signature', '云楼科技', '短信签名', 1, 1),
+    ('sms.signature', '伯乐简历大师', '短信签名', 1, 1),
     ('security.login.max-attempts', '5', '最大登录尝试次数', 1, 1),
     ('security.login.lock-time', '30', '账户锁定时间(分钟)', 1, 1),
     ('security.password.min-length', '8', '密码最小长度', 1, 1),
@@ -154,372 +154,25 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     (6, 3, 2, '系统架构师', '2021-09-01', NULL, true, '负责系统架构设计', '["设计微服务架构", "技术团队建设"]', 2);
 
     -- 插入5个简历模板
-    INSERT INTO bole_app.t_resumes_template (name, code, description, preview_image, is_active, version, global_style, layout, created_at) VALUES
-    -- 1. 经典简洁模板
-    (
-        '经典简洁',
-        'classic_simple_v1',
-        '经典简约设计，适合传统行业和保守型求职者，布局清晰，重点突出',
-        'https://example.com/images/resumes/classic_simple.png',
-        true,
-        '1.0.0',
-        '{
-            "theme": "classic",
-            "fontFamily": "Microsoft YaHei, SimSun, serif",
-            "fontSize": "12px",
-            "lineHeight": "1.6",
-            "primaryColor": "#2c3e50",
-            "secondaryColor": "#7f8c8d",
-            "backgroundColor": "#ffffff",
-            "headerColor": "#3498db",
-            "margin": "20mm",
-            "padding": "10px"
-        }'::jsonb,
-        '{
-            "sections": ["personal_info", "education", "work_experience", "skills", "projects"],
-            "columns": 1,
-            "sectionOrder": ["header", "personal_info", "summary", "work_experience", "education", "skills", "projects", "certifications"],
-            "showPhoto": true,
-            "photoPosition": "right_top",
-            "pageSize": "A4",
-            "orientation": "portrait"
-        }'::jsonb,
-        CURRENT_TIMESTAMP
-    ),
+    INSERT INTO bole_app.t_resumes_template ("id", "name", "code", "description", "preview_image", "is_active", "version", "global_style", "global_layout", "created_at", "updated_at", "deleted") VALUES
+    (1, '经典简洁', 'classic_simple_v1', '经典简约设计，适合传统行业和保守型求职者，布局清晰，重点突出', 'https://example.com/images/resumes/classic_simple.png', 't', '1.0.0', '{"theme": "modern", "spacing": {"padding": "15px", "lineHeight": "1.6", "sectionMargin": "20px"}, "fontSizes": {"h1": "32", "body": "14"}, "fontFamily": "''Microsoft YaHei'', ''PingFang SC'', sans-serif", "accentColor": "#f56c6c", "headerColor": null, "primaryColor": "#f56c6c", "secondaryColor": "#f56c6c", "backgroundColor": ""}', '{"type": "single-column", "columns": {"left": 40, "right": 60}, "orientation": "portrait", "componentOrder": []}', '2025-12-26 18:30:20.413836', '2025-12-26 19:38:00.341392', 0),
+    (2, '现代设计', 'modern_design_v1', '现代扁平化设计，适合互联网、科技行业，视觉冲击力强', 'https://example.com/images/resumes/modern_design.png', 't', '1.2.0', '{"theme": "classic", "spacing": {"padding": "20px", "lineHeight": "1.8", "sectionMargin": "24px"}, "fontSizes": {"h1": "36", "body": "16"}, "fontFamily": "''Times New Roman'', serif", "accentColor": "#2c3e50", "primaryColor": "#2c3e50", "secondaryColor": "#2c3e50", "backgroundColor": "#f8f9fa"}', '{"type": "two-column", "columns": {"left": 35, "right": 65}, "orientation": "portrait", "componentOrder": []}', '2025-12-26 18:30:20.413836', '2025-12-26 19:39:02.173137', 0),
+    (3, '创意艺术', 'creative_art_v1', '创意设计风格，适合设计师、艺术家、创意工作者，展现个性与创造力', 'https://example.com/images/resumes/creative_art.png', 't', '1.1.0', '{"theme": "tech", "spacing": {"padding": "12px", "lineHeight": "1.5", "sectionMargin": "16px"}, "fontSizes": {"h1": "30", "body": "13"}, "fontFamily": "''Roboto'', ''Helvetica Neue'', Arial, sans-serif", "accentColor": "#5ac8fa", "primaryColor": "#5ac8fa", "secondaryColor": "#5ac8fa", "backgroundColor": "#f0f8ff"}', '{"type": "timeline", "columns": {"left": 50, "right": 50}, "orientation": "portrait", "componentOrder": ["UserBasicInfo", "WorkExperience", "EducationExperience"]}', '2025-12-26 18:30:20.413836', '2025-12-26 19:39:47.438013', 0),
+    (4, '专业商务', 'professional_business_v1', '专业商务风格，适合金融、咨询、管理岗位，彰显专业与权威', 'https://example.com/images/resumes/professional_business.png', 't', '1.3.0', '{"theme": "modern", "spacing": {"padding": "10px", "lineHeight": "1.4", "sectionMargin": "12px"}, "fontSizes": {"h1": "28", "body": "12"}, "fontFamily": "''Helvetica'', ''Arial'', sans-serif", "accentColor": "#8e8e93", "primaryColor": "#8e8e93", "secondaryColor": "#8e8e93", "backgroundColor": "#ffffff"}', '{"type": "compact", "columns": {"left": 100, "right": 0}, "orientation": "portrait", "componentOrder": []}', '2025-12-26 18:30:20.413836', '2025-12-26 19:40:47.343823', 0),
+    (5, '学术研究', 'academic_research_v1', '学术研究风格，适合学者、研究人员、教育工作者，突出学术成果', 'https://example.com/images/resumes/academic_research.png', 't', '1.0.0', '{"theme": "modern", "spacing": {"padding": "10px", "lineHeight": "1.4", "sectionMargin": "12px"}, "fontSizes": {"h1": "28", "body": "12"}, "fontFamily": "''Helvetica'', ''Arial'', sans-serif", "accentColor": "#8e8e93", "primaryColor": "#8e8e93", "secondaryColor": "#8e8e93", "backgroundColor": "#ffffff"}', '{"type": "compact", "columns": {"left": 100, "right": 0}, "orientation": "portrait", "componentOrder": []}', '2025-12-26 18:30:20.413836', '2025-12-26 19:41:20.447047', 0);
 
-    -- 2. 现代设计模板
-    (
-        '现代设计',
-        'modern_design_v1',
-        '现代扁平化设计，适合互联网、科技行业，视觉冲击力强',
-        'https://example.com/images/resumes/modern_design.png',
-        true,
-        '1.2.0',
-        '{
-            "theme": "modern",
-            "fontFamily": "PingFang SC, Helvetica, Arial, sans-serif",
-            "fontSize": "14px",
-            "lineHeight": "1.8",
-            "primaryColor": "#1a237e",
-            "secondaryColor": "#5c6bc0",
-            "accentColor": "#ff9800",
-            "backgroundColor": "#f5f7fa",
-            "headerColor": "#1a237e",
-            "borderRadius": "8px",
-            "shadow": "0 2px 10px rgba(0,0,0,0.1)"
-        }'::jsonb,
-        '{
-            "sections": ["personal_info", "summary", "work_experience", "projects", "skills", "education"],
-            "columns": 2,
-            "leftColumn": ["personal_info", "skills", "languages"],
-            "rightColumn": ["summary", "work_experience", "projects", "education"],
-            "showPhoto": true,
-            "photoPosition": "left_top",
-            "pageSize": "A4",
-            "orientation": "portrait",
-            "showSidebar": true
-        }'::jsonb,
-        CURRENT_TIMESTAMP
-    ),
+    --插入组件
+    INSERT INTO bole_app.t_resumes_component ("id", "name", "key", "default_config", "created_at", "updated_at", "deleted") VALUES
+     (1, '基本信息', 'UserBasicInfo', '{"props": {"title": "基本信息", "fields": ["name", "gender", "birthday", "phone", "email", "location", "workYears"], "showName": true, "showEmail": true, "showPhone": true, "avatarSize": "medium", "showAvatar": true, "showGender": true, "showBirthday": true, "showLocation": true, "showWorkYears": true}, "styles": {"padding": "20px", "fontSize": "16px", "fieldColor": "#666666", "titleColor": "#333333", "avatarBorder": "2px solid #e8e8e8", "borderRadius": "8px", "backgroundColor": "#FFFFFF"}}', '2025-12-17 20:06:50.482517', '2025-12-18 23:17:35.112048', 0),
+     (2, '求职意向', 'JobIntention', '{"props": {"title": "求职意向", "salaryUnit": "K", "showJobType": true, "locationType": "city", "showWorkLocation": true, "showCurrentStatus": true, "showExpectedSalary": true, "showOnboardingTime": true, "showExpectedIndustry": true, "showExpectedPosition": true}, "styles": {"padding": "20px", "fontSize": "16px", "boxShadow": "0 2px 8px rgba(0,0,0,0.1)", "titleColor": "#333333", "borderRadius": "8px", "highlightColor": "#1890ff", "backgroundColor": "#FFFFFF"}}', '2025-12-17 20:06:50.726041', '2025-12-18 23:17:42.081749', 0),
+     (6, '技能专长', 'Skills', '{"props": {"title": "技能专长", "showSkillLevel": true, "skillLevelType": "progress", "groupByCategory": true, "skillCategories": ["编程语言", "框架工具", "数据库", "其他技能"], "showExperienceYears": true, "maxSkillsPerCategory": 8}, "styles": {"padding": "20px", "fontSize": "14px", "titleColor": "#333333", "borderRadius": "8px", "skillSpacing": "12px", "progressColor": "#1890ff", "skillNameColor": "#555555", "backgroundColor": "#FFFFFF", "categorySpacing": "24px"}}', '2025-12-17 20:06:50.75858', '2025-12-18 23:17:48.730472', 0),
+     (3, '工作经历', 'WorkExperience', '{"props": {"title": "工作经历", "orderBy": "startDate", "maxItems": 5, "showSkills": true, "showJobTitle": true, "orderDirection": "desc", "showDepartment": true, "showWorkPeriod": true, "showCompanyLogo": true, "showCompanyName": true, "showWorkContent": true, "showAchievements": true}, "styles": {"padding": "20px", "fontSize": "14px", "titleColor": "#333333", "itemSpacing": "16px", "periodColor": "#999999", "borderRadius": "8px", "companyColor": "#1890ff", "timelineColor": "#e8e8e8", "backgroundColor": "#FFFFFF"}}', '2025-12-17 20:06:50.729911', '2025-12-18 23:18:01.110219', 0),
+     (5, '自我评价', 'SelfEvaluation', '{"props": {"title": "自我评价", "format": "paragraph", "maxLength": 500, "showHobbies": true, "allowRichText": true, "showStrengths": true, "characterTraits": ["责任心强", "学习能力强", "团队协作"], "showCareerGoals": true, "showSkillsSummary": true, "showCharacterTraits": true}, "styles": {"border": "1px solid #f0f0f0", "padding": "20px", "fontSize": "14px", "lineHeight": "1.8", "titleColor": "#333333", "borderRadius": "8px", "contentColor": "#555555", "backgroundColor": "#fafafa", "highlightBackground": "#fff7e6"}}', '2025-12-17 20:06:50.754145', '2025-12-18 23:18:08.082836', 0),
+     (4, '教育背景', 'EducationExperience', '{"props": {"title": "教育背景", "orderBy": "graduationDate", "showGPA": true, "maxItems": 3, "showMajor": true, "showDegree": true, "showHonors": true, "showCourses": true, "degreeFormat": "full", "orderDirection": "desc", "showSchoolLogo": true, "showSchoolName": true, "showEducationPeriod": true}, "styles": {"padding": "20px", "fontSize": "14px", "borderLeft": "3px solid #52c41a", "majorColor": "#666666", "titleColor": "#333333", "itemSpacing": "12px", "schoolColor": "#52c41a", "borderRadius": "8px", "backgroundColor": "#FFFFFF"}}', '2025-12-17 20:06:50.748877', '2025-12-18 23:18:18.43145', 0),
+     (7, '公司经历组件', 'CompanyExperience', '{"props": {"title": "公司经历", "orderBy": "startDate", "maxItems": 5, "showSkills": true, "showJobTitle": true, "orderDirection": "desc", "showDepartment": true, "showWorkPeriod": true, "showCompanyLogo": true, "showCompanyName": true, "showWorkContent": true, "showAchievements": true}, "styles": {"padding": "20px", "fontSize": "14px", "titleColor": "#333333", "itemSpacing": "16px", "periodColor": "#999999", "borderRadius": "8px", "companyColor": "#1890ff", "timelineColor": "#e8e8e8", "backgroundColor": "#FFFFFF"}}', '2025-12-22 03:44:40.655621', '2025-12-22 03:45:23.615624', 0),
+     (8, '项目经历', 'ProjectExperience', '{"props": {"title": "项目经历", "orderBy": "startDate", "maxItems": 5, "showSkills": true, "showJobTitle": true, "orderDirection": "desc", "showDepartment": true, "showWorkPeriod": true, "showCompanyLogo": true, "showCompanyName": true, "showWorkContent": true, "showAchievements": true}, "styles": {"padding": "20px", "fontSize": "14px", "titleColor": "#333333", "itemSpacing": "16px", "periodColor": "#999999", "borderRadius": "8px", "companyColor": "#1890ff", "timelineColor": "#e8e8e8", "backgroundColor": "#FFFFFF"}}', '2025-12-22 03:45:55.973934', '2025-12-22 03:46:18.403335', 0);
 
-    -- 3. 创意艺术模板
-    (
-        '创意艺术',
-        'creative_art_v1',
-        '创意设计风格，适合设计师、艺术家、创意工作者，展现个性与创造力',
-        'https://example.com/images/resumes/creative_art.png',
-        true,
-        '1.1.0',
-        '{
-            "theme": "creative",
-            "fontFamily": "Montserrat, Roboto, sans-serif",
-            "fontSize": "13px",
-            "lineHeight": "1.7",
-            "primaryColor": "#d81b60",
-            "secondaryColor": "#8e24aa",
-            "accentColor": "#ffeb3b",
-            "backgroundColor": "#ffffff",
-            "gradient": "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-            "borderStyle": "dashed",
-            "iconStyle": "filled"
-        }'::jsonb,
-        '{
-            "sections": ["personal_info", "portfolio", "work_experience", "skills", "education", "awards"],
-            "columns": 1,
-            "sectionOrder": ["header", "personal_info", "portfolio", "work_experience", "skills", "education", "awards"],
-            "showPhoto": true,
-            "photoPosition": "center_top",
-            "photoStyle": "circle",
-            "pageSize": "A4",
-            "orientation": "portrait",
-            "showIcons": true
-        }'::jsonb,
-        CURRENT_TIMESTAMP
-    ),
-
-    -- 4. 专业商务模板
-    (
-        '专业商务',
-        'professional_business_v1',
-        '专业商务风格，适合金融、咨询、管理岗位，彰显专业与权威',
-        'https://example.com/images/resumes/professional_business.png',
-        true,
-        '1.3.0',
-        '{
-            "theme": "professional",
-            "fontFamily": "Times New Roman, Georgia, serif",
-            "fontSize": "11px",
-            "lineHeight": "1.5",
-            "primaryColor": "#000000",
-            "secondaryColor": "#333333",
-            "accentColor": "#1a237e",
-            "backgroundColor": "#ffffff",
-            "headerColor": "#1a237e",
-            "borderColor": "#e0e0e0",
-            "fontWeight": "normal",
-            "letterSpacing": "0.5px"
-        }'::jsonb,
-        '{
-            "sections": ["personal_info", "professional_summary", "work_experience", "education", "certifications", "skills"],
-            "columns": 1,
-            "sectionOrder": ["header", "personal_info", "professional_summary", "work_experience", "education", "certifications", "skills"],
-            "showPhoto": false,
-            "pageSize": "A4",
-            "orientation": "portrait",
-            "margin": {
-                "top": "15mm",
-                "right": "15mm",
-                "bottom": "15mm",
-                "left": "15mm"
-            },
-            "lineStyle": "solid"
-        }'::jsonb,
-        CURRENT_TIMESTAMP
-    ),
-
-    -- 5. 学术研究模板
-    (
-        '学术研究',
-        'academic_research_v1',
-        '学术研究风格，适合学者、研究人员、教育工作者，突出学术成果',
-        'https://example.com/images/resumes/academic_research.png',
-        true,
-        '1.0.0',
-        '{
-            "theme": "academic",
-            "fontFamily": "Cambria, Georgia, serif",
-            "fontSize": "12px",
-            "lineHeight": "1.8",
-            "primaryColor": "#2e7d32",
-            "secondaryColor": "#558b2f",
-            "backgroundColor": "#ffffff",
-            "headerColor": "#1b5e20",
-            "citationStyle": "APA",
-            "paragraphIndent": "2em",
-            "sectionSpacing": "20px"
-        }'::jsonb,
-        '{
-            "sections": ["personal_info", "education", "research_interests", "publications", "conferences", "teaching_experience", "grants", "references"],
-            "columns": 1,
-            "sectionOrder": ["header", "personal_info", "education", "research_interests", "publications", "conferences", "teaching_experience", "grants", "skills", "references"],
-            "showPhoto": false,
-            "pageSize": "A4",
-            "orientation": "portrait",
-            "showPageNumbers": true,
-            "headerFooter": true,
-            "bibStyle": "APA"
-        }'::jsonb,
-        CURRENT_TIMESTAMP
-    );
-
--- 1. ResumeBasicInfo（基本信息组件）
-INSERT INTO bole_app.t_resumes_component
-(name, key, default_config, created_at, updated_at, deleted)
-VALUES (
-        '基本信息',
-        'ResumeBasicInfo',
-        '{"props":{
-            "title": "基本信息",
-            "showAvatar": true,
-            "avatarSize": "medium",
-            "showName": true,
-            "showGender": true,
-            "showBirthday": true,
-            "showPhone": true,
-            "showEmail": true,
-            "showLocation": true,
-            "showWorkYears": true,
-            "fields": ["name", "gender", "birthday", "phone", "email", "location", "workYears"]
-        },"styles":{
-            "fontSize": "16px",
-            "titleColor": "#333333",
-            "fieldColor": "#666666",
-            "backgroundColor": "#FFFFFF",
-            "padding": "20px",
-            "borderRadius": "8px",
-            "avatarBorder": "2px solid #e8e8e8"
-        }}'::jsonb,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        0);
-
--- 2. ResumeJobIntention（求职意向组件）
-INSERT INTO bole_app.t_resumes_component
-(name, key, default_config, created_at, updated_at, deleted)
-VALUES ('求职意向',
-        'ResumeJobIntention',
-        '{"props":{
-            "title": "求职意向",
-            "showExpectedPosition": true,
-            "showExpectedIndustry": true,
-            "showExpectedSalary": true,
-            "showWorkLocation": true,
-            "showJobType": true,
-            "showOnboardingTime": true,
-            "showCurrentStatus": true,
-            "salaryUnit": "K",
-            "locationType": "city"
-        },"styles":{
-            "fontSize": "16px",
-            "titleColor": "#333333",
-            "highlightColor": "#1890ff",
-            "backgroundColor": "#FFFFFF",
-            "padding": "20px",
-            "borderRadius": "8px",
-            "boxShadow": "0 2px 8px rgba(0,0,0,0.1)"
-        }}'::jsonb,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        0);
-
--- 3. ResumeWorkExperience（工作经历组件）
-INSERT INTO bole_app.t_resumes_component
-(name, key, default_config, created_at, updated_at, deleted)
-VALUES ('工作经历',
-        'ResumeWorkExperience',
-        '{"props":{
-            "title": "工作经历",
-            "maxItems": 5,
-            "showCompanyLogo": true,
-            "showCompanyName": true,
-            "showJobTitle": true,
-            "showDepartment": true,
-            "showWorkPeriod": true,
-            "showWorkContent": true,
-            "showAchievements": true,
-            "showSkills": true,
-            "orderBy": "startDate",
-            "orderDirection": "desc"
-        },"styles":{
-            "fontSize": "14px",
-            "titleColor": "#333333",
-            "companyColor": "#1890ff",
-            "periodColor": "#999999",
-            "backgroundColor": "#FFFFFF",
-            "padding": "20px",
-            "borderRadius": "8px",
-            "itemSpacing": "16px",
-            "timelineColor": "#e8e8e8"
-        }}'::jsonb,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        0);
-
--- 4. ResumeEducation（教育背景组件）
-INSERT INTO bole_app.t_resumes_component
-(name, key, default_config, created_at, updated_at, deleted)
-VALUES (
-        '教育背景',
-        'ResumeEducation',
-        '{"props":{
-            "title": "教育背景",
-            "maxItems": 3,
-            "showSchoolLogo": true,
-            "showSchoolName": true,
-            "showMajor": true,
-            "showDegree": true,
-            "showEducationPeriod": true,
-            "showGPA": true,
-            "showHonors": true,
-            "showCourses": true,
-            "orderBy": "graduationDate",
-            "orderDirection": "desc",
-            "degreeFormat": "full"
-        },"styles":{
-            "fontSize": "14px",
-            "titleColor": "#333333",
-            "schoolColor": "#52c41a",
-            "majorColor": "#666666",
-            "backgroundColor": "#FFFFFF",
-            "padding": "20px",
-            "borderRadius": "8px",
-            "itemSpacing": "12px",
-            "borderLeft": "3px solid #52c41a"
-        }}'::jsonb,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        0);
-
--- 5. ResumeSelfEvaluation（自我评价组件）
-INSERT INTO bole_app.t_resumes_component
-(name, key, default_config, created_at, updated_at, deleted)
-VALUES (
-        '自我评价',
-        'ResumeSelfEvaluation',
-        '{"props":{
-            "title": "自我评价",
-            "maxLength": 500,
-            "showCharacterTraits": true,
-            "showSkillsSummary": true,
-            "showCareerGoals": true,
-            "showStrengths": true,
-            "showHobbies": true,
-            "characterTraits": ["责任心强", "学习能力强", "团队协作"],
-            "format": "paragraph",
-            "allowRichText": true
-        },"styles":{
-            "fontSize": "14px",
-            "titleColor": "#333333",
-            "contentColor": "#555555",
-            "backgroundColor": "#fafafa",
-            "padding": "20px",
-            "borderRadius": "8px",
-            "lineHeight": "1.8",
-            "border": "1px solid #f0f0f0",
-            "highlightBackground": "#fff7e6"
-        }}'::jsonb,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        0);
-
--- 6. 额外添加一个技能专长组件（ResumeSkills）
-INSERT INTO bole_app.t_resumes_component
-(name, key, default_config, created_at, updated_at, deleted)
-VALUES (
-        '技能专长',
-        'ResumeSkills',
-        '{"props":{
-            "title": "技能专长",
-            "skillCategories": ["编程语言", "框架工具", "数据库", "其他技能"],
-            "showSkillLevel": true,
-            "showExperienceYears": true,
-            "skillLevelType": "progress",
-            "maxSkillsPerCategory": 8,
-            "groupByCategory": true
-        },"styles":{
-            "fontSize": "14px",
-            "titleColor": "#333333",
-            "skillNameColor": "#555555",
-            "progressColor": "#1890ff",
-            "backgroundColor": "#FFFFFF",
-            "padding": "20px",
-            "borderRadius": "8px",
-            "categorySpacing": "24px",
-            "skillSpacing": "12px"
-        }}'::jsonb,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        0);
+    --插入模板组件
 
 
     -- 插入技能数据
@@ -563,6 +216,11 @@ VALUES (
     ('西安市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('成都市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('重庆市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+    -- 插入默认验证码模板（根据类中的VALIDATE_CODE_ID = 1L）
+    INSERT INTO bole_app.t_msg_template (id, subject, template, is_verify, length, duration, deleted)
+    VALUES (1, '验证码', '您的验证码是：{code}，有效期为{duration}分钟，请勿泄露给他人。', true, 6, 10, 0)
+    ON CONFLICT (id) DO NOTHING;
 
     -- 插入审计日志数据
     INSERT INTO bole_audit.audit_logs (id, table_name, record_id, action, old_data, new_data, changed_by) VALUES

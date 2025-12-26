@@ -20,33 +20,29 @@ import cn.net.yunlou.bole.service.MessageTemplateService;
 import cn.net.yunlou.bole.service.SmsService;
 import cn.net.yunlou.bole.struct.SmsStructMapper;
 import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
 /**
- * FileName: SmsServiceImpl
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 01:22
- * Modified By
- * Modified At
+ * FileName: SmsServiceImpl Description: Created By laughtiger Created At 2025/12/25 01:22 Modified
+ * By Modified At
  */
 @Service
 @RequiredArgsConstructor
-public class SmsServiceImpl extends BaseService<SmsMapper, Sms, SmsCreate, SmsView, SmsEdit, SmsQuery, SmsStructMapper> implements SmsService {
+public class SmsServiceImpl
+        extends BaseService<SmsMapper, Sms, SmsCreate, SmsView, SmsEdit, SmsQuery, SmsStructMapper>
+        implements SmsService {
 
     private final MessageSendStrategyFactory messageSendStrategyFactory;
 
     private final MessageTemplateService messageTemplateService;
 
     private final RedisCacheUtils redisCacheUtils;
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -56,15 +52,22 @@ public class SmsServiceImpl extends BaseService<SmsMapper, Sms, SmsCreate, SmsVi
 
         String phoneNumber = completePhoneNumber(create.getAreaCode(), create.getPhone());
 
-        boolean send = messageSendStrategyFactory.getMessageSendStrategy(MessageSendType.YP_SMS)
-                .send(MessageEntity.builder()
-                        .to(phoneNumber)
-                        .subject(generated.getTemplate().getSubject())
-                        .text(generated.getText())
-                        .build());
+        boolean send =
+                messageSendStrategyFactory
+                        .getMessageSendStrategy(MessageSendType.YP_SMS)
+                        .send(
+                                MessageEntity.builder()
+                                        .to(phoneNumber)
+                                        .subject(generated.getTemplate().getSubject())
+                                        .text(generated.getText())
+                                        .build());
 
         if (send) {
-            redisCacheUtils.putObject(Sms.SMS_CACHE_KEY + phoneNumber, generated.getContent(), generated.getTemplate().getDuration(), TimeUnit.MINUTES);
+            redisCacheUtils.putObject(
+                    Sms.SMS_CACHE_KEY + phoneNumber,
+                    generated.getContent(),
+                    generated.getTemplate().getDuration(),
+                    TimeUnit.MINUTES);
             generated.setState(1);
         }
 
@@ -88,7 +91,6 @@ public class SmsServiceImpl extends BaseService<SmsMapper, Sms, SmsCreate, SmsVi
         }
         return "+" + areaCode + phone;
     }
-
 
     private Sms generate(SmsCreate create) {
 
@@ -116,5 +118,4 @@ public class SmsServiceImpl extends BaseService<SmsMapper, Sms, SmsCreate, SmsVi
 
         return entity;
     }
-
 }

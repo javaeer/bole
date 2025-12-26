@@ -6,7 +6,6 @@ import cn.net.yunlou.bole.model.create.UserCreate;
 import cn.net.yunlou.bole.model.edit.UserEdit;
 import cn.net.yunlou.bole.model.query.UserQuery;
 import cn.net.yunlou.bole.model.view.UserView;
-import jakarta.validation.constraints.NotBlank;
 
 /**
  * FileName: IUserService Description: Created By MR. WANG Created At 2025/11/19 13:48 Modified By

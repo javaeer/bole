@@ -2,9 +2,7 @@ package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
 import cn.net.yunlou.bole.entity.Email;
-import cn.net.yunlou.bole.entity.Sms;
 import cn.net.yunlou.bole.model.create.EmailCreate;
-import cn.net.yunlou.bole.model.create.SmsCreate;
 import cn.net.yunlou.bole.model.edit.EmailEdit;
 import cn.net.yunlou.bole.model.query.EmailQuery;
 import cn.net.yunlou.bole.model.view.EmailView;
@@ -17,9 +15,7 @@ import jakarta.validation.Valid;
 public interface EmailService
         extends IBaseService<Email, EmailCreate, EmailView, EmailEdit, EmailQuery> {
 
-
     boolean send(@Valid EmailCreate create);
 
     boolean verify(Email entity);
-
 }

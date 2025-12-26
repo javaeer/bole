@@ -6,6 +6,7 @@ import cn.net.yunlou.bole.config.AppEmailConfig;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.io.File;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +17,9 @@ import org.springframework.util.StringUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.io.File;
-
 /**
- * FileName: MessageSendEmailStrategy
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 00:02
- * Modified By
- * Modified At
+ * FileName: MessageSendEmailStrategy Description: Created By laughtiger Created At 2025/12/25 00:02
+ * Modified By Modified At
  */
 @Slf4j
 @Component
@@ -36,7 +31,6 @@ public class MessageSendEmailStrategy implements IMessageSendStrategy {
     private final JavaMailSender javaMailSender;
 
     private final TemplateEngine templateEngine;
-
 
     @Override
     public boolean send(MessageEntity message) {
@@ -53,17 +47,14 @@ public class MessageSendEmailStrategy implements IMessageSendStrategy {
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            //throw new RuntimeException(e);
+            // throw new RuntimeException(e);
             return false;
         }
 
         return true;
     }
 
-
-    /**
-     * 发送 HTML 邮件
-     */
+    /** 发送 HTML 邮件 */
     public void sendHtmlEmail(String to, String subject, String htmlContent)
             throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
@@ -72,16 +63,14 @@ public class MessageSendEmailStrategy implements IMessageSendStrategy {
         helper.setFrom("noreply@yourdomain.com");
         helper.setTo(to);
         helper.setSubject(subject);
-        helper.setText(htmlContent, true);  // true 表示发送 HTML
+        helper.setText(htmlContent, true); // true 表示发送 HTML
 
         javaMailSender.send(message);
     }
 
-    /**
-     * 发送带附件的邮件
-     */
-    public void sendEmailWithAttachment(String to, String subject, String text,
-                                        String attachmentPath)
+    /** 发送带附件的邮件 */
+    public void sendEmailWithAttachment(
+            String to, String subject, String text, String attachmentPath)
             throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -98,21 +87,14 @@ public class MessageSendEmailStrategy implements IMessageSendStrategy {
         javaMailSender.send(message);
     }
 
-    /**
-     * 使用 Thymeleaf 模板发送邮件
-     */
-    public void sendTemplateEmail(String to, String subject,
-                                  String templateName,
-                                  Context context)
+    /** 使用 Thymeleaf 模板发送邮件 */
+    public void sendTemplateEmail(String to, String subject, String templateName, Context context)
             throws MessagingException {
         String htmlContent = templateEngine.process(templateName, context);
         sendHtmlEmail(to, subject, htmlContent);
     }
 
-
-    /**
-     * 获取发件人地址（带名称）
-     */
+    /** 获取发件人地址（带名称） */
     @SneakyThrows
     private InternetAddress getFromAddress() {
         String address = appEmailConfig.getFrom().getAddress();

@@ -3,7 +3,6 @@ package cn.net.yunlou.bole.entity;
 import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: Role Description: Created By MR. WANG Created At 2025/11/19 14:01 Modified By Modified

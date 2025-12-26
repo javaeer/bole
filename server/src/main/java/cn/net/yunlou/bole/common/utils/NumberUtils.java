@@ -20,46 +20,44 @@
 
 package cn.net.yunlou.bole.common.utils;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
-
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.Assert;
 
 @Slf4j
 public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
 
-    public final static String ZERO = "0";
-    public final static String ZERO_O = "0.0";
-    public final static String ZERO_OO = "0.00";
-    /**
-     * 支持的最小进制数
-     */
+    public static final String ZERO = "0";
+    public static final String ZERO_O = "0.0";
+    public static final String ZERO_OO = "0.00";
+
+    /** 支持的最小进制数 */
     public static final int MIN_RADIX = 2;
-    final static char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
-            '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
-            'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
-            'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-            'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
-            'Z'};
-    /**
-     * 支持的最大进制数
-     */
+
+    static final char[] digits = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    };
+
+    /** 支持的最大进制数 */
     public static final int MAX_RADIX = digits.length;
-    /**
-     * 62进制字母【已排除易混淆字符】
-     */
-    final static String[] letters = {"A", "B", "C", "D", "E", "F", "G",
-            "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T",
-            "U", "V", "W", "X", "Y", "Z"};
-    /**
-     * 数字
-     */
-    final static char[] nums = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    final static Map<Character, Integer> digitMap = new HashMap<>();
+
+    /** 62进制字母【已排除易混淆字符】 */
+    static final String[] letters = {
+        "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T",
+        "U", "V", "W", "X", "Y", "Z"
+    };
+
+    /** 数字 */
+    static final char[] nums = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+    static final Map<Character, Integer> digitMap = new HashMap<>();
     private static final Integer DEF_DIV_SCALE = 2;
 
     static {
@@ -103,10 +101,8 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
             buf[--charPos] = '-';
         }
 
-
         return new String(buf, charPos, (size - charPos));
     }
-
 
     /**
      * 将 64以内的数字 转化为 大写字母
@@ -122,7 +118,7 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
     /**
      * 将字符串转换为长整型数字
      *
-     * @param s     数字字符串
+     * @param s 数字字符串
      * @param radix 进制数
      * @return
      */
@@ -132,12 +128,10 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
         }
 
         if (radix < MIN_RADIX) {
-            throw new NumberFormatException("radix " + radix
-                    + " less than Numbers.MIN_RADIX");
+            throw new NumberFormatException("radix " + radix + " less than Numbers.MIN_RADIX");
         }
         if (radix > MAX_RADIX) {
-            throw new NumberFormatException("radix " + radix
-                    + " greater than Numbers.MAX_RADIX");
+            throw new NumberFormatException("radix " + radix + " greater than Numbers.MAX_RADIX");
         }
 
         long result = 0;
@@ -190,7 +184,7 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
      * 获取百分比
      *
      * @param dividend 被除数
-     * @param divisor  除数
+     * @param divisor 除数
      * @return
      */
     public static String getPercent(Double dividend, Double divisor) {
@@ -215,7 +209,6 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
         return false;
     }
 
-
     /**
      * 是否偶数
      *
@@ -229,7 +222,6 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
         }
         return false;
     }
-
 
     /**
      * 指定长度的 随机数字
@@ -288,7 +280,6 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
         return String.format("%0" + formatLength + "d", num);
     }
 
-
     /**
      * a的n次方 + (n-1)*a的(n-1)次方,直到 a的 1次方 最后乘以 乘数
      *
@@ -313,11 +304,7 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
     }
 
     /**
-     * 获取字母数字
-     * 将数字 转化为 字母+数字
-     * 数字位最大支持 到 9999
-     * 即 A0001-A9999 后，自动 切换至 B0001-B9999
-     * 穷尽字母表后 最终数字可能为 ZZZZZ
+     * 获取字母数字 将数字 转化为 字母+数字 数字位最大支持 到 9999 即 A0001-A9999 后，自动 切换至 B0001-B9999 穷尽字母表后 最终数字可能为 ZZZZZ
      *
      * @param num
      * @return
@@ -339,33 +326,33 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
             throw new NumberFormatException("For input : must be less than 5");
         }
 
-
         String s1 = "";
 
-        //1.获取字母数量
+        // 1.获取字母数量
         int lettersLength = letters.length;
 
-
-        //int z = lettersLength * maxNum;
+        // int z = lettersLength * maxNum;
         int z = (int) getEquation(lettersLength, maxNum, 1);
 
         int zz = (int) getEquation(lettersLength, maxNum, 2);
 
-        //double v1 = (Math.pow(lettersLength, 1) + lettersLength * 0) * maxNum;
-        //double v2 = (Math.pow(lettersLength, 2) + lettersLength * 1) * maxNum;
+        // double v1 = (Math.pow(lettersLength, 1) + lettersLength * 0) * maxNum;
+        // double v2 = (Math.pow(lettersLength, 2) + lettersLength * 1) * maxNum;
         //
-        //double v3 = ((Math.pow(lettersLength, 3) + lettersLength) + (Math.pow(lettersLength, 2) + lettersLength)) * maxNum;
+        // double v3 = ((Math.pow(lettersLength, 3) + lettersLength) + (Math.pow(lettersLength, 2) +
+        // lettersLength)) * maxNum;
 
-        //int zzz = lettersLength * (lettersLength * lettersLength * maxNum + lettersLength * maxNum) + (lettersLength * lettersLength * maxNum + lettersLength * maxNum);
+        // int zzz = lettersLength * (lettersLength * lettersLength * maxNum + lettersLength *
+        // maxNum) + (lettersLength * lettersLength * maxNum + lettersLength * maxNum);
         int zzz = (int) getEquation(lettersLength, maxNum, 3);
 
         int zzzz = (int) getEquation(lettersLength, maxNum, 4);
 
         int zzzzz = (int) getEquation(lettersLength, maxNum, 5);
 
-        //log.info("号码节点：{}\t{}\t{}\t{}\t{}\t", z, zz, zzz, zzzz, zzzzz);
+        // log.info("号码节点：{}\t{}\t{}\t{}\t{}\t", z, zz, zzz, zzzz, zzzzz);
         if (num <= z) {
-            //获取倍数，可定位具体对应的字母
+            // 获取倍数，可定位具体对应的字母
             int i = num / maxNum;
             int s = num % maxNum;
             /*
@@ -390,11 +377,11 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
                 s1 = letter + maxNum;
             }
         } else {
-            //两个字母+（01-99的数字）组成
+            // 两个字母+（01-99的数字）组成
             if (num <= zz) {
-                //确定第一个字母
+                // 确定第一个字母
                 String firstLetter = "";
-                //去除不需要的部分
+                // 去除不需要的部分
                 int i1 = num - z;
                 int i = i1 / z;
                 if (i == lettersLength) {
@@ -403,13 +390,13 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
                     firstLetter = String.valueOf(letters[i]);
                 }
                 int i2 = i1 - z * i;
-                //确定第二个字母+数字
+                // 确定第二个字母+数字
                 String letterNum = getLetterNum(i2, maxNum, 0, maxNumLength);
                 s1 = firstLetter + letterNum;
 
             } else {
                 if (num <= zzz) {
-                    //确定第一个字母
+                    // 确定第一个字母
                     String firstLetter = "";
                     int i1 = num - zz;
                     int i = i1 / zz;
@@ -418,13 +405,13 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
                     } else if (i < lettersLength) {
                         firstLetter = String.valueOf(letters[i]);
                     }
-                    //获取第二第三个
+                    // 获取第二第三个
                     int i2 = i1 - zz * i + z;
                     String letterNum = getLetterNum(i2, maxNum, 0, maxNumLength);
                     s1 = firstLetter + letterNum;
                 } else {
                     if (num <= zzzz) {
-                        //确定第一个字母
+                        // 确定第一个字母
                         String firstLetter = "";
                         int i1 = num - zzz;
                         int i = i1 / zzz;
@@ -433,13 +420,13 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
                         } else if (i < lettersLength) {
                             firstLetter = String.valueOf(letters[i]);
                         }
-                        //获取第二第三个第四个
+                        // 获取第二第三个第四个
                         int i2 = i1 - zzz * i + zz;
                         String letterNum = getLetterNum(i2, maxNum, 0, maxNumLength);
                         s1 = firstLetter + letterNum;
                     } else {
                         if (num <= zzzzz) {
-                            //确定第一个字母
+                            // 确定第一个字母
                             String firstLetter = "";
                             int i1 = num - zzzz;
                             int i = i1 / zzzz;
@@ -448,12 +435,13 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
                             } else if (i < lettersLength) {
                                 firstLetter = String.valueOf(letters[i]);
                             }
-                            //获取第二第三个
+                            // 获取第二第三个
                             int i2 = i1 - zzzz * i + zzz;
                             String letterNum = getLetterNum(i2, maxNum, 0, maxNumLength);
                             s1 = firstLetter + letterNum;
                         } else {
-                            throw new NumberFormatException("The merchant numbers have been exhausted");
+                            throw new NumberFormatException(
+                                    "The merchant numbers have been exhausted");
                         }
                     }
                 }
@@ -463,8 +451,7 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
     }
 
     /**
-     * 获取数字长度
-     * 包含负整数
+     * 获取数字长度 包含负整数
      *
      * @param num
      * @return
@@ -474,31 +461,8 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
     }
 
     /**
-     * 获取正整数的位数
-     * 可通过枚举实现 单位的转换
-     * switch (unit) {
-     * case 1:
-     * // 个
-     * break;
-     * case 2:
-     * //十
-     * break;
-     * case 3:
-     * // 百
-     * break;
-     * case 4:
-     * // 千
-     * break;
-     * case 5:
-     * // 万
-     * break;
-     * case 6:
-     * // 十万
-     * break;
-     * default:
-     * // 未知单位
-     * break;
-     * }
+     * 获取正整数的位数 可通过枚举实现 单位的转换 switch (unit) { case 1: // 个 break; case 2: //十 break; case 3: // 百
+     * break; case 4: // 千 break; case 5: // 万 break; case 6: // 十万 break; default: // 未知单位 break; }
      *
      * @param num
      * @return
@@ -519,8 +483,7 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
     }
 
     /**
-     * 获取 折扣 后的价格
-     * 折后价
+     * 获取 折扣 后的价格 折后价
      *
      * @param amount
      * @param percent
@@ -530,7 +493,6 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
         Assert.isTrue(percent > 0, "percent must gt 0");
         return amount.multiply(BigDecimal.valueOf(percent).divide(BigDecimal.valueOf(100)));
     }
-
 
     /**
      * 提供精确的加法运算。
@@ -560,8 +522,7 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
     public static BigDecimal add(Number... numbers) {
         BigDecimal decimal = BigDecimal.ZERO;
         for (Number number : numbers) {
-            if (number == null
-                    || number.doubleValue() == 0) {
+            if (number == null || number.doubleValue() == 0) {
                 continue;
             }
             decimal = decimal.add(new BigDecimal(Double.toString(number.doubleValue())));
@@ -611,7 +572,7 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
      * 提供（相对）精确的除法运算，当发生除不尽的情况时， 精确到小数点以后10位，以后的数字四舍五入。
      *
      * @param dividend 被除数
-     * @param divisor  除数
+     * @param divisor 除数
      * @return 两个参数的商
      */
     public static Double div(Double dividend, Double divisor) {
@@ -622,14 +583,13 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
      * 提供（相对）精确的除法运算。 当发生除不尽的情况时，由scale参数指定精度，以后的数字四舍五入。
      *
      * @param dividend 被除数
-     * @param divisor  除数
-     * @param scale    表示表示需要精确到小数点以后几位。
+     * @param divisor 除数
+     * @param scale 表示表示需要精确到小数点以后几位。
      * @return 两个参数的商
      */
     public static Double div(Double dividend, Double divisor, Integer scale) {
         if (scale < 0) {
-            throw new IllegalArgumentException(
-                    "The scale must be a positive integer or zero");
+            throw new IllegalArgumentException("The scale must be a positive integer or zero");
         }
         BigDecimal b1 = new BigDecimal(Double.toString(dividend));
         BigDecimal b2 = new BigDecimal(Double.toString(divisor));
@@ -645,52 +605,48 @@ public class NumberUtils extends org.apache.commons.lang3.math.NumberUtils {
      */
     public static Double round(Double value, Integer scale) {
         if (scale < 0) {
-            throw new IllegalArgumentException(
-                    "The scale must be a positive integer or zero");
+            throw new IllegalArgumentException("The scale must be a positive integer or zero");
         }
         BigDecimal b = new BigDecimal(Double.toString(value));
         BigDecimal one = new BigDecimal("1");
         return b.divide(one, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
-
     public static void main(String[] args) {
-        ////这里的数后面加“D”是表明它是Double类型，否则相除的话取整，无法正常使用
-        //System.out.println("百分数：" + getPercent(50D, -100D));
+        //// 这里的数后面加“D”是表明它是Double类型，否则相除的话取整，无法正常使用
+        // System.out.println("百分数：" + getPercent(50D, -100D));
 
-        //System.out.println(BigDecimal.valueOf(0).divide(BigDecimal.valueOf(100)));
+        // System.out.println(BigDecimal.valueOf(0).divide(BigDecimal.valueOf(100)));
 
-        //System.out.println(fillZero(11));
+        // System.out.println(fillZero(11));
 
         System.out.println(toUpperLetter(27));
 
-        //System.out.println(getLetterNum(2476, 99, 1));
-        //System.out.println(getLetterNum(59401, 99, 1, 0));
-        //System.out.println(getLetterNum(1));
-        //号码节点：216	5400	135000	3375000	84126168
-        //for (int i = 1; i <= 5402; i++) {
+        // System.out.println(getLetterNum(2476, 99, 1));
+        // System.out.println(getLetterNum(59401, 99, 1, 0));
+        // System.out.println(getLetterNum(1));
+        // 号码节点：216	5400	135000	3375000	84126168
+        // for (int i = 1; i <= 5402; i++) {
         //    System.out.println(getLetterNum(i, 999, 1, 0));
-        //}
+        // }
 
-        //int a = 24, b = 9, n = 5;
-        //System.out.println(getEquation(a, b, n));
+        // int a = 24, b = 9, n = 5;
+        // System.out.println(getEquation(a, b, n));
 
-        //System.out.println(getAfterAmount(new BigDecimal(0.01),80));
+        // System.out.println(getAfterAmount(new BigDecimal(0.01),80));
 
-        //BigDecimal ten = new BigDecimal(100.00);
-        //BigDecimal bigDecimal = new BigDecimal(-500.00);
+        // BigDecimal ten = new BigDecimal(100.00);
+        // BigDecimal bigDecimal = new BigDecimal(-500.00);
 
-        //BigDecimal remainder = bigDecimal.remainder(ten);
+        // BigDecimal remainder = bigDecimal.remainder(ten);
 
+        // System.out.println(remainder.compareTo(BigDecimal.ZERO) == 0);
 
-        //System.out.println(remainder.compareTo(BigDecimal.ZERO) == 0);
+        // System.out.println(add(BigDecimal.ONE, 100D, 50L));
+        // System.System.out.println(getNumberLength(-1));
+        // System.out.println(getNumberBits(500));
 
-
-        //System.out.println(add(BigDecimal.ONE, 100D, 50L));
-        //System.System.out.println(getNumberLength(-1));
-        //System.out.println(getNumberBits(500));
-
-        //System.out.println(BigDecimal.valueOf(NumberUtils.div(Double.valueOf(5), Double.valueOf(10000), NumberUtils.getNumberLength(10000))));
+        // System.out.println(BigDecimal.valueOf(NumberUtils.div(Double.valueOf(5),
+        // Double.valueOf(10000), NumberUtils.getNumberLength(10000))));
     }
-
 }

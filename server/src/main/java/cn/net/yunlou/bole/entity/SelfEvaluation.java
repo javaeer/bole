@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.List;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: SelfEvaluation Description: Created By laughtiger Created At 2025/12/14 04:08 Modified

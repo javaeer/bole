@@ -4,12 +4,7 @@ import cn.net.yunlou.bole.common.IBaseMapper;
 import cn.net.yunlou.bole.entity.Sms;
 
 /**
- * FileName: SmsMapper
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 01:23
- * Modified By
+ * FileName: SmsMapper Description: Created By laughtiger Created At 2025/12/25 01:23 Modified By
  * Modified At
  */
-public interface SmsMapper extends IBaseMapper<Sms> {
-}
+public interface SmsMapper extends IBaseMapper<Sms> {}

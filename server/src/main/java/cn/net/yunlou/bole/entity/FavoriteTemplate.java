@@ -6,12 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 /**
- * FileName: CollectionTemplate
- * Description:
- * Created By laughtiger
- * Created At 2025/12/24 19:56
- * Modified By
- * Modified At
+ * FileName: CollectionTemplate Description: Created By laughtiger Created At 2025/12/24 19:56
+ * Modified By Modified At
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -30,5 +26,4 @@ public class FavoriteTemplate extends MultiEntity {
 
     @TableField(exist = false)
     private ResumesTemplate template;
-
 }

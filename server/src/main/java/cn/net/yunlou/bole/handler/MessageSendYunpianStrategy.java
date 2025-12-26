@@ -6,19 +6,14 @@ import cn.net.yunlou.bole.config.AppYunPianConfig;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 /**
- * FileName: YunpianMessageSendStrategy
- * Description:
- * Created By laughtiger
- * Created At 2025/12/24 23:59
- * Modified By
- * Modified At
+ * FileName: YunpianMessageSendStrategy Description: Created By laughtiger Created At 2025/12/24
+ * 23:59 Modified By Modified At
  */
 @Slf4j
 @Component
@@ -39,7 +34,6 @@ public class MessageSendYunpianStrategy implements IMessageSendStrategy {
         log.info("yunpian code :{},msg :{}", r.getCode(), r.getMsg());
         return r.isSucc();
     }
-
 
     /**
      * 指定模板单发
@@ -64,8 +58,6 @@ public class MessageSendYunpianStrategy implements IMessageSendStrategy {
         log.info("yunpian code :{},msg :{}", r.getCode(), r.getMsg());
         return r.isSucc();
     }
-
-
 
     @Override
     public boolean supports(MessageSendType sendType) {

@@ -16,9 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 关注的公司 收藏的模板
- * FileName: CompanyController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
- * By Modified At
+ * 关注的公司 收藏的模板 FileName: CompanyController Description: Created By MR. WANG Created At 2025/11/24
+ * 21:27 Modified By Modified At
  */
 @RestController
 @RequestMapping("job-intention")

@@ -4,7 +4,6 @@ import cn.net.yunlou.bole.common.MultiEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: UserRole Description: Created By MR. WANG Created At 2025/11/19 13:32

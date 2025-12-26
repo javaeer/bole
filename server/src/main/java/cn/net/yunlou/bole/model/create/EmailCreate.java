@@ -8,11 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: SmsCreate
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 01:13
- * Modified By
+ * FileName: SmsCreate Description: Created By laughtiger Created At 2025/12/25 01:13 Modified By
  * Modified At
  */
 @EqualsAndHashCode(callSuper = true)
@@ -21,7 +17,10 @@ import lombok.EqualsAndHashCode;
 public class EmailCreate extends BaseCreate {
 
     @NotBlank(message = "邮件地址不得为空")
-    @Schema(description = "邮件", example = "admin@yunlou.net.cn", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(
+            description = "邮件",
+            example = "admin@yunlou.net.cn",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     private String address;
 
     @NotNull(message = "模板不能为空")

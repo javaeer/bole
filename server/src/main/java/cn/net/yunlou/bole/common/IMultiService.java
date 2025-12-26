@@ -2,7 +2,6 @@ package cn.net.yunlou.bole.common;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +13,8 @@ public interface IMultiService<T extends MultiEntity, L extends BaseEntity, R ex
         extends IService<T> {
 
     boolean exists(T entity);
+
+    List<T> list(T entity);
 
     List<L> listLeft(T entity);
 
@@ -32,4 +33,8 @@ public interface IMultiService<T extends MultiEntity, L extends BaseEntity, R ex
     boolean unbind(L left, R right);
 
     boolean sync(L left, List<R> rights);
+
+    boolean clean(L left, R right);
+
+    T createEntity(L left, R right);
 }

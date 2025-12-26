@@ -19,32 +19,23 @@
  */
 package cn.net.yunlou.bole.common.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.text.StringEscapeUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-
 /**
- * <p>
- * 封装各种格式的编码解码工具类.
- * 1.Commons-Codec的 hex/base64 编码
- * 2.自制的base62 编码
- * 3.Commons-Lang的xml/html escape
- * 4.JDK提供的URLEncoder
- * </p>
- *
- * @Author javaeer(javaeer @ aliyun.com)
- * @Date 2018/11/27 13:54
- * @Version 1.0
+ * 封装各种格式的编码解码工具类. 1.Commons-Codec的 hex/base64 编码 2.自制的base62 编码 3.Commons-Lang的xml/html escape
+ * 4.JDK提供的URLEncoder @Author javaeer(javaeer @ aliyun.com) @Date 2018/11/27 13:54 @Version 1.0
  */
 public class EncoderUtils {
     private static final String DEFAULT_URL_ENCODING = "UTF-8";
     private static final int[] BASE62_INDEX = new int[128];
-    private static final String BASE62 = "AaBbCcDdEeFf01234GgHhIiJjKkLl56789MmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+    private static final String BASE62 =
+            "AaBbCcDdEeFf01234GgHhIiJjKkLl56789MmNnOoPpQqRrSsTtUuVvWwXxYyZz";
 
     static {
         for (int i = 0; i < BASE62.length(); i++) {
@@ -126,6 +117,7 @@ public class EncoderUtils {
 
     /**
      * Base62编码.
+     *
      * @param input 输入长整型
      * @return 编码后的字符串
      */
@@ -146,6 +138,7 @@ public class EncoderUtils {
 
     /**
      * Base62解码.
+     *
      * @param input 输入字符串
      * @return 解码后的长整型
      * @throws IllegalArgumentException 如果输入包含非Base62字符
@@ -167,7 +160,6 @@ public class EncoderUtils {
         return decoded;
     }
 
-
     /**
      * Html 转码.
      *
@@ -188,10 +180,7 @@ public class EncoderUtils {
         return StringEscapeUtils.unescapeHtml4(htmlEscaped);
     }
 
-    /**
-     * Xml 转码.
-     *
-     */
+    /** Xml 转码. */
     public static String escapeXml(String xml) {
         return StringEscapeUtils.escapeXml10(xml);
     }
@@ -234,10 +223,8 @@ public class EncoderUtils {
         }
     }
 
-
     public static void main(String[] args) {
         System.out.println(encodeBase62(1234567890111L));
         System.out.println(decodeBase62("g7"));
     }
-
 }

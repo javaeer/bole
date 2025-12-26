@@ -22,12 +22,8 @@ public class RegisterEmailDTO extends BaseDTO {
             requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;
 
-
     @NotBlank(message = "密码不得为空")
-    @Schema(
-            description = "密码",
-            example = "123456",
-            requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "密码", example = "123456", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
     @NotBlank(message = "验证码不得为空")

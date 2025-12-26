@@ -5,14 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: SmsEdit
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 01:19
- * Modified By
+ * FileName: SmsEdit Description: Created By laughtiger Created At 2025/12/25 01:19 Modified By
  * Modified At
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SmsEdit extends BaseEdit {
-}
+public class SmsEdit extends BaseEdit {}

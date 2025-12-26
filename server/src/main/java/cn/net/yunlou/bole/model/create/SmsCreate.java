@@ -8,11 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: SmsCreate
- * Description:
- * Created By laughtiger
- * Created At 2025/12/25 01:13
- * Modified By
+ * FileName: SmsCreate Description: Created By laughtiger Created At 2025/12/25 01:13 Modified By
  * Modified At
  */
 @EqualsAndHashCode(callSuper = true)
@@ -25,7 +21,10 @@ public class SmsCreate extends BaseCreate {
     private String areaCode;
 
     @NotBlank(message = "手机号不能为空")
-    @Schema(description = "手机号", example = "18610880038", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(
+            description = "手机号",
+            example = "18610880038",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     private String phone;
 
     @NotNull(message = "模板不得为空")

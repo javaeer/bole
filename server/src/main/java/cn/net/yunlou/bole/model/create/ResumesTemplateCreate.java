@@ -3,6 +3,7 @@ package cn.net.yunlou.bole.model.create;
 import cn.net.yunlou.bole.common.BaseCreate;
 import cn.net.yunlou.bole.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.entity.ResumesTemplateStyle;
+import cn.net.yunlou.bole.model.ResumesTemplateComponentDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.*;
@@ -40,5 +41,5 @@ public class ResumesTemplateCreate extends BaseCreate {
     /** 布局配置 */
     private ResumesTemplateLayout globalLayout;
 
-    private List<ResumesTemplateComponentCreate> components;
+    private List<ResumesTemplateComponentDTO> components;
 }

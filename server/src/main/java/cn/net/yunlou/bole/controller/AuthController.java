@@ -35,13 +35,15 @@ public class AuthController {
 
     @PostMapping("register-phone")
     @Operation(summary = "手机号注册")
-    public BusinessResponse<AccessTokenDTO> registerPhone(@Valid @RequestBody RegisterPhoneDTO dto) {
+    public BusinessResponse<AccessTokenDTO> registerPhone(
+            @Valid @RequestBody RegisterPhoneDTO dto) {
         return BusinessResponse.success(authService.registerPhone(dto));
     }
 
     @PostMapping("register-email")
     @Operation(summary = "邮件注册")
-    public BusinessResponse<AccessTokenDTO> registerEmail(@Valid @RequestBody RegisterEmailDTO dto) {
+    public BusinessResponse<AccessTokenDTO> registerEmail(
+            @Valid @RequestBody RegisterEmailDTO dto) {
         return BusinessResponse.success(authService.registerEmail(dto));
     }
 

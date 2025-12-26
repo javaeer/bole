@@ -817,7 +817,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         is_active BOOLEAN DEFAULT FALSE,
         version VARCHAR(50) DEFAULT '1.0.0',
         global_style JSONB,
-        layout JSONB,
+        global_layout JSONB,
         
         -- 时间字段
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -836,7 +836,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- JSONB字段索引（如果经常查询JSON结构中的特定字段）
     -- CREATE INDEX IF NOT EXISTS idx_resumes_template_global_style ON bole_app.t_resumes_template USING gin(global_style);
-    -- CREATE INDEX IF NOT EXISTS idx_resumes_template_layout ON bole_app.t_resumes_template USING gin(layout);
+    -- CREATE INDEX IF NOT EXISTS idx_resumes_template_layout ON bole_app.t_resumes_template USING gin(global_layout);
 
     -- 表注释和字段注释
     COMMENT ON TABLE bole_app.t_resumes_template IS '简历模板表';
@@ -848,7 +848,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_resumes_template.is_active IS '是否激活';
     COMMENT ON COLUMN bole_app.t_resumes_template.version IS '版本号';
     COMMENT ON COLUMN bole_app.t_resumes_template.global_style IS '全局样式配置（JSON格式）';
-    COMMENT ON COLUMN bole_app.t_resumes_template.layout IS '布局配置（JSON格式）';
+    COMMENT ON COLUMN bole_app.t_resumes_template.global_layout IS '布局配置（JSON格式）';
     COMMENT ON COLUMN bole_app.t_resumes_template.created_at IS '创建时间';
     COMMENT ON COLUMN bole_app.t_resumes_template.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_resumes_template.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
@@ -858,6 +858,9 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         -- 主键字段
         template_id BIGINT NOT NULL,
         component_id BIGINT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        key VARCHAR(100) NOT NULL,
+        default_config JSONB,
         props JSONB,
         styles JSONB,
         
@@ -876,6 +879,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     -- 创建索引
     CREATE INDEX IF NOT EXISTS idx_template_component_template_id ON bole_app.t_resumes_template_component(template_id);
     CREATE INDEX IF NOT EXISTS idx_template_component_component_id ON bole_app.t_resumes_template_component(component_id);
+    CREATE INDEX IF NOT EXISTS idx_template_component_name ON bole_app.t_resumes_template_component(name);
+    CREATE INDEX IF NOT EXISTS idx_template_component_key ON bole_app.t_resumes_template_component(key);
 
     -- 如果需要查询 JSONB 字段中的特定属性，可以创建 GIN 索引
     CREATE INDEX IF NOT EXISTS idx_template_component_props ON bole_app.t_resumes_template_component USING GIN (props);
@@ -884,6 +889,9 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     -- 表注释和字段注释
     COMMENT ON COLUMN bole_app.t_resumes_template_component.template_id IS '模板ID';
     COMMENT ON COLUMN bole_app.t_resumes_template_component.component_id IS '组件ID';
+    COMMENT ON COLUMN bole_app.t_resumes_template_component.name IS '组件名称';
+    COMMENT ON COLUMN bole_app.t_resumes_template_component.key IS '预定义组件类型名称';
+    COMMENT ON COLUMN bole_app.t_resumes_template_component.default_config IS '默认配置(JSON格式)';
     COMMENT ON COLUMN bole_app.t_resumes_template_component.props IS '组件属性（JSON格式）';
     COMMENT ON COLUMN bole_app.t_resumes_template_component.styles IS '组件样式变量（JSON格式）';
 
@@ -966,7 +974,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         
         -- JSON配置字段
         global_style JSONB,
-        layout JSONB,
+        global_layout JSONB,
         components JSONB,
         
         -- 时间字段
@@ -991,7 +999,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 为JSON字段创建GIN索引（如果需要进行JSON查询）
     CREATE INDEX IF NOT EXISTS idx_resumes_global_style ON bole_app.t_resumes USING GIN (global_style);
-    CREATE INDEX IF NOT EXISTS idx_resumes_layout ON bole_app.t_resumes USING GIN (layout);
+    CREATE INDEX IF NOT EXISTS idx_resumes_layout ON bole_app.t_resumes USING GIN (global_layout);
     CREATE INDEX IF NOT EXISTS idx_resumes_components ON bole_app.t_resumes USING GIN (components);
 
     -- 注释
@@ -1003,7 +1011,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_resumes.view_count IS '查看次数';
     COMMENT ON COLUMN bole_app.t_resumes.download_count IS '下载次数';
     COMMENT ON COLUMN bole_app.t_resumes.global_style IS '全局样式配置(JSON格式)';
-    COMMENT ON COLUMN bole_app.t_resumes.layout IS '布局配置(JSON格式)';
+    COMMENT ON COLUMN bole_app.t_resumes.global_layout IS '布局配置(JSON格式)';
     COMMENT ON COLUMN bole_app.t_resumes.components IS '组件列表(JSON格式)';
     COMMENT ON COLUMN bole_app.t_resumes.created_at IS '创建时间';
     COMMENT ON COLUMN bole_app.t_resumes.updated_at IS '更新时间';

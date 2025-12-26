@@ -3,7 +3,6 @@ package cn.net.yunlou.bole.entity;
 import cn.net.yunlou.bole.common.BaseTreeEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: CompanyComment Description: 企业评论 与追贴 （parentId） Created By MR. WANG Created At

@@ -10,6 +10,28 @@
     "build:mp-weixin": "uni build -p mp-weixin",
     "type-check": "vue-tsc --noEmit"
   },
+  "uni-app": {
+    "scripts": {
+      "dev-h5": {
+        "title": "h5 开发环境",
+        "env": {
+          "UNI_PLATFORM": "h5"
+        }
+      },
+      "test-h5": {
+        "title": "h5 测试环境",
+        "env": {
+          "UNI_PLATFORM": "h5"
+        }
+      },
+      "prod-h5": {
+        "title": "h5 正式环境",
+        "env": {
+          "UNI_PLATFORM": "h5"
+        }
+      }
+    }
+  },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4080520251106001",
     "@dcloudio/uni-app-harmony": "3.0.0-4080520251106001",

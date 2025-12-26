@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 /**
  * FileName: BaseTreeEntity Description: 树形结构基础实体类 Created By MR. WANG Created At 2025/11/25 17:00

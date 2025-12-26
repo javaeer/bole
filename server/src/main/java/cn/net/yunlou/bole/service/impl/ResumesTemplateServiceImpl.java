@@ -1,11 +1,9 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
-import cn.net.yunlou.bole.entity.ResumesComponent;
 import cn.net.yunlou.bole.entity.ResumesTemplate;
-import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
 import cn.net.yunlou.bole.mapper.ResumesTemplateMapper;
-import cn.net.yunlou.bole.model.create.ResumesTemplateComponentCreate;
+import cn.net.yunlou.bole.model.ResumesTemplateComponentDTO;
 import cn.net.yunlou.bole.model.create.ResumesTemplateCreate;
 import cn.net.yunlou.bole.model.edit.ResumesTemplateEdit;
 import cn.net.yunlou.bole.model.query.ResumesTemplateQuery;
@@ -14,12 +12,10 @@ import cn.net.yunlou.bole.service.ResumesComponentService;
 import cn.net.yunlou.bole.service.ResumesTemplateComponentService;
 import cn.net.yunlou.bole.service.ResumesTemplateService;
 import cn.net.yunlou.bole.struct.ResumesTemplateStructMapper;
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -63,40 +59,39 @@ public class ResumesTemplateServiceImpl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean saveByCreate(ResumesTemplateCreate create) {
-
         ResumesTemplate toEntity = structMapper.createToEntity(create);
         boolean save = super.save(toEntity);
-
         if (save) {
-            List<ResumesTemplateComponentCreate> componentCreates = create.getComponents();
+            List<ResumesTemplateComponentDTO> componentCreates = create.getComponents();
             if (!CollectionUtils.isEmpty(componentCreates)) {
-                ArrayList<@Nullable ResumesTemplateComponent> realComponents = Lists.newArrayList();
-
-                for (ResumesTemplateComponentCreate resumesTemplateComponentCreate :
-                        componentCreates) {
-                    Long componentId = resumesTemplateComponentCreate.getComponentId();
-                    ResumesComponent component = resumesComponentService.getById(componentId);
-                    if (ObjectUtils.isNotEmpty(component)) {
-                        ResumesTemplateComponent templateComponent =
-                                ResumesTemplateComponent.builder()
-                                        .templateId(toEntity.getId())
-                                        .componentId(componentId)
-                                        .key(component.getKey())
-                                        .name(component.getName())
-                                        .defaultConfig(component.getDefaultConfig())
-                                        .props(resumesTemplateComponentCreate.getProps())
-                                        .styles(resumesTemplateComponentCreate.getStyles())
-                                        .build();
-
-                        resumesTemplateComponentService.save(templateComponent);
-
-                        realComponents.add(templateComponent);
-                    }
-                }
-                toEntity.setComponents(realComponents);
+                resumesTemplateComponentService.bindBatch(toEntity, componentCreates);
             }
         }
-
         return save;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateByEdit(ResumesTemplateEdit edit) {
+        boolean b = super.updateByEdit(edit);
+        if (b) {
+            ResumesTemplate resumesTemplate = getById(edit.getId());
+            List<ResumesTemplateComponentDTO> editComponents = edit.getComponents();
+            if (ObjectUtils.isNotEmpty(editComponents)) {
+                resumesTemplateComponentService.syncBatch(resumesTemplate, editComponents);
+            }
+        }
+        return b;
+    }
+
+    @Override
+    public boolean removeById(Serializable id) {
+        boolean b = super.removeById(id);
+        if (b) {
+            ResumesTemplate resumesTemplate = ResumesTemplate.builder().build();
+            resumesTemplate.setId((Long) id);
+            resumesTemplateComponentService.clean(resumesTemplate, null);
+        }
+        return b;
     }
 }

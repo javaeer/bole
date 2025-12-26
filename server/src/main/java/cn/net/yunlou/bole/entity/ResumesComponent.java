@@ -29,4 +29,6 @@ public class ResumesComponent extends BaseEntity {
 
     @TableField(typeHandler = JsonbTypeHandler.class)
     private ResumesComponentDefaultConfig defaultConfig;
+
+    /** 为 数据更新做准备 */
 }

@@ -17,12 +17,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 /**
  * FileName: ResumesController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
@@ -79,7 +78,8 @@ public class ResumesTemplateController {
     public BusinessResponse<Boolean> favorite(@PathVariable(value = "id") Long id) {
         ResumesTemplate template = new ResumesTemplate();
         template.setId(id);
-        return BusinessResponse.success(favoriteTemplateService.bind(SecurityContextUtils.getCurrentUser(), template));
+        return BusinessResponse.success(
+                favoriteTemplateService.bind(SecurityContextUtils.getCurrentUser(), template));
     }
 
     @PutMapping("unfavorite/{id}")
@@ -96,7 +96,12 @@ public class ResumesTemplateController {
     public BusinessResponse<ResumesTemplateView> get(@PathVariable(value = "id") Long id) {
         ResumesTemplateView resumesTemplate = resumesTemplateService.getViewById(id);
         if (ObjectUtils.isNotEmpty(resumesTemplate)) {
-            resumesTemplate.setCollected(favoriteTemplateService.exists(FavoriteTemplate.builder().templateId(id).userId(SecurityContextUtils.getCurrentUserId()).build()));
+            resumesTemplate.setCollected(
+                    favoriteTemplateService.exists(
+                            FavoriteTemplate.builder()
+                                    .templateId(id)
+                                    .userId(SecurityContextUtils.getCurrentUserId())
+                                    .build()));
         }
         return BusinessResponse.success(resumesTemplate);
     }
@@ -110,18 +115,33 @@ public class ResumesTemplateController {
 
         Page<ResumesTemplateView> viewPage;
         if (request.isCollected()) {
-            viewPage = resumesTemplateService.toViewPage(favoriteTemplateService.pageRight(page, size, FavoriteTemplate.builder().userId(SecurityContextUtils.getCurrentUserId()).build()));
-            viewPage.getRecords().forEach(v -> {
-                v.setCollected(true);
-            });
+            viewPage =
+                    resumesTemplateService.toViewPage(
+                            favoriteTemplateService.pageRight(
+                                    page,
+                                    size,
+                                    FavoriteTemplate.builder()
+                                            .userId(SecurityContextUtils.getCurrentUserId())
+                                            .build()));
+            viewPage.getRecords()
+                    .forEach(
+                            v -> {
+                                v.setCollected(true);
+                            });
             return BusinessResponse.success(viewPage);
         } else {
             viewPage = resumesTemplateService.pageViewByQuery(page, size, request);
-            Set<Long> templateIds = favoriteTemplateService.listRightIds(FavoriteTemplate.builder().userId(SecurityContextUtils.getCurrentUserId()).build());
+            Set<Long> templateIds =
+                    favoriteTemplateService.listRightIds(
+                            FavoriteTemplate.builder()
+                                    .userId(SecurityContextUtils.getCurrentUserId())
+                                    .build());
             if (ObjectUtils.isNotEmpty(templateIds)) {
-                viewPage.getRecords().forEach(v -> {
-                    v.setCollected(templateIds.contains(v.getId()));
-                });
+                viewPage.getRecords()
+                        .forEach(
+                                v -> {
+                                    v.setCollected(templateIds.contains(v.getId()));
+                                });
             }
         }
 
@@ -134,6 +154,7 @@ public class ResumesTemplateController {
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody ResumesTemplateQuery request) {
-        return BusinessResponse.success(resumesTemplateService.pageViewByQuery(page, size, request));
+        return BusinessResponse.success(
+                resumesTemplateService.pageViewByQuery(page, size, request));
     }
 }

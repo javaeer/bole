@@ -1,18 +1,12 @@
 package cn.net.yunlou.bole.entity;
 
-import cn.net.yunlou.bole.common.BaseEntity;
 import cn.net.yunlou.bole.common.MultiEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 /**
- * FileName: Follow
- * Description:
- * Created By laughtiger
- * Created At 2025/12/24 19:34
- * Modified By
+ * FileName: Follow Description: Created By laughtiger Created At 2025/12/24 19:34 Modified By
  * Modified At
  */
 @EqualsAndHashCode(callSuper = true)
@@ -32,5 +26,4 @@ public class FollowCompany extends MultiEntity {
 
     @TableField(exist = false)
     private User user;
-
 }

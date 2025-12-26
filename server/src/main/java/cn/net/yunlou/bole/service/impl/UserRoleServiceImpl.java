@@ -17,7 +17,7 @@ public class UserRoleServiceImpl extends MultiService<UserRoleMapper, UserRole, 
         implements UserRoleService {
 
     @Override
-    protected UserRole createEntity(User left, Role right) {
+    public UserRole createEntity(User left, Role right) {
 
         UserRole userRole = new UserRole();
         if (left != null && left.getId() != null && left.getId() > 0) {
