@@ -37,7 +37,7 @@
     {
       "path": "pages/auth/auth",
       "style": {
-        "navigationBarTitleText": "登录"
+        "navigationBarTitleText": ""
       }
     },
     {
@@ -294,6 +294,12 @@
 	},
 	{
 		"path": "pages/intention/detail",
+		"style": {
+			"navigationBarTitleText": ""
+		}
+	},
+	{
+		"path": "pages/auth/forgot",
 		"style": {
 			"navigationBarTitleText": ""
 		}

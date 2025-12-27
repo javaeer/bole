@@ -15,13 +15,13 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 /**
- * 1.自定义未授权处理器
+ * 1.jwt未授权访问拒绝处理器
  *
  * <p>2.注入
  */
 @Slf4j
 @Component
-public class YunlouAccessDeniedHandler implements AccessDeniedHandler {
+public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(
             HttpServletRequest request,

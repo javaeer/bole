@@ -4,14 +4,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
@@ -38,8 +38,8 @@ public class JwtTokenProvider {
      * @param token
      * @return
      */
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public Long extractUserId(String token) {
+        return Long.valueOf(extractClaim(token, Claims::getSubject));
     }
 
     /**
@@ -87,7 +87,9 @@ public class JwtTokenProvider {
                 .getBody();
     }
 
-    /** 获取访问令牌剩余时间（毫秒） */
+    /**
+     * 获取访问令牌剩余时间（毫秒）
+     */
     public Long getAccessTokenRemainingTime(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -98,7 +100,9 @@ public class JwtTokenProvider {
         }
     }
 
-    /** 获取刷新令牌剩余时间（毫秒） */
+    /**
+     * 获取刷新令牌剩余时间（毫秒）
+     */
     public Long getRefreshTokenRemainingTime(String refreshToken) {
         try {
             Claims claims = extractAllClaims(refreshToken);
@@ -119,7 +123,9 @@ public class JwtTokenProvider {
         return extractExpiration(token).before(new Date());
     }
 
-    /** 检查令牌是否过期 */
+    /**
+     * 检查令牌是否过期
+     */
     private boolean isTokenExpired(Claims claims) {
         return claims.getExpiration().before(new Date());
     }
@@ -131,9 +137,9 @@ public class JwtTokenProvider {
      * @param userDetails
      * @return
      */
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(String token, UnifiedUserDetails userDetails) {
+        final Long userId = extractUserId(token);
+        return (userId.equals(userDetails.getUid()) && !isTokenExpired(token));
     }
 
     /**
@@ -151,7 +157,9 @@ public class JwtTokenProvider {
         }
     }
 
-    /** 验证访问令牌 */
+    /**
+     * 验证访问令牌
+     */
     public boolean validateAccessToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -162,7 +170,9 @@ public class JwtTokenProvider {
         }
     }
 
-    /** 验证刷新令牌 */
+    /**
+     * 验证刷新令牌
+     */
     public boolean validateRefreshToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -173,42 +183,46 @@ public class JwtTokenProvider {
         }
     }
 
-    /** 生成访问令牌 */
-    public String generateAccessToken(String username) {
-        return generateToken(username, TOKEN_TYPE_ACCESS, jwtAccessExpiration);
+    /**
+     * 生成访问令牌
+     */
+    public String generateAccessToken(Long userId) {
+        return generateToken(userId, TOKEN_TYPE_ACCESS, jwtAccessExpiration);
     }
 
-    /** 生成刷新令牌 */
-    public String generateRefreshToken(String username) {
-        return generateToken(username, TOKEN_TYPE_REFRESH, jwtRefreshExpiration);
+    /**
+     * 生成刷新令牌
+     */
+    public String generateRefreshToken(Long userId) {
+        return generateToken(userId, TOKEN_TYPE_REFRESH, jwtRefreshExpiration);
     }
 
-    private String generateToken(String username, String tokenType, long expiration) {
+    private String generateToken(Long userId, String tokenType, long expiration) {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("type", tokenType);
-        return createToken(claims, username, expiration);
+        return createToken(claims, userId, expiration);
     }
 
     /**
      * 生成token
      *
-     * @param username 用户名
+     * @param userId 用户Id
      * @return string
      */
-    public String generateToken(String username) {
+    public String generateToken(Long userId) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username, jwtAccessExpiration);
+        return createToken(claims, userId, jwtAccessExpiration);
     }
 
-    private String createToken(Map<String, Object> claims, String subject, long expiration) {
+    private String createToken(Map<String, Object> claims, Long subject, long expiration) {
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject)
+                .setSubject(String.valueOf(subject))
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

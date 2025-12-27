@@ -16,6 +16,10 @@ public interface UserService extends IBaseService<User, UserCreate, UserView, Us
 
     User findByEmail(String email);
 
+    User findByPhone(String phone);
+
+    User findByWechatOpenId(String wechatOpenid);
+
     boolean updateLastLoginTime(Long id);
 
     boolean existsByUsername(String username);
@@ -23,4 +27,7 @@ public interface UserService extends IBaseService<User, UserCreate, UserView, Us
     boolean existsByEmail(String email);
 
     boolean existsByPhone(String phone);
+
+
+
 }

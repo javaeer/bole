@@ -3,8 +3,7 @@ package cn.net.yunlou.bole.model;
 import cn.net.yunlou.bole.common.BaseDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * FileName: RegisterRequest Description: Created By MR. WANG Created At 2025/11/19 14:23 Modified
@@ -13,11 +12,14 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "手机号注册请求实体")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterPhoneDTO extends BaseDTO {
 
-    @NotBlank(message = "手机区号不得为空")
-    @Schema(description = "手机区号", example = "86", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String area;
+    //@NotBlank(message = "手机区号不得为空")
+    //@Schema(description = "手机区号", example = "86", requiredMode = Schema.RequiredMode.REQUIRED)
+    //private String areaCode;
 
     @NotBlank(message = "手机号不得为空")
     @Schema(

@@ -3,7 +3,7 @@ package cn.net.yunlou.bole.common.utils;
 import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.BaseConstant;
-import cn.net.yunlou.bole.common.security.CustomUserDetails;
+import cn.net.yunlou.bole.common.security.UnifiedUserDetails;
 import cn.net.yunlou.bole.entity.User;
 import java.util.Optional;
 import java.util.Set;
@@ -169,8 +169,8 @@ public class SecurityContextUtils {
      */
     public static Long getCurrentUserId() {
         return getCurrentUserDetails()
-                .filter(userDetails -> userDetails instanceof CustomUserDetails)
-                .map(userDetails -> ((CustomUserDetails) userDetails).getUser().getId())
+                .filter(userDetails -> userDetails instanceof UnifiedUserDetails)
+                .map(userDetails -> ((UnifiedUserDetails) userDetails).getUser().getId())
                 .orElseThrow(
                         () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
@@ -182,16 +182,16 @@ public class SecurityContextUtils {
      */
     public static String getCurrentUserEmail() {
         return getCurrentUserDetails()
-                .filter(userDetails -> userDetails instanceof CustomUserDetails)
-                .map(userDetails -> ((CustomUserDetails) userDetails).getUser().getEmail())
+                .filter(userDetails -> userDetails instanceof UnifiedUserDetails)
+                .map(userDetails -> ((UnifiedUserDetails) userDetails).getUser().getEmail())
                 .orElseThrow(
                         () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
     public static User getCurrentUser() {
         return getCurrentUserDetails()
-                .filter(userDetails -> userDetails instanceof CustomUserDetails)
-                .map(userDetails -> ((CustomUserDetails) userDetails).getUser())
+                .filter(userDetails -> userDetails instanceof UnifiedUserDetails)
+                .map(userDetails -> ((UnifiedUserDetails) userDetails).getUser())
                 .orElseThrow(
                         () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }

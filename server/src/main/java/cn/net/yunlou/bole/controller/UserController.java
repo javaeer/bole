@@ -1,7 +1,6 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.EnumDTO;
 import cn.net.yunlou.bole.common.IEnum;
 import cn.net.yunlou.bole.common.constant.UserKeyField;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
@@ -38,10 +37,10 @@ public class UserController {
 
     @GetMapping("keyField")
     @Operation(summary = "获取查询关键字")
-    public BusinessResponse<List<EnumDTO>> getKeyField() {
+    public BusinessResponse<List<IEnum.EnumItem<?>>> getKeyField() {
         // 从 SecurityContext 获取当前用户
-        List<EnumDTO> enumDTOS = IEnum.toDTOList(UserKeyField.class);
-        return BusinessResponse.success(enumDTOS);
+        List<IEnum.EnumItem<?>> enumItems = IEnum.toItemList(UserKeyField.class);
+        return BusinessResponse.success(enumItems);
     }
 
     @PutMapping("profile")

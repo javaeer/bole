@@ -19,7 +19,7 @@ public class Sms extends BaseEntity {
 
     private Integer state;
 
-    private String areaCode;
+    //private String areaCode;
 
     private String phone;
 

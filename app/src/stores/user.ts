@@ -1,6 +1,15 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import { LoginForm, UserInfo } from "@/types/user";
+import {
+  EmailRegisterForm,
+  LoginForm,
+  LogoutOptions,
+  PhoneRegisterForm,
+  ResetPasswordForm,
+  SmsLoginForm,
+  UserInfo,
+  WechatLoginForm,
+} from "@/types/user";
 import {
   clearAll,
   clearUserAll,
@@ -23,7 +32,7 @@ export const useUserStore = defineStore("user", () => {
   const isLoggedIn = computed(() => !!token.value);
   const currentUser = computed(() => userInfo.value);
   const authHeader = computed(() => ({
-    Authorization: token.value ? `Bearer ${token.value}` : ""
+    Authorization: token.value ? `Bearer ${token.value}` : "",
   }));
 
   // Actions
@@ -64,6 +73,77 @@ export const useUserStore = defineStore("user", () => {
   };
 
   /**
+   * 登录
+   */
+  const smsLogin = async (credentials: SmsLoginForm) => {
+    try {
+      const result = await AuthAPI.smsLogin(credentials);
+      // 更新本地存储
+      setTokenToStorage(result);
+      // 更新store状态
+      token.value = result.accessToken;
+      refreshToken.value = result.refreshToken;
+      userInfo.value = result.userInfo || null;
+
+      return result;
+    } catch (error) {
+      clearUserAll();
+      // 同时清除store状态
+      token.value = null;
+      refreshToken.value = null;
+      userInfo.value = null;
+      throw error;
+    }
+  };
+
+  /**
+   * 登出
+   */
+  const logout = async (options: LogoutOptions = { callApi: true, clearStorage: true }) => {
+    const { callApi, clearStorage } = options;
+
+    try {
+      if (callApi && token.value) {
+        await AuthAPI.logout();
+      }
+    } catch (error) {
+      console.warn("登出接口调用失败:", error);
+    } finally {
+      if (clearStorage) {
+        clearAll();
+      } else {
+        clearUserAll();
+      }
+      // 更新store状态
+      token.value = null;
+      refreshToken.value = null;
+      userInfo.value = null;
+    }
+  };
+
+  const wechatLogin = async (loginData: WechatLoginForm) => {
+    try {
+      const result = await AuthAPI.wechatLogin(loginData);
+      // 更新本地存储
+      setTokenToStorage(result);
+      // 更新store状态
+      token.value = result.accessToken;
+      refreshToken.value = result.refreshToken;
+      userInfo.value = result.userInfo || null;
+
+      return result;
+    } catch (error) {
+      console.error("微信登录失败:", error);
+      clearUserAll();
+      // 同时清除store状态
+      token.value = null;
+      refreshToken.value = null;
+      userInfo.value = null;
+      throw error;
+    }
+  };
+
+  /**
    * 静默登录
    */
   const silentLogin = async () => {
@@ -90,34 +170,6 @@ export const useUserStore = defineStore("user", () => {
       refreshToken.value = null;
       userInfo.value = null;
       throw error;
-    }
-  };
-
-  /**
-   * 登出
-   */
-  const logout = async (options: {
-    callApi?: boolean;
-    clearStorage?: boolean;
-  } = { callApi: true, clearStorage: true }) => {
-    const { callApi, clearStorage } = options;
-
-    try {
-      if (callApi && token.value) {
-        await AuthAPI.logout();
-      }
-    } catch (error) {
-      console.warn("登出接口调用失败:", error);
-    } finally {
-      if (clearStorage) {
-        clearAll();
-      } else {
-        clearUserAll();
-      }
-      // 更新store状态
-      token.value = null;
-      refreshToken.value = null;
-      userInfo.value = null;
     }
   };
 
@@ -166,6 +218,82 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  /**
+   * 手机号注册
+   * @param data
+   */
+  const registerWithPhone = async (data: PhoneRegisterForm) => {
+    try {
+      const result = await AuthAPI.registerWithPhone(data);
+      // 更新本地存储
+      setTokenToStorage(result);
+      // 更新store状态
+      token.value = result.accessToken;
+      refreshToken.value = result.refreshToken;
+      userInfo.value = result.userInfo || null;
+
+      return result;
+    } catch (error) {
+      clearUserAll();
+      // 同时清除store状态
+      token.value = null;
+      refreshToken.value = null;
+      userInfo.value = null;
+      throw error;
+    }
+  };
+
+  /**
+   * 邮箱注册
+   * @param data
+   */
+  const registerWithEmail = async (data: EmailRegisterForm) => {
+    try {
+      const result = await AuthAPI.registerWithEmail(data);
+      // 更新本地存储
+      setTokenToStorage(result);
+      // 更新store状态
+      token.value = result.accessToken;
+      refreshToken.value = result.refreshToken;
+      userInfo.value = result.userInfo || null;
+
+      return result;
+    } catch (error) {
+      clearUserAll();
+      // 同时清除store状态
+      token.value = null;
+      refreshToken.value = null;
+      userInfo.value = null;
+      throw error;
+    }
+  };
+
+  /**
+   * 重置密码
+   * @param data
+   */
+  const resetPassword = async (data: ResetPasswordForm) => {
+    try {
+      const result = await AuthAPI.resetPassword(data);
+      // 更新本地存储
+      setTokenToStorage(result);
+      // 更新store状态
+      token.value = result.accessToken;
+      refreshToken.value = result.refreshToken;
+      userInfo.value = result.userInfo || null;
+
+      return result;
+    } catch (error) {
+      clearUserAll();
+      // 同时清除store状态
+      token.value = null;
+      refreshToken.value = null;
+      userInfo.value = null;
+      throw error;
+    }
+  };
+
+
   // 刷新令牌相关
   const addRefreshSubscriber = (callback: (token: string) => void) => {
     refreshSubscribers.value.push(callback);
@@ -191,8 +319,13 @@ export const useUserStore = defineStore("user", () => {
     // Actions
     login,
     logout,
+    smsLogin,
+    wechatLogin,
     silentLogin,
     refreshTokenAction,
+    registerWithPhone,
+    registerWithEmail,
+    resetPassword,
 
     // 状态更新方法
     updateToken,
@@ -201,5 +334,6 @@ export const useUserStore = defineStore("user", () => {
 
     // 订阅方法
     addRefreshSubscriber,
-  };
+  }
+    ;
 });

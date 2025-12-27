@@ -21,7 +21,7 @@ public class EmailCreate extends BaseCreate {
             description = "邮件",
             example = "admin@yunlou.net.cn",
             requiredMode = Schema.RequiredMode.REQUIRED)
-    private String address;
+    private String email;
 
     @NotNull(message = "模板不能为空")
     @Schema(description = "模板id", example = "id", requiredMode = Schema.RequiredMode.REQUIRED)

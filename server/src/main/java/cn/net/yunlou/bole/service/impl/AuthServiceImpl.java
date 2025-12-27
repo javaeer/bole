@@ -2,9 +2,13 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
+import cn.net.yunlou.bole.common.IEnum;
+import cn.net.yunlou.bole.common.constant.AuthType;
+import cn.net.yunlou.bole.common.constant.IdentifierType;
 import cn.net.yunlou.bole.common.constant.UserStatus;
 import cn.net.yunlou.bole.common.security.AuthenticationService;
-import cn.net.yunlou.bole.common.security.CustomUserDetails;
+import cn.net.yunlou.bole.common.security.UnifiedAuthenticationManager;
+import cn.net.yunlou.bole.common.security.UnifiedUserDetails;
 import cn.net.yunlou.bole.entity.Email;
 import cn.net.yunlou.bole.entity.Sms;
 import cn.net.yunlou.bole.entity.User;
@@ -16,7 +20,7 @@ import cn.net.yunlou.bole.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.*;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,57 +41,78 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationService authenticationService;
 
-    private final AuthenticationManager authenticationManager;
+    private final UnifiedAuthenticationManager unifiedAuthenticationManager;
 
     @Override
     public AccessTokenDTO login(@Valid LoginDTO request) {
 
-        try {
-            // 使用 Spring Security 进行认证
-            Authentication authentication =
-                    authenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(
-                                    request.getUsername(), request.getPassword()));
+        Authentication authentication = unifiedAuthenticationManager
+                .authenticate(AuthType.USERNAME_PASSWORD,
+                        request.getUsername(),
+                        request.getPassword(),
+                        null);
 
-            // 认证成功后，authentication 中已经包含用户信息
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UnifiedUserDetails userDetails = (UnifiedUserDetails) authentication.getPrincipal();
 
-            User user = userDetails.getUser();
+        User user = userDetails.getUser();
 
-            return authenticationService.login(user);
+        return authenticationService.login(user);
+    }
 
-        } catch (BadCredentialsException e) {
-            throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "用户名或密码错误");
-        } catch (DisabledException e) {
-            throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "账户已被禁用");
-        } catch (LockedException e) {
-            throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "账户已被锁定");
-        }
+
+    @Override
+    public AccessTokenDTO smsLogin(SmsLoginDTO request) {
+
+        Authentication authentication = unifiedAuthenticationManager
+                .authenticate(AuthType.PHONE_CODE,
+                        request.getPhone(),
+                        request.getCode(),
+                        null);
+
+        UnifiedUserDetails userDetails = (UnifiedUserDetails) authentication.getPrincipal();
+
+        User user = userDetails.getUser();
+
+        return authenticationService.login(user);
     }
 
     @Override
-    public AccessTokenDTO register(@Valid RegisterDTO registerDTO) {
+    public AccessTokenDTO wechatLogin(WechatLoginDTO request) {
+
+        Authentication authentication = unifiedAuthenticationManager
+                .authenticate(AuthType.WECHAT,
+                        request.getJscode(),
+                        request.getEncryptedData(),
+                        request.getIv());
+
+        UnifiedUserDetails userDetails = (UnifiedUserDetails) authentication.getPrincipal();
+
+        User user = userDetails.getUser();
+
+        return authenticationService.login(user);
+    }
+
+    @Override
+    public AccessTokenDTO register(@Valid RegisterDTO register) {
         // 检查用户名是否已存在
-        if (userService.existsByUsername(registerDTO.getUsername())) {
+        if (userService.existsByUsername(register.getUsername())) {
             throw new BusinessException(BusinessStatus.ALREADY_EXISTS, "用户名已存在");
         }
 
         // 创建用户
         User user = new User();
-        user.setUsername(registerDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-        user.setEmail(registerDTO.getEmail());
-        user.setPhone(registerDTO.getPhone());
+        user.setUsername(register.getUsername());
+        user.setPassword(passwordEncoder.encode(register.getPassword()));
+        user.setEmail(register.getEmail());
         user.setStatus(UserStatus.ACTIVE.getValue());
-        user.setFollowers(0);
-        user.setFans(0);
-        user.setLikes(0);
+
 
         if (!userService.save(user)) {
             throw new BusinessException(BusinessStatus.GONE_DATA_INVALID, "注册失败,请稍后");
         }
 
-        return authenticationService.login(user);
+
+        return uidLogin(user.getId());
     }
 
     @Override
@@ -95,9 +120,9 @@ public class AuthServiceImpl implements AuthService {
 
         Sms sms =
                 Sms.builder()
-                        .areaCode(request.getArea())
                         .phone(request.getPhone())
                         .content(request.getCode())
+                        .templateId(1L)
                         .build();
         if (!smsService.verify(sms)) {
             throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
@@ -121,14 +146,18 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(BusinessStatus.GONE_DATA_INVALID, "注册失败,请稍后");
         }
 
-        return authenticationService.login(user);
+        return uidLogin(user.getId());
     }
 
     @Override
     public AccessTokenDTO registerEmail(RegisterEmailDTO request) {
 
         Email email =
-                Email.builder().address(request.getEmail()).content(request.getCode()).build();
+                Email.builder()
+                        .email(request.getEmail())
+                        .content(request.getCode())
+                        .templateId(1L)
+                        .build();
         if (!emailService.verify(email)) {
             throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
         }
@@ -151,7 +180,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(BusinessStatus.GONE_DATA_INVALID, "注册失败,请稍后");
         }
 
-        return authenticationService.login(user);
+        return uidLogin(user.getId());
     }
 
     @Override
@@ -174,12 +203,57 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Boolean resetPassword(@Valid ResetPasswordDTO request) {
+    public AccessTokenDTO resetPassword(@Valid ResetPasswordDTO request) {
 
         // 1.验证短信、邮箱验证码
+        IdentifierType type = IEnum.valueOf(request.getType(), IdentifierType.class);
+        switch (type) {
+            case PHONE -> {
+                if (!smsService.verify(
+                        Sms.builder()
+                                .phone(request.getUsername())
+                                .content(request.getCode())
+                                .templateId(3L).build())) {
+                    throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
+                }
+            }
+            case EMAIL -> {
+                if (!emailService.verify(
+                        Email.builder()
+                                .email(request.getUsername())
+                                .content(request.getCode())
+                                .templateId(3L).build())) {
+                    throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
+                }
+            }
+        }
 
         // 2.重置密码 到用户新密码
+        User user = userService.findByUsername(request.getUsername());
+        if (ObjectUtils.isNotEmpty(user)) {
+            User entity = User.builder().password(request.getNewPassword()).build();
+            entity.setId(user.getId());
+            if (userService.updateById(entity)) {
+                return uidLogin(user.getId());
+            }
+        }
 
         return null;
+    }
+
+
+    private AccessTokenDTO uidLogin(Long id) {
+
+        Authentication authentication = unifiedAuthenticationManager
+                .authenticate(AuthType.UID,
+                        String.valueOf(id),
+                        null,
+                        null);
+
+        UnifiedUserDetails userDetails = (UnifiedUserDetails) authentication.getPrincipal();
+
+        User user = userDetails.getUser();
+
+        return authenticationService.login(user);
     }
 }

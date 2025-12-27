@@ -11,11 +11,17 @@ public interface AuthService {
 
     AccessTokenDTO login(@Valid LoginDTO loginDTO);
 
+    AccessTokenDTO smsLogin(@Valid SmsLoginDTO loginDTO);
+
+    AccessTokenDTO wechatLogin(@Valid WechatLoginDTO login);
+
     AccessTokenDTO register(@Valid RegisterDTO registerDTO);
 
     AccessTokenDTO registerPhone(@Valid RegisterPhoneDTO request);
 
     AccessTokenDTO registerEmail(@Valid RegisterEmailDTO request);
+
+    AccessTokenDTO resetPassword(@Valid ResetPasswordDTO request);
 
     RefreshTokenViewDTO refreshToken(@Valid String refreshToken);
 
@@ -23,5 +29,5 @@ public interface AuthService {
 
     Boolean changePassword(@Valid ChangePasswordDTO request);
 
-    Boolean resetPassword(@Valid ResetPasswordDTO request);
+
 }

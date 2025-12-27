@@ -1,8 +1,9 @@
 package cn.net.yunlou.bole.config;
 
-import java.util.List;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.List;
 
 /**
  * FileName: AppProperties Description: Created By laughtiger Created At 2025/12/4 14:48 Modified By
@@ -25,6 +26,8 @@ public class AppConfigProperties {
     private Security security = new Security();
 
     private Cors cors = new Cors();
+
+    private WechatApp wechatApp = new WechatApp();
 
     @Data
     public static class Server {
@@ -54,5 +57,11 @@ public class AppConfigProperties {
         private String allowedHeaders;
         private String exposedHeaders;
         private Boolean allowCredentials;
+    }
+
+    @Data
+    public static class WechatApp {
+        private String appId;
+        private String appSecret;
     }
 }

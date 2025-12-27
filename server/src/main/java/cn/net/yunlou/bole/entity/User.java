@@ -4,10 +4,12 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -17,12 +19,15 @@ import org.springframework.security.core.GrantedAuthority;
 @TableName("t_user")
 public class User extends BaseEntity {
 
-    /** 当前所在企业 */
+    /**
+     * 当前所在企业
+     */
     private Long companyId;
 
     private String username;
 
-    @JsonIgnore private String password;
+    @JsonIgnore
+    private String password;
 
     private String email;
 
@@ -31,6 +36,8 @@ public class User extends BaseEntity {
     private String name;
 
     private String avatar;
+
+    private Integer gender;
 
     private String title;
 
@@ -41,6 +48,10 @@ public class User extends BaseEntity {
     private String github;
 
     private String wechat;
+
+    private String wechatOpenId;
+
+    private String wechatUnionId;
 
     private String bio;
 
@@ -65,4 +76,5 @@ public class User extends BaseEntity {
 
     // @TableField(exist = false)
     // private Company company;
+
 }

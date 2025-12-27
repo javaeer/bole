@@ -16,9 +16,9 @@ import lombok.EqualsAndHashCode;
 @Schema(description = "短信请求")
 public class SmsCreate extends BaseCreate {
 
-    @NotBlank(message = "区号不能为空")
-    @Schema(description = "区号", example = "86", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String areaCode;
+    //@NotBlank(message = "区号不能为空")
+    //@Schema(description = "区号", example = "86", requiredMode = Schema.RequiredMode.REQUIRED)
+    //private String areaCode;
 
     @NotBlank(message = "手机号不能为空")
     @Schema(

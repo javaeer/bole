@@ -13,11 +13,12 @@ import cn.net.yunlou.bole.model.view.UserView;
 import cn.net.yunlou.bole.service.UserService;
 import cn.net.yunlou.bole.struct.UserStructMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 /**
  * FileName: UserServiceImpl Description: Created By MR. WANG Created At 2025/11/19 13:49 Modified
@@ -28,21 +29,27 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl
         extends BaseService<
-                UserMapper, User, UserCreate, UserView, UserEdit, UserQuery, UserStructMapper>
+        UserMapper, User, UserCreate, UserView, UserEdit, UserQuery, UserStructMapper>
         implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        User entity = new User();
-        entity.setUsername(username);
-        return get(entity);
+        return get(User.builder().username(username).build());
     }
 
     @Override
     public User findByEmail(String email) {
-        User entity = new User();
-        entity.setEmail(email);
-        return get(entity);
+        return get(User.builder().email(email).build());
+    }
+
+    @Override
+    public User findByPhone(String phone) {
+        return get(User.builder().phone(phone).build());
+    }
+
+    @Override
+    public User findByWechatOpenId(String wechatOpenid) {
+        return get(User.builder().wechatOpenId(wechatOpenid).build());
     }
 
     @Override
@@ -56,23 +63,17 @@ public class UserServiceImpl
 
     @Override
     public boolean existsByUsername(String username) {
-        User entity = new User();
-        entity.setUsername(username);
-        return exist(entity);
+        return exist(User.builder().username(username).build());
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        User entity = new User();
-        entity.setEmail(email);
-        return exist(entity);
+        return exist(User.builder().email(email).build());
     }
 
     @Override
     public boolean existsByPhone(String phone) {
-        User entity = new User();
-        entity.setPhone(phone);
-        return exist(entity);
+        return exist(User.builder().phone(phone).build());
     }
 
     @Override
@@ -81,7 +82,7 @@ public class UserServiceImpl
 
         UserKeyField ukfe =
                 ValueUtils.isValid(entity.getKeyField())
-                        ? IEnum.getEnumByValue(entity.getKeyField(), UserKeyField.class)
+                        ? IEnum.valueOf(entity.getKeyField(), UserKeyField.class)
                         : UserKeyField.ALL;
 
         if (ukfe == null) {

@@ -14,7 +14,7 @@ public class EmailView extends BaseView {
 
     private Integer state;
 
-    private String address;
+    private String email;
 
     private Long templateId;
 }

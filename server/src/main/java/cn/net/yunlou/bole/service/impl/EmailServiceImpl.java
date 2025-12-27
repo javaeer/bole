@@ -10,7 +10,6 @@ import cn.net.yunlou.bole.common.utils.RedisCacheUtils;
 import cn.net.yunlou.bole.common.utils.StringUtils;
 import cn.net.yunlou.bole.entity.Email;
 import cn.net.yunlou.bole.entity.MessageTemplate;
-import cn.net.yunlou.bole.entity.Sms;
 import cn.net.yunlou.bole.handler.MessageSendStrategyFactory;
 import cn.net.yunlou.bole.mapper.EmailMapper;
 import cn.net.yunlou.bole.model.create.EmailCreate;
@@ -21,13 +20,14 @@ import cn.net.yunlou.bole.service.EmailService;
 import cn.net.yunlou.bole.service.MessageTemplateService;
 import cn.net.yunlou.bole.struct.EmailStructMapper;
 import com.google.common.collect.Maps;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * FileName: EmailServiceImpl Description: Created By laughtiger Created At 2025/12/25 01:22
@@ -37,13 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EmailServiceImpl
         extends BaseService<
-                EmailMapper,
-                Email,
-                EmailCreate,
-                EmailView,
-                EmailEdit,
-                EmailQuery,
-                EmailStructMapper>
+        EmailMapper,
+        Email,
+        EmailCreate,
+        EmailView,
+        EmailEdit,
+        EmailQuery,
+        EmailStructMapper>
         implements EmailService {
 
     private final MessageSendStrategyFactory messageSendStrategyFactory;
@@ -63,14 +63,14 @@ public class EmailServiceImpl
                         .getMessageSendStrategy(MessageSendType.EMAIL)
                         .send(
                                 MessageEntity.builder()
-                                        .to(create.getAddress())
+                                        .to(create.getEmail())
                                         .subject(generated.getTemplate().getSubject())
                                         .text(generated.getText())
                                         .build());
 
         if (send) {
             redisCacheUtils.putObject(
-                    Sms.SMS_CACHE_KEY + create.getAddress(),
+                    Email.EMAIL_CACHE_KEY + create.getTemplateId() + ":" + create.getEmail(),
                     generated.getContent(),
                     generated.getTemplate().getDuration(),
                     TimeUnit.MINUTES);
@@ -82,10 +82,10 @@ public class EmailServiceImpl
 
     @Override
     public boolean verify(Email entity) {
-        String address = entity.getAddress();
-        String code = redisCacheUtils.getObject(Sms.SMS_CACHE_KEY + address, String.class);
+        String email = entity.getEmail();
+        String code = redisCacheUtils.getObject(Email.EMAIL_CACHE_KEY + entity.getTemplateId() + ":" + email, String.class);
         if (ObjectUtils.isNotEmpty(code) && Objects.equals(entity.getContent(), code)) {
-            redisCacheUtils.delete(Sms.SMS_CACHE_KEY + address);
+            redisCacheUtils.delete(Email.EMAIL_CACHE_KEY + entity.getTemplateId() + ":" + email);
             return true;
         }
         return false;

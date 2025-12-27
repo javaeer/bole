@@ -27,6 +27,11 @@ export interface UserInfo {
   company: any | null;
 }
 
+export interface Authority {
+  id: number;
+  name: string;
+  code: string;
+}
 
 /** 登录响应 */
 export interface LoginResult extends TokenResult {
@@ -36,6 +41,20 @@ export interface LoginResult extends TokenResult {
 export interface LoginForm {
   username: string;
   password: string;
+}
+
+export interface SmsLoginForm {
+  phone: string;
+  code: string;
+}
+
+export interface WechatLoginForm {
+  code: string;
+  userInfo?: any;
+  encryptedData?: string;
+  iv?: string;
+  signature?: string;
+  rawData?: string;
 }
 
 /**
@@ -195,9 +214,12 @@ export interface UserForm {
 }
 
 export interface ResetPasswordForm {
-  /** 用户头像 */
-  password?: string;
-  /** 部门ID */
+  type?: string;
+  /**账号*/
+  username?: string;
+  /** 验证码 */
+  code?: string;
+  /** 新密码 */
   newPassword?: number;
 }
 
@@ -205,12 +227,32 @@ export interface ResetPasswordForm {
  * 用户注册表单
  */
 export interface RegisterForm {
-  username: string;
+  username?: string;
+
+  email?: string;
+  emailCode?: string;
+
+  areaCode?: string;
+  phone?: string;
+  code?: string;
+
   password: string;
   confirmPassword?: string;
-  email?: string;
-  phone?: string;
+
   invitationCode?: string;
+}
+
+export interface PhoneRegisterForm {
+  areaCode?: string;
+  phone?: string;
+  code?: string;
+  password: string;
+}
+
+export interface EmailRegisterForm {
+  email?: string;
+  code?: string;
+  password: string;
 }
 
 /**
@@ -233,13 +275,19 @@ export interface LoginCheckOptions {
   redirectPath?: any;
 }
 
+export interface LogoutOptions {
+  callApi?: boolean;
+  clearStorage?: boolean;
+}
+
+
 // 自定义错误类型
 export class LoginError extends Error {
   constructor(
     message: string,
-    public type: 'not_logged_in' | 'user_cancelled' | 'redirect_failed' | 'modal_failed' = 'not_logged_in'
+    public type: "not_logged_in" | "user_cancelled" | "redirect_failed" | "modal_failed" = "not_logged_in",
   ) {
     super(message);
-    this.name = 'LoginError';
+    this.name = "LoginError";
   }
 }

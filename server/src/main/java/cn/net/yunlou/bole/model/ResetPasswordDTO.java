@@ -1,8 +1,8 @@
 package cn.net.yunlou.bole.model;
 
 import cn.net.yunlou.bole.common.BaseDTO;
-import javax.swing.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * FileName: ResetPasswordRequest Description: Created By laughtiger Created At 2025/11/28 10:50
@@ -12,9 +12,23 @@ import lombok.*;
 @Data
 public class ResetPasswordDTO extends BaseDTO {
 
-    /** 验证码 */
-    private Spring verificationCode;
+    /**
+     * 类型
+     */
+    private String type;
 
-    /** 新密码 */
+    /**
+     * 账号
+     */
+    private String username;
+
+    /**
+     * 验证码
+     */
+    private String code;
+
+    /**
+     * 新密码
+     */
     private String newPassword;
 }

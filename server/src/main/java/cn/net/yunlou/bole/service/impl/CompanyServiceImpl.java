@@ -39,7 +39,7 @@ public class CompanyServiceImpl
 
         CompanyKeyField ckfe =
                 ValueUtils.isValid(entity.getKeyField())
-                        ? IEnum.getEnumByValue(entity.getKeyField(), CompanyKeyField.class)
+                        ? IEnum.valueOf(entity.getKeyField(), CompanyKeyField.class)
                         : CompanyKeyField.ALL;
 
         if (ckfe == null) {

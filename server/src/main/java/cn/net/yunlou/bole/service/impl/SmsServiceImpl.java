@@ -20,13 +20,14 @@ import cn.net.yunlou.bole.service.MessageTemplateService;
 import cn.net.yunlou.bole.service.SmsService;
 import cn.net.yunlou.bole.struct.SmsStructMapper;
 import com.google.common.collect.Maps;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * FileName: SmsServiceImpl Description: Created By laughtiger Created At 2025/12/25 01:22 Modified
@@ -50,7 +51,7 @@ public class SmsServiceImpl
 
         Sms generated = generate(create);
 
-        String phoneNumber = completePhoneNumber(create.getAreaCode(), create.getPhone());
+        String phoneNumber = create.getPhone();//completePhoneNumber(create.getAreaCode(), create.getPhone());
 
         boolean send =
                 messageSendStrategyFactory
@@ -64,7 +65,7 @@ public class SmsServiceImpl
 
         if (send) {
             redisCacheUtils.putObject(
-                    Sms.SMS_CACHE_KEY + phoneNumber,
+                    Sms.SMS_CACHE_KEY + create.getTemplateId() + ":" + phoneNumber,
                     generated.getContent(),
                     generated.getTemplate().getDuration(),
                     TimeUnit.MINUTES);
@@ -76,21 +77,21 @@ public class SmsServiceImpl
 
     @Override
     public boolean verify(Sms entity) {
-        String phoneNumber = completePhoneNumber(entity.getAreaCode(), entity.getPhone());
-        String code = redisCacheUtils.getObject(Sms.SMS_CACHE_KEY + phoneNumber, String.class);
+        String phoneNumber = entity.getPhone(); //completePhoneNumber(entity.getPhone());
+        String code = redisCacheUtils.getObject(Sms.SMS_CACHE_KEY + entity.getTemplateId() + ":" + phoneNumber, String.class);
         if (ObjectUtils.isNotEmpty(code) && Objects.equals(entity.getContent(), code)) {
-            redisCacheUtils.delete(Sms.SMS_CACHE_KEY + phoneNumber);
+            redisCacheUtils.delete(Sms.SMS_CACHE_KEY + entity.getTemplateId() + ":" + phoneNumber);
             return true;
         }
         return false;
     }
 
-    private String completePhoneNumber(String areaCode, String phone) {
-        if (areaCode.equalsIgnoreCase("86")) {
-            return phone;
-        }
-        return "+" + areaCode + phone;
-    }
+    //private String completePhoneNumber(String areaCode, String phone) {
+    //    if (areaCode.equalsIgnoreCase("86")) {
+    //        return phone;
+    //    }
+    //    return "+" + areaCode + phone;
+    //}
 
     private Sms generate(SmsCreate create) {
 

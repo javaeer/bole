@@ -18,7 +18,7 @@ public class Email extends BaseEntity {
 
     public static final String EMAIL_CACHE_KEY = "EMAIL:";
 
-    private String address;
+    private String email;
 
     private String text;
 

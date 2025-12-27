@@ -65,23 +65,19 @@ class Interceptors {
 
     console.log("进入响应拦截器");
 
-    // 1. 首先打印完整的响应对象
-    // console.log("完整响应对象:", response);
-    // console.log("响应状态码:", response.statusCode);
-    // console.log("响应数据类型:", typeof response.data);
-
-    // 2. 查看原始响应字符串
-    // console.log("原始响应数据:", response.data);
+    // 确保无论什么状态码都关闭loading
+    if (config.loading) {
+      uni.hideLoading();
+    }
 
     //判断response 状态码
     switch (response.statusCode) {
       case ResponseCode.SUCCESS:
-        // 3. 尝试解析（如果是字符串）
+        // 尝试解析（如果是字符串）
         let parsedData;
         if (typeof response.data === "string") {
           try {
             parsedData = JSON.parse(response.data);
-            // console.log("解析后的JSON:", parsedData);
           } catch (e) {
             console.error("JSON解析失败:", e);
             parsedData = response.data;
@@ -90,20 +86,8 @@ class Interceptors {
           parsedData = response.data;
         }
 
-        // 4. 查看解析后的结构
-        // console.log("解析后的完整结构:", JSON.stringify(parsedData, null, 2));
-        // console.log("解析后的code属性:", parsedData?.code);
-        // console.log("解析后的所有键:", Object.keys(parsedData || {}));
-
         // 继续原有逻辑...
         const result = parsedData as ResponseResult<T>;
-
-        // console.log("取得真实数据结构：" + JSON.stringify(result));
-
-        // 关闭 loading
-        if (config.loading) {
-          uni.hideLoading();
-        }
 
         console.log("返回数据编码：" + result.code);
         // 业务状态码处理
@@ -115,14 +99,69 @@ class Interceptors {
         }
       case ResponseCode.UNAUTHORIZED:
         errorHandles.handleUnauthorized();
-        throw new RequestError(
-          "登录已过期",
-        );
+        throw new RequestError("登录已过期", ResponseCode.UNAUTHORIZED);
+      case ResponseCode.INTERNAL_SERVER_ERROR:
+        // 处理500服务器错误
+        if (config.showError !== false) {
+          uni.showToast({
+            title: "服务器内部错误，请稍后重试",
+            icon: "none",
+            duration: 3000,
+          });
+        }
+        throw new RequestError("服务器内部错误", ResponseCode.INTERNAL_SERVER_ERROR);
+      case ResponseCode.BAD_REQUEST:
+        // 处理400错误请求
+        if (config.showError !== false) {
+          uni.showToast({
+            title: "请求参数错误",
+            icon: "none",
+            duration: 3000,
+          });
+        }
+        throw new RequestError("请求参数错误", ResponseCode.BAD_REQUEST);
+      case ResponseCode.FORBIDDEN:
+        // 处理403禁止访问
+        if (config.showError !== false) {
+          uni.showToast({
+            title: "无权限访问",
+            icon: "none",
+            duration: 3000,
+          });
+        }
+        throw new RequestError("无权限访问", ResponseCode.FORBIDDEN);
+      case ResponseCode.NOT_FOUND:
+        // 处理404资源不存在
+        if (config.showError !== false) {
+          uni.showToast({
+            title: "请求的资源不存在",
+            icon: "none",
+            duration: 3000,
+          });
+        }
+        throw new RequestError("请求的资源不存在", ResponseCode.NOT_FOUND);
+      case ResponseCode.REQUEST_TIMEOUT:
+        // 处理408请求超时
+        if (config.showError !== false) {
+          uni.showToast({
+            title: "请求超时，请检查网络连接",
+            icon: "none",
+            duration: 3000,
+          });
+        }
+        throw new RequestError("请求超时", ResponseCode.REQUEST_TIMEOUT);
+      default:
+        // 处理其他未知错误
+        if (config.showError !== false) {
+          uni.showToast({
+            title: `网络错误 (${response.statusCode})`,
+            icon: "none",
+            duration: 3000,
+          });
+        }
+        throw new RequestError(`网络错误 (${response.statusCode})`, response.statusCode);
     }
-
-
   }
-
 }
 
 export const interceptors = Interceptors.getInstance();

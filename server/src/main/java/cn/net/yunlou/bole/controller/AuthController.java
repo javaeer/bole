@@ -4,8 +4,6 @@ import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.model.*;
-import cn.net.yunlou.bole.model.AccessTokenDTO;
-import cn.net.yunlou.bole.model.RefreshTokenViewDTO;
 import cn.net.yunlou.bole.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +23,18 @@ public class AuthController {
     @Operation(summary = "用户登录")
     public BusinessResponse<AccessTokenDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         return BusinessResponse.success(authService.login(loginDTO));
+    }
+
+    @PostMapping("login-sms")
+    @Operation(summary = "用户短信登录")
+    public BusinessResponse<AccessTokenDTO> smsLogin(@Valid @RequestBody SmsLoginDTO loginDTO) {
+        return BusinessResponse.success(authService.smsLogin(loginDTO));
+    }
+
+    @PostMapping("login-wechat")
+    @Operation(summary = "用户微信登录")
+    public BusinessResponse<AccessTokenDTO> wechatLogin(@Valid @RequestBody WechatLoginDTO loginDTO) {
+        return BusinessResponse.success(authService.wechatLogin(loginDTO));
     }
 
     @PostMapping("register")
@@ -74,7 +84,7 @@ public class AuthController {
 
     @PostMapping("reset-password")
     @Operation(summary = "重置密码")
-    public BusinessResponse<Boolean> resetPassword(@Valid @RequestBody ResetPasswordDTO request) {
+    public BusinessResponse<AccessTokenDTO> resetPassword(@Valid @RequestBody ResetPasswordDTO request) {
         return BusinessResponse.success(authService.resetPassword(request));
     }
 

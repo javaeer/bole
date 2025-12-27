@@ -1,13 +1,9 @@
 package cn.net.yunlou.bole.config;
 
+import cn.net.yunlou.bole.common.RequestLoggingFilter;
+import cn.net.yunlou.bole.common.security.JwtAccessDeniedHandler;
+import cn.net.yunlou.bole.common.security.JwtAuthenticationEntryPoint;
 import cn.net.yunlou.bole.common.security.JwtAuthenticationFilter;
-import cn.net.yunlou.bole.common.security.RequestLoggingFilter;
-import cn.net.yunlou.bole.common.security.YunlouAccessDeniedHandler;
-import cn.net.yunlou.bole.common.security.YunlouAuthenticationEntryPoint;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -18,6 +14,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +23,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Configuration
@@ -41,9 +43,11 @@ public class SecurityConfig {
 
     private final AppConfigProperties appConfigProperties;
 
-    private final YunlouAccessDeniedHandler yunlouAccessDeniedHandler;
 
-    private final YunlouAuthenticationEntryPoint yunlouAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -58,7 +62,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 // 2. 禁用CSRF（API项目通常禁用）
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
 
                 // 3. 使用无状态Session（JWT场景）
                 .sessionManagement(
@@ -71,15 +75,15 @@ public class SecurityConfig {
                                         .permitAll() // 白名单放行
                                         .anyRequest()
                                         .authenticated() // 其他需要认证
-                        )
+                )
 
                 // 5. 配置异常处理器
                 .exceptionHandling(
                         handling ->
                                 handling.authenticationEntryPoint(
-                                                yunlouAuthenticationEntryPoint) // 401处理
-                                        .accessDeniedHandler(yunlouAccessDeniedHandler) // 403处理
-                        )
+                                                jwtAuthenticationEntryPoint) // 401处理
+                                        .accessDeniedHandler(jwtAccessDeniedHandler) // 403处理
+                )
 
                 // 6. 添加自定义过滤器
                 .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)

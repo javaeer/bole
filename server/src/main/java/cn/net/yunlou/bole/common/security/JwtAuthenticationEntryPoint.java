@@ -14,13 +14,13 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 /**
- * 1.自定义处理JWT请求头过期或签名错误的结果
+ * jwt 认证入口点 自定义处理JWT请求头过期或签名错误的结果
  *
  * <p>2.注入
  */
 @Slf4j
 @Component
-public class YunlouAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(

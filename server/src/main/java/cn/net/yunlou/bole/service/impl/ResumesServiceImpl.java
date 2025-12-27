@@ -81,7 +81,7 @@ public class ResumesServiceImpl
 
         for (ResumesTemplateComponent component : components) {
             TemplateComponentKey componentType =
-                    IEnum.getEnumByValue(component.getKey(), TemplateComponentKey.class);
+                    IEnum.valueOf(component.getKey(), TemplateComponentKey.class);
             if (ObjectUtils.isNotEmpty(componentType)) {
                 Map<String, Object> props = component.getProps();
                 if (ObjectUtils.isNotEmpty(props)) {

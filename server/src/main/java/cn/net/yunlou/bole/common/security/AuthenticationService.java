@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
@@ -30,20 +29,22 @@ public class AuthenticationService {
 
     private final UserRoleService userRoleService;
 
-    private final UserDetailsService userDetailsService;
+    private final UnifiedUserDetailsService userDetailsService;
 
     private final JwtTokenProvider jwtTokenProvider;
 
     private final RedisCacheUtils redisCacheUtils;
 
-    /** 根据token获取认证信息 */
+    /**
+     * 根据token获取认证信息
+     */
     public UsernamePasswordAuthenticationToken getAuthentication(
             String token, HttpServletRequest request) {
         try {
-            String username = jwtTokenProvider.extractUsername(token);
+            Long userId = jwtTokenProvider.extractUserId(token);
 
-            if (username != null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (userId != null) {
+                UnifiedUserDetails userDetails = userDetailsService.loadUserById(userId);
 
                 // 验证 token 与用户是否匹配
                 if (jwtTokenProvider.validateToken(token, userDetails)) {
@@ -62,18 +63,20 @@ public class AuthenticationService {
         return null;
     }
 
-    /** 用户登录处理 */
+    /**
+     * 用户登录处理
+     */
     public AccessTokenDTO login(User user) {
 
         // 更新最后登录时间
         userService.updateLastLoginTime(user.getId());
 
         // 生成 accessToken
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername());
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
 
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
 
-        storeRefreshToken(user.getUsername(), refreshToken);
+        storeRefreshToken(user.getId(), refreshToken);
 
         return AccessTokenDTO.builder()
                 .accessToken(accessToken)
@@ -86,7 +89,9 @@ public class AuthenticationService {
                 .build();
     }
 
-    /** 刷新访问令牌 */
+    /**
+     * 刷新访问令牌
+     */
     public RefreshTokenViewDTO refreshToken(String refreshToken) {
         try {
             // 验证刷新令牌
@@ -94,22 +99,22 @@ public class AuthenticationService {
                 throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "无效的刷新令牌");
             }
 
-            String username = jwtTokenProvider.extractUsername(refreshToken);
+            Long userId = jwtTokenProvider.extractUserId(refreshToken);
 
             // 检查刷新令牌是否在Redis中（可选，用于令牌撤销）
-            if (!isRefreshTokenValid(username, refreshToken)) {
+            if (!isRefreshTokenValid(userId, refreshToken)) {
                 throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "刷新令牌已失效");
             }
 
             // 验证用户是否存在且有效
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserById(userId);
 
             // 生成新的访问令牌
-            String newAccessToken = jwtTokenProvider.generateAccessToken(username);
+            String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
 
             // 可选：生成新的刷新令牌（滚动刷新）
-            String newRefreshToken = jwtTokenProvider.generateRefreshToken(username);
-            storeRefreshToken(username, newRefreshToken);
+            String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
+            storeRefreshToken(userId, newRefreshToken);
 
             return RefreshTokenViewDTO.builder()
                     .accessToken(newAccessToken)
@@ -127,22 +132,28 @@ public class AuthenticationService {
         }
     }
 
-    /** 存储刷新令牌到Redis */
-    private void storeRefreshToken(String username, String refreshToken) {
-        String key = REFRESH_TOKEN_PREFIX + username;
+    /**
+     * 存储刷新令牌到Redis
+     */
+    private void storeRefreshToken(Long userId, String refreshToken) {
+        String key = REFRESH_TOKEN_PREFIX + userId;
         // 存储刷新令牌，设置过期时间与令牌本身一致
         redisCacheUtils.putObject(
                 key, refreshToken, jwtTokenProvider.getAccessTokenRemainingTime(refreshToken));
     }
 
-    /** 验证刷新令牌是否有效 */
-    private boolean isRefreshTokenValid(String username, String refreshToken) {
-        String key = REFRESH_TOKEN_PREFIX + username;
+    /**
+     * 验证刷新令牌是否有效
+     */
+    private boolean isRefreshTokenValid(Long userId, String refreshToken) {
+        String key = REFRESH_TOKEN_PREFIX + userId;
         String storedToken = redisCacheUtils.getObject(key, String.class);
         return refreshToken.equals(storedToken);
     }
 
-    /** 撤销令牌（登出时使用） */
+    /**
+     * 撤销令牌（登出时使用）
+     */
     public void revokeTokens(String username) {
         // 删除刷新令牌
         String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
