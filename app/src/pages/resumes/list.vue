@@ -464,19 +464,19 @@ const getTopComponents = (components: any[], count: number) => {
 
 const goToDetail = (resume: Resume) => {
   uni.navigateTo({
-    url: `/pages/resume/detail?id=${resume.id}`
+    url: `/pages/resumes/detail?id=${resume.id}`
   })
 }
 
 const editResume = (resume: Resume) => {
   uni.navigateTo({
-    url: `/pages/resume/edit?id=${resume.id}`
+    url: `/pages/resumes/edit?id=${resume.id}`
   })
 }
 
 const createNewResume = () => {
   uni.navigateTo({
-    url: '/pages/resume/edit'
+    url: '/pages/resumes/edit'
   })
 }
 

@@ -29,7 +29,7 @@
       }
     },
     {
-      "path": "pages/profile/setting",
+      "path": "pages/profile/edit",
       "style": {
         "navigationBarTitleText": "设置"
       }
@@ -300,6 +300,12 @@
 	},
 	{
 		"path": "pages/auth/forgot",
+		"style": {
+			"navigationBarTitleText": ""
+		}
+	},
+	{
+		"path": "pages/profile/bind",
 		"style": {
 			"navigationBarTitleText": ""
 		}

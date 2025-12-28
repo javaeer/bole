@@ -96,4 +96,17 @@ public class AuthController {
 
         return BusinessResponse.success("登出成功");
     }
+
+
+
+    @PostMapping("closure")
+    @Operation(summary = "注销账号")
+    public BusinessResponse<String> closure() {
+
+        authService.closure();
+
+        return BusinessResponse.success("注销成功");
+    }
+
+
 }

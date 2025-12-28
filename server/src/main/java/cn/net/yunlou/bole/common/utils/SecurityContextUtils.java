@@ -5,9 +5,6 @@ import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.BaseConstant;
 import cn.net.yunlou.bole.common.security.UnifiedUserDetails;
 import cn.net.yunlou.bole.entity.User;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +13,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -26,12 +27,16 @@ public class SecurityContextUtils {
         log.debug("SecurityContextUtils initialized");
     }
 
-    /** 🔐 获取安全上下文 */
+    /**
+     * 🔐 获取安全上下文
+     */
     public static SecurityContext getContext() {
         return SecurityContextHolder.getContext();
     }
 
-    /** 👤 获取认证信息 */
+    /**
+     * 👤 获取认证信息
+     */
     public static Optional<Authentication> getAuthentication() {
         return Optional.ofNullable(getContext().getAuthentication());
     }
@@ -46,18 +51,6 @@ public class SecurityContextUtils {
     }
 
     /**
-     * 🔍 获取当前用户名
-     *
-     * @return 用户名，未认证返回空字符串
-     */
-    public static String getCurrentUsername() {
-        return getAuthentication()
-                .map(Authentication::getName)
-                .orElseThrow(
-                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
-    }
-
-    /**
      * 👥 获取当前用户详细信息
      *
      * @return UserDetails对象，未认证返回empty
@@ -67,6 +60,28 @@ public class SecurityContextUtils {
                 .map(Authentication::getPrincipal)
                 .filter(principal -> principal instanceof UserDetails)
                 .map(principal -> (UserDetails) principal);
+    }
+
+    /**
+     * 📝 获取当前用户ID（需在 UserDetails 中实现 getUser().getId()）
+     *
+     * @return 当前登录用户的 ID
+     * @throws BusinessException 如果用户未登录或身份信息无效
+     */
+    public static Long getCurrentUserId() {
+        return getCurrentUserDetails()
+                .filter(userDetails -> userDetails instanceof UnifiedUserDetails)
+                .map(userDetails -> ((UnifiedUserDetails) userDetails).getUid())
+                .orElseThrow(
+                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
+    }
+
+    public static User getCurrentUser() {
+        return getCurrentUserDetails()
+                .filter(userDetails -> userDetails instanceof UnifiedUserDetails)
+                .map(userDetails -> ((UnifiedUserDetails) userDetails).getUser())
+                .orElseThrow(
+                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
     /**
@@ -87,7 +102,9 @@ public class SecurityContextUtils {
                         () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
     }
 
-    /** ✅ 检查用户是否已认证 */
+    /**
+     * ✅ 检查用户是否已认证
+     */
     public static boolean isAuthenticated() {
         return getAuthentication().map(Authentication::isAuthenticated).orElse(false);
     }
@@ -156,43 +173,12 @@ public class SecurityContextUtils {
         return false;
     }
 
-    /** 🧹 清除安全上下文 */
+    /**
+     * 🧹 清除安全上下文
+     */
     public static void clearContext() {
         SecurityContextHolder.clearContext();
     }
 
-    /**
-     * 📝 获取当前用户ID（需在 UserDetails 中实现 getUser().getId()）
-     *
-     * @return 当前登录用户的 ID
-     * @throws BusinessException 如果用户未登录或身份信息无效
-     */
-    public static Long getCurrentUserId() {
-        return getCurrentUserDetails()
-                .filter(userDetails -> userDetails instanceof UnifiedUserDetails)
-                .map(userDetails -> ((UnifiedUserDetails) userDetails).getUser().getId())
-                .orElseThrow(
-                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
-    }
 
-    /**
-     * 📧 获取当前用户邮箱（需在UserDetails中实现getEmail方法）
-     *
-     * @throws BusinessException 如果用户未登录或身份信息无效
-     */
-    public static String getCurrentUserEmail() {
-        return getCurrentUserDetails()
-                .filter(userDetails -> userDetails instanceof UnifiedUserDetails)
-                .map(userDetails -> ((UnifiedUserDetails) userDetails).getUser().getEmail())
-                .orElseThrow(
-                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
-    }
-
-    public static User getCurrentUser() {
-        return getCurrentUserDetails()
-                .filter(userDetails -> userDetails instanceof UnifiedUserDetails)
-                .map(userDetails -> ((UnifiedUserDetails) userDetails).getUser())
-                .orElseThrow(
-                        () -> new BusinessException(BusinessStatus.UNAUTHORIZED_INVALID_EXPIRED));
-    }
 }

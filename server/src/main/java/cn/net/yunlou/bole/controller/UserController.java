@@ -5,6 +5,7 @@ import cn.net.yunlou.bole.common.IEnum;
 import cn.net.yunlou.bole.common.constant.UserKeyField;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.ProfileDTO;
 import cn.net.yunlou.bole.model.edit.UserEdit;
 import cn.net.yunlou.bole.model.query.UserQuery;
 import cn.net.yunlou.bole.model.view.UserView;
@@ -13,10 +14,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("user")
@@ -30,8 +32,8 @@ public class UserController {
     @Operation(summary = "获取当前用户信息")
     public BusinessResponse<User> getCurrentUser() {
         // 从 SecurityContext 获取当前用户
-        String username = SecurityContextUtils.getCurrentUsername();
-        User user = userService.findByUsername(username);
+        Long currentUserId = SecurityContextUtils.getCurrentUserId();
+        User user = userService.getById(currentUserId);
         return BusinessResponse.success(user);
     }
 
@@ -45,12 +47,15 @@ public class UserController {
 
     @PutMapping("profile")
     @Operation(summary = "更新用户信息")
-    public BusinessResponse<User> updateUser(@Valid @RequestBody UserEdit request) {
-        String username = SecurityContextUtils.getCurrentUsername();
-        User currentUser = userService.findByUsername(username);
+    public BusinessResponse<UserView> updateUser(@Valid @RequestBody ProfileDTO request) {
+        return BusinessResponse.success(userService.updateProfile(request));
+    }
 
-        userService.updateByEdit(request);
-        return BusinessResponse.success(userService.getById(currentUser.getId()));
+    @PutMapping("edit")
+    @Operation(summary = "更新用户信息")
+    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
+    public BusinessResponse<Boolean> updateUser(@Valid @RequestBody UserEdit request) {
+        return BusinessResponse.success(userService.updateByEdit(request));
     }
 
     @PostMapping("page")

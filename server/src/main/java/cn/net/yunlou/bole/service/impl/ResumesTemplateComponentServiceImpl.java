@@ -39,24 +39,24 @@ public class ResumesTemplateComponentServiceImpl
     public ResumesTemplateComponent createEntity(ResumesTemplate left, ResumesComponent right) {
         return ResumesTemplateComponent.builder()
                 .templateId(
-                        (ObjectUtils.isNotEmpty(left) || ObjectUtils.isNotEmpty(left.getId()))
+                        (ObjectUtils.isNotEmpty(left) && ObjectUtils.isNotEmpty(left.getId()))
                                 ? left.getId()
                                 : null)
                 .componentId(
-                        (ObjectUtils.isNotEmpty(right) || ObjectUtils.isNotEmpty(right.getId()))
+                        (ObjectUtils.isNotEmpty(right) && ObjectUtils.isNotEmpty(right.getId()))
                                 ? right.getId()
                                 : null)
                 .key(
-                        (ObjectUtils.isNotEmpty(right) || ObjectUtils.isNotEmpty(right.getKey()))
+                        (ObjectUtils.isNotEmpty(right) && ObjectUtils.isNotEmpty(right.getKey()))
                                 ? right.getKey()
                                 : null)
                 .name(
-                        (ObjectUtils.isNotEmpty(right) || ObjectUtils.isNotEmpty(right.getName()))
+                        (ObjectUtils.isNotEmpty(right) && ObjectUtils.isNotEmpty(right.getName()))
                                 ? right.getName()
                                 : null)
                 .defaultConfig(
                         (ObjectUtils.isNotEmpty(right)
-                                        || ObjectUtils.isNotEmpty(right.getDefaultConfig()))
+                                        && ObjectUtils.isNotEmpty(right.getDefaultConfig()))
                                 ? right.getDefaultConfig()
                                 : null)
                 .build();

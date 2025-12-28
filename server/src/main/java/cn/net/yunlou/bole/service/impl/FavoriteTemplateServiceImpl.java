@@ -22,11 +22,11 @@ public class FavoriteTemplateServiceImpl
     public FavoriteTemplate createEntity(User left, ResumesTemplate right) {
         return FavoriteTemplate.builder()
                 .userId(
-                        (ObjectUtils.isNotEmpty(left) || ObjectUtils.isNotEmpty(left.getId()))
+                        (ObjectUtils.isNotEmpty(left) && ObjectUtils.isNotEmpty(left.getId()))
                                 ? left.getId()
                                 : null)
                 .templateId(
-                        (ObjectUtils.isNotEmpty(right) || ObjectUtils.isNotEmpty(right.getId()))
+                        (ObjectUtils.isNotEmpty(right) && ObjectUtils.isNotEmpty(right.getId()))
                                 ? right.getId()
                                 : null)
                 .build();

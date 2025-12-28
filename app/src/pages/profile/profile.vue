@@ -8,20 +8,16 @@
       <view class="user-avatar-section">
         <view class="avatar-wrapper">
           <image
-            :src="userInfo.avatar"
+            :src="userInfo.avatar || '/static/logo.png'"
             class="user-avatar"
             mode="aspectFit"
-            @click="handleEditAvatar"
           />
-          <view class="avatar-edit-badge" @click="handleEditAvatar">
-            <text class="icon-camera">📷</text>
-          </view>
         </view>
 
         <view class="user-info-wrapper">
           <view class="user-info">
-            <text class="user-name">{{ userInfo.name }}</text>
-            <text class="user-title">{{ userInfo.title }}</text>
+            <text class="user-name">{{ userInfo.name || "未设置" }}</text>
+            <text class="user-title">{{ userInfo.title || "未设置" }}</text>
           </view>
 
           <!-- 编辑按钮 -->
@@ -112,19 +108,6 @@
       </view>
     </view>
 
-    <!-- 功能菜单 -->
-    <!-- <view class="section">
-      <view class="menu-list">
-        <view class="menu-item" v-for="item in menuList" :key="item.id" @click="handleMenuClick(item)">
-          <view class="menu-left">
-            <text class="menu-icon">{{ item.icon }}</text>
-            <text class="menu-text">{{ item.name }}</text>
-          </view>
-          <text class="menu-arrow">›</text>
-        </view>
-      </view>
-    </view> -->
-
     <!-- 设置入口 -->
     <view class="section settings-section">
       <view class="section-header">
@@ -165,23 +148,24 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useUserStore } from "@/stores/user";
-import { getUserInfo } from "@/utils/store";
-import FileAPI from "@/api/file";
+import { onUnload } from "@dcloudio/uni-app";
+import { EventKey } from "@/constants/event-key";
 
 const userStore = useUserStore();
 
-const info = getUserInfo();
-
-// 用户信息
-const userInfo = ref({
-  name: info.name,
-  title: info.title,
-  avatar: "/static/logo.png",
-  followers: 24,
-  fans: 18,
-  likes: 156,
+// 使用计算属性获取用户信息，确保响应式
+const userInfo = computed(() => {
+  const storeInfo = userStore.userInfo || {};
+  return {
+    name: storeInfo.name || "未设置",
+    title: storeInfo.title || "未设置",
+    avatar: storeInfo.avatar || "/static/logo.png",
+    followers: storeInfo.followers || 0,
+    fans: storeInfo.fans || 0,
+    likes: storeInfo.likes || 0,
+  };
 });
 
 // 简历统计
@@ -191,57 +175,47 @@ const resumeStats = ref({
   downloaded: 5,
 });
 
-// 菜单列表
-const menuList = ref([
-  { id: 1, name: "模板发布", icon: "📤", path: "/pages/template/edit" },
-  { id: 2, name: "浏览记录", icon: "👀", path: "/pages/history/history" },
-  { id: 3, name: "申请管理", icon: "📅", path: "/pages/application/list" },
-]);
+// 页面状态
+const pageState = reactive({
+  lastRefreshTime: 0,
+  refreshFlag: false,
+  lastUpdateTimestamp: 0,
+});
 
-// 事件处理
-const handleEditAvatar = async () => {
-  try {
-    // 1. 调用系统接口选择图片
-    const chooseRes = await uni.chooseImage({
-      count: 1,
-      sizeType: ["compressed"],
-      sourceType: ["album", "camera"],
-    });
+// 处理用户信息更新事件
+const handleUserInfoUpdated = (data: any) => {
+  if (data && data.success) {
+    console.log("收到用户信息更新事件，准备刷新数据");
+    // 设置刷新标志
+    pageState.refreshFlag = true;
+    pageState.lastUpdateTimestamp = data.timestamp || Date.now();
 
-    const tempFilePath = chooseRes.tempFilePaths[0];
-
-    // 2. 调用上传接口
-    const uploadResult = await FileAPI.upload({
-      filePath: tempFilePath,
-      formData: { userId: info.id },
-      onProgress: (progress) => {
-        console.log("上传进度:", progress);
-      },
-    });
-
-    console.log("上传成功，服务器返回:", uploadResult);
-
-    userInfo.value.avatar = uploadResult.accessUrl;
-    uni.showToast({
-      title: "头像更新成功",
-      icon: "success",
-    });
-
-  } catch (error) {
-    console.error("操作失败:", error);
-    uni.showToast({ title: "上传失败", icon: "none" });
+    // 可以在这里立即刷新
+    loadUserInfo();
   }
 };
 
-const handleEditProfile = () => {
-  uni.navigateTo({
-    url: "/pages/profile/setting",
-  });
+// 加载用户信息
+const loadUserInfo = async () => {
+  try {
+    console.log("开始加载用户信息...");
+    await userStore.userInfo
+    pageState.lastRefreshTime = Date.now();
+    pageState.refreshFlag = false;
+    console.log("用户信息加载完成");
+  } catch (error) {
+    console.error("刷新用户信息失败:", error);
+    uni.showToast({
+      title: "获取用户信息失败",
+      icon: "error",
+    });
+  }
 };
 
-const handleCreateResume = () => {
+// 事件处理函数
+const handleEditProfile = () => {
   uni.navigateTo({
-    url: "/pages/template/select",
+    url: "/pages/profile/edit",
   });
 };
 
@@ -293,12 +267,6 @@ const handleSelfEvaluations = () => {
   });
 };
 
-const handleMenuClick = (item: any) => {
-  uni.navigateTo({
-    url: item.path,
-  });
-};
-
 const handleFeedback = () => {
   uni.navigateTo({
     url: "/pages/feedback/feedback",
@@ -318,23 +286,58 @@ const handleLogout = () => {
     content: "确定要退出当前账号吗？",
     success: (res) => {
       if (res.confirm) {
-        uni.showToast({
-          title: "退出成功",
-          icon: "success",
+        uni.showLoading({
+          title: "退出中...",
         });
         userStore.logout({ callApi: true });
         setTimeout(() => {
-          uni.reLaunch({
-            url: "/pages/index/index",
+          uni.hideLoading();
+          uni.showToast({
+            title: "退出成功",
+            icon: "success",
           });
-        }, 1500);
+          setTimeout(() => {
+            uni.reLaunch({
+              url: "/pages/index/index",
+            });
+          }, 1500);
+        }, 1000);
       }
     },
   });
 };
 
+// 页面生命周期
 onMounted(() => {
   console.log("我的页面加载完成");
+
+  // 初始加载用户信息
+  loadUserInfo();
+
+  // 监听全局事件
+  uni.$on(EventKey.USER_INFO_UPDATED_EVENT, handleUserInfoUpdated);
+});
+
+// 页面显示时刷新
+const onShow = () => {
+  // 页面显示时检查是否需要刷新
+  const now = Date.now();
+  // 如果上次刷新时间超过10秒，或者有刷新标志，则刷新
+  if (pageState.refreshFlag || now - pageState.lastRefreshTime > 10000) {
+    console.log("页面显示，触发刷新检查");
+    loadUserInfo();
+  }
+};
+
+// 页面卸载时清理事件监听
+onUnload(() => {
+  // 移除事件监听
+  uni.$off(EventKey.USER_INFO_UPDATED_EVENT, handleUserInfoUpdated);
+});
+
+// 暴露生命周期方法给uni-app框架
+defineExpose({
+  onShow,
 });
 </script>
 

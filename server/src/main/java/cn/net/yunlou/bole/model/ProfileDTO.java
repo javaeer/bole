@@ -1,18 +1,20 @@
-package cn.net.yunlou.bole.model.edit;
+package cn.net.yunlou.bole.model;
 
-import cn.net.yunlou.bole.common.BaseEdit;
+import cn.net.yunlou.bole.common.BaseDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * FileName: UpdateUserRequest Description: Created By MR. WANG Created At 2025/11/19 14:14 Modified
- * By Modified At
+ * FileName: ProfileDTO
+ * Description:
+ * Created By laughtiger
+ * Created At 2025/12/28 17:41
+ * Modified By
+ * Modified At
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-@Schema(description = "编辑用户请求")
-public class UserEdit extends BaseEdit {
+@Schema(description = "编辑资料请求")
+public class ProfileDTO extends BaseDTO {
 
     @Schema(description = "用户名", example = "admin")
     private String username;

@@ -63,6 +63,34 @@
             </view>
 
             <view class="form-group">
+              <text class="form-label">预览图</text>
+              <view class="preview-image-container" @click="handlePreviewImageUpload">
+                <image
+                  v-if="templateForm.previewImage"
+                  :src="templateForm.previewImage"
+                  class="preview-image"
+                  mode="aspectFill"
+                />
+                <view v-else class="preview-image-placeholder">
+                  <text class="preview-image-icon">+</text>
+                  <text class="preview-image-text">上传预览图</text>
+                </view>
+
+                <!-- 上传遮罩层 -->
+                <view v-if="uploadingPreviewImage" class="upload-mask">
+                  <view class="upload-progress">
+                    <view class="progress-circle">
+                      <view class="circle-bg"></view>
+                      <view class="circle-fill" :style="{ transform: `rotate(${uploadPreviewProgress * 3.6}deg)` }"></view>
+                    </view>
+                    <text class="progress-text">{{ uploadPreviewProgress }}%</text>
+                  </view>
+                </view>
+              </view>
+              <text class="preview-image-tips">建议尺寸 1080×1920 像素，支持 JPG/PNG</text>
+            </view>
+
+            <view class="form-group">
               <text class="form-label">描述</text>
               <textarea
                 v-model="templateForm.description"
@@ -589,7 +617,9 @@
       <view class="footer-right">
         <button @click="cancel" class="footer-btn secondary">取消</button>
         <button @click="saveAsDraft" class="footer-btn">保存草稿</button>
-        <button @click="saveTemplate" class="footer-btn primary">保存模板</button>
+        <button @click="saveTemplate" class="footer-btn primary">
+          {{ isEditMode ? "更新模板" : "保存模板" }}
+        </button>
       </view>
     </view>
   </view>
@@ -600,10 +630,13 @@ import { computed, onMounted, ref, watch } from "vue";
 import TemplatePreview from "@/components/template/TemplatePreview.vue";
 import { TemplateForm } from "@/types/template";
 import { TemplateComponentForm } from "@/types/template-component";
-import TemplateAPI from "@/api/template";
+import FileAPI from "@/api/file";
+import { FileResult } from "@/types/file";
+import { UploadOptions } from "@/types/request";
 import { COLOR_PRESETS, CONFIG_TABS, DEVICE_OPTIONS, LAYOUT_TYPES } from "@/constants/template";
 import { COMPONENT_LIBRARY } from "@/constants/component";
 import { useTemplateStore } from "@/stores/template";
+import TemplateAPI from "@/api/template";
 
 // 使用模板 store
 const templateStore = useTemplateStore();
@@ -617,6 +650,10 @@ const scrollTop = ref(0);
 const showColorPresets = ref(false);
 const currentColorField = ref<"primaryColor" | "secondaryColor" | "accentColor">("primaryColor");
 const selectedIndex = ref(-1);
+
+// 预览图上传相关
+const uploadingPreviewImage = ref(false);
+const uploadPreviewProgress = ref(0);
 
 const colorPresets = ref(COLOR_PRESETS);
 
@@ -719,6 +756,126 @@ const refreshPreview = () => {
   });
 };
 
+// 预览图上传处理
+const handlePreviewImageUpload = () => {
+  uni.chooseImage({
+    count: 1,
+    sizeType: ["compressed", "original"],
+    sourceType: ["album", "camera"],
+    success: async (res) => {
+      const tempFilePath = res.tempFilePaths[0];
+      const fileSize = res.tempFiles[0].size;
+
+      // 检查文件大小（限制为10MB）
+      const maxSize = 10 * 1024 * 1024;
+      if (fileSize > maxSize) {
+        uni.showToast({
+          title: "图片大小不能超过10MB",
+          icon: "error",
+        });
+        return;
+      }
+
+      uploadingPreviewImage.value = true;
+      uploadPreviewProgress.value = 0;
+
+      try {
+        uni.showLoading({
+          title: "上传中...",
+          mask: true,
+        });
+
+        // 构建上传参数 - 预览图
+        const uploadOptions: UploadOptions = {
+          filePath: tempFilePath,
+          name: "previewImage",
+          compress: true,
+          maxWidth: 1080,
+          maxHeight: 1920,
+          quality: 0.85,
+          showProgress: true,
+          onProgress: (progress: number) => {
+            uploadPreviewProgress.value = progress;
+            uni.showLoading({
+              title: `上传中 ${progress}%`,
+              mask: true,
+            });
+          },
+          formData: {
+            fileType: "template_preview",
+            businessType: "template_editor"
+          },
+        };
+
+        // 调用FileAPI上传
+        const result: FileResult = await FileAPI.upload(uploadOptions);
+
+        // 上传成功，更新预览图URL
+        templateForm.previewImage = result.accessUrl;
+
+        uni.hideLoading();
+        uni.showToast({
+          title: "预览图上传成功",
+          icon: "success",
+        });
+
+        // 触发预览更新
+        previewKey.value += 1;
+
+      } catch (error: any) {
+        console.error("预览图上传失败:", error);
+        uni.hideLoading();
+
+        let errorMsg = "预览图上传失败";
+        if (error.code === "NETWORK_ERROR") {
+          errorMsg = "网络错误，请检查网络连接";
+        } else if (error.code === "UPLOAD_FAILED") {
+          errorMsg = "上传失败，请稍后重试";
+        } else if (error.message) {
+          errorMsg = error.message;
+        }
+
+        uni.showToast({
+          title: errorMsg,
+          icon: "error",
+          duration: 3000,
+        });
+      } finally {
+        uploadingPreviewImage.value = false;
+        uploadPreviewProgress.value = 0;
+      }
+    },
+    fail: (error) => {
+      console.error("选择图片失败:", error);
+      if (error.errMsg?.includes("cancel")) {
+        return;
+      }
+      uni.showToast({
+        title: "选择图片失败",
+        icon: "error",
+      });
+    },
+  });
+};
+
+// 移除预览图
+const removePreviewImage = () => {
+  uni.showModal({
+    title: "删除预览图",
+    content: "确定要删除预览图吗？",
+    confirmColor: "#f56c6c",
+    success: (res) => {
+      if (res.confirm) {
+        templateForm.previewImage = "";
+        uni.showToast({
+          title: "预览图已删除",
+          icon: "success",
+        });
+      }
+    },
+  });
+};
+
 const saveAsDraft = () => {
   if (!validateRequiredFields()) return;
 
@@ -769,13 +926,16 @@ const saveTemplate = async () => {
 
 const performSave = async () => {
   uni.showModal({
-    title: "保存模板",
-    content: "确定要保存模板吗？模板将发布到模板库",
-    confirmText: "发布",
+    title: isEditMode.value ? "更新模板" : "保存模板",
+    content: isEditMode.value ? "确定要更新模板吗？" : "确定要发布模板吗？",
+    confirmText: isEditMode.value ? "更新" : "发布",
     confirmColor: "#d4af37",
     success: async (res) => {
       if (res.confirm) {
-        uni.showLoading({ title: "发布中..." });
+        uni.showLoading({
+          title: isEditMode.value ? "更新中..." : "发布中..."
+        });
+
         try {
           // 确保组件数组存在
           if (!templateForm.components) {
@@ -794,26 +954,75 @@ const performSave = async () => {
 
           console.log("提交数据:", JSON.stringify(submitData, null, 2));
           console.log("组件数量:", submitData.components?.length);
+          console.log("当前模式:", isEditMode.value ? "编辑" : "新增");
 
-          await TemplateAPI.addTemplate(submitData);
-          uni.hideLoading();
-          uni.showToast({
-            title: "模板发布成功",
-            icon: "success",
-            duration: 2000,
-          });
+          // 根据模式调用不同的store方法
+          if (isEditMode.value) {
+            // 编辑模式：调用editTemplate
+            // 确保有模板ID（从路由参数或其他地方获取）
+            const pages = getCurrentPages();
+            const currentPage = pages[pages.length - 1];
+            const options = currentPage.options;
+            const templateId = options.id ? parseInt(options.id) : 0;
 
+            if (templateId) {
+              // 如果有ID，添加到提交数据
+              const editData = {
+                ...submitData,
+                id: templateId
+              };
+              await templateStore.editTemplate(editData);
+
+              uni.showToast({
+                title: "模板更新成功",
+                icon: "success",
+                duration: 2000,
+              });
+            } else {
+              // 没有ID，降级为新增
+              console.warn("编辑模式下未找到模板ID，降级为新增");
+              await templateStore.addTemplate(submitData);
+
+              uni.showToast({
+                title: "模板创建成功",
+                icon: "success",
+                duration: 2000,
+              });
+            }
+          } else {
+            // 新增模式：调用addTemplate
+            await templateStore.addTemplate(submitData);
+
+            uni.showToast({
+              title: "模板创建成功",
+              icon: "success",
+              duration: 2000,
+            });
+          }
+
+          // 保存成功后延迟返回
           setTimeout(() => {
             uni.navigateBack();
           }, 2000);
+
         } catch (error) {
-          uni.hideLoading();
+          console.error("保存模板失败:", error);
+
+          // 根据错误类型显示不同的提示
+          let errorMessage = "保存失败，请重试";
+          if (error.message && error.message.includes("网络")) {
+            errorMessage = "网络异常，请检查网络连接";
+          } else if (error.message && error.message.includes("权限")) {
+            errorMessage = "没有操作权限";
+          }
+
           uni.showToast({
-            title: "保存失败，请重试",
+            title: errorMessage,
             icon: "error",
             duration: 2000,
           });
-          console.error("保存模板失败:", error);
+        } finally {
+          uni.hideLoading();
         }
       }
     },
@@ -1261,6 +1470,7 @@ const loadTemplateData = async (id: number) => {
     uni.showLoading({ title: "加载模板数据..." });
 
     // 调用 API 加载模板数据
+    // 这里需要根据实际API进行调整
     const response = await TemplateAPI.getById(id);
 
     if (response) {
@@ -1329,7 +1539,6 @@ onMounted(() => {
   });
 });
 </script>
-
 <style scoped lang="scss">
 .template-editor {
   min-height: 100vh;
@@ -1581,6 +1790,106 @@ onMounted(() => {
   }
 }
 
+.preview-image-container {
+  position: relative;
+  width: 100%;
+  height: 240rpx;
+  border: 2rpx dashed $border-color-light;
+  border-radius: $border-radius;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.9;
+  }
+
+  .preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: $background-color;
+  }
+
+  .preview-image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .preview-image-icon {
+      font-size: 64rpx;
+      color: $primary-color;
+      margin-bottom: $uni-spacing-col-sm;
+    }
+
+    .preview-image-text {
+      font-size: $font-size-base;
+      color: $text-placeholder;
+    }
+  }
+}
+
+.preview-image-tips {
+  display: block;
+  font-size: $font-size-extra-small;
+  color: $text-placeholder;
+  margin-top: $margin-mini;
+  text-align: center;
+}
+
+/* 预览图上传遮罩层 */
+.upload-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: $uni-bg-color-mask;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-circle {
+  position: relative;
+  width: 60rpx;
+  height: 60rpx;
+  margin-bottom: $uni-spacing-col-sm;
+}
+
+.circle-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4rpx solid rgba($background-color-white, 0.3);
+  border-radius: $border-radius-round;
+}
+
+.circle-fill {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4rpx solid $background-color-white;
+  border-radius: $border-radius-round;
+  clip: rect(0, 30rpx, 60rpx, 0);
+  transform-origin: center;
+}
+
+.progress-text {
+  font-size: $font-size-small;
+  color: $background-color-white;
+  font-weight: $font-weight-medium;
+}
+
 .form-textarea {
   width: 100%;
   min-height: 160rpx;
@@ -1612,6 +1921,7 @@ onMounted(() => {
     color: $text-secondary;
   }
 }
+
 
 /* 布局类型选择 */
 .layout-types {

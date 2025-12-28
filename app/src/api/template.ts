@@ -13,8 +13,12 @@ const TemplateAPI = {
     return request.get<TemplateResult>(`${TEMPLATE_BASE_URL}/preview/${code}`);
   },
 
-  addTemplate(templateForm: TemplateForm) {
-    return request.post(`${TEMPLATE_BASE_URL}/add`, templateForm);
+  addTemplate(form: TemplateForm) {
+    return request.post(`${TEMPLATE_BASE_URL}/add`, form);
+  },
+
+  edit(form: TemplateForm) {
+    return request.put(`${TEMPLATE_BASE_URL}/edit`, form);
   },
 
   page(params: PageQuery, query?: TemplateQuery) {

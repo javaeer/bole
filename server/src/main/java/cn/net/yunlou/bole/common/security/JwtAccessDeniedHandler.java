@@ -7,12 +7,13 @@ import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 /**
  * 1.jwt未授权访问拒绝处理器
@@ -28,14 +29,14 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException)
             throws IOException, ServletException {
-        String username =
-                SecurityContextUtils.getCurrentUsername() != null
-                        ? SecurityContextUtils.getCurrentUsername()
-                        : "unknown";
+        Long Uid =
+                SecurityContextUtils.getCurrentUserId() != null
+                        ? SecurityContextUtils.getCurrentUserId()
+                        : 0L;
 
         log.warn(
                 "权限拒绝: 用户[{}]尝试访问 {} {} - 权限不足",
-                username,
+                Uid,
                 request.getMethod(),
                 request.getRequestURI());
 

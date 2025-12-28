@@ -7,18 +7,13 @@ import {
   PhoneRegisterForm,
   ResetPasswordForm,
   SmsLoginForm,
+  UpdateForm,
   UserInfo,
   WechatLoginForm,
 } from "@/types/user";
-import {
-  clearAll,
-  clearUserAll,
-  getRefreshToken,
-  getToken,
-  getUserInfo,
-  setToken as setTokenToStorage,
-} from "@/utils/store";
+import { clearAll, clearUserAll, getRefreshToken, getToken, getUserInfo, setToken, setUserInfo } from "@/utils/store";
 import AuthAPI from "@/api/auth";
+import UserAPI from "@/api/user";
 
 export const useUserStore = defineStore("user", () => {
   // 状态
@@ -38,14 +33,17 @@ export const useUserStore = defineStore("user", () => {
   // Actions
   const updateToken = (newToken: string | null) => {
     token.value = newToken;
+    setToken(newToken);
   };
 
   const updateRefreshToken = (newRefreshToken: string | null) => {
     refreshToken.value = newRefreshToken;
+    setToken(newRefreshToken);
   };
 
   const updateUserInfo = (newUserInfo: UserInfo | null) => {
     userInfo.value = newUserInfo;
+    setUserInfo(newUserInfo);
   };
 
   /**
@@ -54,13 +52,12 @@ export const useUserStore = defineStore("user", () => {
   const login = async (credentials: LoginForm) => {
     try {
       const result = await AuthAPI.login(credentials);
-      // 更新本地存储
-      setTokenToStorage(result);
       // 更新store状态
       token.value = result.accessToken;
       refreshToken.value = result.refreshToken;
       userInfo.value = result.userInfo || null;
-
+      // 更新本地存储
+      setToken(result);
       return result;
     } catch (error) {
       clearUserAll();
@@ -78,13 +75,12 @@ export const useUserStore = defineStore("user", () => {
   const smsLogin = async (credentials: SmsLoginForm) => {
     try {
       const result = await AuthAPI.smsLogin(credentials);
-      // 更新本地存储
-      setTokenToStorage(result);
       // 更新store状态
       token.value = result.accessToken;
       refreshToken.value = result.refreshToken;
       userInfo.value = result.userInfo || null;
-
+      // 更新本地存储
+      setToken(result);
       return result;
     } catch (error) {
       clearUserAll();
@@ -121,15 +117,33 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  /**
+   * 注销
+   */
+  const closure = async () => {
+    try {
+        await AuthAPI.closure();
+    } catch (error) {
+      console.warn("注销接口调用失败:", error);
+    } finally {
+      clearUserAll();
+      // 更新store状态
+      token.value = null;
+      refreshToken.value = null;
+      userInfo.value = null;
+    }
+  };
+
   const wechatLogin = async (loginData: WechatLoginForm) => {
     try {
       const result = await AuthAPI.wechatLogin(loginData);
-      // 更新本地存储
-      setTokenToStorage(result);
       // 更新store状态
       token.value = result.accessToken;
       refreshToken.value = result.refreshToken;
       userInfo.value = result.userInfo || null;
+
+      // 更新本地存储
+      setToken(result);
 
       return result;
     } catch (error) {
@@ -156,13 +170,13 @@ export const useUserStore = defineStore("user", () => {
         refresh_token: refreshToken.value,
       });
 
-      setTokenToStorage(result);
+      setToken(result);
+      
       token.value = result.accessToken;
       refreshToken.value = result.refreshToken;
       if (result.userInfo) {
         userInfo.value = result.userInfo;
       }
-
       return result;
     } catch (error) {
       clearUserAll();
@@ -198,7 +212,7 @@ export const useUserStore = defineStore("user", () => {
       });
 
       // 更新所有token
-      setTokenToStorage(result);
+      setToken(result);
       token.value = result.accessToken;
       refreshToken.value = result.refreshToken;
 
@@ -225,13 +239,13 @@ export const useUserStore = defineStore("user", () => {
   const registerWithPhone = async (data: PhoneRegisterForm) => {
     try {
       const result = await AuthAPI.registerWithPhone(data);
-      // 更新本地存储
-      setTokenToStorage(result);
       // 更新store状态
       token.value = result.accessToken;
       refreshToken.value = result.refreshToken;
       userInfo.value = result.userInfo || null;
 
+      // 更新本地存储
+      setToken(result);
       return result;
     } catch (error) {
       clearUserAll();
@@ -251,12 +265,11 @@ export const useUserStore = defineStore("user", () => {
     try {
       const result = await AuthAPI.registerWithEmail(data);
       // 更新本地存储
-      setTokenToStorage(result);
+      setToken(result);
       // 更新store状态
       token.value = result.accessToken;
       refreshToken.value = result.refreshToken;
       userInfo.value = result.userInfo || null;
-
       return result;
     } catch (error) {
       clearUserAll();
@@ -276,7 +289,7 @@ export const useUserStore = defineStore("user", () => {
     try {
       const result = await AuthAPI.resetPassword(data);
       // 更新本地存储
-      setTokenToStorage(result);
+      setToken(result);
       // 更新store状态
       token.value = result.accessToken;
       refreshToken.value = result.refreshToken;
@@ -289,6 +302,16 @@ export const useUserStore = defineStore("user", () => {
       token.value = null;
       refreshToken.value = null;
       userInfo.value = null;
+      throw error;
+    }
+  };
+
+
+  const updateProfile = async (data: UpdateForm) => {
+    try {
+      const result = await UserAPI.updateProfile(data);
+      updateUserInfo(result);
+    } catch (error) {
       throw error;
     }
   };
@@ -326,6 +349,9 @@ export const useUserStore = defineStore("user", () => {
     registerWithPhone,
     registerWithEmail,
     resetPassword,
+    updateProfile,
+    closure,
+
 
     // 状态更新方法
     updateToken,

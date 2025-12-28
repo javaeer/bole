@@ -145,6 +145,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         
         -- 基础信息字段
         company_id BIGINT,
+        gender INTEGER INTEGER DEFAULT 0,
         username VARCHAR(100) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         email VARCHAR(100),
@@ -158,7 +159,9 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         website VARCHAR(255),
         github VARCHAR(100),
         wechat VARCHAR(50),
-        
+        wechat_open_id VARCHAR(50),
+        wechat_union_id VARCHAR(50),
+
         -- 个人简介字段
         bio TEXT,
         
@@ -182,14 +185,17 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 创建索引
     CREATE INDEX IF NOT EXISTS idx_user_username ON bole_app.t_user(username);
+    CREATE INDEX IF NOT EXISTS idx_user_phone ON bole_app.t_user(phone);
     CREATE INDEX IF NOT EXISTS idx_user_email ON bole_app.t_user(email);
     CREATE INDEX IF NOT EXISTS idx_user_company ON bole_app.t_user(company_id);
+    CREATE INDEX IF NOT EXISTS idx_user_wechat_open_id ON bole_app.t_user(wechat_open_id);
     CREATE INDEX IF NOT EXISTS idx_user_status ON bole_app.t_user(status);
     CREATE INDEX IF NOT EXISTS idx_user_created_at ON bole_app.t_user(created_at);
 
     -- 注释
     COMMENT ON TABLE bole_app.t_user IS '用户表';
     COMMENT ON COLUMN bole_app.t_user.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_user.gender IS '性别';
     COMMENT ON COLUMN bole_app.t_user.company_id IS '当前所在企业ID';
     COMMENT ON COLUMN bole_app.t_user.username IS '用户名';
     COMMENT ON COLUMN bole_app.t_user.password IS '密码';
@@ -202,6 +208,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_user.website IS '个人网站';
     COMMENT ON COLUMN bole_app.t_user.github IS 'GitHub账号';
     COMMENT ON COLUMN bole_app.t_user.wechat IS '微信号';
+    COMMENT ON COLUMN bole_app.t_user.wechat_open_id IS '微信OPENID';
+    COMMENT ON COLUMN bole_app.t_user.wechat_union_id IS '微信UNIONID';
     COMMENT ON COLUMN bole_app.t_user.bio IS '个人简介';
     COMMENT ON COLUMN bole_app.t_user.followers IS '粉丝数';
     COMMENT ON COLUMN bole_app.t_user.fans IS '关注数';
@@ -228,10 +236,10 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         website VARCHAR(255),
         github VARCHAR(100),
         wechat VARCHAR(50),
-        
+
         -- 简介字段
         bio TEXT,
-        
+
         -- 统计字段
         followers INTEGER DEFAULT 0,
         fans INTEGER DEFAULT 0,
@@ -1084,6 +1092,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         id BIGSERIAL PRIMARY KEY,
         file_key VARCHAR(64) NOT NULL,
         file_size VARCHAR(50),
+        file_name VARCHAR(50),
         file_size_bytes BIGINT,
         original_filename VARCHAR(500),
         storage_path VARCHAR(1000),
@@ -1115,6 +1124,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON TABLE bole_app.t_file IS '文件表';
     COMMENT ON COLUMN bole_app.t_file.id IS '主键ID';
     COMMENT ON COLUMN bole_app.t_file.file_key IS '文件全局唯一标识（MD5/SHA256）';
+    COMMENT ON COLUMN bole_app.t_file.file_name IS '文件名称';
     COMMENT ON COLUMN bole_app.t_file.file_size IS '文件大小（带单位）';
     COMMENT ON COLUMN bole_app.t_file.file_size_bytes IS '文件大小（字节）';
     COMMENT ON COLUMN bole_app.t_file.original_filename IS '原始文件名';

@@ -8,7 +8,6 @@ import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.model.AccessTokenDTO;
 import cn.net.yunlou.bole.model.RefreshTokenViewDTO;
-import cn.net.yunlou.bole.service.UserRoleService;
 import cn.net.yunlou.bole.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,6 @@ public class AuthenticationService {
     private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
 
     private final UserService userService;
-
-    private final UserRoleService userRoleService;
 
     private final UnifiedUserDetailsService userDetailsService;
 
@@ -154,9 +151,9 @@ public class AuthenticationService {
     /**
      * 撤销令牌（登出时使用）
      */
-    public void revokeTokens(String username) {
+    public void revokeTokens(Long userId) {
         // 删除刷新令牌
-        String refreshTokenKey = REFRESH_TOKEN_PREFIX + username;
+        String refreshTokenKey = REFRESH_TOKEN_PREFIX + userId;
         redisCacheUtils.delete(refreshTokenKey);
 
         // 可以将访问令牌加入黑名单（如果需要在过期前撤销）
@@ -169,7 +166,13 @@ public class AuthenticationService {
     }
 
     public void logout() {
-        String username = SecurityContextUtils.getCurrentUsername();
-        revokeTokens(username);
+        Long currentUserId = SecurityContextUtils.getCurrentUserId();
+        revokeTokens(currentUserId);
+    }
+
+    public void closure() {
+        Long currentUserId = SecurityContextUtils.getCurrentUserId();
+        userService.removeById(currentUserId);
+        revokeTokens(currentUserId);
     }
 }

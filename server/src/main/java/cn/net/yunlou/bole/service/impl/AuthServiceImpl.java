@@ -194,6 +194,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public void closure() {
+        authenticationService.closure();
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean changePassword(@Valid ChangePasswordDTO request) {
 

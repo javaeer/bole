@@ -83,6 +83,12 @@ const AuthAPI = {
   verifyToken(): Promise<{ valid: boolean }> {
     return request.get<{ valid: boolean }>("/auth/verify");
   },
+  /**
+   * 注销接口
+   */
+  closure(): Promise<void> {
+    return request.post<void>("/auth/closure");
+  },
 };
 
 export default AuthAPI;

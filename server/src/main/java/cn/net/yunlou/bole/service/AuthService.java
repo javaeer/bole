@@ -25,9 +25,9 @@ public interface AuthService {
 
     RefreshTokenViewDTO refreshToken(@Valid String refreshToken);
 
-    void logout();
-
     Boolean changePassword(@Valid ChangePasswordDTO request);
 
+    void logout();
 
+    void closure();
 }
