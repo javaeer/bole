@@ -27,22 +27,22 @@ const UserAPI = {
 
   /** 绑定个人中心用户手机 */
   bindPhone(data: BindPhoneForm) {
-    return request.put(`${USER_BASE_URL}/phone/bind`, data);
+    return request.put(`${USER_BASE_URL}/bind/phone`, data);
   },
 
   /** 解绑个人中心用户手机 */
   unbindPhone(data: BindPhoneForm) {
-    return request.put(`${USER_BASE_URL}/phone/unbind`, data);
+    return request.put(`${USER_BASE_URL}/unbind/phone`, data);
   },
 
   /** 绑定个人中心用户邮箱 */
   bindEmail(data: BindEmailForm) {
-    return request.put(`${USER_BASE_URL}/email/bind`, data);
+    return request.put(`${USER_BASE_URL}/bind/email`, data);
   },
 
   /** 绑定个人中心用户邮箱 */
   unbindEmail(data: BindEmailForm) {
-    return request.put(`${USER_BASE_URL}/email/unbind`, data);
+    return request.put(`${USER_BASE_URL}/unbind/email`, data);
   },
 
 };

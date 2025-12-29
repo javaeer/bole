@@ -1278,6 +1278,53 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_ems.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_ems.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
+    -- 反馈表
+    CREATE TABLE IF NOT EXISTS bole_app.t_feedback (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        type VARCHAR(50),
+        content TEXT,
+        images JSONB,
+        contact JSONB,
+
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_feedback_user_id ON bole_app.t_feedback(user_id);
+    CREATE INDEX IF NOT EXISTS idx_feedback_type ON bole_app.t_feedback(type);
+    CREATE INDEX IF NOT EXISTS idx_feedback_created_at ON bole_app.t_feedback(created_at);
+    CREATE INDEX IF NOT EXISTS idx_feedback_deleted ON bole_app.t_feedback(deleted);
+
+    -- 如果需要按联系信息中的特定字段查询，可以创建GIN索引（按需使用）
+    -- CREATE INDEX IF NOT EXISTS idx_feedback_contact_gin ON bole_app.t_feedback USING gin(contact);
+    -- CREATE INDEX IF NOT EXISTS idx_feedback_images_gin ON bole_app.t_feedback USING gin(images);
+
+    -- 添加外键约束（如果存在用户表）
+    -- ALTER TABLE bole_app.t_feedback
+    -- ADD CONSTRAINT fk_feedback_user
+    -- FOREIGN KEY (user_id)
+    -- REFERENCES bole_app.t_user(id);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_feedback IS '用户反馈表';
+    COMMENT ON COLUMN bole_app.t_feedback.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_feedback.user_id IS '用户ID';
+    COMMENT ON COLUMN bole_app.t_feedback.type IS '反馈类型';
+    COMMENT ON COLUMN bole_app.t_feedback.content IS '反馈内容';
+    COMMENT ON COLUMN bole_app.t_feedback.images IS '图片列表（JSONB格式）';
+    COMMENT ON COLUMN bole_app.t_feedback.contact IS '联系方式信息（JSONB格式）';
+    COMMENT ON COLUMN bole_app.t_feedback.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_feedback.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_feedback.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
+
+
     -- 审计日志表
     CREATE TABLE IF NOT EXISTS bole_audit.audit_logs (
         id BIGSERIAL PRIMARY KEY,
@@ -1319,7 +1366,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
                 't_education_experience', 't_project_experience',
                 't_resumes','t_resumes_component', 't_resumes_template',
                 't_skill','t_city_grade','t_self_evaluation',
-                't_city','t_file'
+                't_city','t_file','t_msg_template',
+                't_sms','t_ems','t_feedback','audit_logs'
             )
         LOOP
             EXECUTE format('

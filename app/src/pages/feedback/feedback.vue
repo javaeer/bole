@@ -12,8 +12,8 @@
       <view class="form-section">
         <text class="section-label">反馈类型</text>
         <view class="type-grid">
-          <view 
-            v-for="(type, index) in feedbackTypes" 
+          <view
+            v-for="(type, index) in feedbackTypes"
             :key="index"
             class="type-item"
             :class="{ active: selectedType === type.value }"
@@ -29,7 +29,7 @@
       <view class="form-section">
         <text class="section-label">反馈内容</text>
         <view class="input-wrapper">
-          <textarea 
+          <textarea
             v-model="feedbackContent"
             class="content-input"
             placeholder="请详细描述您遇到的问题或建议..."
@@ -48,17 +48,17 @@
         <text class="section-hint">最多上传3张图片</text>
         <view class="upload-grid">
           <!-- 已上传图片 -->
-          <view 
-            v-for="(image, index) in uploadedImages" 
+          <view
+            v-for="(image, index) in uploadedImages"
             :key="index"
             class="image-preview"
           >
             <image :src="image" class="preview-image" mode="aspectFill" />
             <view class="image-delete" @click="removeImage(index)">×</view>
           </view>
-          
+
           <!-- 上传按钮 -->
-          <view 
+          <view
             v-if="uploadedImages.length < 3"
             class="upload-button"
             @click="chooseImage"
@@ -75,7 +75,7 @@
         <text class="section-hint">方便我们与您进一步沟通</text>
         <view class="contact-inputs">
           <view class="input-wrapper">
-            <input 
+            <input
               v-model="contactInfo.email"
               class="form-input"
               type="text"
@@ -86,7 +86,7 @@
             />
           </view>
           <view class="input-wrapper">
-            <input 
+            <input
               v-model="contactInfo.phone"
               class="form-input"
               type="number"
@@ -101,7 +101,7 @@
       </view>
 
       <!-- 提交按钮 -->
-      <button 
+      <button
         class="submit-button"
         :class="{ 'submit-button--disabled': !canSubmit }"
         :disabled="!canSubmit || submitting"
@@ -128,106 +128,184 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { computed, reactive, ref } from "vue";
+import FeedbackAPI from "@/api/feedback";
+import { FeedbackForm, FeedbackResult } from "@/types/feedback";
+import { UploadOptions } from "@/types/request";
+import { FileResult } from "@/types/file";
+import FileAPI from "@/api/file";
 
 // 反馈类型数据
 const feedbackTypes = [
-  { value: 'bug', label: 'Bug反馈', icon: '🐛' },
-  { value: 'suggestion', label: '功能建议', icon: '💡' },
-  { value: 'experience', label: '体验问题', icon: '🌟' },
-  { value: 'other', label: '其他', icon: '📝' }
-]
+  { value: "bug", label: "Bug反馈", icon: "🐛" },
+  { value: "suggestion", label: "功能建议", icon: "💡" },
+  { value: "experience", label: "体验问题", icon: "🌟" },
+  { value: "other", label: "其他", icon: "📝" },
+];
 
 // 表单数据
-const selectedType = ref('bug')
-const feedbackContent = ref('')
-const uploadedImages = ref<string[]>([])
+const formData: FeedbackForm = {
+  type: "bug",
+  contact: "",
+  images: "",
+  content: "",
+};
+const selectedType = ref("bug");
+const feedbackContent = ref("");
+const uploadedImages = ref<string[]>([]);
 const contactInfo = reactive({
-  email: '',
-  phone: ''
-})
+  email: "",
+  phone: "",
+});
 
 // 状态
-const submitting = ref(false)
-const submitSuccess = ref(false)
+const submitting = ref(false);
+const submitSuccess = ref(false);
 
 // 计算属性
 const canSubmit = computed(() => {
-  return feedbackContent.value.trim().length >= 10 && !submitting.value
-})
+  return feedbackContent.value.trim().length >= 10 && !submitting.value;
+});
 
 // 选择反馈类型
 const selectType = (type: string) => {
-  selectedType.value = type
-}
+  selectedType.value = type;
+};
 
 // 输入框焦点处理
 const handleInputFocus = () => {
   // 可以添加动画效果
-}
+};
 
 const handleInputBlur = () => {
   // 可以添加验证逻辑
-}
+};
 
 // 选择图片
 const chooseImage = () => {
   uni.chooseImage({
     count: 3 - uploadedImages.value.length,
-    sizeType: ['compressed'],
-    sourceType: ['album', 'camera'],
+    sizeType: ["compressed"],
+    sourceType: ["album", "camera"],
     success: (res) => {
-      // 模拟上传过程
-      uploadedImages.value = [...uploadedImages.value, ...res.tempFilePaths]
+      const tempFilePaths = res.tempFilePaths;
+      const fileSize = res.tempFiles[0].size;
+
+      // 检查文件大小（限制为5MB）
+      const maxSize = 5 * 1024 * 1024;
+      if (fileSize > maxSize) {
+        uni.showToast({
+          title: "图片大小不能超过5MB",
+          icon: "error",
+        });
+        return;
+      }
+
+      uploadedImages.value = [...uploadedImages.value, ...tempFilePaths];
+
+      try {
+        uni.showLoading({
+          title: "上传中...",
+          mask: true,
+        });
+
+        // 构建上传参数
+        const uploadOptions: UploadOptions = {
+          filePath: tempFilePath,
+          name: "image",
+          compress: true,
+          maxWidth: 800,
+          maxHeight: 800,
+          quality: 0.8,
+          showProgress: true,
+          onProgress: (progress: number) => {
+            uploadProgress.value = progress;
+            uni.showLoading({
+              title: `上传中 ${progress}%`,
+              mask: true,
+            });
+          },
+        };
+
+        // 调用FileAPI上传
+        const result: FileResult = await FileAPI.upload(uploadOptions);
+
+        uni.hideLoading();
+        uni.showToast({
+          title: "上传成功",
+          icon: "success",
+        });
+
+      } catch (error: any) {
+        console.error("上传失败:", error);
+        uni.hideLoading();
+
+        uni.showToast({
+          title: errorMsg,
+          icon: "error",
+          duration: 3000,
+        });
+      } finally {
+        ///
+      }
+    },
+    fail: (error) => {
+      console.error("选择图片失败:", error);
+      if (error.errMsg?.includes("cancel")) {
+        return;
+      }
       uni.showToast({
-        title: '图片添加成功',
-        icon: 'success'
-      })
-    }
-  })
-}
+        title: "选择图片失败",
+        icon: "error",
+      });
+    },
+  });
+};
 
 // 删除图片
 const removeImage = (index: number) => {
-  uploadedImages.value.splice(index, 1)
+  uploadedImages.value.splice(index, 1);
   uni.showToast({
-    title: '图片已删除',
-    icon: 'success'
-  })
-}
+    title: "图片已删除",
+    icon: "success",
+  });
+};
 
 // 提交反馈
 const submitFeedback = () => {
-  if (!canSubmit.value) return
-  
-  submitting.value = true
-  
-  // 模拟提交过程
+  if (!canSubmit.value) return;
+
+  submitting.value = true;
+
+  // 提交过程
+
+  const result: FeedbackResult = await FeedbackAPI.add();
+
   setTimeout(() => {
-    submitting.value = false
-    submitSuccess.value = true
-    
+    submitting.value = false;
+    submitSuccess.value = true;
+
     // 3秒后重置表单
     setTimeout(() => {
-      resetForm()
-    }, 3000)
-    
+      resetForm();
+    }, 3000);
+
     uni.showToast({
-      title: '提交成功',
-      icon: 'success'
-    })
-  }, 2000)
-}
+      title: "提交成功",
+      icon: "success",
+    });
+  }, 2000);
+};
 
 // 重置表单
 const resetForm = () => {
-  selectedType.value = 'bug'
-  feedbackContent.value = ''
-  uploadedImages.value = []
-  contactInfo.email = ''
-  contactInfo.phone = ''
-  submitSuccess.value = false
-}
+  selectedType.value = "bug";
+  feedbackContent.value = "";
+  uploadedImages.value = [];
+  contactInfo.email = "";
+  contactInfo.phone = "";
+  submitSuccess.value = false;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -303,24 +381,24 @@ const resetForm = () => {
   border-radius: $border-radius;
   border: 2rpx solid $border-color-light;
   transition: all $transition-fast;
-  
+
   &.active {
     border-color: $primary-color;
     background: rgba($primary-color, 0.1);
     box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.1);
-    
+
     .type-text {
       color: $primary-color;
       font-weight: $font-weight-medium;
     }
-    
+
     .type-icon {
       transform: scale(1.1);
     }
   }
-  
+
   &:active:not(.active) {
-    background: color.adjust($background-color, $lightness:  - 5%);
+    background: color.adjust($background-color, $lightness: - 5%);
     transform: translateY(2rpx);
   }
 }
@@ -343,7 +421,7 @@ const resetForm = () => {
   border-radius: $border-radius;
   border: 2rpx solid $border-color-light;
   transition: all $transition-fast;
-  
+
   &:focus-within {
     border-color: $primary-color;
     box-shadow: 0 0 0 2rpx rgba($primary-color, 0.1);
@@ -360,7 +438,7 @@ const resetForm = () => {
   border: none;
   outline: none;
   resize: none;
-  
+
   &::placeholder {
     color: $text-placeholder;
   }
@@ -420,7 +498,7 @@ const resetForm = () => {
   font-weight: $font-weight-bold;
   cursor: pointer;
   transition: transform $transition-fast;
-  
+
   &:active {
     transform: scale(0.9);
   }
@@ -438,9 +516,9 @@ const resetForm = () => {
   border-radius: $border-radius;
   color: $text-secondary;
   transition: all $transition-fast;
-  
+
   &:active {
-    background: color.adjust($background-color, $lightness:  - 5%);
+    background: color.adjust($background-color, $lightness: - 5%);
     border-color: $primary-color;
     color: $primary-color;
   }
@@ -462,7 +540,7 @@ const resetForm = () => {
   flex-direction: column;
   gap: $margin-small;
   margin-top: $margin-mini;
-  
+
   .input-wrapper {
     margin: 0;
   }
@@ -477,7 +555,7 @@ const resetForm = () => {
   background: transparent;
   border: none;
   outline: none;
-  
+
   &::placeholder {
     color: $text-placeholder;
   }
@@ -487,7 +565,7 @@ const resetForm = () => {
 .submit-button {
   width: 100%;
   height: $button-height;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness:  -10%) 100%);
+  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
   color: $background-color-white;
   border: none;
   border-radius: $border-radius;
@@ -495,18 +573,18 @@ const resetForm = () => {
   font-weight: $font-weight-bold;
   margin-top: $margin-base * 1.5;
   transition: all $transition-normal;
-  
+
   &:active:not(:disabled) {
     transform: translateY(2rpx);
     box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.3);
   }
-  
+
   &:disabled {
     opacity: $button-disabled-opacity;
   }
-  
+
   &--disabled {
-    background: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness:  -10%) 100%);
+    background: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness: -10%) 100%);
   }
 }
 
@@ -570,7 +648,7 @@ const resetForm = () => {
   font-size: $font-size-small;
   color: $text-secondary;
   line-height: 1.6;
-  
+
   &:first-child {
     font-weight: $font-weight-medium;
   }
@@ -581,7 +659,7 @@ const resetForm = () => {
   .type-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .upload-grid {
     grid-template-columns: repeat(2, 1fr);
   }
