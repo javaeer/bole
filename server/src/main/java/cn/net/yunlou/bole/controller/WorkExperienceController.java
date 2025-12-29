@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * Modified By Modified At
  */
 @RestController
-@RequestMapping("work-experience")
+@RequestMapping("work/experience")
 @Tag(name = "11.工作经历管理", description = "工作经历相关接口")
 @RequiredArgsConstructor
 public class WorkExperienceController {

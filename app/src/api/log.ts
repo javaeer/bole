@@ -19,7 +19,7 @@ const LogAPI = {
    * @returns
    */
   getVisitTrend(queryParams: VisitTrendQuery) {
-    return request.get<VisitTrendVO>(`${LOG_BASE_URL}/visit-trend`, queryParams);
+    return request.get<VisitTrendVO>(`${LOG_BASE_URL}/visit/trend`, queryParams);
   },
 
   /**
@@ -29,7 +29,7 @@ const LogAPI = {
    * @returns
    */
   getVisitStats() {
-    return request.get<VisitStatsVO>(`${LOG_BASE_URL}/visit-stats`);
+    return request.get<VisitStatsVO>(`${LOG_BASE_URL}/visit/stats`);
   },
 };
 

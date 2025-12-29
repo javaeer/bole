@@ -380,9 +380,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import { onLoad } from "@dcloudio/uni-app";
+import CodeAPI from "@/api/code";
+import { CodeTemplateKey } from "@/constants/code-template-key";
+import { EventKey } from "@/constants/event-key";
+import { BindEmailForm, BindPhoneForm } from "@/types/user";
+import { EmailSendForm, SmsSendForm } from "@/types/code";
 
 const userStore = useUserStore();
 
@@ -391,24 +396,24 @@ const pageTitle = ref("账号绑定");
 
 // 标签页配置
 const tabs = [
-  { type: 'phone', label: '手机号' },
-  { type: 'email', label: '邮箱' },
-  { type: 'wechat', label: '微信' }
+  { type: "phone", label: "手机号" },
+  { type: "email", label: "邮箱" },
+  { type: "wechat", label: "微信" },
 ];
 
 // 活动标签页
-const activeTab = ref<'phone' | 'email' | 'wechat'>('phone');
+const activeTab = ref<"phone" | "email" | "wechat">("phone");
 
 // 手机号表单
-const phoneForm = reactive({
-  phone: '',
-  code: '',
-  password: ''
+const phoneForm: BindPhoneForm = reactive({
+  phone: "",
+  code: "",
+  password: "",
 });
 
 const phoneError = reactive({
-  phone: '',
-  code: ''
+  phone: "",
+  code: "",
 });
 
 const codeCountdown = ref(0);
@@ -416,15 +421,15 @@ const bindingPhone = ref(false);
 const unbindingPhone = ref(false);
 
 // 邮箱表单
-const emailForm = reactive({
-  email: '',
-  code: '',
-  password: ''
+const emailForm: BindEmailForm = reactive({
+  email: "",
+  code: "",
+  password: "",
 });
 
 const emailError = reactive({
-  email: '',
-  code: ''
+  email: "",
+  code: "",
 });
 
 const emailCodeCountdown = ref(0);
@@ -433,36 +438,44 @@ const unbindingEmail = ref(false);
 
 // 微信表单
 const wechatForm = reactive({
-  password: ''
+  password: "",
 });
 
 const unbindingWechat = ref(false);
 
 // 处理标签页切换
-const handleTabChange = (type: 'phone' | 'email' | 'wechat') => {
+const handleTabChange = (type: "phone" | "email" | "wechat") => {
   activeTab.value = type;
 };
 
 // 格式化手机号显示
 const formatPhone = (phone: string) => {
-  if (!phone) return '';
-  return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+  if (!phone) return "";
+  return phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
 };
 
 // 发送验证码
 const handleSendCode = () => {
   if (!phoneForm.phone) {
-    phoneError.phone = '请输入手机号';
+    phoneError.phone = "请输入手机号";
     return;
   }
 
   if (!/^1[3-9]\d{9}$/.test(phoneForm.phone)) {
-    phoneError.phone = '请输入正确的手机号';
+    phoneError.phone = "请输入正确的手机号";
     return;
   }
 
   // 调用发送验证码接口
-  console.log('发送验证码到:', phoneForm.phone);
+  console.log("发送验证码到:", phoneForm.phone);
+
+  // 构建发送参数
+  const smsSendForm: SmsSendForm = {
+    phone: phoneForm.phone,
+    templateId: CodeTemplateKey.TEMPLATE_CHANGE_BIND,
+  };
+
+  CodeAPI.sendSms(smsSendForm);
 
   // 开始倒计时
   codeCountdown.value = 60;
@@ -474,14 +487,16 @@ const handleSendCode = () => {
   }, 1000);
 
   uni.showToast({
-    title: '验证码已发送',
-    icon: 'success'
+    title: "验证码已发送",
+    icon: "success",
   });
 };
 
 // 发送解绑验证码
 const handleSendUnbindCode = () => {
   // 发送解绑验证码逻辑
+  CodeAPI.sendUnbindSms();
+
   codeCountdown.value = 60;
   const timer = setInterval(() => {
     codeCountdown.value--;
@@ -491,25 +506,32 @@ const handleSendUnbindCode = () => {
   }, 1000);
 
   uni.showToast({
-    title: '验证码已发送',
-    icon: 'success'
+    title: "验证码已发送",
+    icon: "success",
   });
 };
 
 // 发送邮箱验证码
 const handleSendEmailCode = () => {
   if (!emailForm.email) {
-    emailError.email = '请输入邮箱地址';
+    emailError.email = "请输入邮箱地址";
     return;
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailForm.email)) {
-    emailError.email = '请输入正确的邮箱地址';
+    emailError.email = "请输入正确的邮箱地址";
     return;
   }
 
+  // 构建发送参数
+  const emailSendForm: EmailSendForm = {
+    email: emailForm.email,
+    templateId: CodeTemplateKey.TEMPLATE_CHANGE_BIND,
+  };
+
   // 调用发送邮箱验证码接口
-  console.log('发送验证码到:', emailForm.email);
+  console.log("发送验证码到:", emailForm.email);
+  CodeAPI.sendEmail(emailSendForm);
 
   emailCodeCountdown.value = 60;
   const timer = setInterval(() => {
@@ -520,13 +542,16 @@ const handleSendEmailCode = () => {
   }, 1000);
 
   uni.showToast({
-    title: '验证码已发送',
-    icon: 'success'
+    title: "验证码已发送",
+    icon: "success",
   });
 };
 
 // 发送解绑邮箱验证码
 const handleSendUnbindEmailCode = () => {
+
+  CodeAPI.sendUnbindEmail();
+
   emailCodeCountdown.value = 60;
   const timer = setInterval(() => {
     emailCodeCountdown.value--;
@@ -536,8 +561,8 @@ const handleSendUnbindEmailCode = () => {
   }, 1000);
 
   uni.showToast({
-    title: '验证码已发送',
-    icon: 'success'
+    title: "验证码已发送",
+    icon: "success",
   });
 };
 
@@ -547,27 +572,27 @@ const handleBindPhone = async () => {
 
   try {
     // 调用绑定手机号接口
-    // await userStore.bindPhone(phoneForm);
+    await userStore.bindPhone(phoneForm);
 
     uni.showToast({
-      title: '绑定成功',
-      icon: 'success'
+      title: "绑定成功",
+      icon: "success",
     });
 
     // 触发全局事件更新用户信息
-    uni.$emit('userInfoUpdated', {
+    uni.$emit(EventKey.USER_INFO_UPDATED_EVENT, {
       success: true,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // 清空表单
-    phoneForm.phone = '';
-    phoneForm.code = '';
+    phoneForm.phone = "";
+    phoneForm.code = "";
 
   } catch (error: any) {
     uni.showToast({
-      title: error.message || '绑定失败',
-      icon: 'error'
+      title: error.message || "绑定失败",
+      icon: "error",
     });
   } finally {
     bindingPhone.value = false;
@@ -576,9 +601,9 @@ const handleBindPhone = async () => {
 
 // 更换手机号
 const handleChangePhone = () => {
-  phoneForm.phone = '';
-  phoneForm.code = '';
-  phoneForm.password = '';
+  phoneForm.phone = "";
+  phoneForm.code = "";
+  phoneForm.password = "";
 };
 
 // 解绑手机号
@@ -587,25 +612,25 @@ const handleUnbindPhone = async () => {
 
   try {
     // 调用解绑手机号接口
-    // await userStore.unbindPhone(phoneForm);
+    await userStore.unbindPhone(phoneForm);
 
     uni.showModal({
-      title: '解绑成功',
-      content: '手机号已成功解绑',
+      title: "解绑成功",
+      content: "手机号已成功解绑",
       showCancel: false,
       success: () => {
         // 触发全局事件更新用户信息
-        uni.$emit('userInfoUpdated', {
+        uni.$emit(EventKey.USER_INFO_UPDATED_EVENT, {
           success: true,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
-      }
+      },
     });
 
   } catch (error: any) {
     uni.showToast({
-      title: error.message || '解绑失败',
-      icon: 'error'
+      title: error.message || "解绑失败",
+      icon: "error",
     });
   } finally {
     unbindingPhone.value = false;
@@ -618,25 +643,25 @@ const handleBindEmail = async () => {
 
   try {
     // 调用绑定邮箱接口
-    // await userStore.bindEmail(emailForm);
+    await userStore.bindEmail(emailForm);
 
     uni.showToast({
-      title: '绑定成功',
-      icon: 'success'
+      title: "绑定成功",
+      icon: "success",
     });
 
-    uni.$emit('userInfoUpdated', {
+    uni.$emit(EventKey.USER_INFO_UPDATED_EVENT, {
       success: true,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
-    emailForm.email = '';
-    emailForm.code = '';
+    emailForm.email = "";
+    emailForm.code = "";
 
   } catch (error: any) {
     uni.showToast({
-      title: error.message || '绑定失败',
-      icon: 'error'
+      title: error.message || "绑定失败",
+      icon: "error",
     });
   } finally {
     bindingEmail.value = false;
@@ -645,9 +670,9 @@ const handleBindEmail = async () => {
 
 // 更换邮箱
 const handleChangeEmail = () => {
-  emailForm.email = '';
-  emailForm.code = '';
-  emailForm.password = '';
+  emailForm.email = "";
+  emailForm.code = "";
+  emailForm.password = "";
 };
 
 // 解绑邮箱
@@ -656,24 +681,24 @@ const handleUnbindEmail = async () => {
 
   try {
     // 调用解绑邮箱接口
-    // await userStore.unbindEmail(emailForm);
+    await userStore.unbindEmail(emailForm);
 
     uni.showModal({
-      title: '解绑成功',
-      content: '邮箱已成功解绑',
+      title: "解绑成功",
+      content: "邮箱已成功解绑",
       showCancel: false,
       success: () => {
-        uni.$emit('userInfoUpdated', {
+        uni.$emit(EventKey.USER_INFO_UPDATED_EVENT, {
           success: true,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
-      }
+      },
     });
 
   } catch (error: any) {
     uni.showToast({
-      title: error.message || '解绑失败',
-      icon: 'error'
+      title: error.message || "解绑失败",
+      icon: "error",
     });
   } finally {
     unbindingEmail.value = false;
@@ -683,27 +708,27 @@ const handleUnbindEmail = async () => {
 // 绑定微信
 const handleBindWechat = () => {
   uni.showModal({
-    title: '绑定微信',
-    content: '即将跳转到微信进行授权，确认继续吗？',
+    title: "绑定微信",
+    content: "即将跳转到微信进行授权，确认继续吗？",
     success: (res) => {
       if (res.confirm) {
         // 跳转到微信授权页面
         // uni.navigateToMiniProgram({ appId: 'wx1234567890' });
 
         uni.showLoading({
-          title: '跳转中...'
+          title: "跳转中...",
         });
 
         // 模拟跳转
         setTimeout(() => {
           uni.hideLoading();
           uni.showToast({
-            title: '请在微信中完成授权',
-            icon: 'success'
+            title: "请在微信中完成授权",
+            icon: "success",
           });
         }, 1000);
       }
-    }
+    },
   });
 };
 
@@ -716,38 +741,33 @@ const handleUnbindWechat = async () => {
     // await userStore.unbindWechat(wechatForm);
 
     uni.showModal({
-      title: '解绑成功',
-      content: '微信已成功解绑',
+      title: "解绑成功",
+      content: "微信已成功解绑",
       showCancel: false,
       success: () => {
-        uni.$emit('userInfoUpdated', {
+        uni.$emit(EventKey.USER_INFO_UPDATED_EVENT, {
           success: true,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
-      }
+      },
     });
 
-    wechatForm.password = '';
+    wechatForm.password = "";
 
   } catch (error: any) {
     uni.showToast({
-      title: error.message || '解绑失败',
-      icon: 'error'
+      title: error.message || "解绑失败",
+      icon: "error",
     });
   } finally {
     unbindingWechat.value = false;
   }
 };
 
-// 返回上一页
-const handleBack = () => {
-  uni.navigateBack();
-};
-
 // 页面加载时处理参数
 onLoad((options) => {
   if (options.type) {
-    const type = options.type as 'phone' | 'email' | 'wechat';
+    const type = options.type as "phone" | "email" | "wechat";
     if (tabs.some(tab => tab.type === type)) {
       activeTab.value = type;
     }
@@ -756,7 +776,7 @@ onLoad((options) => {
 
 onMounted(() => {
   uni.setNavigationBarTitle({
-    title: pageTitle.value
+    title: pageTitle.value,
   });
 });
 </script>

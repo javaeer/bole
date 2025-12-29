@@ -1,4 +1,4 @@
-import { EmailBindingForm, MobileBindingForm, PasswordChangeForm, UpdateForm, UserInfo } from "@/types/user";
+import { BindEmailForm, BindPhoneForm, PasswordChangeForm, UpdateForm, UserInfo } from "@/types/user";
 import { request } from "@/utils/request";
 
 const USER_BASE_URL = "/user";
@@ -26,13 +26,23 @@ const UserAPI = {
 
 
   /** 绑定个人中心用户手机 */
-  bindMobile(data: MobileBindingForm) {
-    return request.put(`${USER_BASE_URL}/mobile`, data);
+  bindPhone(data: BindPhoneForm) {
+    return request.put(`${USER_BASE_URL}/phone/bind`, data);
+  },
+
+  /** 解绑个人中心用户手机 */
+  unbindPhone(data: BindPhoneForm) {
+    return request.put(`${USER_BASE_URL}/phone/unbind`, data);
   },
 
   /** 绑定个人中心用户邮箱 */
-  bindEmail(data: EmailBindingForm) {
-    return request.put(`${USER_BASE_URL}/email`, data);
+  bindEmail(data: BindEmailForm) {
+    return request.put(`${USER_BASE_URL}/email/bind`, data);
+  },
+
+  /** 绑定个人中心用户邮箱 */
+  unbindEmail(data: BindEmailForm) {
+    return request.put(`${USER_BASE_URL}/email/unbind`, data);
   },
 
 };

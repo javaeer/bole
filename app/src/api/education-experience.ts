@@ -3,9 +3,9 @@ import {
 	EducationExperienceForm,
 	EducationExperienceItem,
 	EducationExperienceQuery,
-} from "@/types/education-experience";
+} from "@/types/education/experience";
 
-const EDUCATION_EXPERIENCE_BASE_URL = "/education-experience";
+const EDUCATION_EXPERIENCE_BASE_URL = "/education/experience";
 
 const EducationExperienceAPI = {
 

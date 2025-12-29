@@ -11,12 +11,11 @@ import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.service.EmailService;
 import cn.net.yunlou.bole.service.SmsService;
 import cn.net.yunlou.bole.service.UserService;
-import com.wechat.api.java.core.Config;
-import com.wechat.api.java.core.DefaultConfig;
-import com.wechat.api.java.core.entity.WechatSession;
-import com.wechat.api.java.core.entity.WechatUserData;
-import com.wechat.api.java.service.WechatAuthService;
-import com.wechat.api.java.utils.WechatDataCryptUtils;
+import cn.net.yunlou.wechat.api.core.Config;
+import cn.net.yunlou.wechat.api.core.DefaultConfig;
+import cn.net.yunlou.wechat.api.core.entity.WechatSession;
+import cn.net.yunlou.wechat.api.core.entity.WechatUserData;
+import cn.net.yunlou.wechat.api.service.WechatAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -26,16 +25,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * FileName: UnifiedAuthenticationManager
- * Description:
+ * FileName: UnifiedAuthenticationManager Description:
  *
- * @see UnifiedUserDetailsService#loadUserByUsername(String)
- * Created By laughtiger
- * Created At 2025/12/28 00:12
- * Modified By
- * Modified At
+ * @see UnifiedUserDetailsService#loadUserByUsername(String) Created By laughtiger Created At
+ *     2025/12/28 00:12 Modified By Modified At
  */
-
 @Component
 @RequiredArgsConstructor
 public class UnifiedAuthenticationManager {
@@ -52,20 +46,15 @@ public class UnifiedAuthenticationManager {
 
     private final UserService userService;
 
-
     /**
      * 必须事先约定 规则
      *
      * @param authType
-     * @param principal   username|phone|email|jscode|
+     * @param principal username|phone|email|code|
      * @param credentials |password|code|encryptedData
-     * @param iv          iv
      * @return
      */
-    public Authentication authenticate(AuthType authType,
-                                       String principal,
-                                       String credentials,
-                                       String iv) {
+    public Authentication authenticate(AuthType authType, String principal, String credentials) {
         try {
             switch (authType) {
                 case USERNAME_PASSWORD:
@@ -77,7 +66,7 @@ public class UnifiedAuthenticationManager {
                 case UID:
                     return loginUseUid(principal);
                 case WECHAT:
-                    return loginOrRegisterUseWechatOpenId(principal, credentials, iv);
+                    return loginOrRegisterUseWechatOpenId(principal, credentials);
                 case EMAIL_CODE:
                     return loginUseEmailCode(principal, credentials);
                 default:
@@ -91,11 +80,12 @@ public class UnifiedAuthenticationManager {
 
     private Authentication loginUseEmailCode(String principal, String credentials) {
         // 验证邮箱验证码
-        Email email = Email.builder()
-                .email(principal)
-                .content(credentials)
-                .templateId(2L) // 登录模板
-                .build();
+        Email email =
+                Email.builder()
+                        .email(principal)
+                        .content(credentials)
+                        .templateId(2L) // 登录模板
+                        .build();
 
         if (!emailService.verify(email)) {
             throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
@@ -110,19 +100,19 @@ public class UnifiedAuthenticationManager {
         }
 
         return new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities()
-        );
+                userDetails, null, userDetails.getAuthorities());
     }
 
-    private Authentication loginOrRegisterUseWechatOpenId(String principal, String credentials, String iv) {
+    private Authentication loginOrRegisterUseWechatOpenId(String principal, String credentials) {
         // 微信登录逻辑
-        Config config = new DefaultConfig.Builder()
-                .appId(appConfigProperties.getWechatApp().getAppId())
-                .appSecret(appConfigProperties.getWechatApp().getAppSecret())
-                .build();
+        Config config =
+                new DefaultConfig.Builder()
+                        .appId(appConfigProperties.getWechatApp().getAppId())
+                        .appSecret(appConfigProperties.getWechatApp().getAppSecret())
+                        .build();
 
-        WechatAuthService wechatAuthService = new WechatAuthService.Builder()
-                .config(config).build();
+        WechatAuthService wechatAuthService =
+                new WechatAuthService.Builder().config(config).build();
 
         WechatSession wechatSession = wechatAuthService.code2Session(principal);
 
@@ -140,44 +130,43 @@ public class UnifiedAuthenticationManager {
         } catch (UsernameNotFoundException e) {
             // 解密用户信息（如果需要）
             WechatUserData userData = null;
-            if (credentials != null && iv != null) {
-                userData = new WechatDataCryptUtils(
-                        appConfigProperties.getWechatApp().getAppId(),
-                        wechatSession.getSessionKey()
-                ).decrypt(credentials, iv);
-            }
+            // if (credentials != null) {
+            //    userData =
+            //            new WechatDataCryptUtils(
+            //                    appConfigProperties.getWechatApp().getAppId(),
+            //                    wechatSession.getSessionKey())
+            //                    .decrypt(credentials);
+            // }
 
             // 创建用户
-            User user = User.builder()
-                    .wechatOpenId(wechatSession.getOpenid())
-                    .wechatUnionId(wechatSession.getUnionId())
-                    .name(userData != null ? userData.getNickName() : "微信用户")
-                    .avatar(userData != null ? userData.getAvatarUrl() : null)
-                    .gender(userData != null ? userData.getGender() : null)
-                    .status(UserStatus.ACTIVE.getValue())
-                    .build();
+            User user =
+                    User.builder()
+                            .wechatOpenId(wechatSession.getOpenid())
+                            .wechatUnionId(wechatSession.getUnionId())
+                            .name(userData != null ? userData.getNickName() : "微信用户")
+                            .avatar(userData != null ? userData.getAvatarUrl() : null)
+                            .gender(userData != null ? userData.getGender() : null)
+                            .status(UserStatus.ACTIVE.getValue())
+                            .build();
 
             if (!userService.save(user)) {
                 throw new BusinessException(
-                        BusinessStatus.INTERNAL_SERVER_CREATE_ERROR,
-                        "微信用户注册失败"
-                );
+                        BusinessStatus.INTERNAL_SERVER_CREATE_ERROR, "微信用户注册失败");
             }
             unifiedUserDetails = unifiedUserDetailsService.loadUserById(user.getId());
         }
 
         return new UsernamePasswordAuthenticationToken(
-                unifiedUserDetails, null, unifiedUserDetails.getAuthorities()
-        );
+                unifiedUserDetails, null, unifiedUserDetails.getAuthorities());
     }
 
     private Authentication loginUseUid(String principal) {
         // 加载用户
-        UnifiedUserDetails userDetails = unifiedUserDetailsService.loadUserById(Long.valueOf(principal));
+        UnifiedUserDetails userDetails =
+                unifiedUserDetailsService.loadUserById(Long.valueOf(principal));
 
         return new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities()
-        );
+                userDetails, null, userDetails.getAuthorities());
     }
 
     private Authentication loginUsePhoneCode(String principal, String credentials) {
@@ -195,8 +184,7 @@ public class UnifiedAuthenticationManager {
         UnifiedUserDetails userDetails = unifiedUserDetailsService.loadUserByPhone(principal);
 
         return new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities()
-        );
+                userDetails, null, userDetails.getAuthorities());
     }
 
     private Authentication loginUsePassword(String principal, String credentials) {
@@ -209,10 +197,7 @@ public class UnifiedAuthenticationManager {
         }
 
         return new UsernamePasswordAuthenticationToken(
-                userDetails,
-                credentials,
-                userDetails.getAuthorities()
-        );
+                userDetails, credentials, userDetails.getAuthorities());
     }
 
     private void handleAuthenticationException(AuthenticationException e) {

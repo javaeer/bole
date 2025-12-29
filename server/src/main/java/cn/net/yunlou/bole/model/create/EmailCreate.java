@@ -4,6 +4,8 @@ import cn.net.yunlou.bole.common.BaseCreate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,6 +16,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "邮件请求")
+@Builder
+@AllArgsConstructor
 public class EmailCreate extends BaseCreate {
 
     @NotBlank(message = "邮件地址不得为空")

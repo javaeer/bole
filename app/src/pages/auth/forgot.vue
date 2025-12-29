@@ -300,8 +300,9 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
 import CodeAPI from "@/api/code";
-import { EmailForm } from "@/types/code";
+import { EmailSendForm } from "@/types/code";
 import { ResetPasswordForm } from "@/types/user";
+import { CodeTemplateKey } from "@/constants/code-template-key";
 
 // 初始配置
 const configStore = useConfigStore();
@@ -480,7 +481,7 @@ const handleSendCode = async () => {
     // 构建短信发送表单
     const smsForm = {
       phone: forgotForm.phone,
-      templateId: 3,
+      templateId: CodeTemplateKey.TEMPLATE_FORGOT,
     };
 
     // 调用短信发送接口
@@ -527,9 +528,9 @@ const handleSendEmailCode = async () => {
 
   try {
     // 构建邮件发送参数
-    const emailData: EmailForm = {
+    const emailData: EmailSendForm = {
       email: forgotForm.email,
-      templateId: 3,
+      templateId: CodeTemplateKey.TEMPLATE_FORGOT,
     };
 
     // 调用邮箱验证码发送接口

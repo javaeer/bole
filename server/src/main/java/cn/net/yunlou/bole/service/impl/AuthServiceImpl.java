@@ -46,11 +46,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AccessTokenDTO login(@Valid LoginDTO request) {
 
-        Authentication authentication = unifiedAuthenticationManager
-                .authenticate(AuthType.USERNAME_PASSWORD,
-                        request.getUsername(),
-                        request.getPassword(),
-                        null);
+        Authentication authentication =
+                unifiedAuthenticationManager.authenticate(
+                        AuthType.USERNAME_PASSWORD, request.getUsername(), request.getPassword());
 
         UnifiedUserDetails userDetails = (UnifiedUserDetails) authentication.getPrincipal();
 
@@ -59,15 +57,12 @@ public class AuthServiceImpl implements AuthService {
         return authenticationService.login(user);
     }
 
-
     @Override
     public AccessTokenDTO smsLogin(SmsLoginDTO request) {
 
-        Authentication authentication = unifiedAuthenticationManager
-                .authenticate(AuthType.PHONE_CODE,
-                        request.getPhone(),
-                        request.getCode(),
-                        null);
+        Authentication authentication =
+                unifiedAuthenticationManager.authenticate(
+                        AuthType.PHONE_CODE, request.getPhone(), request.getCode());
 
         UnifiedUserDetails userDetails = (UnifiedUserDetails) authentication.getPrincipal();
 
@@ -79,11 +74,20 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AccessTokenDTO wechatLogin(WechatLoginDTO request) {
 
-        Authentication authentication = unifiedAuthenticationManager
-                .authenticate(AuthType.WECHAT,
-                        request.getJscode(),
-                        request.getEncryptedData(),
-                        request.getIv());
+        Authentication authentication =
+                unifiedAuthenticationManager.authenticate(AuthType.WECHAT, request.getCode(), null);
+
+        UnifiedUserDetails userDetails = (UnifiedUserDetails) authentication.getPrincipal();
+
+        User user = userDetails.getUser();
+
+        return authenticationService.login(user);
+    }
+
+    private AccessTokenDTO uidLogin(Long id) {
+
+        Authentication authentication =
+                unifiedAuthenticationManager.authenticate(AuthType.UID, String.valueOf(id), null);
 
         UnifiedUserDetails userDetails = (UnifiedUserDetails) authentication.getPrincipal();
 
@@ -106,11 +110,9 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(register.getEmail());
         user.setStatus(UserStatus.ACTIVE.getValue());
 
-
         if (!userService.save(user)) {
             throw new BusinessException(BusinessStatus.GONE_DATA_INVALID, "注册失败,请稍后");
         }
-
 
         return uidLogin(user.getId());
     }
@@ -218,7 +220,8 @@ public class AuthServiceImpl implements AuthService {
                         Sms.builder()
                                 .phone(request.getUsername())
                                 .content(request.getCode())
-                                .templateId(3L).build())) {
+                                .templateId(3L)
+                                .build())) {
                     throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
                 }
             }
@@ -227,7 +230,8 @@ public class AuthServiceImpl implements AuthService {
                         Email.builder()
                                 .email(request.getUsername())
                                 .content(request.getCode())
-                                .templateId(3L).build())) {
+                                .templateId(3L)
+                                .build())) {
                     throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "验证码有误");
                 }
             }
@@ -244,21 +248,5 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return null;
-    }
-
-
-    private AccessTokenDTO uidLogin(Long id) {
-
-        Authentication authentication = unifiedAuthenticationManager
-                .authenticate(AuthType.UID,
-                        String.valueOf(id),
-                        null,
-                        null);
-
-        UnifiedUserDetails userDetails = (UnifiedUserDetails) authentication.getPrincipal();
-
-        User user = userDetails.getUser();
-
-        return authenticationService.login(user);
     }
 }

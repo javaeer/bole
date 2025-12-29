@@ -1,9 +1,8 @@
 package cn.net.yunlou.bole.config;
 
+import java.util.List;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.List;
 
 /**
  * FileName: AppProperties Description: Created By laughtiger Created At 2025/12/4 14:48 Modified By

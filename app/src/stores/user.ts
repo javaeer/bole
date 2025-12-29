@@ -1,6 +1,8 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import {
+  BindEmailForm,
+  BindPhoneForm,
   EmailRegisterForm,
   LoginForm,
   LogoutOptions,
@@ -122,7 +124,7 @@ export const useUserStore = defineStore("user", () => {
    */
   const closure = async () => {
     try {
-        await AuthAPI.closure();
+      await AuthAPI.closure();
     } catch (error) {
       console.warn("注销接口调用失败:", error);
     } finally {
@@ -171,7 +173,7 @@ export const useUserStore = defineStore("user", () => {
       });
 
       setToken(result);
-      
+
       token.value = result.accessToken;
       refreshToken.value = result.refreshToken;
       if (result.userInfo) {
@@ -316,6 +318,38 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const bindPhone = async (data: BindPhoneForm) => {
+    try {
+      const result = await UserAPI.bindPhone(data);
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  const unbindPhone = async (data: BindPhoneForm) => {
+    try {
+      const result = await UserAPI.unbindPhone(data);
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  const bindEmail = async (data: BindEmailForm) => {
+    try {
+      const result = await UserAPI.bindEmail(data);
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  const unbindEmail = async (data: BindEmailForm) => {
+    try {
+      const result = await UserAPI.unbindEmail(data);
+    } catch (e) {
+      throw e;
+    }
+  };
+
 
   // 刷新令牌相关
   const addRefreshSubscriber = (callback: (token: string) => void) => {
@@ -351,6 +385,10 @@ export const useUserStore = defineStore("user", () => {
     resetPassword,
     updateProfile,
     closure,
+    bindPhone,
+    unbindPhone,
+    bindEmail,
+    unbindEmail,
 
 
     // 状态更新方法

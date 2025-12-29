@@ -25,15 +25,16 @@ public class AuthController {
         return BusinessResponse.success(authService.login(loginDTO));
     }
 
-    @PostMapping("login-sms")
+    @PostMapping("login/sms")
     @Operation(summary = "用户短信登录")
     public BusinessResponse<AccessTokenDTO> smsLogin(@Valid @RequestBody SmsLoginDTO loginDTO) {
         return BusinessResponse.success(authService.smsLogin(loginDTO));
     }
 
-    @PostMapping("login-wechat")
+    @PostMapping("login/wechat")
     @Operation(summary = "用户微信登录")
-    public BusinessResponse<AccessTokenDTO> wechatLogin(@Valid @RequestBody WechatLoginDTO loginDTO) {
+    public BusinessResponse<AccessTokenDTO> wechatLogin(
+            @Valid @RequestBody WechatLoginDTO loginDTO) {
         return BusinessResponse.success(authService.wechatLogin(loginDTO));
     }
 
@@ -43,14 +44,14 @@ public class AuthController {
         return BusinessResponse.success(authService.register(dto));
     }
 
-    @PostMapping("register-phone")
+    @PostMapping("register/phone")
     @Operation(summary = "手机号注册")
     public BusinessResponse<AccessTokenDTO> registerPhone(
             @Valid @RequestBody RegisterPhoneDTO dto) {
         return BusinessResponse.success(authService.registerPhone(dto));
     }
 
-    @PostMapping("register-email")
+    @PostMapping("register/email")
     @Operation(summary = "邮件注册")
     public BusinessResponse<AccessTokenDTO> registerEmail(
             @Valid @RequestBody RegisterEmailDTO dto) {
@@ -76,15 +77,16 @@ public class AuthController {
         return BusinessResponse.success(SecurityContextUtils.getCurrentUser());
     }
 
-    @PostMapping("change-password")
+    @PostMapping("password/change")
     @Operation(summary = "修改密码")
     public BusinessResponse<Boolean> changePassword(@Valid @RequestBody ChangePasswordDTO dto) {
         return BusinessResponse.success(authService.changePassword(dto));
     }
 
-    @PostMapping("reset-password")
+    @PostMapping("password/reset")
     @Operation(summary = "重置密码")
-    public BusinessResponse<AccessTokenDTO> resetPassword(@Valid @RequestBody ResetPasswordDTO request) {
+    public BusinessResponse<AccessTokenDTO> resetPassword(
+            @Valid @RequestBody ResetPasswordDTO request) {
         return BusinessResponse.success(authService.resetPassword(request));
     }
 
@@ -97,8 +99,6 @@ public class AuthController {
         return BusinessResponse.success("登出成功");
     }
 
-
-
     @PostMapping("closure")
     @Operation(summary = "注销账号")
     public BusinessResponse<String> closure() {
@@ -107,6 +107,4 @@ public class AuthController {
 
         return BusinessResponse.success("注销成功");
     }
-
-
 }

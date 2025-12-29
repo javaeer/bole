@@ -17,6 +17,10 @@ const ResumesAPI = {
 		return request.post(`${RESUMES_BASE_URL}/add`, form);
 	},
 
+	edit(form : ResumesForm) {
+		return request.put(`${RESUMES_BASE_URL}/edit`, form);
+	},
+
 	page(params : PageQuery, query ?: ResumesQuery) {
 		return request.page<PageResult<ResumesResult>>(`${RESUMES_BASE_URL}/page`, params, query);
 	},

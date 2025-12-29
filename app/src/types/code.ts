@@ -1,10 +1,10 @@
-export interface SmsForm {
+export interface SmsSendForm {
   areaCode: string;
   phone: string;
   templateId: number;
 }
 
-export interface EmailForm {
+export interface EmailSendForm {
   email: string;
   templateId: number;
 }

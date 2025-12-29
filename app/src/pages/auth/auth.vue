@@ -485,8 +485,9 @@ import {
   WechatLoginForm,
 } from "@/types/user";
 import { useUserStore } from "@/stores/user";
-import { EmailForm, SmsForm } from "@/types/code";
+import { EmailSendForm, SmsSendForm } from "@/types/code";
 import CodeAPI from "@/api/code";
+import { CodeTemplateKey } from "@/constants/code-template-key";
 
 // 初始配置
 const configStore = useConfigStore();
@@ -637,10 +638,10 @@ const checkEnvironment = () => {
 
 // 微信登录处理
 const handleWechatLogin = async () => {
-  // 如果是非微信环境，显示提示
+
   if (!isWechatMiniProgram.value) {
     uni.showToast({
-      title: "微信登录开发中",
+      title: "请在微信小程序中打开",
       icon: "none",
     });
     return;
@@ -649,7 +650,7 @@ const handleWechatLogin = async () => {
   wechatLoginLoading.value = true;
 
   try {
-    // 1. 获取微信登录code
+    // 1. 获取微信登录code（正确方式）
     const loginRes = await new Promise<any>((resolve, reject) => {
       uni.login({
         provider: "weixin",
@@ -661,49 +662,37 @@ const handleWechatLogin = async () => {
     if (!loginRes.code) {
       throw new Error("获取微信登录code失败");
     }
+    console.log("微信code 获取成功:" + loginRes.code);
 
-    // 2. 获取用户信息（需要用户授权）
-    const userInfoRes = await new Promise<any>((resolve, reject) => {
-      uni.getUserProfile({
-        desc: "用于完善会员资料",
-        success: resolve,
-        fail: reject,
-      });
-    });
-
-    // 3. 调用后端接口进行微信登录
+    // 2. 只使用code进行登录（后端通过code获取openid）
     const loginData: WechatLoginForm = {
       code: loginRes.code,
-      userInfo: userInfoRes.userInfo,
-      encryptedData: userInfoRes.encryptedData,
-      iv: userInfoRes.iv,
-      signature: userInfoRes.signature,
-      rawData: userInfoRes.rawData,
     };
 
-    // 调用store中的微信登录方法
+    // 调用store中的微信登录方法（需要修改后端接口，只接收code）
     await userStore.wechatLogin(loginData);
 
     uni.showToast({
-      title: "登录成功",
+      title: "登陆成功",
       icon: "success",
     });
 
-    // 跳转到首页
+    // 切换到首页页并清空表单
     setTimeout(() => {
       uni.switchTab({
         url: "/pages/index/index",
       });
+      resetRegisterForm();
     }, 1500);
 
   } catch (error: any) {
     console.error("微信登录失败:", error);
 
     let errorMsg = "登录失败，请重试";
-    if (error.errMsg && error.errMsg.includes("getUserProfile:fail auth deny")) {
-      errorMsg = "需要授权用户信息才能登录";
-    } else if (error.errMsg && error.errMsg.includes("getUserProfile:fail")) {
-      errorMsg = "获取用户信息失败";
+    if (error.code === 40029 || error.errMsg?.includes("invalid code")) {
+      errorMsg = "登录码无效或已过期";
+    } else if (error.code === 45011) {
+      errorMsg = "登录频率限制，请稍后再试";
     }
 
     uni.showToast({
@@ -904,10 +893,10 @@ const handleSendSmsCode = async () => {
 
   try {
     // 构建短信发送表单
-    const smsForm: SmsForm = {
+    const smsForm: SmsSendForm = {
       areaCode: "86",
       phone: smsLoginForm.phone,
-      templateId: 2,  // 登录验证码
+      templateId: CodeTemplateKey.TEMPLATE_LOGIN,  // 登录验证码
     };
 
     // 调用短信发送接口
@@ -1051,10 +1040,10 @@ const handleSendPhoneCode = async () => {
 
   try {
     // 构建短信发送表单
-    const smsForm: SmsForm = {
+    const smsForm: SmsSendForm = {
       areaCode: "86",
       phone: registerForm.phone,
-      templateId: 1,  // 注册验证码
+      templateId: CodeTemplateKey.TEMPLATE_REGISTER,  // 注册验证码
     };
 
     // 调用短信发送接口
@@ -1102,9 +1091,9 @@ const handleSendEmailCode = async () => {
 
   try {
     // 构建邮件发送参数
-    const emailData: EmailForm = {
+    const emailData: EmailSendForm = {
       email: registerForm.email,
-      templateId: 1,  // 注册验证码
+      templateId: CodeTemplateKey.TEMPLATE_REGISTER,  // 注册验证码
     };
 
     // 调用邮箱验证码发送接口

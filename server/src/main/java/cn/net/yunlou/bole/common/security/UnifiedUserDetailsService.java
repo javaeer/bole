@@ -7,6 +7,9 @@ import cn.net.yunlou.bole.entity.UserRole;
 import cn.net.yunlou.bole.service.UserRoleService;
 import cn.net.yunlou.bole.service.UserService;
 import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.DisabledException;
@@ -17,10 +20,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * FileName: UserDetailsServiceImpl Description: Created By MR. WANG Created At 2025/11/19 14:25
@@ -39,8 +38,8 @@ public class UnifiedUserDetailsService implements UserDetailsService {
 
     private final UserRoleService userRoleService;
 
-    //@Override
-    //public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    // @Override
+    // public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     //
     //    User user = userService.findByUsername(username);
     //
@@ -71,18 +70,13 @@ public class UnifiedUserDetailsService implements UserDetailsService {
     //    user.setAuthorities(authorities);
     //
     //    return new CustomUserDetails(user);
-    //}
+    // }
     //
 
-
-    /**
-     * 统一用户加载方法
-     * 支持用户名、手机号、邮箱自动识别
-     */
+    /** 统一用户加载方法 支持用户名、手机号、邮箱自动识别 */
     @Override
     public UnifiedUserDetails loadUserByUsername(String identifier) {
         log.debug("尝试加载用户: {}", identifier);
-
 
         // 1. 尝试按用户名查找
         User user = userService.findByUsername(identifier);
@@ -96,7 +90,6 @@ public class UnifiedUserDetailsService implements UserDetailsService {
         if (user == null && isEmail(identifier)) {
             user = userService.findByEmail(identifier);
         }
-
 
         if (user == null) {
             log.warn("用户未找到: {}", identifier);
@@ -115,9 +108,7 @@ public class UnifiedUserDetailsService implements UserDetailsService {
         return buildUserDetails(user);
     }
 
-    /**
-     * 根据用户ID加载用户（用于JWT验证）
-     */
+    /** 根据用户ID加载用户（用于JWT验证） */
     public UnifiedUserDetails loadUserById(Long userId) {
         log.debug("根据ID加载用户: {}", userId);
 
@@ -128,9 +119,7 @@ public class UnifiedUserDetailsService implements UserDetailsService {
         return buildUserDetails(user);
     }
 
-    /**
-     * 根据手机号加载用户
-     */
+    /** 根据手机号加载用户 */
     public UnifiedUserDetails loadUserByPhone(String phone) {
         User user = userService.findByPhone(phone);
         if (user == null) {
@@ -139,10 +128,7 @@ public class UnifiedUserDetailsService implements UserDetailsService {
         return buildUserDetails(user);
     }
 
-
-    /**
-     * 根据邮箱加载用户
-     */
+    /** 根据邮箱加载用户 */
     public UnifiedUserDetails loadUserByEmail(String email) {
         User user = userService.findByEmail(email);
         if (user == null) {
@@ -159,7 +145,6 @@ public class UnifiedUserDetailsService implements UserDetailsService {
         return buildUserDetails(user);
     }
 
-
     private UnifiedUserDetails buildUserDetails(User user) {
         // 获取用户权限
         List<GrantedAuthority> authorities = getAuthorities(user.getId());
@@ -171,7 +156,7 @@ public class UnifiedUserDetailsService implements UserDetailsService {
 
         return UnifiedUserDetails.builder()
                 .user(user)
-                .uid(user.getId())// 使用唯一标识
+                .uid(user.getId()) // 使用唯一标识
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .enabled(UserStatus.isActive(user.getStatus()))
@@ -184,11 +169,11 @@ public class UnifiedUserDetailsService implements UserDetailsService {
 
     private List<GrantedAuthority> getAuthorities(Long userId) {
         // 从数据库查询用户权限
-        return userRoleService.listRight(UserRole.builder().userId(userId).build())
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(
-                        BaseConstant.ROLE_PREFIX
-                                + role.getCode().toUpperCase()))
+        return userRoleService.listRight(UserRole.builder().userId(userId).build()).stream()
+                .map(
+                        role ->
+                                new SimpleGrantedAuthority(
+                                        BaseConstant.ROLE_PREFIX + role.getCode().toUpperCase()))
                 .collect(Collectors.toList());
     }
 
@@ -199,6 +184,4 @@ public class UnifiedUserDetailsService implements UserDetailsService {
     private boolean isEmail(String identifier) {
         return identifier != null && EMAIL_PATTERN.matcher(identifier).matches();
     }
-
-
 }

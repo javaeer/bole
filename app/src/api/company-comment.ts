@@ -1,6 +1,6 @@
 import { request } from "@/utils/request";
 
-const COMPANY_COMMENT_BASE_URL = "/company-comment";
+const COMPANY_COMMENT_BASE_URL = "/company/comment";
 
 const CompanyCommentAPI = {
 

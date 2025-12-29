@@ -6,7 +6,7 @@ import {
 	ProjectExperienceQuery,
 } from "@/types/education-experience";
 
-const PROJECT_EXPERIENCE_BASE_URL = "/project-experience";
+const PROJECT_EXPERIENCE_BASE_URL = "/project/experience";
 
 const ProjectExperienceAPI = {
 

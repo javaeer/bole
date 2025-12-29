@@ -5,18 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * FileName: AuthType
- * Description:
- * Created By laughtiger
- * Created At 2025/12/28 00:18
- * Modified By
+ * FileName: AuthType Description: Created By laughtiger Created At 2025/12/28 00:18 Modified By
  * Modified At
  */
 @Getter
 @AllArgsConstructor
 public enum AuthType implements IEnum<Integer> {
-
-
     UID(100, "系统跳转"),
     WECHAT(6, "微信授权"),
     EMAIL_CODE(5, "邮箱验证码"),

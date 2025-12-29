@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * By Modified At
  */
 @RestController
-@RequestMapping("self-evaluation")
+@RequestMapping("self/evaluation")
 @Tag(name = "14.自我评价管理", description = "自我评价相关接口")
 @RequiredArgsConstructor
 public class SelfEvaluationController {

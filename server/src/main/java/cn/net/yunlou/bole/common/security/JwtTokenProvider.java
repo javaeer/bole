@@ -4,14 +4,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
@@ -87,9 +86,7 @@ public class JwtTokenProvider {
                 .getBody();
     }
 
-    /**
-     * 获取访问令牌剩余时间（毫秒）
-     */
+    /** 获取访问令牌剩余时间（毫秒） */
     public Long getAccessTokenRemainingTime(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -100,9 +97,7 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 获取刷新令牌剩余时间（毫秒）
-     */
+    /** 获取刷新令牌剩余时间（毫秒） */
     public Long getRefreshTokenRemainingTime(String refreshToken) {
         try {
             Claims claims = extractAllClaims(refreshToken);
@@ -123,9 +118,7 @@ public class JwtTokenProvider {
         return extractExpiration(token).before(new Date());
     }
 
-    /**
-     * 检查令牌是否过期
-     */
+    /** 检查令牌是否过期 */
     private boolean isTokenExpired(Claims claims) {
         return claims.getExpiration().before(new Date());
     }
@@ -157,9 +150,7 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 验证访问令牌
-     */
+    /** 验证访问令牌 */
     public boolean validateAccessToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -170,9 +161,7 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 验证刷新令牌
-     */
+    /** 验证刷新令牌 */
     public boolean validateRefreshToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
@@ -183,16 +172,12 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 生成访问令牌
-     */
+    /** 生成访问令牌 */
     public String generateAccessToken(Long userId) {
         return generateToken(userId, TOKEN_TYPE_ACCESS, jwtAccessExpiration);
     }
 
-    /**
-     * 生成刷新令牌
-     */
+    /** 生成刷新令牌 */
     public String generateRefreshToken(Long userId) {
         return generateToken(userId, TOKEN_TYPE_REFRESH, jwtRefreshExpiration);
     }

@@ -1,20 +1,18 @@
 package cn.net.yunlou.bole.common;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author wangyb
  */
 public interface IEnum<T> extends Serializable {
-
 
     /**
      * 获取枚举
@@ -87,8 +85,7 @@ public interface IEnum<T> extends Serializable {
      * @return
      */
     static <E extends Enum<E> & IEnum<?>, V> Map<E, V> toMap(
-            Class<E> clazz,
-            Function<E, V> valueExtractor) {
+            Class<E> clazz, Function<E, V> valueExtractor) {
         Objects.requireNonNull(clazz, "Class cannot be null");
         Objects.requireNonNull(valueExtractor, "Value extractor cannot be null");
 
@@ -174,9 +171,7 @@ public interface IEnum<T> extends Serializable {
         EnumCacheManager.clearCache(enumType);
     }
 
-    /**
-     * 清理所有缓存
-     */
+    /** 清理所有缓存 */
     static void clearAllCache() {
         EnumCacheManager.clearAllCache();
     }
@@ -208,58 +203,85 @@ public interface IEnum<T> extends Serializable {
         // 使用 ConcurrentHashMap 保证线程安全
         private static final Map<Class<?>, Map<Object, ?>> VALUE_CACHE = new ConcurrentHashMap<>();
         private static final Map<Class<?>, Map<String, ?>> LABEL_CACHE = new ConcurrentHashMap<>();
-        private static final Map<Class<?>, List<EnumItem<?>>> ITEM_LIST_CACHE = new ConcurrentHashMap<>();
+        private static final Map<Class<?>, List<EnumItem<?>>> ITEM_LIST_CACHE =
+                new ConcurrentHashMap<>();
         private static final Map<Class<?>, List<Object>> VALUES_CACHE = new ConcurrentHashMap<>();
         private static final Map<Class<?>, List<String>> LABELS_CACHE = new ConcurrentHashMap<>();
 
         @SuppressWarnings("unchecked")
         static <E extends Enum<E> & IEnum<?>> Map<Object, E> getValueCache(Class<E> enumType) {
-            return (Map<Object, E>) VALUE_CACHE.computeIfAbsent(enumType, k ->
-                    EnumSet.allOf(enumType).stream()
-                            .collect(Collectors.toMap(
-                                    e -> ((IEnum<?>) e).getValue(),
-                                    Function.identity(),
-                                    (e1, e2) -> e1,
-                                    () -> new HashMap<>((int) (EnumSet.allOf(enumType).size() / 0.75f + 1))
-                            ))
-            );
+            return (Map<Object, E>)
+                    VALUE_CACHE.computeIfAbsent(
+                            enumType,
+                            k ->
+                                    EnumSet.allOf(enumType).stream()
+                                            .collect(
+                                                    Collectors.toMap(
+                                                            e -> ((IEnum<?>) e).getValue(),
+                                                            Function.identity(),
+                                                            (e1, e2) -> e1,
+                                                            () ->
+                                                                    new HashMap<>(
+                                                                            (int)
+                                                                                    (EnumSet.allOf(
+                                                                                                                    enumType)
+                                                                                                            .size()
+                                                                                                    / 0.75f
+                                                                                            + 1)))));
         }
 
         @SuppressWarnings("unchecked")
         static <E extends Enum<E> & IEnum<?>> Map<String, E> getLabelCache(Class<E> enumType) {
-            return (Map<String, E>) LABEL_CACHE.computeIfAbsent(enumType, k ->
-                    EnumSet.allOf(enumType).stream()
-                            .collect(Collectors.toMap(
-                                    e -> e.getLabel(),
-                                    Function.identity(),
-                                    (e1, e2) -> e1,
-                                    () -> new HashMap<>((int) (EnumSet.allOf(enumType).size() / 0.75f + 1))
-                            ))
-            );
+            return (Map<String, E>)
+                    LABEL_CACHE.computeIfAbsent(
+                            enumType,
+                            k ->
+                                    EnumSet.allOf(enumType).stream()
+                                            .collect(
+                                                    Collectors.toMap(
+                                                            e -> e.getLabel(),
+                                                            Function.identity(),
+                                                            (e1, e2) -> e1,
+                                                            () ->
+                                                                    new HashMap<>(
+                                                                            (int)
+                                                                                    (EnumSet.allOf(
+                                                                                                                    enumType)
+                                                                                                            .size()
+                                                                                                    / 0.75f
+                                                                                            + 1)))));
         }
 
-        static <E extends Enum<E> & IEnum<?>> List<EnumItem<?>> getItemListCache(Class<E> enumType) {
-            return ITEM_LIST_CACHE.computeIfAbsent(enumType, k ->
-                    EnumSet.allOf(enumType).stream()
-                            .map(e -> new EnumItem<>(((IEnum<?>) e).getValue(), e.getLabel()))
-                            .collect(Collectors.toList())
-            );
+        static <E extends Enum<E> & IEnum<?>> List<EnumItem<?>> getItemListCache(
+                Class<E> enumType) {
+            return ITEM_LIST_CACHE.computeIfAbsent(
+                    enumType,
+                    k ->
+                            EnumSet.allOf(enumType).stream()
+                                    .map(
+                                            e ->
+                                                    new EnumItem<>(
+                                                            ((IEnum<?>) e).getValue(),
+                                                            e.getLabel()))
+                                    .collect(Collectors.toList()));
         }
 
         static <E extends Enum<E> & IEnum<?>> List<Object> getValuesCache(Class<E> enumType) {
-            return VALUES_CACHE.computeIfAbsent(enumType, k ->
-                    EnumSet.allOf(enumType).stream()
-                            .map(e -> ((IEnum<?>) e).getValue())
-                            .collect(Collectors.toList())
-            );
+            return VALUES_CACHE.computeIfAbsent(
+                    enumType,
+                    k ->
+                            EnumSet.allOf(enumType).stream()
+                                    .map(e -> ((IEnum<?>) e).getValue())
+                                    .collect(Collectors.toList()));
         }
 
         static <E extends Enum<E> & IEnum<?>> List<String> getLabelsCache(Class<E> enumType) {
-            return LABELS_CACHE.computeIfAbsent(enumType, k ->
-                    EnumSet.allOf(enumType).stream()
-                            .map(e -> e.getLabel())
-                            .collect(Collectors.toList())
-            );
+            return LABELS_CACHE.computeIfAbsent(
+                    enumType,
+                    k ->
+                            EnumSet.allOf(enumType).stream()
+                                    .map(e -> e.getLabel())
+                                    .collect(Collectors.toList()));
         }
 
         // 清理缓存方法（可选，用于热部署等场景）

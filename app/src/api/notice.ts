@@ -77,12 +77,12 @@ const NoticeAPI = {
 
   /* 全部已读 */
   readAll() {
-    return request.put( `${NOTICE_BASE_URL}/read-all`);
+    return request.put( `${NOTICE_BASE_URL}/read/all`);
   },
 
   /** 获取我的通知分页列表 */
   getMyNoticePage(queryParams?: PageQuery, queryData?: any) {
-    return request.page<PageResult<NoticePageVO[]>>( `${NOTICE_BASE_URL}/my-page`, queryData, queryParams);
+    return request.page<PageResult<NoticePageVO[]>>( `${NOTICE_BASE_URL}/my/page`, queryData, queryParams);
   },
 };
 

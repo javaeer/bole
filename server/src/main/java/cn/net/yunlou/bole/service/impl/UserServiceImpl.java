@@ -18,13 +18,12 @@ import cn.net.yunlou.bole.model.view.UserView;
 import cn.net.yunlou.bole.service.UserService;
 import cn.net.yunlou.bole.struct.UserStructMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 /**
  * FileName: UserServiceImpl Description: Created By MR. WANG Created At 2025/11/19 13:49 Modified
@@ -35,7 +34,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserServiceImpl
         extends BaseService<
-        UserMapper, User, UserCreate, UserView, UserEdit, UserQuery, UserStructMapper>
+                UserMapper, User, UserCreate, UserView, UserEdit, UserQuery, UserStructMapper>
         implements UserService {
 
     @Override
@@ -118,26 +117,27 @@ public class UserServiceImpl
         return queryWrapper;
     }
 
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateById(User entity) {
 
-        //唯一性校验
-        //手机号不为空时校验是否已被占用
+        // 唯一性校验
+        // 手机号不为空时校验是否已被占用
         if (ObjectUtils.isNotEmpty(entity.getPhone()) && existsByPhone(entity.getPhone())) {
             throw new BusinessException(BusinessStatus.ALREADY_EXISTS);
         }
-        //邮箱不为空时校验是否已被占用
+        // 邮箱不为空时校验是否已被占用
         if (ObjectUtils.isNotEmpty(entity.getEmail()) && existsByEmail(entity.getEmail())) {
             throw new BusinessException(BusinessStatus.ALREADY_EXISTS);
         }
-        //账号不为空时校验是否已被占用
-        if (ObjectUtils.isNotEmpty(entity.getUsername()) && existsByUsername(entity.getUsername())) {
+        // 账号不为空时校验是否已被占用
+        if (ObjectUtils.isNotEmpty(entity.getUsername())
+                && existsByUsername(entity.getUsername())) {
             throw new BusinessException(BusinessStatus.ALREADY_EXISTS);
         }
-        //微信openID不为空时校验是否已被占用
-        if (ObjectUtils.isNotEmpty(entity.getWechatOpenId()) && existsByWechatOpenId(entity.getWechatOpenId())) {
+        // 微信openID不为空时校验是否已被占用
+        if (ObjectUtils.isNotEmpty(entity.getWechatOpenId())
+                && existsByWechatOpenId(entity.getWechatOpenId())) {
             throw new BusinessException(BusinessStatus.ALREADY_EXISTS);
         }
 

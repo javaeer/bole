@@ -2,6 +2,8 @@ package cn.net.yunlou.bole.model.edit;
 
 import cn.net.yunlou.bole.common.BaseEdit;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,6 +14,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "编辑用户请求")
+@Builder
+@AllArgsConstructor
 public class UserEdit extends BaseEdit {
 
     @Schema(description = "用户名", example = "admin")

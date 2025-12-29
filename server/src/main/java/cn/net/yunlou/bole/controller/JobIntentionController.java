@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * 21:27 Modified By Modified At
  */
 @RestController
-@RequestMapping("job-intention")
+@RequestMapping("job/intention")
 @Tag(name = "08.求职意向管理", description = "求职意向相关接口")
 @RequiredArgsConstructor
 public class JobIntentionController {

@@ -5,17 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * FileName: UsernameType
- * Description:
- * Created By laughtiger
- * Created At 2025/12/27 16:31
- * Modified By
+ * FileName: UsernameType Description: Created By laughtiger Created At 2025/12/27 16:31 Modified By
  * Modified At
  */
 @Getter
 @AllArgsConstructor
 public enum IdentifierType implements IEnum<String> {
-
     PHONE("phone", "手机号"),
     EMAIL("email", "邮箱"),
     USERNAME("username", "用户名");

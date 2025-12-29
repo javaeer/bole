@@ -45,7 +45,7 @@ public class ResumesTemplateController {
         return BusinessResponse.success(resumesTemplateService.saveByCreate(request));
     }
 
-    @PostMapping("add-draft")
+    @PostMapping("add/draft")
     @Operation(summary = "新增简历模板草稿")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> addDraft(@RequestBody ResumesTemplateCreate request) {

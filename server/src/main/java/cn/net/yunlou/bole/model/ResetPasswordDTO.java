@@ -12,23 +12,15 @@ import lombok.EqualsAndHashCode;
 @Data
 public class ResetPasswordDTO extends BaseDTO {
 
-    /**
-     * 类型
-     */
+    /** 类型 */
     private String type;
 
-    /**
-     * 账号
-     */
+    /** 账号 */
     private String username;
 
-    /**
-     * 验证码
-     */
+    /** 验证码 */
     private String code;
 
-    /**
-     * 新密码
-     */
+    /** 新密码 */
     private String newPassword;
 }

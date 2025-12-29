@@ -17,9 +17,9 @@ import lombok.*;
 @AllArgsConstructor
 public class RegisterPhoneDTO extends BaseDTO {
 
-    //@NotBlank(message = "手机区号不得为空")
-    //@Schema(description = "手机区号", example = "86", requiredMode = Schema.RequiredMode.REQUIRED)
-    //private String areaCode;
+    // @NotBlank(message = "手机区号不得为空")
+    // @Schema(description = "手机区号", example = "86", requiredMode = Schema.RequiredMode.REQUIRED)
+    // private String areaCode;
 
     @NotBlank(message = "手机号不得为空")
     @Schema(

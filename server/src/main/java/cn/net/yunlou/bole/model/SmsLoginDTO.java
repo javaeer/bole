@@ -9,7 +9,10 @@ import lombok.Data;
 public class SmsLoginDTO {
 
     @NotBlank(message = "手机号不能为空")
-    @Schema(description = "手机号", example = "18610880038", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(
+            description = "手机号",
+            example = "18610880038",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     private String phone;
 
     @NotBlank(message = "验证码不能为空")

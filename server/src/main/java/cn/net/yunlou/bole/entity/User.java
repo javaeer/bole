@@ -4,12 +4,10 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -19,15 +17,12 @@ import java.util.UUID;
 @TableName("t_user")
 public class User extends BaseEntity {
 
-    /**
-     * 当前所在企业
-     */
+    /** 当前所在企业 */
     private Long companyId;
 
     private String username;
 
-    @JsonIgnore
-    private String password;
+    @JsonIgnore private String password;
 
     private String email;
 

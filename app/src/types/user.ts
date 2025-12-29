@@ -50,11 +50,6 @@ export interface SmsLoginForm {
 
 export interface WechatLoginForm {
   code: string;
-  userInfo?: any;
-  encryptedData?: string;
-  iv?: string;
-  signature?: string;
-  rawData?: string;
 }
 
 /** 修改个人信息 */
@@ -96,19 +91,23 @@ export interface PasswordChangeForm {
 }
 
 /** 修改手机表单 */
-export interface MobileBindingForm {
+export interface BindPhoneForm {
   /** 手机号 */
-  mobile?: string;
+  phone?: string;
   /** 验证码 */
   code?: string;
+  /** 密码 */
+  password?: string;
 }
 
 /** 修改邮箱表单 */
-export interface EmailBindingForm {
+export interface BindEmailForm {
   /** 邮箱 */
   email?: string;
   /** 验证码 */
   code?: string;
+  /** 密码 */
+  password?: string;
 }
 
 export interface ResetPasswordForm {

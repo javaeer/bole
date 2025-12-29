@@ -20,14 +20,13 @@ import cn.net.yunlou.bole.service.EmailService;
 import cn.net.yunlou.bole.service.MessageTemplateService;
 import cn.net.yunlou.bole.struct.EmailStructMapper;
 import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * FileName: EmailServiceImpl Description: Created By laughtiger Created At 2025/12/25 01:22
@@ -37,13 +36,13 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class EmailServiceImpl
         extends BaseService<
-        EmailMapper,
-        Email,
-        EmailCreate,
-        EmailView,
-        EmailEdit,
-        EmailQuery,
-        EmailStructMapper>
+                EmailMapper,
+                Email,
+                EmailCreate,
+                EmailView,
+                EmailEdit,
+                EmailQuery,
+                EmailStructMapper>
         implements EmailService {
 
     private final MessageSendStrategyFactory messageSendStrategyFactory;
@@ -83,7 +82,9 @@ public class EmailServiceImpl
     @Override
     public boolean verify(Email entity) {
         String email = entity.getEmail();
-        String code = redisCacheUtils.getObject(Email.EMAIL_CACHE_KEY + entity.getTemplateId() + ":" + email, String.class);
+        String code =
+                redisCacheUtils.getObject(
+                        Email.EMAIL_CACHE_KEY + entity.getTemplateId() + ":" + email, String.class);
         if (ObjectUtils.isNotEmpty(code) && Objects.equals(entity.getContent(), code)) {
             redisCacheUtils.delete(Email.EMAIL_CACHE_KEY + entity.getTemplateId() + ":" + email);
             return true;

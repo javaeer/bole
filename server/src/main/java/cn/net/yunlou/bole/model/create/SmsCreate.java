@@ -4,6 +4,8 @@ import cn.net.yunlou.bole.common.BaseCreate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,11 +16,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "短信请求")
+@Builder
+@AllArgsConstructor
 public class SmsCreate extends BaseCreate {
 
-    //@NotBlank(message = "区号不能为空")
-    //@Schema(description = "区号", example = "86", requiredMode = Schema.RequiredMode.REQUIRED)
-    //private String areaCode;
+    // @NotBlank(message = "区号不能为空")
+    // @Schema(description = "区号", example = "86", requiredMode = Schema.RequiredMode.REQUIRED)
+    // private String areaCode;
 
     @NotBlank(message = "手机号不能为空")
     @Schema(

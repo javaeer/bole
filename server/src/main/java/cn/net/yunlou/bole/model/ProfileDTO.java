@@ -5,11 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- * FileName: ProfileDTO
- * Description:
- * Created By laughtiger
- * Created At 2025/12/28 17:41
- * Modified By
+ * FileName: ProfileDTO Description: Created By laughtiger Created At 2025/12/28 17:41 Modified By
  * Modified At
  */
 @Data

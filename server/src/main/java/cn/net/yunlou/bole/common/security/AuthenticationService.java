@@ -32,9 +32,7 @@ public class AuthenticationService {
 
     private final RedisCacheUtils redisCacheUtils;
 
-    /**
-     * 根据token获取认证信息
-     */
+    /** 根据token获取认证信息 */
     public UsernamePasswordAuthenticationToken getAuthentication(
             String token, HttpServletRequest request) {
         try {
@@ -60,9 +58,7 @@ public class AuthenticationService {
         return null;
     }
 
-    /**
-     * 用户登录处理
-     */
+    /** 用户登录处理 */
     public AccessTokenDTO login(User user) {
 
         // 更新最后登录时间
@@ -86,9 +82,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    /**
-     * 刷新访问令牌
-     */
+    /** 刷新访问令牌 */
     public RefreshTokenViewDTO refreshToken(String refreshToken) {
         try {
             // 验证刷新令牌
@@ -129,9 +123,7 @@ public class AuthenticationService {
         }
     }
 
-    /**
-     * 存储刷新令牌到Redis
-     */
+    /** 存储刷新令牌到Redis */
     private void storeRefreshToken(Long userId, String refreshToken) {
         String key = REFRESH_TOKEN_PREFIX + userId;
         // 存储刷新令牌，设置过期时间与令牌本身一致
@@ -139,18 +131,14 @@ public class AuthenticationService {
                 key, refreshToken, jwtTokenProvider.getAccessTokenRemainingTime(refreshToken));
     }
 
-    /**
-     * 验证刷新令牌是否有效
-     */
+    /** 验证刷新令牌是否有效 */
     private boolean isRefreshTokenValid(Long userId, String refreshToken) {
         String key = REFRESH_TOKEN_PREFIX + userId;
         String storedToken = redisCacheUtils.getObject(key, String.class);
         return refreshToken.equals(storedToken);
     }
 
-    /**
-     * 撤销令牌（登出时使用）
-     */
+    /** 撤销令牌（登出时使用） */
     public void revokeTokens(Long userId) {
         // 删除刷新令牌
         String refreshTokenKey = REFRESH_TOKEN_PREFIX + userId;

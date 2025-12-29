@@ -2,59 +2,40 @@ package cn.net.yunlou.bole.common.constant;
 
 import cn.net.yunlou.bole.common.IEnum;
 import cn.net.yunlou.bole.common.IEnumCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-/**
- * 用户状态枚举
- */
+/** 用户状态枚举 */
 @Getter
 @AllArgsConstructor
 public enum UserStatus implements IEnumCode<Integer, String> {
-    /**
-     * 待激活（新注册用户）
-     */
+    /** 待激活（新注册用户） */
     PENDING(0, "待激活", "PENDING"),
 
-    /**
-     * 活跃/正常状态
-     */
+    /** 活跃/正常状态 */
     ACTIVE(1, "活跃", "ACTIVE"),
 
-    /**
-     * 已禁用（管理员操作）
-     */
+    /** 已禁用（管理员操作） */
     DISABLED(2, "已禁用", "DISABLED"),
 
-    /**
-     * 已锁定（登录失败过多）
-     */
+    /** 已锁定（登录失败过多） */
     LOCKED(3, "已锁定", "LOCKED"),
 
-    /**
-     * 已注销（用户主动注销）
-     */
+    /** 已注销（用户主动注销） */
     CANCELLED(4, "已注销", "CANCELLED"),
 
-    /**
-     * 已过期（账户到期）
-     */
+    /** 已过期（账户到期） */
     EXPIRED(5, "已过期", "EXPIRED"),
 
-    /**
-     * 待审核（需要管理员审核）
-     */
+    /** 待审核（需要管理员审核） */
     PENDING_REVIEW(6, "待审核", "PENDING_REVIEW"),
 
-    /**
-     * 审核不通过
-     */
+    /** 审核不通过 */
     REVIEW_REJECTED(7, "审核不通过", "REVIEW_REJECTED");
 
     private final Integer value;
@@ -161,31 +142,30 @@ public enum UserStatus implements IEnumCode<Integer, String> {
         }
 
         return switch (this) {
-            case PENDING -> targetStatus == ACTIVE ||
-                    targetStatus == DISABLED ||
-                    targetStatus == LOCKED ||
-                    targetStatus == PENDING_REVIEW;
-            case ACTIVE -> targetStatus == DISABLED ||
-                    targetStatus == LOCKED ||
-                    targetStatus == CANCELLED ||
-                    targetStatus == EXPIRED ||
-                    targetStatus == PENDING_REVIEW;
-            case DISABLED -> targetStatus == ACTIVE ||
-                    targetStatus == LOCKED ||
-                    targetStatus == CANCELLED;
-            case LOCKED -> targetStatus == ACTIVE ||
-                    targetStatus == DISABLED ||
-                    targetStatus == CANCELLED;
-            case EXPIRED -> targetStatus == ACTIVE ||
-                    targetStatus == CANCELLED;
-            case PENDING_REVIEW -> targetStatus == ACTIVE ||
-                    targetStatus == REVIEW_REJECTED ||
-                    targetStatus == DISABLED ||
-                    targetStatus == LOCKED;
-            case REVIEW_REJECTED -> targetStatus == PENDING_REVIEW ||
-                    targetStatus == DISABLED ||
-                    targetStatus == LOCKED ||
-                    targetStatus == CANCELLED;
+            case PENDING -> targetStatus == ACTIVE
+                    || targetStatus == DISABLED
+                    || targetStatus == LOCKED
+                    || targetStatus == PENDING_REVIEW;
+            case ACTIVE -> targetStatus == DISABLED
+                    || targetStatus == LOCKED
+                    || targetStatus == CANCELLED
+                    || targetStatus == EXPIRED
+                    || targetStatus == PENDING_REVIEW;
+            case DISABLED -> targetStatus == ACTIVE
+                    || targetStatus == LOCKED
+                    || targetStatus == CANCELLED;
+            case LOCKED -> targetStatus == ACTIVE
+                    || targetStatus == DISABLED
+                    || targetStatus == CANCELLED;
+            case EXPIRED -> targetStatus == ACTIVE || targetStatus == CANCELLED;
+            case PENDING_REVIEW -> targetStatus == ACTIVE
+                    || targetStatus == REVIEW_REJECTED
+                    || targetStatus == DISABLED
+                    || targetStatus == LOCKED;
+            case REVIEW_REJECTED -> targetStatus == PENDING_REVIEW
+                    || targetStatus == DISABLED
+                    || targetStatus == LOCKED
+                    || targetStatus == CANCELLED;
             default -> false;
         };
     }
@@ -193,10 +173,9 @@ public enum UserStatus implements IEnumCode<Integer, String> {
     public List<UserStatus> getAllowableTransitions() {
         return Arrays.stream(UserStatus.values())
                 .filter(this::canTransitionTo)
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        Collections::unmodifiableList
-                ));
+                .collect(
+                        Collectors.collectingAndThen(
+                                Collectors.toList(), Collections::unmodifiableList));
     }
 
     public UserStatus getRecommendedNextStatus() {
