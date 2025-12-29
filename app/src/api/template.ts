@@ -21,6 +21,14 @@ const TemplateAPI = {
     return request.put(`${TEMPLATE_BASE_URL}/edit`, form);
   },
 
+  favorite(id) {
+    return request.put(`${TEMPLATE_BASE_URL}/favorite/${id}`);
+  },
+
+  unfavorite(id) {
+    return request.put(`${TEMPLATE_BASE_URL}/unfavorite/${id}`);
+  },
+
   page(params: PageQuery, query?: TemplateQuery) {
     return request.page<PageResult<TemplateResult>>(`${TEMPLATE_BASE_URL}/page`, params, query);
   },

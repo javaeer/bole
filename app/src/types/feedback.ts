@@ -8,13 +8,10 @@ export interface FeedbackResult {
   type: string;
   content: string;
   images: string[];
-  contact: Contact[];
+  contact: Contact;
 }
 
-export interface Contact {
-  phone?: string;
-  email?: string;
-}
+
 
 export interface FeedbackQuery extends BodyQuery {
   userId?: number;
@@ -26,5 +23,10 @@ export interface FeedbackForm {
   type: string;
   content?: string;
   images?: string[];
-  contact?: Contact[];
+  contact?: Contact;
+}
+
+export interface Contact {
+  phone?: string;
+  email?: string;
 }

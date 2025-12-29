@@ -145,7 +145,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         
         -- 基础信息字段
         company_id BIGINT,
-        gender INTEGER INTEGER DEFAULT 0,
+        gender INTEGER DEFAULT 0,
         username VARCHAR(100) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         email VARCHAR(100),

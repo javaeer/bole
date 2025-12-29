@@ -1,7 +1,7 @@
 // stores/template.ts
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
-import { TemplateForm, TemplateResult } from "@/types/template";
+import { TemplateForm, TemplateQuery, TemplateResult } from "@/types/template";
 import { TemplateComponentForm } from "@/types/template-component";
 import TemplateAPI from "@/api/template";
 
@@ -117,7 +117,7 @@ export const useTemplateStore = defineStore("template", () => {
     });
   };
 
-  const loadTemplateList = async (query?: any) => {
+  const loadTemplateList = async (query?: TemplateQuery) => {
     loading.value = true;
     try {
       const params: PageQuery = {

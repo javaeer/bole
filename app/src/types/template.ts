@@ -4,12 +4,12 @@ import { TemplateComponentForm, TemplateComponentItem } from "@/types/template-c
 export interface TemplateQuery extends BodyQuery {
   name?: string;
   code?: string;
+  collected?: boolean,
 }
 
 //响应类型定义
 export interface TemplateResult {
   id: number;
-
   name: string;
   code: string;
   description?: string;

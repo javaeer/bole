@@ -206,13 +206,6 @@
           </view>
 
           <view class="card-footer flex-between">
-            <view class="price-info">
-              <text class="price-label">价格:</text>
-              <text class="price-value text-primary">¥{{ template.price || 0 }}</text>
-            </view>
-            <text class="update-time">{{ formatRelativeTime(template.updatedAt) }}</text>
-          </view>
-
           <view class="card-actions flex-between">
             <button class="btn-action btn btn-primary" @click.stop="handleSelected(template)">
               <text class="action-text">使用</text>

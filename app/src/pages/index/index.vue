@@ -57,9 +57,7 @@
               <text class="template-name">{{ template.name }}</text>
               <text class="template-desc">{{ template.description }}</text>
               <view class="template-meta">
-                <text class="template-price" v-if="template.price > 0">¥{{ template.price }}</text>
-                <text class="template-free" v-else>免费</text>
-                <text class="template-users">{{ template.users }}人使用</text>
+                <text class="template-users">1000人使用</text>
               </view>
             </view>
           </view>

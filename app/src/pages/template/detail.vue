@@ -156,12 +156,15 @@
 
     <!-- 底部操作栏 -->
     <view class="bottom-actions flex-center">
-<!--      <button class="bottom-btn btn btn-danger" @click="handleToggleStatus">
-        <text class="btn-text">{{ template?.isActive ? "停用模板" : "启用模板" }}</text>
-      </button>-->
-<!--      <button class="action-btn btn btn-secondary" @click="handleEdit">
-        <text class="btn-text">编辑模板</text>
-      </button>-->
+      <button
+        class="action-btn btn"
+        :class="template?.collected ? 'btn-danger' : 'btn-secondary'"
+        @click="handleToggleFavorite"
+      >
+        <text class="btn-text">
+          {{ template?.collected ? '取消收藏' : '收藏模板' }}
+        </text>
+      </button>
 
       <button class="action-btn btn btn-primary" @click="handleUseTemplate">
         <text class="btn-text">使用此模板</text>
@@ -179,104 +182,139 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue"
-import { onLoad } from "@dcloudio/uni-app"
-import TemplatePreview from "@/components/template/TemplatePreview.vue"
-import { TemplateResult } from "@/types/template"
-import { TemplateComponentItem } from "@/types/template-component"
-import { COMPONENT_LIBRARY } from "@/constants/component"
-import { DEVICE_OPTIONS, LAYOUT_TYPES } from "@/constants/template"
-import { useTemplateStore } from "@/stores/template"
-import TemplateAPI from "@/api/template"
+import { computed, ref } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
+import TemplatePreview from "@/components/template/TemplatePreview.vue";
+import { TemplateResult } from "@/types/template";
+import { TemplateComponentItem } from "@/types/template-component";
+import { COMPONENT_LIBRARY } from "@/constants/component";
+import { DEVICE_OPTIONS, LAYOUT_TYPES } from "@/constants/template";
+import { useTemplateStore } from "@/stores/template";
+import TemplateAPI from "@/api/template";
 
 // 响应式数据
-const template = ref<TemplateResult | null>(null)
-const loading = ref(true)
-const previewKey = ref(0)
-const previewDevice = ref("desktop")
+const template = ref<TemplateResult | null>(null);
+const loading = ref(true);
+const previewKey = ref(0);
+const previewDevice = ref("desktop");
 
 // 使用 store
-const templateStore = useTemplateStore()
+const templateStore = useTemplateStore();
 
 // 设备选项
-const deviceOptions = ref(DEVICE_OPTIONS)
+const deviceOptions = ref(DEVICE_OPTIONS);
 
 // 计算属性
 const templateComponents = computed(() => {
-  if (!template.value?.components) return []
-  return template.value.components
-})
+  if (!template.value?.components) return [];
+  return template.value.components;
+});
 
 const colorItems = computed(() => {
-  if (!template.value?.globalStyle) return []
-  const style = template.value.globalStyle
+  if (!template.value?.globalStyle) return [];
+  const style = template.value.globalStyle;
   return [
     { label: "主色", value: style.primaryColor || "#d4af37" },
     { label: "辅色", value: style.secondaryColor || "#f9f3e3" },
     { label: "强调色", value: style.accentColor || "#f7ef8a" },
-  ]
-})
+  ];
+});
 
 // 加载模板数据
 const loadTemplateDetail = async (id: string) => {
   try {
-    loading.value = true
-    const templateId = parseInt(id)
+    loading.value = true;
+    const templateId = parseInt(id);
     if (isNaN(templateId)) {
-      throw new Error("无效的模板ID")
+      throw new Error("无效的模板ID");
     }
 
     // 使用 store 中的方法或直接调用 API
-    const response = await TemplateAPI.getById(templateId)
+    const response = await TemplateAPI.getById(templateId);
     if (response) {
-      template.value = response as TemplateResult
-      templateStore.setCurrentTemplate(template.value)
+      template.value = response as TemplateResult;
+      templateStore.setCurrentTemplate(template.value);
     } else {
       uni.showToast({
         title: "模板不存在",
         icon: "none",
-      })
+      });
       setTimeout(() => {
-        uni.navigateBack()
-      }, 1500)
+        uni.navigateBack();
+      }, 1500);
     }
-    previewKey.value += 1
+    previewKey.value += 1;
   } catch (error) {
-    console.error("加载模板详情失败:", error)
+    console.error("加载模板详情失败:", error);
     uni.showToast({
       title: "加载失败",
       icon: "none",
-    })
+    });
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 导航处理
 const handleEdit = () => {
-  if (!template.value) return
+  if (!template.value) return;
   uni.navigateTo({
     url: `/pages/template/edit?id=${template.value.id}`,
-  })
-}
+  });
+};
+
+// 切换收藏状态
+const handleToggleFavorite = async () => {
+  if (!template.value) return;
+
+  try {
+    if (template.value.collected) {
+      // 取消收藏
+      await TemplateAPI.unfavorite(template.value.id);
+      template.value.collected = false;
+
+      uni.showToast({
+        title: "取消收藏成功",
+        icon: "success",
+      });
+
+      // 发送收藏状态更新事件，让收藏列表页面可以更新
+      uni.$emit('template-favorite-updated', { id: template.value.id, collected: false });
+    } else {
+      // 添加收藏
+      await TemplateAPI.favorite(template.value.id);
+      template.value.collected = true;
+
+      uni.showToast({
+        title: "收藏成功",
+        icon: "success",
+      });
+
+      // 发送收藏状态更新事件
+      uni.$emit('template-favorite-updated', { id: template.value.id, collected: true });
+    }
+  } catch (error) {
+    console.error("操作失败:", error);
+    uni.showToast({
+      title: "操作失败，请重试",
+      icon: "error",
+    });
+  }
+};
 
 const handleUseTemplate = () => {
-  if (!template.value) return
-  uni.showToast({
-    title: "开始使用此模板",
-    icon: "success",
-  })
-  // 导航到使用模板创建简历的页面
+  if (!template.value) return;
+
   uni.navigateTo({
     url: `/pages/resumes/edit?templateId=${template.value.id}`,
-  })
-}
+  });
+};
 
 const handleToggleStatus = async () => {
-  if (!template.value) return
+  if (!template.value) return;
 
-  const newStatus = !template.value.isActive
-  const action = newStatus ? "启用" : "停用"
+  const newStatus = !template.value.isActive;
+  const action = newStatus ? "启用" : "停用";
 
   uni.showModal({
     title: `确认${action}`,
@@ -289,36 +327,36 @@ const handleToggleStatus = async () => {
           // await TemplateAPI.updateStatus(template.value!.id, newStatus)
 
           // 更新本地状态
-          template.value!.isActive = newStatus
-          previewKey.value += 1
+          template.value!.isActive = newStatus;
+          previewKey.value += 1;
 
           uni.showToast({
             title: `${action}成功`,
             icon: "success",
-          })
+          });
         } catch (error) {
-          console.error(`${action}模板失败:`, error)
+          console.error(`${action}模板失败:`, error);
           uni.showToast({
             title: `${action}失败`,
             icon: "none",
-          })
+          });
         }
       }
     },
-  })
-}
+  });
+};
 
 // 设备切换
 const handleDeviceSwitch = (device: string) => {
-  previewDevice.value = device
-  previewKey.value += 1
-}
+  previewDevice.value = device;
+  previewKey.value += 1;
+};
 
 // 工具函数
 const getTemplateInitial = (name: string) => {
-  if (!name) return "T"
-  return name.charAt(0).toUpperCase()
-}
+  if (!name) return "T";
+  return name.charAt(0).toUpperCase();
+};
 
 const getAvatarColor = (id: number) => {
   const colors = [
@@ -330,59 +368,58 @@ const getAvatarColor = (id: number) => {
     "#1abc9c",
     "#d35400",
     "#c0392b",
-  ]
-  return colors[id % colors.length]
-}
+  ];
+  return colors[id % colors.length];
+};
 
 const getLayoutTypeLabel = (type?: string) => {
-  const layout = LAYOUT_TYPES.find(item => item.value === type)
-  return layout?.label || "单栏"
-}
+  const layout = LAYOUT_TYPES.find(item => item.value === type);
+  return layout?.label || "单栏";
+};
 
 const getComponentName = (component: TemplateComponentItem) => {
-  if (!component.componentId) return "未命名组件"
+  if (!component.componentId) return "未命名组件";
   const libComponent = COMPONENT_LIBRARY.find(
     (c) => c.id === component.componentId,
-  )
-  return libComponent?.name || "未知组件"
-}
+  );
+  return libComponent?.name || "未知组件";
+};
 
 const getComponentDescription = (component: TemplateComponentItem) => {
-  if (!component.componentId) return ""
+  if (!component.componentId) return "";
   const libComponent = COMPONENT_LIBRARY.find(
     (c) => c.id === component.componentId,
-  )
-  return libComponent?.description || ""
-}
+  );
+  return libComponent?.description || "";
+};
 
 const formatDateTime = (dateStr?: string) => {
-  if (!dateStr) return "未知"
+  if (!dateStr) return "未知";
   try {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString("zh-CN")
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("zh-CN");
   } catch {
-    return dateStr
+    return dateStr;
   }
-}
+};
 
 // 生命周期
 onLoad((options) => {
   if (options.id) {
-    loadTemplateDetail(options.id)
+    loadTemplateDetail(options.id);
   } else {
     uni.showToast({
       title: "缺少模板参数",
       icon: "none",
-    })
+    });
     setTimeout(() => {
-      uni.navigateBack()
-    }, 1500)
+      uni.navigateBack();
+    }, 1500);
   }
-})
+});
 </script>
 
 <style scoped lang="scss">
-
 .template-detail-container {
   background-color: $uni-bg-color-grey;
   min-height: 100vh;
@@ -480,39 +517,33 @@ onLoad((options) => {
   }
 }
 
-/* 操作按钮 */
-.action-buttons {
+/* 底部操作栏 */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $uni-bg-color;
+  padding: $uni-spacing-col-sm $uni-spacing-row-base;
   display: flex;
   gap: $uni-spacing-col-base;
-  padding: $uni-spacing-row-base;
-  background: $uni-bg-color;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  border-top: 1rpx solid $border-color-light;
+  box-shadow: $box-shadow-dark;
+  z-index: $z-index-dropdown;
 }
 
 .action-btn {
   flex: 1;
   height: $button-height;
   border-radius: $uni-border-radius-lg;
+  font-size: $uni-font-size-base;
+  font-weight: $font-weight-medium;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: $uni-spacing-col-sm;
-  font-size: $uni-font-size-base;
-  font-weight: $font-weight-medium;
   transition: all $transition-fast;
 
-  &.primary {
-    background: $primary-color;
-    color: $uni-bg-color;
-    border: none;
-
-    &:active {
-      background: color.adjust($primary-color, $lightness: -10%);
-      opacity: 0.9;
-    }
-  }
-
-  &.secondary {
+  &.btn-secondary {
     background: $uni-bg-color;
     color: $text-regular;
     border: 1rpx solid $border-color-light;
@@ -522,14 +553,26 @@ onLoad((options) => {
       border-color: $border-color;
     }
   }
-}
 
-.btn-icon {
-  font-size: $uni-font-size-lg;
-}
+  &.btn-danger {
+    background: $danger-bg;
+    color: $danger-color;
+    border: 1rpx solid $danger-border;
 
-.btn-text {
-  font-weight: $font-weight-medium;
+    &:active {
+      background: color.adjust($danger-bg, $lightness: -10%);
+    }
+  }
+
+  &.btn-primary {
+    background: $primary-color;
+    color: $uni-bg-color;
+    border: none;
+
+    &:active {
+      background: color.adjust($primary-color, $lightness: -10%);
+    }
+  }
 }
 
 /* 模板预览 */
@@ -813,63 +856,6 @@ onLoad((options) => {
   }
 }
 
-/* 底部操作栏 */
-.bottom-actions {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: $uni-bg-color;
-  padding: $uni-spacing-col-sm $uni-spacing-row-base;
-  display: flex;
-  gap: $uni-spacing-col-base;
-  border-top: 1rpx solid $border-color-light;
-  box-shadow: $box-shadow-dark;
-  z-index: $z-index-dropdown;
-}
-
-.bottom-btn {
-  flex: 1;
-  height: $button-height;
-  border-radius: $uni-border-radius-lg;
-  font-size: $uni-font-size-base;
-  font-weight: $font-weight-medium;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all $transition-fast;
-
-  &.delete {
-    background: $danger-bg;
-    color: $danger-color;
-    border: 1rpx solid $danger-border;
-
-    &:active {
-      background: color.adjust($danger-bg, $lightness: -10%);
-    }
-  }
-
-  &.toggle-status {
-    background: $info-bg;
-    color: $info-color;
-    border: 1rpx solid $info-border;
-
-    &:active {
-      background: color.adjust($info-bg, $lightness: -10%);
-    }
-  }
-
-  &.primary {
-    background: $primary-color;
-    color: $uni-bg-color;
-    border: none;
-
-    &:active {
-      background: color.adjust($primary-color, $lightness: -10%);
-    }
-  }
-}
-
 /* 加载状态 */
 .loading-overlay {
   position: fixed;
@@ -932,7 +918,7 @@ onLoad((options) => {
   .bottom-actions {
     flex-direction: column;
 
-    .bottom-btn {
+    .action-btn {
       width: 100%;
     }
   }
