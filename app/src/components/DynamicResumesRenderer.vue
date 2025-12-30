@@ -26,16 +26,6 @@
         :style="getSectionStyle(component)"
       />
 
-      <!-- CompanyExperience -->
-      <CompanyExperience
-        v-else-if="component.key === 'CompanyExperience'"
-        :component="getComponentConfig(component)"
-        :global-style="globalStyle"
-        :theme="currentTheme"
-        class="resume-section"
-        :style="getSectionStyle(component)"
-      />
-
       <!-- WorkExperience -->
       <WorkExperience
         v-else-if="component.key === 'WorkExperience'"
@@ -100,7 +90,6 @@ import { computed, onMounted } from 'vue'
 // 导入所有组件（微信小程序不支持异步组件，需要同步导入）
 import UserBasicInfo from '@/components/resumes/UserBasicInfo.vue'
 import JobIntention from '@/components/resumes/JobIntention.vue'
-import CompanyExperience from '@/components/resumes/CompanyExperience.vue'
 import WorkExperience from '@/components/resumes/WorkExperience.vue'
 import ProjectExperience from '@/components/resumes/ProjectExperience.vue'
 import EducationExperience from '@/components/resumes/EducationExperience.vue'
@@ -239,7 +228,6 @@ const processComponentData = (key, propsData, defaultConfig) => {
       break
 
     case 'WorkExperience':
-    case 'CompanyExperience':
     case 'ProjectExperience':
       // 统一 experiences 字段
       let experiences = safeValue(processed.experiences, [])
@@ -272,7 +260,7 @@ const processComponentData = (key, propsData, defaultConfig) => {
       processed.experiences = eduExperiences.map(exp => ({
         ...exp,
         id: safeValue(exp.id, Date.now()),
-        school: safeValue(exp.school, '未指定学校'),
+        university: safeValue(exp.university, '未指定学校'),
         degree: safeValue(exp.degree, '学历未填写'),
         major: safeValue(exp.major, ''),
         startDate: safeValue(exp.startDate, ''),

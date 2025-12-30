@@ -112,21 +112,6 @@
         </view>
       </template>
 
-      <template v-else-if="componentKey === 'CompanyExperience'">
-        <view class="preview-placeholder">
-          <view class="preview-section">
-            <view class="preview-line-bold">ABC科技有限公司</view>
-            <view class="preview-line" v-if="componentProps?.showRole">高级前端开发工程师 | 2020.06 - 至今</view>
-            <view class="preview-line">负责公司核心产品的开发与维护</view>
-            <view v-if="componentProps?.showTechnologies" class="preview-tech-tags">
-              <view class="tech-tag">Vue3</view>
-              <view class="tech-tag">TypeScript</view>
-              <view class="tech-tag">微前端</view>
-            </view>
-          </view>
-        </view>
-      </template>
-
       <template v-else>
         <view class="preview-placeholder">
           <text class="placeholder-text">{{ componentKey ? `${componentName} 预览` : '请选择组件类型' }}</text>

@@ -17,7 +17,7 @@ const FeedbackAPI = {
 		return request.put(`${FEEDBACK_BASE_URL}/edit`, form);
 	},
 
-	page(params : PageQuery, query ?: FeedbackQuery) {
+	page(params : PageParam, query ?: FeedbackQuery) {
 		return request.page<PageResult<FeedbackResult>>(`${FEEDBACK_BASE_URL}/page`, params, query);
 	},
 

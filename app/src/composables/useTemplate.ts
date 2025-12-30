@@ -187,7 +187,7 @@ export function useTemplate() {
         }
 
         // 构建API参数
-        const pageQuery: PageQuery = {
+        const pageQuery: PageParam = {
           page,
           size,
           ...(sortBy && { sortBy }),
@@ -397,7 +397,7 @@ export function useTemplate() {
 
     if (!cache.value.has(cacheKey)) {
       try {
-        const pageQuery: PageQuery = {
+        const pageQuery: PageParam = {
           page: nextPage,
           size: pagination.pageSize,
           ...(lastSort.value.sortBy && { sortBy: lastSort.value.sortBy }),

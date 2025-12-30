@@ -1324,6 +1324,85 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_feedback.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_feedback.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
+    -- 大学表
+    CREATE TABLE IF NOT EXISTS bole_app.t_university (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        code VARCHAR(100) NOT NULL UNIQUE,
+        type VARCHAR(50),
+        holder VARCHAR(255),
+        location VARCHAR(500),
+        website VARCHAR(500),
+        github VARCHAR(500),
+        bio TEXT,
+        followers INTEGER DEFAULT 0,
+        fans INTEGER DEFAULT 0,
+        likes INTEGER DEFAULT 0,
+        
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_university_name ON bole_app.t_university(name);
+    CREATE INDEX IF NOT EXISTS idx_university_code ON bole_app.t_university(code);
+    CREATE INDEX IF NOT EXISTS idx_university_type ON bole_app.t_university(type);
+    CREATE INDEX IF NOT EXISTS idx_university_holder ON bole_app.t_university(holder);
+    CREATE INDEX IF NOT EXISTS idx_university_location ON bole_app.t_university(location);
+    CREATE INDEX IF NOT EXISTS idx_university_created_at ON bole_app.t_university(created_at);
+    CREATE INDEX IF NOT EXISTS idx_university_deleted ON bole_app.t_university(deleted);
+    CREATE INDEX IF NOT EXISTS idx_university_followers ON bole_app.t_university(followers DESC);
+    CREATE INDEX IF NOT EXISTS idx_university_likes ON bole_app.t_university(likes DESC);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_university IS '大学表';
+    COMMENT ON COLUMN bole_app.t_university.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_university.name IS '大学名称';
+    COMMENT ON COLUMN bole_app.t_university.code IS '大学代码（唯一）';
+    COMMENT ON COLUMN bole_app.t_university.type IS '大学类型（985/211/重点/普通）';
+    COMMENT ON COLUMN bole_app.t_university.holder IS '主管单位';
+    COMMENT ON COLUMN bole_app.t_university.location IS '地理位置';
+    COMMENT ON COLUMN bole_app.t_university.website IS '官方网站';
+    COMMENT ON COLUMN bole_app.t_university.github IS 'GitHub地址';
+    COMMENT ON COLUMN bole_app.t_university.bio IS '简介';
+    COMMENT ON COLUMN bole_app.t_university.followers IS '关注者数量';
+    COMMENT ON COLUMN bole_app.t_university.fans IS '粉丝数量';
+    COMMENT ON COLUMN bole_app.t_university.likes IS '点赞数量';
+    COMMENT ON COLUMN bole_app.t_university.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_university.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_university.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
+
+    -- 关注大学表
+    CREATE TABLE IF NOT EXISTS bole_app.t_follow_university (
+        -- 业务字段
+        user_id BIGINT NOT NULL,
+        university_id BIGINT NOT NULL,
+        
+        -- 时间字段（继承自BaseEntity）
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 唯一约束：确保一个用户不能重复关注同一所大学
+        CONSTRAINT uk_follow_university_user_uniq UNIQUE (user_id, university_id),
+        
+        -- 外键约束（根据实际业务需要添加）
+        CONSTRAINT fk_follow_university_user FOREIGN KEY (user_id) REFERENCES bole_app.t_user(id),
+        CONSTRAINT fk_follow_university_university FOREIGN KEY (university_id) REFERENCES bole_app.t_university(id)
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_follow_university_user_id ON bole_app.t_follow_university(user_id);
+    CREATE INDEX IF NOT EXISTS idx_follow_university_university_id ON bole_app.t_follow_university(university_id);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_follow_university IS '用户关注大学表';
+    COMMENT ON COLUMN bole_app.t_follow_university.user_id IS '用户ID';
+    COMMENT ON COLUMN bole_app.t_follow_university.university_id IS '大学ID';
+    COMMENT ON COLUMN bole_app.t_follow_university.created_at IS '创建时间';
 
     -- 审计日志表
     CREATE TABLE IF NOT EXISTS bole_audit.audit_logs (
@@ -1367,7 +1446,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
                 't_resumes','t_resumes_component', 't_resumes_template',
                 't_skill','t_city_grade','t_self_evaluation',
                 't_city','t_file','t_msg_template',
-                't_sms','t_ems','t_feedback','audit_logs'
+                't_sms','t_ems','t_feedback',
+                't_university','t_follow_university','audit_logs'
             )
         LOOP
             EXECUTE format('

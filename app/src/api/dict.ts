@@ -10,7 +10,7 @@ const DictAPI = {
    * @param queryParams 查询参数
    * @returns 字典分页结果
    */
-  getPage(pageQuery: PageQuery, queryParams: DictQuery) {
+  getPage(pageQuery: PageParam, queryParams: DictQuery) {
     return request.page<DictPageResult>(`${DICT_BASE_URL}/page`, pageQuery, queryParams);
   },
 

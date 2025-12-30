@@ -1,4 +1,6 @@
 export interface WorkExperienceForm {
+  id?: number;
+  companyId?: number;
   company?: string;
   position?: string;
   description?: string;
@@ -8,12 +10,12 @@ export interface WorkExperienceForm {
   achievements?: string[];
 }
 
-export interface WorkExperienceQuery extends PageQuery {
+export interface WorkExperienceQuery extends BodyQuery {
 
 }
 
 
-export interface WorkExperienceItem {
+export interface WorkExperienceResult {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -25,6 +27,6 @@ export interface WorkExperienceItem {
   endDate: string;
   isCurrent: boolean;
   description: string;
-  achievements: string | null;
+  achievements: string[] | null;
   sort: number;
 }

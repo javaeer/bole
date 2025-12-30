@@ -1,18 +1,19 @@
 export interface SelfEvaluationForm {
-  content?: string
+  id?: number;
+  content: string;
+  highlights?: string[];
 }
 
-export interface SelfEvaluationQuery extends PageQuery {
+export interface SelfEvaluationQuery extends BodyQuery {
 
 }
 
 
-export interface SelfEvaluationItem {
-  id: number
-  createdAt: string
-  updatedAt: string
-  deleted: number
-  userId: number
-  content: string
-  keywords: string | null
+export interface SelfEvaluationResult {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  deleted: number;
+  content: string;
+  highlights: string[] | null;
 }

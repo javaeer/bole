@@ -217,10 +217,24 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     ('成都市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('重庆市', 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+    -- 插入示例高校数据
+  INSERT INTO bole_app.t_university 
+  (name, code, type, holder, location, website, github, bio, followers, fans, likes) 
+  VALUES
+  ('清华大学', '10003', '985', '教育部', '北京市海淀区', 'https://www.tsinghua.edu.cn', 'https://github.com/TsinghuaUniversity', '清华大学是中国著名高等学府，坐落于北京西北郊风景秀丽的清华园', 125000, 89000, 156000),
+  ('北京大学', '10001', '985', '教育部', '北京市海淀区', 'https://www.pku.edu.cn', 'https://github.com/PKU-University', '北京大学创立于1898年，初名京师大学堂', 118000, 92000, 148000),
+  ('浙江大学', '10335', '985', '教育部', '浙江省杭州市', 'https://www.zju.edu.cn', 'https://github.com/zjup', '浙江大学是一所历史悠久、声誉卓著的高等学府', 95000, 67000, 112000),
+  ('复旦大学', '10246', '985', '教育部', '上海市杨浦区', 'https://www.fudan.edu.cn', 'https://github.com/Fudan-University', '复旦大学是中国人自主创办的第一所高等院校', 88000, 62000, 105000),
+  ('上海交通大学', '10248', '985', '教育部', '上海市闵行区', 'https://www.sjtu.edu.cn', 'https://github.com/SJTU-University', '上海交通大学是我国历史最悠久、享誉海内外的高等学府之一', 92000, 68000, 110000);
+
     -- 插入默认验证码模板（根据类中的VALIDATE_CODE_ID = 1L）
     INSERT INTO bole_app.t_msg_template (id, subject, template, is_verify, length, duration, deleted)
-    VALUES (1, '验证码', '您的验证码是：{code}，有效期为{duration}分钟，请勿泄露给他人。', true, 6, 10, 0)
-    ON CONFLICT (id) DO NOTHING;
+    VALUES 
+    (1, '注册验证码', '[伯乐简历大师]您的验证码是#code#（#minutes#分钟内有效，如非本人操作，请忽略）', NULL, NULL, NULL, 't', 6, 5),
+    (2, '登录验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', NULL, NULL, NULL, 't', 6, 5),
+    (3, '忘记密码验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', NULL, NULL, NULL, 't', 6, 5),
+    (4, '绑定类验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', NULL, NULL, NULL, 't', 6, 5),
+    (5, '解绑类验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', NULL, NULL, NULL, 't', 6, 5);
 
     -- 插入审计日志数据
     INSERT INTO bole_audit.audit_logs (id, table_name, record_id, action, old_data, new_data, changed_by) VALUES
@@ -232,10 +246,12 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 更新序列值，确保后续插入的主键不会冲突
     SELECT setval('bole_app.t_banner_id_seq', (SELECT MAX(id) FROM bole_app.t_banner));
+    SELECT setval('bole_app.t_config_id_seq', (SELECT MAX(id) FROM bole_app.t_config));
     SELECT setval('bole_app.t_dict_id_seq', (SELECT MAX(id) FROM bole_app.t_dict));
     SELECT setval('bole_app.t_user_id_seq', (SELECT MAX(id) FROM bole_app.t_user));
     SELECT setval('bole_app.t_company_id_seq', (SELECT MAX(id) FROM bole_app.t_company));
     SELECT setval('bole_app.t_role_id_seq', (SELECT MAX(id) FROM bole_app.t_role));
+    SELECT setval('bole_app.t_user_role_id_seq', (SELECT MAX(id) FROM bole_app.t_user_role));
     SELECT setval('bole_app.t_company_comment_id_seq', (SELECT MAX(id) FROM bole_app.t_company_comment));
     SELECT setval('bole_app.t_company_experiences_id_seq', (SELECT MAX(id) FROM bole_app.t_company_experiences));
     SELECT setval('bole_app.t_education_experience_id_seq', (SELECT MAX(id) FROM bole_app.t_education_experience));
@@ -245,7 +261,12 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     SELECT setval('bole_app.t_resumes_template_id_seq', (SELECT MAX(id) FROM bole_app.t_resumes_template));
     SELECT setval('bole_app.t_resumes_component_id_seq', (SELECT MAX(id) FROM bole_app.t_resumes_component));
     SELECT setval('bole_app.t_skill_id_seq', (SELECT MAX(id) FROM bole_app.t_skill));
+    SELECT setval('bole_app.t_city_grade_id_seq', (SELECT MAX(id) FROM bole_app.t_city_grade));
+    SELECT setval('bole_app.t_city_id_seq', (SELECT MAX(id) FROM bole_app.t_city));
+    SELECT setval('bole_app.t_university_id_seq', (SELECT MAX(id) FROM bole_app.t_university));
+    SELECT setval('bole_app.t_msg_template_id_seq', (SELECT MAX(id) FROM bole_app.t_msg_template));
     SELECT setval('bole_audit.audit_logs_id_seq', (SELECT MAX(id) FROM bole_audit.audit_logs));
+    
 EOSQL
 
 echo "示例数据插入完成"

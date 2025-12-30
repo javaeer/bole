@@ -29,11 +29,11 @@ const TemplateAPI = {
     return request.put(`${TEMPLATE_BASE_URL}/unfavorite/${id}`);
   },
 
-  page(params: PageQuery, query?: TemplateQuery) {
+  page(params: PageParam, query?: TemplateQuery) {
     return request.page<PageResult<TemplateResult>>(`${TEMPLATE_BASE_URL}/page`, params, query);
   },
 
-  pageIndex(params: PageQuery, query?: TemplateQuery) {
+  pageIndex(params: PageParam, query?: TemplateQuery) {
     return request.page<PageResult<TemplateResult>>(`${TEMPLATE_BASE_URL}/index`, params, query);
   },
 

@@ -72,8 +72,8 @@ $danger-color: #f56c6c;
 $info-color: #909399;
 
 /* 主色衍生色 */
-$primary-light: #f9f3e3;
-$primary-lighter: #fef9ed;
+$primary-color-light: #f9f3e3;
+$primary-color-lighter: #fef9ed;
 
 /* 文本色系 */
 $text-primary: #303133;
@@ -239,6 +239,38 @@ $empty-text-font-size: $font-size-base;
 /* 消息项阴影 */
 $message-item-shadow: $box-shadow-light;
 $message-item-hover-shadow: $box-shadow;
+
+/* ==================== 扩展成就列表相关变量 ==================== */
+/* 成就列表颜色 */
+$achievement-add-bg: $primary-color-light;
+$achievement-add-color: $primary-color;
+$achievement-add-border: $primary-color;
+$achievement-remove-bg: $danger-color;
+$achievement-remove-color: $background-color-white;
+
+/* 成就列表尺寸 */
+$achievement-item-height: 60rpx;
+$achievement-input-height: 60rpx;
+$achievement-remove-btn-size: 60rpx;
+$achievement-item-gap: 16rpx;
+$achievement-index-width: 40rpx;
+
+/* 成就列表边框 */
+$achievement-input-border: 2rpx solid $border-color-lighter;
+$achievement-add-border-style: dashed;
+
+/* 成就列表圆角 */
+$achievement-input-radius: $border-radius;
+$achievement-remove-btn-radius: $border-radius-small;
+
+/* 成就列表字体 */
+$achievement-content-color: $text-regular;
+$achievement-index-color: $text-secondary;
+$achievement-count-color: $text-secondary;
+
+/* 空状态 */
+$achievement-empty-color: $text-placeholder;
+$achievement-empty-font-size: $font-size-base;
 
 /* 层级 */
 $z-index-base: 1;
@@ -460,7 +492,7 @@ $device-btn-padding: 8rpx 16rpx;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba($primary-light, 0.1);
+    background: rgba($primary-color-light, 0.1);
     border-radius: $message-border-radius;
     pointer-events: none;
   }
@@ -607,8 +639,6 @@ $device-btn-padding: 8rpx 16rpx;
     border-color: $info-border;
   }
 }
-
-
 
 /* 响应式调整 */
 @media (max-width: $screen-md) {

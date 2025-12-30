@@ -988,7 +988,7 @@ onMounted(() => {
 .code-btn {
   padding: 0 $padding-small;
   height: $input-height;
-  background: $primary-light;
+  background: $primary-color-light;
   border: 2rpx solid $primary-border;
   border-radius: $border-radius;
   font-size: $font-size-small;
@@ -997,7 +997,7 @@ onMounted(() => {
   white-space: nowrap;
 
   &:active {
-    background: color.adjust($primary-light, $lightness: -5%);
+    background: color.adjust($primary-color-light, $lightness: -5%);
   }
 
   &--disabled {

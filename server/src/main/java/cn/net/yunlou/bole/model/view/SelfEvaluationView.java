@@ -15,5 +15,5 @@ public class SelfEvaluationView extends BaseView {
 
     private String content;
 
-    private List<String> keywords;
+    private List<String> highlights;
 }

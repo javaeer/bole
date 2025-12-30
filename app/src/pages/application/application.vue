@@ -711,7 +711,7 @@ const showHistorySection = computed(() => {
 .skill-tag {
   font-size: $font-size-extra-small;
   color: $text-primary;
-  background: $primary-light;
+  background: $primary-color-light;
   padding: 4rpx 12rpx;
   border-radius: $border-radius-small;
 }

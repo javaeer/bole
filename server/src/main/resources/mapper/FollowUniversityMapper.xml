@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.net.yunlou.bole.mapper.FollowUniversityMapper">
+
+    <select id="selectListLeft" resultType="cn.net.yunlou.bole.entity.User">
+        select l.*
+        from t_user as l
+                 left join t_follow_university as et on et.user_id = l.id
+        where et.university_id = #{et.universityId}
+    </select>
+
+    <select id="selectListRight" resultType="cn.net.yunlou.bole.entity.University">
+        select r.*
+        from t_university as r
+                 left join t_follow_university as et on et.university_id = r.id
+        where et.user_id = #{et.userId}
+    </select>
+
+</mapper>

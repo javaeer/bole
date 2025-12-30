@@ -85,7 +85,7 @@
       <view v-else-if="filteredResumes.length === 0" class="empty-state">
         <text class="icon">📄</text>
         <text class="empty-text">暂无简历</text>
-        <text v-if="searchKeyword" class="empty-hint">未找到匹配的简历</text>
+        <text v-if="searchKeywords" class="empty-hint">未找到匹配的简历</text>
       </view>
 
       <view v-else>

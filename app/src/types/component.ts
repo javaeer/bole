@@ -58,8 +58,8 @@ export interface EducationExperienceConfig extends BaseComponentConfig {
   orderBy?: 'startDate' | 'endDate' | 'degree'
   orderDirection?: 'asc' | 'desc'
   maxItems?: number
-  showSchoolLogo?: boolean
-  showSchoolName?: boolean
+  showUniversityLogo?: boolean
+  showUniversityName?: boolean
   showDegree?: boolean
   showMajor?: boolean
   showEducationPeriod?: boolean
@@ -72,7 +72,7 @@ export interface EducationExperienceConfig extends BaseComponentConfig {
 // 教育经历项
 export interface EducationExperienceItem {
   id: number
-  school: string
+  university: string
   degree: string
   major?: string
   startDate: string

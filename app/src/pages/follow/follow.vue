@@ -371,7 +371,7 @@ onUnmounted(() => {
 .template-cover {
   width: 100%;
   height: 240rpx;
-  background: linear-gradient(135deg, $primary-light 0%, transparent 100%);
+  background: linear-gradient(135deg, $primary-color-light 0%, transparent 100%);
   object-fit: cover;
   border-radius: $border-radius $border-radius 0 0;
 

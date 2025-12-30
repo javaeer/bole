@@ -24,7 +24,7 @@ declare global {
   /**
    * 分页查询参数 将追加到 params
    */
-  interface PageQuery {
+  interface PageParam {
     /*起始页 */
     page: number;
     /*每页行数 */

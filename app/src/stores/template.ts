@@ -120,7 +120,7 @@ export const useTemplateStore = defineStore("template", () => {
   const loadTemplateList = async (query?: TemplateQuery) => {
     loading.value = true;
     try {
-      const params: PageQuery = {
+      const params: PageParam = {
         page: pageParams.page,
         size: pageParams.size,
       };

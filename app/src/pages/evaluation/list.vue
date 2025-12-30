@@ -3,16 +3,16 @@
     <!-- 搜索栏 -->
     <view class="search-container card-container">
       <view class="search-box">
-        <uni-icons type="search" size="20" color="#999" />
+        <view class="search-icon">🔍</view>
         <input
-          v-model="searchKeyword"
+          v-model="searchKeywords"
           class="search-input"
           placeholder="搜索评价内容或关键词"
           placeholder-class="placeholder-text"
           @input="handleSearch"
         />
-        <button v-if="searchKeyword" class="clear-btn" @click="clearSearch">
-          <uni-icons type="clear" size="18" color="#999" />
+        <button v-if="searchKeywords" class="clear-btn" @click="clearSearch">
+          <view class="clear-icon">×</view>
         </button>
       </view>
 
@@ -25,12 +25,13 @@
           @click="changeSort(option.value)"
         >
           <text>{{ option.label }}</text>
-          <uni-icons
+          <view
             v-if="sortBy === option.value"
-            :type="sortOrder === 'asc' ? 'arrowup' : 'arrowdown'"
-            size="14"
-            :color="sortOrder === 'asc' ? successColor : dangerColor"
-          />
+            class="sort-icon"
+            :style="{ color: sortOrder === 'asc' ? successColor : dangerColor }"
+          >
+            {{ sortOrder === 'asc' ? '↑' : '↓' }}
+          </view>
         </view>
       </view>
     </view>
@@ -44,12 +45,13 @@
     >
       <!-- 空状态 -->
       <view v-if="loading && listData.length === 0" class="empty-state">
-        <uni-load-more status="loading"></uni-load-more>
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载中...</text>
       </view>
 
       <!-- 列表为空 -->
       <view v-else-if="!loading && listData.length === 0" class="empty-state">
-        <uni-icons type="edit" size="60" color="#c0c4cc" />
+        <view class="empty-icon">📝</view>
         <text class="empty-text">暂无自我评价</text>
         <button class="btn btn-primary" @click="addNewEvaluation">添加自我评价</button>
       </view>
@@ -74,20 +76,28 @@
                 {{ item.content }}
               </text>
 
-              <!-- 关键词 -->
-              <view class="keywords-section" v-if="getKeywordsArray(item.keywords).length > 0">
-                <view class="keywords-label">
-                  <uni-icons type="tags" size="14" color="#909399" />
+              <!-- 关键词列表 -->
+              <view class="highlights-section" v-if="item.highlights && item.highlights.length > 0">
+                <view class="highlights-label">
+                  <view class="tag-icon">🏷</view>
                   <text class="label-text">关键词</text>
+                  <text class="count-badge">{{ item.highlights.length }}</text>
                 </view>
-                <view class="keywords-list">
+                <view class="highlights-list">
                   <view
-                    v-for="keyword in getKeywordsArray(item.keywords)"
-                    :key="keyword"
-                    class="keyword-tag"
-                    @click.stop="searchByKeyword(keyword)"
+                    v-for="(highlight, highlightIndex) in item.highlights.slice(0, 5)"
+                    :key="highlightIndex"
+                    class="highlight-tag"
+                    @click.stop="searchByHighlight(highlight)"
                   >
-                    <text>{{ keyword }}</text>
+                    <text>{{ highlight }}</text>
+                  </view>
+                  <view
+                    v-if="item.highlights.length > 5"
+                    class="more-highlights"
+                    @click.stop="showAllHighlights(item.highlights)"
+                  >
+                    <text>+{{ item.highlights.length - 5 }}</text>
                   </view>
                 </view>
               </view>
@@ -95,8 +105,12 @@
               <!-- 内容统计 -->
               <view class="content-stats">
                 <view class="stat-item">
-                  <uni-icons type="font-size" size="12" color="#909399" />
+                  <view class="font-size-icon">A</view>
                   <text class="stat-text">{{ item.content.length }}字</text>
+                </view>
+                <view v-if="item.highlights && item.highlights.length > 0" class="stat-item">
+                  <view class="tag-count-icon">🏷</view>
+                  <text class="stat-text">{{ item.highlights.length }}个关键词</text>
                 </view>
               </view>
             </view>
@@ -114,21 +128,23 @@
 
           <!-- 时间信息 -->
           <view class="item-footer">
-            <text class="time-text">创建：{{ dateUtils.format(item.createdAt) }}</text>
-            <text class="time-text">更新：{{ dateUtils.format(item.updatedAt) }}</text>
+            <text class="time-text">创建：{{ formatDate(item.createdAt) }}</text>
+            <text class="time-text">更新：{{ formatDate(item.updatedAt) }}</text>
           </view>
         </view>
 
         <!-- 加载更多 -->
         <view v-if="hasMore" class="load-more">
-          <uni-load-more
-            :status="loading ? 'loading' : 'more'"
-            :content-text="{
-              contentdown: '上拉加载更多',
-              contentrefresh: '正在加载...',
-              contentnomore: '没有更多了'
-            }"
-          />
+          <view v-if="loading" class="loading-more">
+            <view class="loading-spinner-small"></view>
+            <text>加载中...</text>
+          </view>
+          <view v-else class="load-more-btn" @click="loadMore">
+            上拉加载更多
+          </view>
+        </view>
+        <view v-else-if="listData.length > 0" class="no-more">
+          <text>没有更多了</text>
         </view>
       </view>
     </scroll-view>
@@ -137,76 +153,50 @@
     <button class="add-btn" @click="addNewEvaluation">
       <view class="icon-plus">+</view>
     </button>
+
+    <!-- 关键词全量弹窗 -->
+    <view v-if="showHighlightsModal" class="highlights-modal" @click="closeHighlightsModal">
+      <view class="modal-content" @click.stop>
+        <view class="modal-header">
+          <text class="modal-title">全部关键词</text>
+          <button class="modal-close-btn" @click="closeHighlightsModal">×</button>
+        </view>
+        <view class="modal-body">
+          <view class="all-highlights-list">
+            <view
+              v-for="(highlight, index) in currentHighlights"
+              :key="index"
+              class="highlight-tag-large"
+              @click.stop="searchByHighlight(highlight)"
+            >
+              <text>{{ highlight }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref, onMounted } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
-import { dateUtils } from "@/utils/date";
-import { SelfEvaluationItem } from "@/types/self-evaluation";
-
+import type { SelfEvaluationResult } from "@/types/self-evaluation";
+import SelfEvaluationAPI from "@/api/self-evaluation";
 
 // 响应式数据
-const searchKeyword = ref('')
+const searchKeywords = ref('')
 const sortBy = ref<'createdAt' | 'updatedAt'>('createdAt')
 const sortOrder = ref<'asc' | 'desc'>('desc')
 const currentPage = ref(1)
 const pageSize = ref(10)
 const loading = ref(false)
 const hasMore = ref(true)
+const listData = ref<SelfEvaluationResult[]>([])
 
-// 模拟数据
-const mockData: SelfEvaluationItem[] = [
-  {
-    id: 1,
-    createdAt: "2025-12-22 03:59:05",
-    updatedAt: "2025-12-22 10:30:15",
-    deleted: 0,
-    userId: 1,
-    content: "作为一名资深软件工程师，我拥有超过5年的全栈开发经验。熟练掌握Java、Python、JavaScript等多种编程语言，对微服务架构、云原生技术有深入理解。在工作中，我注重代码质量，擅长性能优化和系统架构设计。具备良好的团队协作能力和项目管理经验，能够带领团队高效完成复杂项目。",
-    keywords: "资深工程师,全栈开发,微服务,架构设计,团队协作"
-  },
-  {
-    id: 2,
-    createdAt: "2025-12-21 14:20:30",
-    updatedAt: "2025-12-22 08:45:20",
-    deleted: 0,
-    userId: 1,
-    content: "具备良好的沟通能力和团队协作精神，能够快速适应新环境。在多个项目中担任技术负责人，成功带领团队完成多个大型项目的开发与部署。注重技术创新，持续学习新技术，保持在技术前沿。",
-    keywords: "沟通能力,团队协作,技术负责人,项目管理,学习能力"
-  },
-  {
-    id: 3,
-    createdAt: "2025-12-20 09:15:40",
-    updatedAt: "2025-12-21 16:30:50",
-    deleted: 0,
-    userId: 1,
-    content: "在解决问题时，我善于从多角度思考，能够快速定位问题的根本原因并提出有效的解决方案。对技术充满热情，喜欢探索新技术，并将其应用于实际项目中以提升工作效率。",
-    keywords: "问题解决,创新思维,技术热情,效率提升"
-  },
-  {
-    id: 4,
-    createdAt: "2025-12-19 11:30:25",
-    updatedAt: "2025-12-20 14:25:35",
-    deleted: 0,
-    userId: 1,
-    content: "拥有丰富的产品开发经验，能够从用户需求出发，设计出既美观又实用的产品。注重用户体验，善于通过数据分析优化产品功能。具备良好的跨部门沟通协调能力。",
-    keywords: "产品开发,用户体验,数据分析,跨部门协作"
-  },
-  {
-    id: 5,
-    createdAt: "2025-12-18 16:45:10",
-    updatedAt: "2025-12-19 09:20:45",
-    deleted: 0,
-    userId: 1,
-    content: "具备较强的学习能力和适应能力，能够快速掌握新技术。在工作中，我始终保持积极的态度，勇于接受挑战，能够在压力下保持高效工作。注重细节，追求卓越，对工作质量有严格的要求。",
-    keywords: "学习能力,适应能力,抗压能力,注重细节,追求卓越"
-  }
-]
-
-const listData = ref<SelfEvaluationItem[]>([])
-const filteredData = ref<SelfEvaluationItem[]>([])
+// 关键词弹窗相关
+const showHighlightsModal = ref(false)
+const currentHighlights = ref<string[]>([])
 
 // 排序选项
 const sortOptions = [
@@ -214,16 +204,32 @@ const sortOptions = [
   { label: '更新时间', value: 'updatedAt' }
 ]
 
-// 颜色变量（从uni.scss中提取）
-const primaryColor = '#d4af37'
+// 颜色变量
 const successColor = '#67c23a'
 const dangerColor = '#f56c6c'
 
-// 解析关键词字符串
-const getKeywordsArray = (keywordsStr: string | null): string[] => {
-  if (!keywordsStr) return []
-  return keywordsStr.split(',').map(keyword => keyword.trim()).filter(keyword => keyword)
-}
+// 格式化日期
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  } catch {
+    return dateStr;
+  }
+};
+
+// 显示全部关键词
+const showAllHighlights = (highlights: string[]) => {
+  currentHighlights.value = highlights;
+  showHighlightsModal.value = true;
+};
+
+// 关闭关键词弹窗
+const closeHighlightsModal = () => {
+  showHighlightsModal.value = false;
+  currentHighlights.value = [];
+};
 
 // 搜索处理
 const handleSearch = () => {
@@ -232,16 +238,19 @@ const handleSearch = () => {
 }
 
 const clearSearch = () => {
-  searchKeyword.value = ''
+  searchKeywords.value = ''
   currentPage.value = 1
   loadData(true)
 }
 
 // 按关键词搜索
-const searchByKeyword = (keyword: string) => {
-  searchKeyword.value = keyword
+const searchByHighlight = (highlight: string) => {
+  searchKeywords.value = highlight
   currentPage.value = 1
   loadData(true)
+
+  // 关闭弹窗（如果打开）
+  closeHighlightsModal();
 }
 
 // 排序处理
@@ -255,93 +264,105 @@ const changeSort = (field: any) => {
     sortOrder.value = 'desc'
   }
 
-  sortData()
-}
-
-// 排序数据
-const sortData = () => {
-  filteredData.value.sort((a: any, b: any) => {
-    const aValue = a[sortBy.value]
-    const bValue = b[sortBy.value]
-
-    if (sortOrder.value === 'asc') {
-      return aValue.localeCompare(bValue)
-    } else {
-      return bValue.localeCompare(aValue)
-    }
-  })
+  currentPage.value = 1
+  loadData(true)
 }
 
 // 加载数据
-const loadData = (reset = false) => {
-  if (loading.value) return
+const loadData = async (reset = false) => {
+  if (loading.value) return;
 
-  loading.value = true
+  loading.value = true;
 
   if (reset) {
-    currentPage.value = 1
-    hasMore.value = true
-    listData.value = []
+    currentPage.value = 1;
+    hasMore.value = true;
+    listData.value = [];
   }
 
-  // 模拟API请求延迟
-  setTimeout(() => {
-    // 筛选数据
-    let filtered = [...mockData]
+  try {
+    // 构建查询参数
+    const pageParam = {
+      page: currentPage.value,
+      size: pageSize.value,
+    };
 
-    if (searchKeyword.value) {
-      const keyword = searchKeyword.value.toLowerCase()
-      filtered = filtered.filter(item =>
-        item.content.toLowerCase().includes(keyword) ||
-        (item.keywords && item.keywords.toLowerCase().includes(keyword))
-      )
+    const query: any = {};
+
+    // 添加搜索条件
+    if (searchKeywords.value) {
+      query.highlight = searchKeywords.value;
     }
 
-    filteredData.value = filtered
-
-    // 排序
-    sortData()
-
-    // 分页
-    const start = (currentPage.value - 1) * pageSize.value
-    const end = start + pageSize.value
-    const pageData = filteredData.value.slice(start, end)
-
-    if (reset) {
-      listData.value = pageData
-    } else {
-      listData.value = [...listData.value, ...pageData]
+    // 添加排序条件
+    if (sortBy.value && sortOrder.value) {
+      query.orderBy = sortBy.value;
+      query.orderDirection = sortOrder.value === 'asc' ? 'ASC' : 'DESC';
     }
 
-    // 更新是否有更多数据
-    hasMore.value = listData.value.length < filtered.length
-    loading.value = false
-    currentPage.value++
-  }, 500)
-}
+    // 调用API
+    const response = await SelfEvaluationAPI.page(pageParam, query);
+
+    if (response) {
+      const { records = [], total = 0 } = response;
+
+      // 确保highlights是数组格式（如果是字符串就转换为数组）
+      const processedRecords = records.map(record => ({
+        ...record,
+        highlights: Array.isArray(record.highlights)
+          ? record.highlights
+          : typeof record.highlights === 'string'
+            ? record.highlights.split(',').map(k => k.trim()).filter(k => k)
+            : []
+      }));
+
+      if (reset) {
+        listData.value = processedRecords;
+      } else {
+        listData.value = [...listData.value, ...processedRecords];
+      }
+
+      // 更新是否有更多数据
+      hasMore.value = listData.value.length < total;
+
+      // 如果当前页有数据，且数据条数等于pageSize，说明可能还有下一页
+      if (records.length === pageSize.value) {
+        currentPage.value++;
+      }
+    }
+  } catch (error) {
+    console.error("加载数据失败:", error);
+    uni.showToast({
+      title: "加载失败",
+      icon: "error",
+    });
+  } finally {
+    loading.value = false;
+  }
+};
 
 // 加载更多
 const loadMore = () => {
-  if (!hasMore.value || loading.value) return
-  loadData()
-}
+  if (!hasMore.value || loading.value) return;
+  loadData();
+};
 
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/evaluation/detail?id=${id}`
+    url: `/pages/evaluation/evaluation?id=${id}`
   })
 }
 
 const editEvaluation = (id: number) => {
   uni.navigateTo({
-    url: `/pages/evaluation/detail?id=${id}&edit=true`
+    url: `/pages/evaluation/evaluation?id=${id}&edit=true`
   })
 }
 
 const addNewEvaluation = () => {
   uni.navigateTo({
-    url: '/pages/evaluation/detail'
+    url: '/pages/evaluation/evaluation'
   })
 }
 
@@ -364,7 +385,6 @@ onReachBottom(() => {
 </script>
 
 <style lang="scss">
-
 .page-container {
   min-height: 100vh;
   background-color: $background-color;
@@ -388,6 +408,11 @@ onReachBottom(() => {
   margin-bottom: $margin-small;
   border: 1rpx solid $border-color-light;
 
+  .search-icon {
+    font-size: 32rpx;
+    color: $text-secondary;
+  }
+
   .search-input {
     flex: 1;
     font-size: $font-size-base;
@@ -404,6 +429,16 @@ onReachBottom(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    .clear-icon {
+      font-size: 36rpx;
+      color: $text-secondary;
+      width: 40rpx;
+      height: 40rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
@@ -425,11 +460,15 @@ onReachBottom(() => {
     border: 1rpx solid $border-color-light;
 
     &.active {
-      background: $primary-light;
+      background: $primary-color-light;
       color: $primary-color;
       border-color: $primary-color;
       font-weight: $font-weight-medium;
     }
+  }
+
+  .sort-icon {
+    font-size: 20rpx;
   }
 }
 
@@ -455,7 +494,7 @@ onReachBottom(() => {
     top: 20rpx;
     width: 40rpx;
     height: 40rpx;
-    background: $primary-light;
+    background: $primary-color-light;
     border-radius: $border-radius-round;
     display: flex;
     align-items: center;
@@ -479,46 +518,87 @@ onReachBottom(() => {
         -webkit-line-clamp: 3;
       }
 
-      .keywords-section {
+      .highlights-section {
         margin-bottom: $margin-small;
 
-        .keywords-label {
+        .highlights-label {
           display: flex;
           align-items: center;
           gap: 8rpx;
           margin-bottom: 12rpx;
+
+          .tag-icon {
+            font-size: 24rpx;
+          }
 
           .label-text {
             font-size: $font-size-extra-small;
             color: $text-secondary;
             font-weight: $font-weight-medium;
           }
+
+          .count-badge {
+            background: $primary-color-light;
+            color: $primary-color;
+            font-size: $font-size-extra-small;
+            padding: 2rpx 8rpx;
+            border-radius: 10rpx;
+            font-weight: $font-weight-medium;
+          }
         }
 
-        .keywords-list {
+        .highlights-list {
           display: flex;
           flex-wrap: wrap;
           gap: 8rpx;
+          align-items: center;
 
-          .keyword-tag {
-            padding: 4rpx 12rpx;
-            background: $primary-light;
+          .highlight-tag {
+            padding: 6rpx 12rpx;
+            background: $primary-color-light;
             border-radius: $border-radius-round;
             font-size: $font-size-extra-small;
             color: $primary-color;
             border: 1rpx solid $primary-border;
+            cursor: pointer;
+            max-width: 150rpx;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .more-highlights {
+            padding: 6rpx 12rpx;
+            background: $info-bg;
+            border-radius: $border-radius-round;
+            font-size: $font-size-extra-small;
+            color: $info-color;
+            border: 1rpx solid $info-border;
+            cursor: pointer;
           }
         }
       }
 
       .content-stats {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
+        align-items: center;
 
         .stat-item {
           display: flex;
           align-items: center;
-          gap: 4rpx;
+          gap: 6rpx;
+
+          .font-size-icon {
+            font-size: 18rpx;
+            color: $text-secondary;
+            font-weight: bold;
+          }
+
+          .tag-count-icon {
+            font-size: 18rpx;
+            color: $text-secondary;
+          }
 
           .stat-text {
             font-size: $font-size-extra-small;
@@ -561,6 +641,21 @@ onReachBottom(() => {
   justify-content: center;
   padding: 100rpx 0;
 
+  .loading-spinner {
+    width: 60rpx;
+    height: 60rpx;
+    border: 4rpx solid rgba($primary-color, 0.2);
+    border-top-color: $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20rpx;
+  }
+
+  .empty-icon {
+    font-size: 80rpx;
+    margin-bottom: 20rpx;
+  }
+
   .empty-text {
     font-size: $font-size-base;
     color: $empty-text-color;
@@ -574,7 +669,42 @@ onReachBottom(() => {
 }
 
 .load-more {
-  padding: $margin-base 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx 0;
+
+  .loading-more {
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+    color: $text-secondary;
+    font-size: $font-size-small;
+
+    .loading-spinner-small {
+      width: 24rpx;
+      height: 24rpx;
+      border: 2rpx solid rgba($primary-color, 0.2);
+      border-top-color: $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .load-more-btn {
+    padding: 16rpx 32rpx;
+    background: $background-color;
+    border-radius: $border-radius;
+    color: $text-primary;
+    font-size: $font-size-small;
+  }
+}
+
+.no-more {
+  text-align: center;
+  padding: 40rpx 0;
+  color: $text-secondary;
+  font-size: $font-size-small;
 }
 
 .add-btn {
@@ -598,9 +728,86 @@ onReachBottom(() => {
   }
 }
 
+// 关键词弹窗样式
+.highlights-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-index-modal;
+  padding: $padding-base;
+
+  .modal-content {
+    background: $background-color-white;
+    border-radius: $border-radius-large;
+    width: 100%;
+    max-width: 600rpx;
+    max-height: 70vh;
+    overflow: hidden;
+    box-shadow: $box-shadow-dark;
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $padding-base;
+      border-bottom: 1rpx solid $border-color-extra-light;
+
+      .modal-title {
+        font-size: $font-size-medium;
+        font-weight: $font-weight-medium;
+        color: $text-primary;
+      }
+
+      .modal-close-btn {
+        background: transparent;
+        border: none;
+        font-size: 32rpx;
+        color: $text-secondary;
+        width: 40rpx;
+        height: 40rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .modal-body {
+      padding: $padding-base;
+      max-height: 50vh;
+      overflow-y: auto;
+
+      .all-highlights-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12rpx;
+
+        .highlight-tag-large {
+          padding: 10rpx 16rpx;
+          background: $primary-color-light;
+          border-radius: $border-radius;
+          font-size: $font-size-small;
+          color: $primary-color;
+          border: 1rpx solid $primary-border;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
 .placeholder-text {
   color: $text-placeholder;
   font-size: $font-size-base;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: $screen-md) {
@@ -624,6 +831,18 @@ onReachBottom(() => {
     .item-footer {
       flex-direction: column;
       gap: 8rpx;
+    }
+
+    .content-stats {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8rpx;
+    }
+  }
+
+  .highlights-modal {
+    .modal-content {
+      max-width: 90vw;
     }
   }
 }

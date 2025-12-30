@@ -838,11 +838,11 @@ onLoad((options) => {
   font-weight: $font-weight-medium;
   cursor: pointer;
   padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  background: $primary-light;
+  background: $primary-color-light;
   border-radius: $uni-border-radius-sm;
 
   &:active {
-    background: color.adjust($primary-light, $lightness: -5%);
+    background: color.adjust($primary-color-light, $lightness: -5%);
   }
 }
 

@@ -5,13 +5,13 @@
       <view class="search-box">
         <uni-icons type="search" size="20" color="#999" />
         <input
-          v-model="searchKeyword"
+          v-model="searchKeywords"
           class="search-input"
           placeholder="请输入学校名称搜索"
           placeholder-class="placeholder-text"
           @input="handleSearch"
         />
-        <button v-if="searchKeyword" class="clear-btn" @click="clearSearch">
+        <button v-if="searchKeywords" class="clear-btn" @click="clearSearch">
           <uni-icons type="clear" size="18" color="#999" />
         </button>
       </view>
@@ -64,7 +64,7 @@
           <!-- 主要内容 -->
           <view class="item-main">
             <view class="item-header flex-between">
-              <text class="item-title text-truncate">{{ item.school }}</text>
+              <text class="item-title text-truncate">{{ item.university }}</text>
               <view class="item-status">
                 <view :class="['status-tag', getStatusClass(item)]">
                   {{ getStatusText(item) }}
@@ -80,7 +80,8 @@
 
               <view class="item-info">
                 <uni-icons type="calendar" size="16" color="#909399" />
-                <text class="info-text">{{ dateUtils.format(item.startDate) }} - {{ dateUtils.format(item.endDate) }}</text>
+                <text class="info-text">{{ formatDate(item.startDate) }} - {{ formatDate(item.endDate) }}
+                </text>
               </view>
 
               <view v-if="item.description" class="item-desc text-multi-truncate">
@@ -101,8 +102,8 @@
 
           <!-- 时间信息 -->
           <view class="item-footer">
-            <text class="time-text">创建：{{ dateUtils.format(item.createdAt) }}</text>
-            <text class="time-text">更新：{{ dateUtils.format((item.updatedAt))}}</text>
+            <text class="time-text">创建：{{ formatDateTime(item.createdAt) }}</text>
+            <text class="time-text">更新：{{ formatDateTime(item.updatedAt) }}</text>
           </view>
         </view>
 
@@ -128,257 +129,209 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref, onMounted } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
-import { EducationExperienceItem } from "@/types/component";
-import DateUtils, { dateUtils } from "../../utils/date";
+import EducationExperienceAPI from "@/api/education-experience";
+import type { EducationExperienceResult } from "@/types/education-experience";
 
 // 响应式数据
-const searchKeyword = ref('')
-const sortBy = ref<'createdAt' | 'updatedAt' | 'startDate' | 'endDate'>('createdAt')
-const sortOrder = ref<'asc' | 'desc'>('desc')
-const currentPage = ref(1)
-const pageSize = ref(10)
-const loading = ref(false)
-const hasMore = ref(true)
-
-// 模拟数据
-const mockData: EducationExperienceItem[] = [
-  {
-    id: 1,
-    createdAt: "2025-12-17 20:06:50",
-    updatedAt: "2025-12-17 20:06:50",
-    deleted: 0,
-    userId: 1,
-    school: "清华大学",
-    major: "计算机科学与技术",
-    degree: "本科",
-    startDate: "2014-09-01",
-    endDate: "2018-06-30",
-    isHighest: 1,
-    description: "主修计算机相关课程，包括数据结构、算法、操作系统等核心课程",
-    achievements: "获得国家奖学金，参与国家级科研项目",
-    sort: 1
-  },
-  {
-    id: 2,
-    createdAt: "2025-12-17 20:06:50",
-    updatedAt: "2025-12-18 10:30:25",
-    deleted: 0,
-    userId: 1,
-    school: "北京大学",
-    major: "软件工程",
-    degree: "硕士",
-    startDate: "2018-09-01",
-    endDate: "2021-06-30",
-    isHighest: 0,
-    description: "深入研究软件工程理论与方法，参与多个大型项目开发",
-    achievements: "发表SCI论文一篇，获得优秀毕业生称号",
-    sort: 2
-  },
-  {
-    id: 3,
-    createdAt: "2025-12-17 20:06:50",
-    updatedAt: "2025-12-17 20:06:50",
-    deleted: 0,
-    userId: 1,
-    school: "复旦大学",
-    major: "人工智能",
-    degree: "博士",
-    startDate: "2021-09-01",
-    endDate: "2025-06-30",
-    isHighest: 1,
-    description: "研究方向为机器学习与深度学习，参与多个国家级AI项目",
-    achievements: "获得博士学位，发表多篇高水平论文",
-    sort: 3
-  }
-]
-
-const listData = ref<EducationExperienceItem[]>([])
-const filteredData = ref<EducationExperienceItem[]>([])
+const searchKeywords = ref("");
+const sortBy = ref<"createdAt" | "updatedAt" | "startDate" | "endDate">("createdAt");
+const sortOrder = ref<"asc" | "desc">("desc");
+const currentPage = ref(1);
+const pageSize = ref(10);
+const loading = ref(false);
+const hasMore = ref(true);
+const listData = ref<EducationExperienceResult[]>([]);
 
 // 排序选项
 const sortOptions = [
-  { label: '创建时间', value: 'createdAt' },
-  { label: '更新时间', value: 'updatedAt' },
-  { label: '开始时间', value: 'startDate' },
-  { label: '结束时间', value: 'endDate' }
-]
+  { label: "创建时间", value: "createdAt" },
+  { label: "更新时间", value: "updatedAt" },
+  { label: "开始时间", value: "startDate" },
+  { label: "结束时间", value: "endDate" },
+];
 
-// 颜色变量（从uni.scss中提取）
-const primaryColor = '#d4af37'
-const successColor = '#67c23a'
-const warningColor = '#e6a23c'
-const dangerColor = '#f56c6c'
+// 颜色变量
+const successColor = "#67c23a";
+const dangerColor = "#f56c6c";
 
 // 获取状态文本和样式
-const getStatusText = (item: EducationExperienceItem) => {
-  const now = new Date()
-  const endDate = new Date(item.endDate)
+const getStatusText = (item: EducationExperienceResult) => {
+  const now = new Date();
+  const endDate = new Date(item.endDate);
 
   if (now < endDate) {
-    return '在读'
+    return "在读";
   } else if (item.isHighest === 1) {
-    return '最高学历'
+    return "最高学历";
   } else {
-    return '已毕业'
+    return "已毕业";
   }
-}
+};
 
-const getStatusClass = (item: EducationExperienceItem) => {
-  const now = new Date()
-  const endDate = new Date(item.endDate)
+const getStatusClass = (item: EducationExperienceResult) => {
+  const now = new Date();
+  const endDate = new Date(item.endDate);
 
   if (now < endDate) {
-    return 'status-warning'
+    return "status-warning";
   } else if (item.isHighest === 1) {
-    return 'status-success'
+    return "status-success";
   } else {
-    return 'status-info'
+    return "status-info";
   }
-}
+};
+
+// 格式化日期
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
+
+// 格式化日期时间
+const formatDateTime = (dateStr: string) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+};
 
 // 搜索处理
 const handleSearch = () => {
-  currentPage.value = 1
-  loadData(true)
-}
+  currentPage.value = 1;
+  loadData(true);
+};
 
 const clearSearch = () => {
-  searchKeyword.value = ''
-  currentPage.value = 1
-  loadData(true)
-}
+  searchKeywords.value = "";
+  currentPage.value = 1;
+  loadData(true);
+};
 
 // 排序处理
 const changeSort = (field: any) => {
   if (sortBy.value === field) {
     // 切换排序顺序
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
   } else {
     // 切换到新字段，默认降序
-    sortBy.value = field
-    sortOrder.value = 'desc'
+    sortBy.value = field;
+    sortOrder.value = "desc";
   }
 
-  sortData()
-}
-
-// 排序数据
-const sortData = () => {
-  filteredData.value.sort((a: any, b: any) => {
-    const aValue = a[sortBy.value]
-    const bValue = b[sortBy.value]
-
-    if (sortOrder.value === 'asc') {
-      return aValue.localeCompare(bValue)
-    } else {
-      return bValue.localeCompare(aValue)
-    }
-  })
-}
+  currentPage.value = 1;
+  loadData(true);
+};
 
 // 加载数据
-const loadData = (reset = false) => {
-  if (loading.value) return
+const loadData = async (reset = false) => {
+  if (loading.value) return;
 
-  loading.value = true
+  loading.value = true;
 
   if (reset) {
-    currentPage.value = 1
-    hasMore.value = true
-    listData.value = []
+    currentPage.value = 1;
+    hasMore.value = true;
+    listData.value = [];
   }
 
-  // 模拟API请求延迟
-  setTimeout(() => {
-    // 筛选数据
-    let filtered = [...mockData]
+  try {
+    // 构建查询参数
+    const pageParam = {
+      page: currentPage.value,
+      size: pageSize.value,
+    };
 
-    if (searchKeyword.value) {
-      filtered = filtered.filter(item =>
-        item.school.includes(searchKeyword.value) ||
-        item.major.includes(searchKeyword.value)
-      )
+    const query: any = {};
+
+    // 添加搜索条件
+    if (searchKeywords.value) {
+      query.university = searchKeywords.value;
+      // 如果还需要搜索专业，可以添加：query.major = searchKeywords.value;
     }
 
-    // 排序
-    filtered.sort((a: any, b: any) => {
-      const aValue = a[sortBy.value]
-      const bValue = b[sortBy.value]
+    // 添加排序条件
+    if (sortBy.value && sortOrder.value) {
+      query.orderBy = sortBy.value;
+      query.orderDirection = sortOrder.value === 'asc' ? 'ASC' : 'DESC';
+    }
 
-      if (sortOrder.value === 'asc') {
-        return aValue.localeCompare(bValue)
+    // 调用API
+    const response = await EducationExperienceAPI.page(pageParam, query);
+
+    if (response) {
+      const { records = [], total = 0 } = response;
+
+      if (reset) {
+        listData.value = records;
       } else {
-        return bValue.localeCompare(aValue)
+        listData.value = [...listData.value, ...records];
       }
-    })
 
-    filteredData.value = filtered
+      // 更新是否有更多数据
+      hasMore.value = listData.value.length < total;
 
-    // 分页
-    const start = (currentPage.value - 1) * pageSize.value
-    const end = start + pageSize.value
-    const pageData = filtered.slice(start, end)
-
-    if (reset) {
-      listData.value = pageData
-    } else {
-      listData.value = [...listData.value, ...pageData]
+      // 如果当前页有数据，且数据条数等于pageSize，说明可能还有下一页
+      if (records.length === pageSize.value) {
+        currentPage.value++;
+      }
     }
-
-    // 更新是否有更多数据
-    hasMore.value = listData.value.length < filtered.length
-    loading.value = false
-    currentPage.value++
-  }, 500)
-}
+  } catch (error) {
+    console.error("加载数据失败:", error);
+    uni.showToast({
+      title: "加载失败",
+      icon: "error",
+    });
+  } finally {
+    loading.value = false;
+  }
+};
 
 // 加载更多
 const loadMore = () => {
-  if (!hasMore.value || loading.value) return
-  loadData()
-}
+  if (!hasMore.value || loading.value) return;
+  loadData();
+};
 
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/education/detail?id=${id}`
-  })
-}
+    url: `/pages/education/education?id=${id}`,
+  });
+};
 
 const editItem = (id: number) => {
   uni.navigateTo({
-    url: `/pages/education/detail?id=${id}&edit=true`
-  })
-}
+    url: `/pages/education/education?id=${id}&edit=true`,
+  });
+};
 
 const addNewItem = () => {
   uni.navigateTo({
-    url: '/pages/education/detail'
-  })
-}
+    url: "/pages/education/education",
+  });
+};
 
 // 生命周期
 onMounted(() => {
-  loadData(true)
-})
+  loadData(true);
+});
 
 onLoad((options) => {
   // 从详情页返回时刷新数据
-  const refresh = options?.refresh === 'true'
+  const refresh = options?.refresh === "true";
   if (refresh) {
-    loadData(true)
+    loadData(true);
   }
-})
+});
 
 onReachBottom(() => {
-  loadMore()
-})
+  loadMore();
+});
 </script>
 
 <style lang="scss">
-
 .page-container {
   min-height: 100vh;
   background-color: $background-color;
@@ -439,7 +392,7 @@ onReachBottom(() => {
     border: 1rpx solid $border-color-light;
 
     &.active {
-      background: $primary-light;
+      background: $primary-color-light;
       color: $primary-color;
       border-color: $primary-color;
       font-weight: $font-weight-medium;
@@ -575,6 +528,42 @@ onReachBottom(() => {
 .placeholder-text {
   color: $text-placeholder;
   font-size: $font-size-base;
+}
+
+// 状态标签样式
+.status-success {
+  background-color: $success-bg;
+  color: $success-color;
+}
+
+.status-warning {
+  background-color: $warning-bg;
+  color: $warning-color;
+}
+
+.status-info {
+  background-color: $info-bg;
+  color: $info-color;
+}
+
+// 工具类
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-multi-truncate {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 @media (max-width: $screen-md) {

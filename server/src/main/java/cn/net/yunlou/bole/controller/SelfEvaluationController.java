@@ -29,21 +29,18 @@ public class SelfEvaluationController {
 
     @PostMapping("add")
     @Operation(summary = "新增自我评价")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> add(@RequestBody SelfEvaluationCreate request) {
         return BusinessResponse.success(selfEvaluationService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除自我评价")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(selfEvaluationService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑自我评价")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> edit(@RequestBody @Valid SelfEvaluationEdit request) {
         return BusinessResponse.success(selfEvaluationService.updateByEdit(request));
     }

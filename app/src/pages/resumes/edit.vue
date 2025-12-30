@@ -786,8 +786,8 @@
                         <text class="item-label">学校名称</text>
                         <input
                           class="form-input"
-                          :value="edu.school || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'school', e.detail.value)"
+                          :value="edu.university || ''"
+                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'university', e.detail.value)"
                           placeholder="请输入学校名称"
                           placeholder-class="input-placeholder"
                         />
@@ -914,7 +914,7 @@
                   </view>
 
                   <button class="add-section-btn" @click="addArrayItem(component.id, 'experiences', {
-                    school: '',
+                    university: '',
                     degree: '',
                     major: '',
                     startDate: '',

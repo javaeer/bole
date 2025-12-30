@@ -12,7 +12,7 @@ export interface SkillForm {
   certificateDate?: string;
 }
 
-export interface SkillQuery extends PageQuery {
+export interface SkillQuery extends BodyQuery {
 
 }
 

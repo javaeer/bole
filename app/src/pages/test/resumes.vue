@@ -166,13 +166,6 @@
               class="component-preview"
             />
 
-            <!-- CompanyExperience -->
-            <CompanyExperience
-              v-else-if="currentComponent === 'CompanyExperience' && currentComponentData"
-              :component="currentComponentData"
-              :theme="currentTheme"
-              class="component-preview"
-            />
 
             <view v-else class="no-component">
               <text class="no-component-text">请选择组件</text>
@@ -239,7 +232,6 @@ import EducationExperience from '@/components/resumes/EducationExperience.vue';
 import SelfEvaluation from '@/components/resumes/SelfEvaluation.vue';
 import Skills from '@/components/resumes/Skills.vue';
 import ProjectExperience from '@/components/resumes/ProjectExperience.vue';
-import CompanyExperience from '@/components/resumes/CompanyExperience.vue';
 
 export default {
   components: {
@@ -252,8 +244,7 @@ export default {
     EducationExperience,
     SelfEvaluation,
     Skills,
-    ProjectExperience,
-    CompanyExperience
+    ProjectExperience
   },
 
   data() {
@@ -641,8 +632,8 @@ export default {
                 showCourses: true,
                 degreeFormat: "full",
                 orderDirection: "desc",
-                showSchoolLogo: true,
-                showSchoolName: true,
+                showUniversityLogo: true,
+                showUniversityName: true,
                 showEducationPeriod: true
               },
               styles: {
@@ -652,7 +643,7 @@ export default {
                 majorColor: "#666666",
                 titleColor: "#333333",
                 itemSpacing: "12px",
-                schoolColor: "#52c41a",
+                universityColor: "#52c41a",
                 borderRadius: "8px",
                 backgroundColor: "#FFFFFF"
               }
@@ -665,7 +656,7 @@ export default {
                   deleted: 0,
                   major: "软件工程",
                   endDate: "2021-06-30",
-                  school: "北京大学",
+                  university: "北京大学",
                   degree: "硕士",
                   isHighest: 1,
                   description: "研究方向：分布式系统",
@@ -679,7 +670,7 @@ export default {
                   deleted: 0,
                   major: "计算机科学与技术",
                   endDate: "2018-06-30",
-                  school: "清华大学",
+                  university: "清华大学",
                   degree: "本科",
                   isHighest: 0,
                   description: "主修计算机相关课程",
@@ -721,7 +712,7 @@ export default {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                 titleColor: "#333333",
                 borderRadius: "8px",
-                highlightColor: "#1890ff",
+                keywordColor: "#1890ff",
                 backgroundColor: "#FFFFFF"
               }
             },
@@ -788,7 +779,7 @@ export default {
                 borderRadius: "8px",
                 contentColor: "#555555",
                 backgroundColor: "#fafafa",
-                highlightBackground: "#fff7e6"
+                keywordBackground: "#fff7e6"
               }
             },
             props: {

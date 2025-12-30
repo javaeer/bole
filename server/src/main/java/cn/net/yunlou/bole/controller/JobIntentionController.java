@@ -29,21 +29,18 @@ public class JobIntentionController {
 
     @PostMapping("add")
     @Operation(summary = "新增求职意向")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> add(@RequestBody JobIntentionCreate request) {
         return BusinessResponse.success(jobIntentionService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除求职意向")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(jobIntentionService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑求职意向")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> edit(@RequestBody @Valid JobIntentionEdit request) {
         return BusinessResponse.success(jobIntentionService.updateByEdit(request));
     }

@@ -1,12 +1,15 @@
 package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
+import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
+import cn.net.yunlou.bole.common.handler.JsonbTypeListHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.util.List;
-import lombok.*;
 
 /**
  * FileName: EducationExperience Description: Created By MR. WANG Created At 2025/11/24 20:44
@@ -17,12 +20,14 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_education_experience")
+@TableName(value = "t_education_experience", autoResultMap = true, resultMap = "BaseResultMap")
 public class EducationExperience extends BaseEntity {
 
     private Long userId;
 
-    private String school;
+    private Long universityId;
+
+    private String university;
 
     private String major;
 
@@ -38,8 +43,9 @@ public class EducationExperience extends BaseEntity {
 
     private String description;
 
-    @TableField(typeHandler = com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler.class)
+    @TableField(typeHandler = JsonbTypeHandler.class)
     private List<String> achievements;
 
     private Integer sort;
+
 }

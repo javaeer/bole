@@ -6,12 +6,12 @@
         <view class="search-input-wrapper">
           <text class="search-icon">🔍</text>
           <input
-            v-model="searchKeyword"
+            v-model="searchKeywords"
             class="search-input"
             placeholder="搜索申请人或简历名称"
             placeholder-class="search-placeholder"
           />
-          <view v-if="searchKeyword" class="search-clear" @click="clearSearch">
+          <view v-if="searchKeywords" class="search-clear" @click="clearSearch">
             ✕
           </view>
         </view>
@@ -138,7 +138,7 @@ interface StatusTab {
 }
 
 // ============ 响应式数据 ============
-const searchKeyword = ref('')
+const searchKeywords = ref('')
 const activeStatus = ref('all')
 const applicationList: Ref<ApplicationItem[]> = ref([])
 const loading = ref(false)
@@ -165,8 +165,8 @@ const filteredList = computed(() => {
   }
 
   // 按关键词搜索
-  if (searchKeyword.value) {
-    const keyword = searchKeyword.value.toLowerCase()
+  if (searchKeywords.value) {
+    const keyword = searchKeywords.value.toLowerCase()
     list = list.filter(item =>
       item.name.toLowerCase().includes(keyword) ||
       item.resumeTitle.toLowerCase().includes(keyword) ||
@@ -253,7 +253,7 @@ const updateTabCounts = () => {
 
 // 清空搜索
 const clearSearch = () => {
-  searchKeyword.value = ''
+  searchKeywords.value = ''
 }
 
 // 切换状态
@@ -390,13 +390,13 @@ const getStatusText = (status: ApplicationItem['status']) => {
 // 页面卸载时清理
 onUnmounted(() => {
   // 清理数据
-  searchKeyword.value = ''
+  searchKeywords.value = ''
   applicationList.value = []
 })
 
 // ============ 暴露给模板使用 ============
 defineExpose({
-  searchKeyword,
+  searchKeywords,
   activeStatus,
   applicationList: filteredList,
   loading,

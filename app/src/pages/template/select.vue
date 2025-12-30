@@ -219,7 +219,7 @@ onMounted(async () => {
 
 .template-select-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, $primary-lighter 0%, $background-color-white 100%);
+  background: linear-gradient(135deg, $primary-color-lighter 0%, $background-color-white 100%);
   padding-bottom: 160rpx;
 }
 
@@ -303,7 +303,7 @@ onMounted(async () => {
 
   &-active {
     border-color: $primary-color;
-    background: linear-gradient(135deg, $primary-lighter 0%, $uni-bg-color 100%);
+    background: linear-gradient(135deg, $primary-color-lighter 0%, $uni-bg-color 100%);
   }
 }
 
@@ -464,7 +464,7 @@ onMounted(async () => {
   transition: all $transition-fast;
 
   &:active {
-    background: $primary-light;
+    background: $primary-color-light;
     opacity: 0.8;
   }
 }

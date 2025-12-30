@@ -29,29 +29,26 @@ public class EducationExperienceController {
 
     @PostMapping("add")
     @Operation(summary = "新增教育经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> add(@RequestBody EducationExperienceCreate request) {
         return BusinessResponse.success(educationExperienceService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除教育经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(educationExperienceService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑教育经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> edit(@RequestBody @Valid EducationExperienceEdit request) {
         return BusinessResponse.success(educationExperienceService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
     @Operation(summary = "获取教育经历信息")
-    public BusinessResponse<EducationExperience> get(@PathVariable(value = "id") Long id) {
-        return BusinessResponse.success(educationExperienceService.getById(id));
+    public BusinessResponse<EducationExperienceView> get(@PathVariable(value = "id") Long id) {
+        return BusinessResponse.success(educationExperienceService.getViewById(id));
     }
 
     @PostMapping("page")

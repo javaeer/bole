@@ -1,796 +1,1095 @@
 <template>
-  <view class="company-detail-container">
-    <!-- 公司头部信息 -->
-    <view class="company-header">
-      <view class="company-basic-info">
-        <image :src="companyInfo.logo" class="company-logo" mode="aspectFit" />
-        <view class="company-text-info">
-          <view class="company-name-rating">
-            <text class="company-name">{{ companyInfo.name }}</text>
-            <view class="rating-stars">
-              <text v-for="n in 5" :key="n" class="star-icon"
-                    :class="{ 'active': n <= Math.floor(companyInfo.rating) }">
-                ★
-              </text>
-              <text class="rating-score">{{ companyInfo.rating.toFixed(1) }}</text>
+  <view class="page-container">
+    <!-- 头部信息 -->
+    <view class="detail-header">
+      <view class="header-title">
+        {{ companyDetail?.name || "公司详情" }}
+      </view>
+      <view class="header-actions">
+        <view
+          v-if="!isEditMode"
+          class="header-btn"
+          @click="enterEditMode"
+        >
+          编辑
+        </view>
+        <view
+          v-else
+          class="header-btn"
+          @click="cancelEdit"
+        >
+          取消
+        </view>
+      </view>
+    </view>
+
+    <!-- 主要内容区域 -->
+    <scroll-view
+      class="content-container"
+      scroll-y
+      @scrolltolower="loadMoreComments"
+    >
+      <!-- 公司基本信息 -->
+      <view class="section-container">
+        <view class="section-title">基本信息</view>
+
+        <template v-if="!isEditMode">
+          <!-- 查看模式 -->
+          <view class="info-group">
+            <view class="info-item">
+              <view class="info-label">公司名称</view>
+              <view class="info-value">{{ companyDetail?.name }}</view>
             </view>
-          </view>
-          <text class="company-industry">{{ companyInfo.industry }} · {{ companyInfo.scale }}</text>
-          <view class="company-tags">
-            <text v-for="tag in companyInfo.tags" :key="tag" class="tag">{{ tag }}</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 关键指标 -->
-      <view class="key-indicators">
-        <view class="indicator-item">
-          <text class="indicator-value">{{ companyInfo.evaluationCount }}</text>
-          <text class="indicator-label">评价</text>
-        </view>
-        <view class="divider"></view>
-        <view class="indicator-item">
-          <text class="indicator-value">{{ companyInfo.riskLevel }}</text>
-          <text class="indicator-label">风险等级</text>
-        </view>
-        <view class="divider"></view>
-        <view class="indicator-item">
-          <text class="indicator-value">{{ companyInfo.interviewRate }}%</text>
-          <text class="indicator-label">面试邀约率</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 风险提示条 -->
-    <view class="risk-alert" :class="'risk-level-' + companyInfo.riskLevel">
-      <text class="risk-icon">⚠️</text>
-      <text class="risk-text">{{ riskAlertText }}</text>
-    </view>
-
-    <!-- 公司简介 -->
-    <view class="section company-intro">
-      <text class="section-title">公司简介</text>
-      <text class="intro-content">{{ companyInfo.introduction }}</text>
-      <view class="company-details">
-        <view class="detail-item">
-          <text class="detail-label">成立时间</text>
-          <text class="detail-value">{{ companyInfo.foundedDate }}</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">所在地</text>
-          <text class="detail-value">{{ companyInfo.location }}</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">融资阶段</text>
-          <text class="detail-value">{{ companyInfo.financingStage }}</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 风险评估详情 -->
-    <view class="section risk-assessment">
-      <view class="section-header">
-        <text class="section-title">风险评估</text>
-        <text class="risk-score">{{ companyInfo.riskScore }}/100</text>
-      </view>
-
-      <view class="risk-details">
-        <view class="risk-item" v-for="(item, index) in riskAssessment" :key="index">
-          <view class="risk-item-header">
-            <text class="risk-item-name">{{ item.name }}</text>
-            <text class="risk-item-score">{{ item.score }}/{{ item.maxScore }}</text>
-          </view>
-          <view class="score-bar">
-            <view class="score-progress" :style="{ width: (item.score / item.maxScore * 100) + '%' }"></view>
-          </view>
-          <text v-if="item.comment" class="risk-comment">{{ item.comment }}</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 评价列表 -->
-    <view class="section evaluations-section">
-      <view class="section-header">
-        <text class="section-title">用户评价</text>
-        <view class="rating-summary">
-          <text class="average-rating">{{ companyInfo.rating.toFixed(1) }}</text>
-          <text class="total-evaluations">({{ companyInfo.evaluationCount }}条)</text>
-        </view>
-      </view>
-
-      <!-- 评价筛选 -->
-      <scroll-view class="evaluation-filters" scroll-x>
-        <view class="filter-tags">
-          <text class="filter-tag active">全部</text>
-          <text class="filter-tag" v-for="filter in evaluationFilters" :key="filter">{{ filter }}</text>
-        </view>
-      </scroll-view>
-
-      <!-- 评价列表 -->
-      <view class="evaluations-list">
-        <view class="evaluation-item" v-for="(evaluation, index) in evaluations" :key="index">
-          <view class="evaluation-header">
-            <image :src="evaluation.avatar" class="user-avatar" mode="aspectFit" />
-            <view class="user-info">
-              <text class="user-name">{{ evaluation.userName }}</text>
-              <view class="evaluation-meta">
-                <text class="position">{{ evaluation.position }}</text>
-                <text class="time">{{ evaluation.time }}</text>
+            <view class="info-item">
+              <view class="info-label">负责人</view>
+              <view class="info-value">{{ companyDetail?.holder }}</view>
+            </view>
+            <view class="info-item">
+              <view class="info-label">所在地</view>
+              <view class="info-value">{{ companyDetail?.location }}</view>
+            </view>
+            <view class="info-item">
+              <view class="info-label">邮箱</view>
+              <view class="info-value">{{ companyDetail?.email }}</view>
+            </view>
+            <view class="info-item">
+              <view class="info-label">官网</view>
+              <view
+                class="info-value link"
+                @click="openLink(companyDetail?.website || '')"
+              >
+                {{ companyDetail?.website }}
               </view>
             </view>
-            <view class="evaluation-rating">
-              <text class="rating-number">{{ evaluation.rating }}</text>
-              <text class="star-icon">★</text>
+          </view>
+        </template>
+
+        <template v-else>
+          <!-- 编辑模式 -->
+          <view class="form-group">
+            <view class="form-item">
+              <view class="form-label">公司名称</view>
+              <input
+                v-model="editForm.name"
+                class="form-input"
+                placeholder="请输入公司名称"
+              />
+            </view>
+            <view class="form-item">
+              <view class="form-label">负责人</view>
+              <input
+                v-model="editForm.holder"
+                class="form-input"
+                placeholder="请输入负责人"
+              />
+            </view>
+            <view class="form-item">
+              <view class="form-label">所在地</view>
+              <input
+                v-model="editForm.location"
+                class="form-input"
+                placeholder="请输入所在地"
+              />
+            </view>
+            <view class="form-item">
+              <view class="form-label">邮箱</view>
+              <input
+                v-model="editForm.email"
+                class="form-input"
+                placeholder="请输入邮箱"
+                type="email"
+              />
+            </view>
+            <view class="form-item">
+              <view class="form-label">官网</view>
+              <input
+                v-model="editForm.website"
+                class="form-input"
+                placeholder="请输入官网地址"
+              />
+            </view>
+            <view class="form-item">
+              <view class="form-label">公司简介</view>
+              <textarea
+                v-model="editForm.bio"
+                class="form-textarea"
+                placeholder="请输入公司简介"
+                maxlength="200"
+              />
+              <view class="textarea-count">
+                {{ editForm.bio?.length || 0 }}/200
+              </view>
             </view>
           </view>
+        </template>
+      </view>
 
-          <text class="evaluation-content">{{ evaluation.content }}</text>
-
-          <!-- 评价标签 -->
-          <view class="evaluation-tags" v-if="evaluation.tags && evaluation.tags.length">
-            <text class="tag" v-for="tag in evaluation.tags" :key="tag">{{ tag }}</text>
+      <!-- 社交信息 -->
+      <view class="section-container">
+        <view class="section-title">社交信息</view>
+        <view class="social-links">
+          <view
+            v-if="companyDetail?.github"
+            class="social-item"
+            @click="openLink(`https://github.com/${companyDetail.github}`)"
+          >
+            <uni-icons type="github" size="24" />
+            <text>GitHub</text>
           </view>
-
-          <!-- 评价互动 -->
-          <view class="evaluation-actions">
-            <view class="action-item">
-              <text class="action-icon">👍</text>
-              <text class="action-count">{{ evaluation.likes }}</text>
-            </view>
-            <view class="action-item">
-              <text class="action-icon">💬</text>
-              <text class="action-count">{{ evaluation.comments }}</text>
-            </view>
-            <view class="action-item">
-              <text class="action-icon">🔗</text>
-              <text class="action-text">分享</text>
-            </view>
+          <view
+            v-if="companyDetail?.wechat"
+            class="social-item"
+          >
+            <uni-icons type="weixin" size="24" />
+            <text>微信</text>
           </view>
         </view>
       </view>
 
-      <!-- 加载更多 -->
-      <view class="load-more" @click="loadMoreEvaluations">
-        <text class="load-more-text" v-if="!loadingMore && hasMore">查看更多评价</text>
-        <view v-if="loadingMore" class="loading-spinner"></view>
-        <text v-if="!hasMore" class="no-more-text">没有更多评价了</text>
+      <!-- 统计数据 -->
+      <view class="section-container">
+        <view class="section-title">统计数据</view>
+        <view class="stats-grid">
+          <view class="stat-card">
+            <view class="stat-number">{{ companyDetail?.followers || 0 }}</view>
+            <view class="stat-label">关注者</view>
+          </view>
+          <view class="stat-card">
+            <view class="stat-number">{{ companyDetail?.fans || 0 }}</view>
+            <view class="stat-label">粉丝</view>
+          </view>
+          <view class="stat-card">
+            <view class="stat-number">{{ companyDetail?.likes || 0 }}</view>
+            <view class="stat-label">点赞</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 时间信息 -->
+      <view class="section-container">
+        <view class="section-title">时间信息</view>
+        <view class="time-info">
+          <view class="time-item">
+            <uni-icons type="calendar" size="18" color="$text-secondary" />
+            <text>创建时间：{{ formatDateTime(companyDetail?.createdAt || "") }}</text>
+          </view>
+          <view class="time-item">
+            <uni-icons type="calendar" size="18" color="$text-secondary" />
+            <text>更新时间：{{ formatDateTime(companyDetail?.updatedAt || "") }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 评论区域 -->
+      <view class="section-container">
+        <view class="section-header">
+          <view class="section-title">评价 ({{ commentTotal }})</view>
+          <view
+            class="add-comment-btn"
+            @click="showCommentInput = true"
+          >
+            <uni-icons type="plus" size="20" />
+            <text>添加评价</text>
+          </view>
+        </view>
+
+        <!-- 评论输入框 -->
+        <view v-if="showCommentInput" class="comment-input-container">
+          <textarea
+            v-model="newComment"
+            class="comment-textarea"
+            placeholder="写下您的评价..."
+            maxlength="500"
+            auto-height
+          />
+          <view class="comment-actions">
+            <view class="textarea-count">
+              {{ newComment.length }}/500
+            </view>
+            <view class="action-buttons">
+              <view
+                class="action-btn cancel"
+                @click="showCommentInput = false; newComment = ''"
+              >
+                取消
+              </view>
+              <view
+                class="action-btn submit"
+                :class="{ disabled: !newComment.trim() }"
+                @click="submitComment"
+              >
+                发布
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 评论列表 -->
+        <view v-if="commentList.length > 0" class="comment-list">
+          <view
+            v-for="comment in commentList"
+            :key="comment.id"
+            class="comment-item"
+          >
+            <view class="comment-header">
+              <view class="comment-user">
+                <view class="user-avatar">
+                  {{ comment.userName?.charAt(0) || "U" }}
+                </view>
+                <view class="user-info">
+                  <view class="user-name">{{ comment.userName }}</view>
+                  <view class="comment-time">{{ formatDateTime(comment.createdAt) }}</view>
+                </view>
+              </view>
+              <view
+                v-if="comment.canDelete"
+                class="comment-delete"
+                @click="deleteComment(comment.id)"
+              >
+                <uni-icons type="trash" size="18" color="$text-secondary" />
+              </view>
+            </view>
+            <view class="comment-content">
+              {{ comment.content }}
+            </view>
+          </view>
+
+          <!-- 加载更多 -->
+          <view v-if="!commentFinished" class="load-more">
+            <view v-if="commentLoading" class="loading-text">
+              <uni-icons type="spinner-cycle" size="20" />
+              <text>加载中...</text>
+            </view>
+            <view v-else class="load-more-btn" @click="loadMoreComments">
+              加载更多
+            </view>
+          </view>
+          <view v-else-if="commentList.length > 0" class="no-more">
+            <text>没有更多了</text>
+          </view>
+        </view>
+
+        <!-- 空评论 -->
+        <view v-else class="empty-comments">
+          <uni-icons type="chat" size="60" color="$empty-text-color" />
+          <text class="empty-text">暂无评价</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 底部操作栏 -->
+    <view v-if="!isEditMode" class="action-bar">
+      <view
+        class="follow-btn"
+        :class="{ followed: companyDetail?.followed }"
+        @click="toggleFollow"
+      >
+        <uni-icons
+          :type="companyDetail?.followed ? 'heart-filled' : 'heart'"
+          size="20"
+          :color="companyDetail?.followed ? 'white' : '$primary-color'"
+        />
+        <text>{{ companyDetail?.followed ? "已关注" : "关注" }}</text>
+      </view>
+      <view class="action-divider"></view>
+      <view class="like-btn">
+        <uni-icons type="hand-up" size="20" color="$warning-color" />
+        <text>点赞</text>
       </view>
     </view>
 
-    <!-- 底部操作栏 -->
-    <view class="bottom-actions">
-      <button class="btn-secondary" @click="collectCompany">
-        <text class="action-icon">{{ isCollected ? '★' : '☆' }}</text>
-        <text class="action-text">{{ isCollected ? '已收藏' : '收藏' }}</text>
-      </button>
-      <button class="btn-primary" @click="writeEvaluation">
-        <text class="action-icon">✍️</text>
-        <text class="action-text">写评价</text>
-      </button>
+    <!-- 编辑模式保存按钮 -->
+    <view v-else class="edit-actions">
+      <view class="save-btn" @click="saveEdit">
+        保存修改
+      </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { reactive, ref } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
+import CompanyAPI from "@/api/company";
+import type { CompanyResult } from "@/types/company";
+import { CompanyCommentQuery, CompanyCommentResult } from "@/types/company-comment-result";
+import CompanyCommentAPI from "@/api/company-comment";
 
-// 公司信息
-const companyInfo = reactive({
-  id: 1,
-  name: '深圳市创新科技有限公司',
-  logo: '/static/company-logo.png',
-  rating: 4.3,
-  industry: '互联网/科技',
-  scale: '1000-9999人',
-  tags: ['上市公司', '弹性工作', '五险一金', '年终奖'],
-  evaluationCount: 1289,
-  riskLevel: 2, // 1-5级，1最低，5最高
-  riskScore: 78,
-  interviewRate: 85,
-  introduction: '我们是一家专注于人工智能技术研发的高科技企业，致力于通过技术创新推动行业发展。公司成立于2015年，已获得多轮融资，拥有完善的员工福利体系和职业发展通道。',
-  foundedDate: '2015-03-15',
-  location: '深圳·南山区',
-  financingStage: 'C轮'
-})
+// 页面参数
+const pageParams = ref<{ id: number }>();
 
-// 风险评估数据
-const riskAssessment = reactive([
-  { name: '法律风险', score: 8, maxScore: 10, comment: '无重大法律纠纷记录' },
-  { name: '财务风险', score: 7, maxScore: 10, comment: '融资状态良好，现金流稳定' },
-  { name: '经营风险', score: 9, maxScore: 10, comment: '业务持续增长，市场占有率高' },
-  { name: '声誉风险', score: 6, maxScore: 10, comment: '近期有少量负面评价' },
-  { name: '就业风险', score: 8, maxScore: 10, comment: '员工离职率低于行业平均' }
-])
+// 公司详情数据
+const companyDetail = ref<CompanyResult | null>(null);
 
-// 评价数据
-const evaluations = ref([
-  {
-    id: 1,
-    userName: '张明',
-    avatar: '/static/avatar1.png',
-    position: '前端工程师',
-    time: '2天前',
-    rating: 4.5,
-    content: '公司技术氛围很好，同事都很专业，福利待遇也不错。就是加班稍微有点多，不过也能理解，毕竟互联网行业。',
-    tags: ['技术氛围好', '薪资满意', '加班较多'],
-    likes: 24,
-    comments: 8
-  },
-  {
-    id: 2,
-    userName: '李晓红',
-    avatar: '/static/avatar2.png',
-    position: '产品经理',
-    time: '1周前',
-    rating: 5,
-    content: '非常棒的公司文化，领导很开明，给员工充分的发挥空间。晋升机制透明，只要有能力就能得到认可。',
-    tags: ['公司文化好', '晋升透明', '领导开明'],
-    likes: 56,
-    comments: 12
-  },
-  {
-    id: 3,
-    userName: '王刚',
-    avatar: '/static/avatar3.png',
-    position: 'Java开发',
-    time: '2周前',
-    rating: 3,
-    content: '项目压力比较大，经常需要加班。不过能学到很多东西，技术成长很快。希望公司能多关注员工生活平衡。',
-    tags: ['技术成长快', '项目压力大', '加班文化'],
-    likes: 18,
-    comments: 5
+// 编辑模式
+const isEditMode = ref(false);
+const editForm = reactive<Partial<CompanyResult>>({});
+
+// 评论分页相关
+const commentList = ref<CompanyCommentResult[]>([]);
+const newComment = ref("");
+const showCommentInput = ref(false);
+const commentPage = ref(1);
+const commentSize = ref(10);
+const commentTotal = ref(0);
+const commentLoading = ref(false);
+const commentFinished = ref(false);
+
+// 加载详情
+const loadCompanyDetail = async (id: number) => {
+  try {
+    const data = await CompanyAPI.getById(id);
+    companyDetail.value = data;
+    Object.assign(editForm, data);
+  } catch (error) {
+    uni.showToast({
+      title: "加载失败",
+      icon: "error",
+    });
   }
-])
+};
 
-// 筛选标签
-const evaluationFilters = ref(['好评', '中评', '差评', '薪资相关', '面试体验', '工作环境'])
+// 加载评论
+const loadComments = async (companyId: number, reset: boolean = true) => {
+  if (commentLoading.value) return;
 
-// 加载状态
-const loadingMore = ref(false)
-const hasMore = ref(true)
-const isCollected = ref(false)
+  if (reset) {
+    commentPage.value = 1;
+    commentFinished.value = false;
+    commentList.value = [];
+  }
 
-// 计算风险提示文本
-const riskAlertText = computed(() => {
-  const level = companyInfo.riskLevel
-  const texts = [
-    '风险极低，可放心求职',
-    '风险较低，建议重点关注',
-    '风险中等，建议仔细评估',
-    '风险较高，建议谨慎考虑',
-    '风险极高，建议避开'
-  ]
-  return texts[level - 1] || '风险信息未知'
-})
+  commentLoading.value = true;
 
-// 加载更多评价
-const loadMoreEvaluations = () => {
-  if (loadingMore.value || !hasMore.value) return
+  try {
+    const pageQuery = {
+      page: commentPage.value,
+      size: commentSize.value,
+    };
 
-  loadingMore.value = true
+    const query: CompanyCommentQuery = {
+      companyId: companyId,
+    };
 
-  // 模拟加载更多数据
-  setTimeout(() => {
-    const newEvaluations = Array.from({ length: 3 }, (_, i) => ({
-      id: evaluations.value.length + i + 1,
-      userName: `用户${evaluations.value.length + i + 1}`,
-      avatar: `/static/avatar${(i % 3) + 1}.png`,
-      position: ['前端工程师', '产品经理', 'Java开发'][i % 3],
-      time: `${i + 1}周前`,
-      rating: [4.5, 5, 3][i % 3],
-      content: '这是一条模拟的评论内容，用于测试加载更多功能。',
-      tags: ['标签1', '标签2'],
-      likes: Math.floor(Math.random() * 50),
-      comments: Math.floor(Math.random() * 20)
-    }))
+    const { records, total } = await CompanyCommentAPI.page(pageQuery, query);
 
-    evaluations.value.push(...newEvaluations)
-    loadingMore.value = false
+    commentTotal.value = total;
 
-    // 模拟没有更多数据的情况
-    if (evaluations.value.length >= 15) {
-      hasMore.value = false
+    if (reset) {
+      commentList.value = records;
+    } else {
+      commentList.value = [...commentList.value, ...records];
     }
-  }, 1000)
-}
 
-// 收藏公司
-const collectCompany = () => {
-  isCollected.value = !isCollected.value
-  uni.showToast({
-    title: isCollected.value ? '收藏成功' : '已取消收藏',
-    icon: 'success'
-  })
-}
+    // 判断是否还有更多数据
+    if (records.length < commentSize.value || commentList.value.length >= total) {
+      commentFinished.value = true;
+    } else {
+      commentPage.value++;
+    }
+  } catch (error) {
+    console.error("加载评论失败:", error);
+    uni.showToast({
+      title: "加载评论失败",
+      icon: "error",
+    });
+  } finally {
+    commentLoading.value = false;
+  }
+};
 
-// 写评价
-const writeEvaluation = () => {
+// 加载更多评论
+const loadMoreComments = () => {
+  if (!commentFinished.value && !commentLoading.value && pageParams.value?.id) {
+    loadComments(pageParams.value.id, false);
+  }
+};
+
+// 进入编辑模式
+const enterEditMode = () => {
+  isEditMode.value = true;
+  uni.pageScrollTo({
+    scrollTop: 0,
+    duration: 300,
+  });
+};
+
+// 保存编辑
+const saveEdit = async () => {
+  if (!companyDetail.value) return;
+
+  try {
+    const updated = await CompanyAPI.update(
+      companyDetail.value.id,
+      editForm,
+    );
+
+    companyDetail.value = updated;
+    isEditMode.value = false;
+
+    uni.showToast({
+      title: "保存成功",
+      icon: "success",
+    });
+  } catch (error) {
+    uni.showToast({
+      title: "保存失败",
+      icon: "error",
+    });
+  }
+};
+
+// 取消编辑
+const cancelEdit = () => {
+  isEditMode.value = false;
+  if (companyDetail.value) {
+    Object.assign(editForm, companyDetail.value);
+  }
+};
+
+// 关注/取消关注 - 使用 followed 字段
+const toggleFollow = async () => {
+  if (!companyDetail.value) return;
+
+  try {
+    if (companyDetail.value.followed) {
+      await CompanyAPI.unfollow(companyDetail.value.id);
+      companyDetail.value.followed = false;
+      companyDetail.value.followers = Math.max(0, (companyDetail.value.followers || 1) - 1);
+      uni.showToast({
+        title: "已取消关注",
+        icon: "success",
+      });
+    } else {
+      await CompanyAPI.follow(companyDetail.value.id);
+      companyDetail.value.followed = true;
+      companyDetail.value.followers = (companyDetail.value.followers || 0) + 1;
+      uni.showToast({
+        title: "关注成功",
+        icon: "success",
+      });
+    }
+  } catch (error) {
+    uni.showToast({
+      title: "操作失败",
+      icon: "error",
+    });
+  }
+};
+
+// 提交评论
+const submitComment = async () => {
+  if (!newComment.value.trim() || !companyDetail.value) return;
+
+  try {
+    // 显示加载提示
+    uni.showLoading({
+      title: "发布中...",
+      mask: true,
+    });
+
+    // 假设有一个添加评论的API
+    // 这里需要根据实际的API进行调整
+    const comment = await CompanyCommentAPI.add({
+      companyId: companyDetail.value.id,
+      content: newComment.value.trim(),
+    });
+
+    if (comment) {
+      // 清空输入框并关闭输入区域
+      newComment.value = "";
+      showCommentInput.value = false;
+
+      // 直接刷新评论列表（从第一页重新加载）
+      await loadComments(companyDetail.value.id, true);
+
+      uni.hideLoading();
+      uni.showToast({
+        title: "评论成功",
+        icon: "success",
+      });
+    }
+  } catch (error) {
+    uni.hideLoading();
+    uni.showToast({
+      title: "评论失败",
+      icon: "error",
+    });
+  }
+};
+
+// 删除评论
+const deleteComment = async (commentId: number) => {
+  try {
+    uni.showLoading({
+      title: "删除中...",
+      mask: true,
+    });
+
+    // 假设有一个删除评论的API
+    await CompanyCommentAPI.delete(commentId);
+
+    // 重新加载评论列表
+    if (companyDetail.value?.id) {
+      await loadComments(companyDetail.value.id, true);
+    }
+
+    uni.hideLoading();
+    uni.showToast({
+      title: "删除成功",
+      icon: "success",
+    });
+  } catch (error) {
+    uni.hideLoading();
+    uni.showToast({
+      title: "删除失败",
+      icon: "error",
+    });
+  }
+};
+
+// 格式化时间
+const formatDateTime = (dateStr: string) => {
+  if (!dateStr) return "";
+  return dateStr.replace(" ", " · ");
+};
+
+// 打开链接（使用 Webview）
+const openLink = (url: string) => {
+  if (!url) {
+    uni.showToast({
+      title: "链接无效",
+      icon: "error",
+    });
+    return;
+  }
+
+  // 确保 URL 有协议头
+  let targetUrl = url;
+  if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
+    targetUrl = "https://" + targetUrl;
+  }
+
+  // 导航到 Webview 页面
   uni.navigateTo({
-    url: `/pages/evaluation/write?companyId=${companyInfo.id}`
-  })
-}
+    url: `/pages/webview/webview?url=${encodeURIComponent(targetUrl)}`,
+  });
+};
 
-onMounted(() => {
-  // 模拟初始化数据加载
-  console.log('公司详情页面加载完成')
-})
+// 页面加载
+onLoad((options) => {
+  const id = Number(options.id);
+  if (id) {
+    pageParams.value = { id };
+    loadCompanyDetail(id);
+    loadComments(id);
+  }
+});
 </script>
 
-<style scoped lang="scss">
-.company-detail-container {
-  padding-bottom: 120rpx;
-}
-
-/* 公司头部 */
-.company-header {
-  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-  padding: $padding-base * 2 $padding-base $padding-base;
-  color: $background-color-white;
-}
-
-.company-basic-info {
-  display: flex;
-  align-items: center;
-  margin-bottom: $margin-base;
-}
-
-.company-logo {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: $border-radius;
-  border: 4rpx solid rgba($background-color-white, 0.3);
+<style lang="scss">
+.detail-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: $navigation-bar-height;
   background: $background-color-white;
-  margin-right: $margin-base;
-}
-
-.company-text-info {
-  flex: 1;
-}
-
-.company-name-rating {
   display: flex;
   align-items: center;
-  margin-bottom: $margin-mini;
-}
+  padding: 0 $padding-base;
+  border-bottom: 1rpx solid $border-color-lighter;
+  z-index: $z-index-base;
 
-.company-name {
-  font-size: $font-size-extra-large;
-  font-weight: $font-weight-bold;
-  margin-right: $margin-small;
-}
-
-.rating-stars {
-  display: flex;
-  align-items: center;
-}
-
-.star-icon {
-  color: rgba($background-color-white, 0.4);
-  font-size: $font-size-medium;
-  margin-right: 4rpx;
-
-  &.active {
-    color: #FFD700;
+  .header-back {
+    width: 60rpx;
+    @extend .flex-center;
   }
-}
 
-.rating-score {
-  margin-left: $margin-mini;
-  font-size: $font-size-small;
-}
-
-.company-industry {
-  display: block;
-  font-size: $font-size-base;
-  opacity: 0.9;
-  margin-bottom: $margin-mini;
-}
-
-.company-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $margin-mini;
-  margin-top: $margin-small;
-}
-
-.tag {
-  background: rgba($background-color-white, 0.2);
-  padding: 6rpx $margin-mini;
-  border-radius: $border-radius-small;
-  font-size: $font-size-extra-small;
-}
-
-/* 关键指标 */
-.key-indicators {
-  display: flex;
-  justify-content: space-around;
-  background: rgba($background-color-white, 0.1);
-  border-radius: $border-radius;
-  padding: $padding-base 0;
-  margin-top: $margin-base;
-}
-
-.indicator-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-
-.indicator-value {
-  font-size: $font-size-extra-large;
-  font-weight: $font-weight-bold;
-  margin-bottom: 5rpx;
-}
-
-.indicator-label {
-  font-size: $font-size-small;
-  opacity: 0.8;
-}
-
-.divider {
-  width: 1rpx;
-  background: rgba($background-color-white, 0.3);
-}
-
-/* 风险提示 */
-.risk-alert {
-  margin: $margin-base;
-  padding: $padding-small $padding-base;
-  border-radius: $border-radius;
-  display: flex;
-  align-items: center;
-  background: $primary-light;
-
-  &.risk-level-1 { background: #e8f5e9; }
-  &.risk-level-2 { background: $primary-light; }
-  &.risk-level-3 { background: $warning-light; }
-  &.risk-level-4 { background: #fff3e0; }
-  &.risk-level-5 { background: $danger-light; }
-}
-
-.risk-icon {
-  margin-right: $margin-mini;
-  font-size: $font-size-medium;
-}
-
-.risk-text {
-  flex: 1;
-  font-size: $font-size-base;
-  color: $text-regular;
-}
-
-/* 通用区块样式 */
-.section {
-  background: $background-color-white;
-  margin: $margin-base;
-  border-radius: $border-radius;
-  padding: $padding-base;
-  box-shadow: $box-shadow;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $margin-base;
-}
-
-.section-title {
-  font-size: $font-size-medium;
-  font-weight: $font-weight-bold;
-  color: $text-primary;
-}
-
-/* 公司简介 */
-.intro-content {
-  display: block;
-  font-size: $font-size-base;
-  color: $text-regular;
-  line-height: 1.6;
-  margin-bottom: $margin-base;
-}
-
-.company-details {
-  border-top: 1rpx solid $border-color-lighter;
-  padding-top: $padding-small;
-}
-
-.detail-item {
-  display: flex;
-  justify-content: space-between;
-  padding: $padding-mini 0;
-  border-bottom: 1rpx solid $border-color-extra-light;
-
-  &:last-child {
-    border-bottom: none;
+  .header-title {
+    flex: 1;
+    text-align: center;
+    font-size: $font-size-medium;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    @extend .text-ellipsis;
+    margin: 0 20rpx;
   }
-}
 
-.detail-label {
-  font-size: $font-size-base;
-  color: $text-secondary;
-}
+  .header-actions {
+    width: 60rpx;
+    @extend .flex-center;
 
-.detail-value {
-  font-size: $font-size-base;
-  color: $text-primary;
-  font-weight: $font-weight-medium;
-}
-
-/* 风险评估 */
-.risk-score {
-  font-size: $font-size-large;
-  font-weight: $font-weight-bold;
-  color: $primary-color;
-}
-
-.risk-details {
-  .risk-item {
-    margin-bottom: $margin-base;
-
-    &:last-child {
-      margin-bottom: 0;
+    .header-btn {
+      color: $primary-color;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
     }
   }
 }
 
-.risk-item-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: $margin-mini;
-}
+.content-container {
+  height: calc(100vh - #{$navigation-bar-height} - 120rpx);
+  padding: $padding-base;
+  padding-top: calc(#{$navigation-bar-height} + #{$padding-base});
 
-.risk-item-name {
-  font-size: $font-size-base;
-  color: $text-primary;
-}
+  .section-container {
+    background: $background-color-white;
+    border-radius: $border-radius;
+    padding: $padding-base;
+    margin-bottom: $margin-base;
+    box-shadow: $box-shadow-light;
 
-.risk-item-score {
-  font-size: $font-size-small;
-  color: $text-secondary;
-}
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $margin-base;
 
-.score-bar {
-  height: 8rpx;
-  background: $border-color-lighter;
-  border-radius: 4rpx;
-  overflow: hidden;
-  margin-bottom: $margin-mini;
-}
+      .add-comment-btn {
+        display: flex;
+        align-items: center;
+        color: $primary-color;
+        font-size: $font-size-small;
 
-.score-progress {
-  height: 100%;
-  background: $primary-color;
-  border-radius: 4rpx;
-  transition: width $transition-duration;
-}
+        .uni-icons {
+          margin-right: 4rpx;
+        }
+      }
+    }
 
-.risk-comment {
-  font-size: $font-size-small;
-  color: $text-secondary;
-}
-
-/* 评价部分 */
-.rating-summary {
-  display: flex;
-  align-items: baseline;
-}
-
-.average-rating {
-  font-size: $font-size-large;
-  font-weight: $font-weight-bold;
-  color: $primary-color;
-}
-
-.total-evaluations {
-  font-size: $font-size-small;
-  color: $text-secondary;
-  margin-left: 4rpx;
-}
-
-.evaluation-filters {
-  margin-bottom: $margin-base;
-  white-space: nowrap;
-}
-
-.filter-tags {
-  display: flex;
-  gap: $margin-small;
-}
-
-.filter-tag {
-  display: inline-block;
-  padding: $padding-mini $padding-small;
-  background: $background-color;
-  border-radius: $border-radius * 2;
-  font-size: $font-size-small;
-  color: $text-secondary;
-
-  &.active {
-    background: $primary-color;
-    color: $background-color-white;
+    .section-title {
+      font-size: $font-size-medium;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      margin-bottom: $margin-base;
+    }
   }
 }
 
-/* 评价列表 */
-.evaluations-list {
-  .evaluation-item {
-    border-bottom: 1rpx solid $border-color-extra-light;
-    padding-bottom: $padding-base;
-    margin-bottom: $margin-base;
+// 信息展示样式
+.info-group {
+  .info-item {
+    display: flex;
+    align-items: center;
+    padding: 16rpx 0;
+    border-bottom: 1rpx solid $border-color-lighter;
 
     &:last-child {
       border-bottom: none;
-      margin-bottom: 0;
+    }
+
+    .info-label {
+      width: 120rpx;
+      font-size: $font-size-base;
+      color: $text-secondary;
+    }
+
+    .info-value {
+      flex: 1;
+      font-size: $font-size-base;
+      color: $text-primary;
+
+      &.link {
+        color: $primary-color;
+        text-decoration: underline;
+        cursor: pointer;
+      }
     }
   }
 }
 
-.evaluation-header {
+// 表单样式
+.form-group {
+  .form-item {
+    margin-bottom: $margin-small;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      font-size: $font-size-base;
+      color: $text-primary;
+      margin-bottom: $margin-mini;
+      font-weight: $font-weight-medium;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 20rpx;
+      border: 2rpx solid $border-color-lighter;
+      border-radius: $border-radius;
+      font-size: $font-size-base;
+      color: $text-primary;
+      background: $background-color;
+      transition: all $transition-fast;
+
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: $input-focus-shadow;
+      }
+    }
+
+    .form-textarea {
+      width: 100%;
+      min-height: 120rpx;
+      padding: 20rpx;
+      border: 2rpx solid $border-color-lighter;
+      border-radius: $border-radius;
+      font-size: $font-size-base;
+      color: $text-primary;
+      background: $background-color;
+    }
+  }
+}
+
+.form-textarea {
+  .textarea-count {
+    text-align: right;
+    font-size: $font-size-extra-small;
+    color: $text-secondary;
+    margin-top: 8rpx;
+  }
+}
+
+// 社交链接
+.social-links {
   display: flex;
-  align-items: center;
-  margin-bottom: $margin-small;
+  gap: 20rpx;
+
+  .social-item {
+    display: flex;
+    align-items: center;
+    padding: 12rpx 20rpx;
+    background: $background-color;
+    border-radius: $border-radius;
+    color: $text-primary;
+    font-size: $font-size-small;
+    cursor: pointer;
+
+    .uni-icons {
+      margin-right: 8rpx;
+    }
+  }
 }
 
-.user-avatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: $border-radius-round;
-  margin-right: $margin-small;
+// 统计卡片
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+
+  .stat-card {
+    @extend .flex-center;
+    flex-direction: column;
+    padding: 20rpx;
+    background: $background-color;
+    border-radius: $border-radius;
+
+    .stat-number {
+      font-size: $font-size-large;
+      font-weight: $font-weight-bold;
+      color: $primary-color;
+      margin-bottom: 4rpx;
+    }
+
+    .stat-label {
+      font-size: $font-size-extra-small;
+      color: $text-secondary;
+    }
+  }
 }
 
-.user-info {
-  flex: 1;
+// 时间信息
+.time-info {
+  .time-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12rpx;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .uni-icons {
+      margin-right: 12rpx;
+    }
+
+    text {
+      font-size: $font-size-small;
+      color: $text-regular;
+    }
+  }
 }
 
-.user-name {
-  display: block;
-  font-size: $font-size-base;
-  font-weight: $font-weight-medium;
-  color: $text-primary;
-  margin-bottom: 4rpx;
-}
-
-.evaluation-meta {
-  display: flex;
-  gap: $margin-mini;
-}
-
-.position,
-.time {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
-}
-
-.evaluation-rating {
-  display: flex;
-  align-items: center;
-  background: rgba($primary-color, 0.1);
-  padding: 6rpx $margin-mini;
-  border-radius: $border-radius-small;
-}
-
-.rating-number {
-  font-size: $font-size-small;
-  color: $primary-color;
-  font-weight: $font-weight-bold;
-  margin-right: 4rpx;
-}
-
-.evaluation-content {
-  display: block;
-  font-size: $font-size-base;
-  color: $text-regular;
-  line-height: 1.6;
-  margin-bottom: $margin-small;
-}
-
-.evaluation-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $margin-mini;
-  margin-bottom: $margin-small;
-}
-
-.evaluation-actions {
-  display: flex;
-  gap: $margin-base;
-}
-
-.action-item {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.action-icon {
-  margin-right: 6rpx;
-  font-size: $font-size-medium;
-}
-
-.action-count,
-.action-text {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
-}
-
-/* 加载更多 */
-.load-more {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100rpx;
-  margin-top: $margin-base;
-}
-
-.load-more-text {
-  font-size: $font-size-base;
-  color: $primary-color;
-  padding: $padding-mini $padding-small;
-  border: 1rpx solid $primary-color;
+// 评论区域
+.comment-input-container {
+  margin-bottom: $margin-base;
+  padding: $padding-base;
+  background: $background-color;
   border-radius: $border-radius;
+
+  .comment-textarea {
+    width: 100%;
+    min-height: 80rpx;
+    font-size: $font-size-base;
+    color: $text-primary;
+  }
+
+  .comment-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: $margin-mini;
+
+    .textarea-count {
+      font-size: $font-size-extra-small;
+      color: $text-secondary;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 20rpx;
+
+      .action-btn {
+        padding: 8rpx 20rpx;
+        border-radius: $border-radius-small;
+        font-size: $font-size-small;
+        font-weight: $font-weight-medium;
+
+        &.cancel {
+          background: $background-color-white;
+          color: $text-secondary;
+          border: 1rpx solid $border-color-light;
+        }
+
+        &.submit {
+          background: $primary-color;
+          color: white;
+
+          &.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
 }
 
-.no-more-text {
-  font-size: $font-size-small;
-  color: $text-secondary;
+.comment-list {
+  .comment-item {
+    padding: $padding-base 0;
+    border-bottom: 1rpx solid $border-color-lighter;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $margin-mini;
+
+      .comment-user {
+        display: flex;
+        align-items: center;
+
+        .user-avatar {
+          width: 60rpx;
+          height: 60rpx;
+          @extend .flex-center;
+          background: $primary-color;
+          color: white;
+          border-radius: $border-radius-round;
+          font-size: $font-size-medium;
+          font-weight: $font-weight-semibold;
+          margin-right: 12rpx;
+        }
+
+        .user-info {
+          .user-name {
+            font-size: $font-size-base;
+            font-weight: $font-weight-medium;
+            color: $text-primary;
+            margin-bottom: 2rpx;
+          }
+
+          .comment-time {
+            font-size: $font-size-extra-small;
+            color: $text-secondary;
+          }
+        }
+      }
+
+      .comment-delete {
+        @extend .flex-center;
+        width: 40rpx;
+        height: 40rpx;
+        border-radius: $border-radius-round;
+        background: $background-color;
+        cursor: pointer;
+      }
+    }
+
+    .comment-content {
+      font-size: $font-size-base;
+      color: $text-regular;
+      line-height: 1.5;
+    }
+  }
+
+  // 加载更多样式
+  .load-more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40rpx 0;
+
+    .loading-text {
+      display: flex;
+      align-items: center;
+      color: $text-secondary;
+      font-size: $font-size-small;
+
+      .uni-icons {
+        margin-right: 8rpx;
+        animation: rotate 1s linear infinite;
+      }
+    }
+
+    .load-more-btn {
+      padding: 16rpx 40rpx;
+      background: $background-color;
+      border-radius: $border-radius;
+      color: $text-primary;
+      font-size: $font-size-small;
+      cursor: pointer;
+    }
+  }
+
+  .no-more {
+    text-align: center;
+    padding: 40rpx 0;
+    color: $text-secondary;
+    font-size: $font-size-small;
+  }
 }
 
-.loading-spinner {
-  width: 40rpx;
-  height: 40rpx;
-  border: 4rpx solid rgba($primary-color, 0.3);
-  border-top-color: $primary-color;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
 }
 
-/* 底部操作栏 */
-.bottom-actions {
+.empty-comments {
+  @extend .flex-center;
+  flex-direction: column;
+  padding: 60rpx 0;
+
+  .empty-text {
+    margin-top: 20rpx;
+    font-size: $font-size-base;
+    color: $empty-text-color;
+  }
+}
+
+// 底部操作栏
+.action-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
+  height: 120rpx;
   background: $background-color-white;
-  border-top: 1rpx solid $border-color-light;
-  padding: $padding-small $padding-base;
-  display: flex;
-  gap: $margin-small;
-  z-index: 1000;
-}
-
-.btn-secondary,
-.btn-primary {
-  flex: 1;
-  height: 80rpx;
-  border: none;
-  border-radius: $border-radius;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: $font-size-base;
-  font-weight: $font-weight-medium;
+  padding: 0 $padding-base;
+  border-top: 1rpx solid $border-color-lighter;
+  z-index: $z-index-base;
 
-  .action-icon {
-    margin-right: $margin-mini;
+  .follow-btn, .like-btn {
+    flex: 1;
+    @extend .flex-center;
+    flex-direction: column;
+    padding: 20rpx 0;
+    cursor: pointer;
+
+    &.followed {
+      background: $danger-color;
+      border-radius: $border-radius;
+      color: white;
+    }
+
+    .uni-icons {
+      margin-bottom: 4rpx;
+    }
+
+    text {
+      font-size: $font-size-extra-small;
+    }
+  }
+
+  .follow-btn {
+    text {
+      color: $primary-color;
+    }
+
+    &.followed text {
+      color: white;
+    }
+  }
+
+  .like-btn text {
+    color: $warning-color;
+  }
+
+  .action-divider {
+    width: 1rpx;
+    height: 40rpx;
+    background: $border-color-lighter;
   }
 }
 
-.btn-secondary {
-  background: $background-color;
-  color: $primary-color;
-  border: 1rpx solid $primary-color;
+// 编辑模式保存按钮
+.edit-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120rpx;
+  background: $background-color-white;
+  display: flex;
+  align-items: center;
+  padding: $padding-base;
+  border-top: 1rpx solid $border-color-lighter;
+
+  .save-btn {
+    flex: 1;
+    @extend .flex-center;
+    height: 80rpx;
+    background: $button-primary-bg;
+    color: white;
+    border-radius: $border-radius;
+    font-size: $font-size-medium;
+    font-weight: $font-weight-semibold;
+    cursor: pointer;
+  }
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness:  -10%) 100%);
-  color: $background-color-white;
+// 响应式调整
+@media (max-width: $screen-md) {
+  .stats-grid {
+    gap: $padding-small;
+  }
+
+  .action-bar, .edit-actions {
+    height: 100rpx;
+  }
 }
 </style>

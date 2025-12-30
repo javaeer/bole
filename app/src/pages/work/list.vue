@@ -4,16 +4,16 @@
     <view class="filter-container card-container">
       <!-- 搜索框 -->
       <view class="search-box">
-        <uni-icons type="search" size="20" color="#999" />
+        <view class="search-icon">🔍</view>
         <input
-          v-model="searchKeyword"
+          v-model="searchKeywords"
           class="search-input"
           placeholder="搜索职位名称或描述"
           placeholder-class="placeholder-text"
           @input="handleSearch"
         />
-        <button v-if="searchKeyword" class="clear-btn" @click="clearSearch">
-          <uni-icons type="clear" size="18" color="#999" />
+        <button v-if="searchKeywords" class="clear-btn" @click="clearSearch">
+          <view class="clear-icon">×</view>
         </button>
       </view>
 
@@ -29,7 +29,7 @@
           >
             <view class="filter-select">
               {{ statusOptions[statusIndex] }}
-              <uni-icons type="arrowdown" size="14" color="#999" />
+              <view class="arrow-down">▼</view>
             </view>
           </picker>
         </view>
@@ -44,7 +44,7 @@
           >
             <view class="filter-select">
               {{ sortOptions[sortIndex] }}
-              <uni-icons type="arrowdown" size="14" color="#999" />
+              <view class="arrow-down">▼</view>
             </view>
           </picker>
         </view>
@@ -60,11 +60,12 @@
     >
       <!-- 空状态 -->
       <view v-if="loading && listData.length === 0" class="empty-state">
-        <uni-load-more status="loading"></uni-load-more>
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载中...</text>
       </view>
 
       <view v-else-if="!loading && listData.length === 0" class="empty-state">
-        <uni-icons type="briefcase" size="60" color="#c0c4cc" />
+        <view class="empty-icon">💼</view>
         <text class="empty-text">暂无工作经历</text>
         <button class="btn btn-primary" @click="addNewWork">添加工作经历</button>
       </view>
@@ -72,11 +73,16 @@
       <!-- 列表内容 -->
       <view v-else>
         <view
-          v-for="item in listData"
+          v-for="(item, index) in listData"
           :key="item.id"
           class="work-item card-container"
           @click="goToDetail(item.id)"
         >
+          <!-- 序号标签 -->
+          <view class="item-index">
+            <text class="index-number">{{ index + 1 }}</text>
+          </view>
+
           <!-- 工作头部 -->
           <view class="work-header flex-between">
             <view class="work-title-section">
@@ -101,10 +107,10 @@
             <view class="time-line">
               <view class="time-dot"></view>
               <view class="time-range">
-                <text class="time-date">{{ dateUtils.format(item.startDate) }}</text>
+                <text class="time-date">{{ formatDate(item.startDate) }}</text>
                 <text class="time-separator">至</text>
                 <text class="time-date" :class="{ 'current-date': item.isCurrent }">
-                  {{ item.isCurrent ? '至今' : dateUtils.format(item.endDate) }}
+                  {{ item.isCurrent ? "至今" : formatDate(item.endDate) }}
                 </text>
               </view>
               <view class="time-duration">
@@ -118,13 +124,31 @@
             <text class="work-desc text-multi-truncate">{{ item.description }}</text>
           </view>
 
-          <!-- 成就 -->
-          <view class="work-achievements" v-if="item.achievements">
+          <!-- 成就列表 -->
+          <view class="work-achievements" v-if="item.achievements && item.achievements.length > 0">
             <view class="achievements-header">
-              <uni-icons type="star-filled" size="16" color="#e6a23c" />
+              <view class="star-icon">★</view>
               <text class="achievements-title">主要成就</text>
+              <text class="achievements-count">({{ item.achievements.length }})</text>
             </view>
-            <text class="achievements-text text-multi-truncate">{{ item.achievements }}</text>
+            <view class="achievements-list">
+              <view
+                v-for="(achievement, aIndex) in item.achievements.slice(0, 3)"
+                :key="aIndex"
+                class="achievement-item"
+              >
+                <view class="achievement-index">{{ aIndex + 1 }}.</view>
+                <text class="achievement-text text-multi-truncate">{{ achievement }}</text>
+              </view>
+              <view
+                v-if="item.achievements.length > 3"
+                class="more-achievements"
+                @click.stop="showAllAchievements(item.achievements)"
+              >
+                <text>查看全部{{ item.achievements.length }}项成就</text>
+                <view class="more-arrow">›</view>
+              </view>
+            </view>
           </view>
 
           <!-- 操作按钮 -->
@@ -139,21 +163,23 @@
 
           <!-- 时间信息 -->
           <view class="work-footer">
-            <text class="time-text">创建：{{ dateUtils.format(item.createdAt) }}</text>
-            <text class="time-text">更新：{{ dateUtils.format(item.updatedAt) }}</text>
+            <text class="time-text">创建：{{ formatDateTime(item.createdAt) }}</text>
+            <text class="time-text">更新：{{ formatDateTime(item.updatedAt) }}</text>
           </view>
         </view>
 
         <!-- 加载更多 -->
         <view v-if="hasMore" class="load-more">
-          <uni-load-more
-            :status="loading ? 'loading' : 'more'"
-            :content-text="{
-              contentdown: '上拉加载更多',
-              contentrefresh: '正在加载...',
-              contentnomore: '没有更多了'
-            }"
-          />
+          <view v-if="loading" class="loading-more">
+            <view class="loading-spinner-small"></view>
+            <text>加载中...</text>
+          </view>
+          <view v-else class="load-more-btn" @click="loadMore">
+            上拉加载更多
+          </view>
+        </view>
+        <view v-else-if="listData.length > 0" class="no-more">
+          <text>没有更多了</text>
         </view>
       </view>
     </scroll-view>
@@ -162,275 +188,280 @@
     <button class="add-btn" @click="addNewWork">
       <view class="icon-plus">+</view>
     </button>
+
+    <!-- 成就全量弹窗 -->
+    <view v-if="showAchievementsModal" class="achievements-modal" @click="closeAchievementsModal">
+      <view class="modal-content" @click.stop>
+        <view class="modal-header">
+          <text class="modal-title">全部成就</text>
+          <button class="modal-close-btn" @click="closeAchievementsModal">×</button>
+        </view>
+        <view class="modal-body">
+          <view class="all-achievements-list">
+            <view
+              v-for="(achievement, index) in currentAchievements"
+              :key="index"
+              class="achievement-item-large"
+            >
+              <view class="achievement-index-large">{{ index + 1 }}.</view>
+              <view class="achievement-content-large">{{ achievement }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
-import { onLoad, onReachBottom } from '@dcloudio/uni-app'
-import { WorkExperienceItem } from "@/types/work-experience";
-import { dateUtils } from "../../utils/date";
-
+import { onMounted, ref } from "vue";
+import { onLoad, onReachBottom } from "@dcloudio/uni-app";
+import type { WorkExperienceQuery, WorkExperienceResult } from "@/types/work-experience";
+import WorkExperienceAPI from "@/api/work-experience";
 
 // 响应式数据
-const searchKeyword = ref('')
-const statusIndex = ref(0)
-const sortIndex = ref(0)
-const currentPage = ref(1)
-const pageSize = ref(10)
-const loading = ref(false)
-const hasMore = ref(true)
+const searchKeywords = ref("");
+const statusIndex = ref(0);
+const sortIndex = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const loading = ref(false);
+const hasMore = ref(true);
+const listData = ref<WorkExperienceResult[]>([]);
 
-// 模拟数据
-const mockData: WorkExperienceItem[] = [
-  {
-    id: 1,
-    createdAt: "2025-12-17 20:06:50",
-    updatedAt: "2025-12-18 09:15:30",
-    deleted: 0,
-    userId: 1,
-    companyId: 101,
-    position: "软件工程师",
-    startDate: "2021-07-01",
-    endDate: "2023-06-30",
-    isCurrent: false,
-    description: "负责核心业务功能开发，参与系统架构设计，主导多个重要模块的开发工作。",
-    achievements: "成功交付3个重大项目，优化系统性能提升30%，获得年度优秀员工奖",
-    sort: 1
-  },
-  {
-    id: 2,
-    createdAt: "2025-12-16 14:20:10",
-    updatedAt: "2025-12-17 16:45:20",
-    deleted: 0,
-    userId: 1,
-    companyId: 102,
-    position: "高级前端工程师",
-    startDate: "2023-07-15",
-    endDate: "2024-12-31",
-    isCurrent: true,
-    description: "负责前端技术架构选型和团队管理，带领5人前端团队完成复杂SPA应用开发。",
-    achievements: "引入微前端架构提升团队开发效率50%，主导重构项目提升用户体验评分20%",
-    sort: 2
-  },
-  {
-    id: 3,
-    createdAt: "2025-12-15 10:30:45",
-    updatedAt: "2025-12-16 11:25:35",
-    deleted: 0,
-    userId: 1,
-    companyId: 103,
-    position: "全栈开发工程师",
-    startDate: "2020-03-01",
-    endDate: "2021-06-30",
-    isCurrent: false,
-    description: "负责前后端全栈开发，参与产品从0到1的完整开发周期。",
-    achievements: "独立完成核心业务模块开发，产品上线首月用户突破10万",
-    sort: 3
-  },
-  {
-    id: 4,
-    createdAt: "2025-12-14 08:45:20",
-    updatedAt: "2025-12-15 14:30:15",
-    deleted: 0,
-    userId: 1,
-    companyId: 104,
-    position: "技术经理",
-    startDate: "2019-01-01",
-    endDate: "2020-02-29",
-    isCurrent: false,
-    description: "负责技术团队管理、项目规划和人员培养，制定技术发展路线。",
-    achievements: "团队规模从3人扩展到15人，成功交付10+个项目，客户满意度95%",
-    sort: 4
-  }
-]
-
-const listData = ref<WorkExperienceItem[]>([])
-const filteredData = ref<WorkExperienceItem[]>([])
+// 成就弹窗相关
+const showAchievementsModal = ref(false);
+const currentAchievements = ref<string[]>([]);
 
 // 筛选选项
-const statusOptions = ['全部状态', '在职', '离职']
-const sortOptions = ['时间倒序', '时间正序', '创建时间', '更新时间']
+const statusOptions = ["全部状态", "在职", "离职"];
+const sortOptions = ["时间倒序", "时间正序", "创建时间", "更新时间"];
+
+// 格式化日期
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  } catch {
+    return dateStr;
+  }
+};
+
+// 格式化日期时间
+const formatDateTime = (dateStr: string) => {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  } catch {
+    return dateStr;
+  }
+};
 
 // 计算工作持续时间
 const calculateDuration = (startDate: string, endDate: string | null, isCurrent: boolean): string => {
-  const start = new Date(startDate)
-  const end = isCurrent ? new Date() : new Date(endDate || new Date())
+  try {
+    const start = new Date(startDate);
+    const end = isCurrent ? new Date() : new Date(endDate || new Date());
 
-  const years = end.getFullYear() - start.getFullYear()
-  const months = end.getMonth() - start.getMonth()
+    const years = end.getFullYear() - start.getFullYear();
+    const months = end.getMonth() - start.getMonth();
 
-  let totalMonths = years * 12 + months
-  if (end.getDate() < start.getDate()) {
-    totalMonths--
+    let totalMonths = years * 12 + months;
+    if (end.getDate() < start.getDate()) {
+      totalMonths--;
+    }
+
+    if (totalMonths < 0) totalMonths = 0;
+
+    const yearsPart = totalMonths >= 12 ? Math.floor(totalMonths / 12) + "年" : "";
+    const monthsPart = totalMonths % 12 > 0 ? (totalMonths % 12) + "个月" : "";
+
+    return `${yearsPart}${monthsPart}`.trim() || "0个月";
+  } catch {
+    return "0个月";
   }
+};
 
-  if (totalMonths < 0) totalMonths = 0
+// 显示全部成就
+const showAllAchievements = (achievements: string[]) => {
+  currentAchievements.value = achievements;
+  showAchievementsModal.value = true;
+};
 
-  const yearsPart = totalMonths >= 12 ? Math.floor(totalMonths / 12) + '年' : ''
-  const monthsPart = totalMonths % 12 > 0 ? (totalMonths % 12) + '个月' : ''
-
-  return `${yearsPart}${monthsPart}`.trim() || '0个月'
-}
+// 关闭成就弹窗
+const closeAchievementsModal = () => {
+  showAchievementsModal.value = false;
+  currentAchievements.value = [];
+};
 
 // 搜索处理
 const handleSearch = () => {
-  currentPage.value = 1
-  loadData(true)
-}
+  currentPage.value = 1;
+  loadData(true);
+};
 
 const clearSearch = () => {
-  searchKeyword.value = ''
-  currentPage.value = 1
-  loadData(true)
-}
+  searchKeywords.value = "";
+  currentPage.value = 1;
+  loadData(true);
+};
 
 // 筛选处理
 const onStatusChange = (e: any) => {
-  statusIndex.value = e.detail.value
-  currentPage.value = 1
-  loadData(true)
-}
+  statusIndex.value = e.detail.value;
+  currentPage.value = 1;
+  loadData(true);
+};
 
 const onSortChange = (e: any) => {
-  sortIndex.value = e.detail.value
-  sortData()
-}
-
-// 排序数据
-const sortData = () => {
-  switch(sortIndex.value) {
-    case 0: // 时间倒序
-      filteredData.value.sort((a, b) =>
-        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-      )
-      break
-    case 1: // 时间正序
-      filteredData.value.sort((a, b) =>
-        new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-      )
-      break
-    case 2: // 创建时间
-      filteredData.value.sort((a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-      break
-    case 3: // 更新时间
-      filteredData.value.sort((a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      )
-      break
-  }
-
-  // 更新分页数据
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  listData.value = filteredData.value.slice(start, end)
-}
+  sortIndex.value = e.detail.value;
+  currentPage.value = 1;
+  loadData(true);
+};
 
 // 加载数据
-const loadData = (reset = false) => {
-  if (loading.value) return
+const loadData = async (reset = false) => {
+  if (loading.value) return;
 
-  loading.value = true
+  loading.value = true;
 
   if (reset) {
-    currentPage.value = 1
-    hasMore.value = true
-    listData.value = []
+    currentPage.value = 1;
+    hasMore.value = true;
+    listData.value = [];
   }
 
-  // 模拟API请求延迟
-  setTimeout(() => {
-    // 筛选数据
-    let filtered = [...mockData]
+  try {
+    // 构建查询参数
+    const pageParam: PageParam = {
+      page: currentPage.value,
+      size: pageSize.value,
+    };
 
-    // 关键字搜索
-    if (searchKeyword.value) {
-      const keyword = searchKeyword.value.toLowerCase()
-      filtered = filtered.filter(item =>
-        item.position.toLowerCase().includes(keyword) ||
-        item.description.toLowerCase().includes(keyword) ||
-        (item.achievements && item.achievements.toLowerCase().includes(keyword))
-      )
+    const query: WorkExperienceQuery = {};
+
+    // 添加搜索条件
+    if (searchKeywords.value) {
+      query.keyword = searchKeywords.value;
     }
 
-    // 状态筛选
+    // 添加状态筛选条件
     if (statusIndex.value > 0) {
-      const status = statusIndex.value === 1 // 1: 在职, 2: 离职
-      filtered = filtered.filter(item => item.isCurrent === status)
+      query.isCurrent = statusIndex.value === 1;
     }
 
-    filteredData.value = filtered
+    // 添加排序条件
+    let orderBy = "createdAt";
+    let orderDirection = "DESC";
 
-    // 排序
-    sortData()
+    switch (sortIndex.value) {
+      case 0: // 时间倒序
+        orderBy = "startDate";
+        orderDirection = "DESC";
+        break;
+      case 1: // 时间正序
+        orderBy = "startDate";
+        orderDirection = "ASC";
+        break;
+      case 2: // 创建时间
+        orderBy = "createdAt";
+        orderDirection = "DESC";
+        break;
+      case 3: // 更新时间
+        orderBy = "updatedAt";
+        orderDirection = "DESC";
+        break;
+    }
 
-    // 更新是否有更多数据
-    hasMore.value = listData.value.length < filtered.length
-    loading.value = false
-    currentPage.value++
-  }, 500)
-}
+    query.orderBy = orderBy;
+    query.orderDirection = orderDirection;
+
+    // 调用API
+    const response = await WorkExperienceAPI.page(pageParam, query);
+
+    if (response) {
+      const { records = [], total = 0 } = response;
+
+      // 确保achievements是数组格式
+      const processedRecords = records.map(record => ({
+        ...record,
+        achievements: Array.isArray(record.achievements)
+          ? record.achievements
+          : typeof record.achievements === "string"
+            ? record.achievements.split("\n").map(a => a.trim()).filter(a => a)
+            : [],
+      }));
+
+      if (reset) {
+        listData.value = processedRecords;
+      } else {
+        listData.value = [...listData.value, ...processedRecords];
+      }
+
+      // 更新是否有更多数据
+      hasMore.value = listData.value.length < total;
+
+      // 如果当前页有数据，且数据条数等于pageSize，说明可能还有下一页
+      if (records.length === pageSize.value) {
+        currentPage.value++;
+      }
+    }
+  } catch (error) {
+    console.error("加载数据失败:", error);
+    uni.showToast({
+      title: "加载失败",
+      icon: "error",
+    });
+  } finally {
+    loading.value = false;
+  }
+};
 
 // 加载更多
 const loadMore = () => {
-  if (!hasMore.value || loading.value) return
-
-  // 模拟API请求延迟
-  loading.value = true
-  setTimeout(() => {
-    const start = (currentPage.value - 1) * pageSize.value
-    const end = start + pageSize.value
-    const pageData = filteredData.value.slice(start, end)
-
-    listData.value = [...listData.value, ...pageData]
-
-    // 更新是否有更多数据
-    hasMore.value = listData.value.length < filteredData.value.length
-    loading.value = false
-    currentPage.value++
-  }, 500)
-}
+  if (!hasMore.value || loading.value) return;
+  loadData();
+};
 
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/work/detail?id=${id}`
-  })
-}
+    url: `/pages/work/work?id=${id}`,
+  });
+};
 
 const editWork = (id: number) => {
   uni.navigateTo({
-    url: `/pages/work/detail?id=${id}&edit=true`
-  })
-}
+    url: `/pages/work/work?id=${id}&edit=true`,
+  });
+};
 
 const addNewWork = () => {
   uni.navigateTo({
-    url: '/pages/work/detail'
-  })
-}
+    url: "/pages/work/work",
+  });
+};
 
 // 生命周期
 onMounted(() => {
-  loadData(true)
-})
+  loadData(true);
+});
 
 onLoad((options) => {
-  const refresh = options?.refresh === 'true'
+  const refresh = options?.refresh === "true";
   if (refresh) {
-    loadData(true)
+    loadData(true);
   }
-})
+});
 
 onReachBottom(() => {
-  loadMore()
-})
+  loadMore();
+});
 </script>
 
 <style lang="scss">
-
 .page-container {
   min-height: 100vh;
   background-color: $background-color;
@@ -455,6 +486,11 @@ onReachBottom(() => {
   margin-bottom: $margin-small;
   border: 1rpx solid $border-color-light;
 
+  .search-icon {
+    font-size: 32rpx;
+    color: $text-secondary;
+  }
+
   .search-input {
     flex: 1;
     font-size: $font-size-base;
@@ -471,6 +507,16 @@ onReachBottom(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    .clear-icon {
+      font-size: 36rpx;
+      color: $text-secondary;
+      width: 40rpx;
+      height: 40rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
@@ -499,6 +545,11 @@ onReachBottom(() => {
       display: flex;
       align-items: center;
       justify-content: space-between;
+
+      .arrow-down {
+        font-size: 20rpx;
+        color: $text-secondary;
+      }
     }
   }
 }
@@ -510,11 +561,32 @@ onReachBottom(() => {
 
 .work-item {
   margin-bottom: $margin-base;
+  position: relative;
   transition: all $transition-fast $ease-in-out;
+  padding-left: 80rpx;
 
   &:active {
     transform: translateY(-2rpx);
     box-shadow: $card-hover-shadow;
+  }
+
+  .item-index {
+    position: absolute;
+    left: 20rpx;
+    top: 20rpx;
+    width: 40rpx;
+    height: 40rpx;
+    background: $primary-color-light;
+    border-radius: $border-radius-round;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .index-number {
+      font-size: $font-size-small;
+      font-weight: $font-weight-bold;
+      color: $primary-color;
+    }
   }
 
   .work-header {
@@ -658,17 +730,64 @@ onReachBottom(() => {
       gap: 8rpx;
       margin-bottom: 12rpx;
 
+      .star-icon {
+        font-size: 20rpx;
+        color: $warning-color;
+      }
+
       .achievements-title {
         font-size: $font-size-small;
         font-weight: $font-weight-medium;
         color: $warning-color;
       }
+
+      .achievements-count {
+        font-size: $font-size-extra-small;
+        color: $text-secondary;
+      }
     }
 
-    .achievements-text {
-      font-size: $font-size-small;
-      color: $text-regular;
-      line-height: 1.5;
+    .achievements-list {
+      .achievement-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 12rpx;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .achievement-index {
+          width: 30rpx;
+          color: $warning-color;
+          font-weight: $font-weight-medium;
+          font-size: $font-size-extra-small;
+        }
+
+        .achievement-text {
+          flex: 1;
+          font-size: $font-size-small;
+          color: $text-regular;
+          line-height: 1.5;
+          -webkit-line-clamp: 2;
+        }
+      }
+
+      .more-achievements {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8rpx 0;
+        color: $primary-color;
+        font-size: $font-size-extra-small;
+        border-top: 1rpx solid $border-color-extra-light;
+        margin-top: 8rpx;
+        cursor: pointer;
+
+        .more-arrow {
+          font-size: 24rpx;
+        }
+      }
     }
   }
 
@@ -704,6 +823,21 @@ onReachBottom(() => {
   justify-content: center;
   padding: 100rpx 0;
 
+  .loading-spinner {
+    width: 60rpx;
+    height: 60rpx;
+    border: 4rpx solid rgba($primary-color, 0.2);
+    border-top-color: $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20rpx;
+  }
+
+  .empty-icon {
+    font-size: 80rpx;
+    margin-bottom: 20rpx;
+  }
+
   .empty-text {
     font-size: $font-size-base;
     color: $empty-text-color;
@@ -717,7 +851,42 @@ onReachBottom(() => {
 }
 
 .load-more {
-  padding: $margin-base 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx 0;
+
+  .loading-more {
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+    color: $text-secondary;
+    font-size: $font-size-small;
+
+    .loading-spinner-small {
+      width: 24rpx;
+      height: 24rpx;
+      border: 2rpx solid rgba($primary-color, 0.2);
+      border-top-color: $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .load-more-btn {
+    padding: 16rpx 32rpx;
+    background: $background-color;
+    border-radius: $border-radius;
+    color: $text-primary;
+    font-size: $font-size-small;
+  }
+}
+
+.no-more {
+  text-align: center;
+  padding: 40rpx 0;
+  color: $text-secondary;
+  font-size: $font-size-small;
 }
 
 .add-btn {
@@ -741,9 +910,99 @@ onReachBottom(() => {
   }
 }
 
+// 成就弹窗样式
+.achievements-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-index-modal;
+  padding: $padding-base;
+
+  .modal-content {
+    background: $background-color-white;
+    border-radius: $border-radius-large;
+    width: 100%;
+    max-width: 700rpx;
+    max-height: 70vh;
+    overflow: hidden;
+    box-shadow: $box-shadow-dark;
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $padding-base;
+      border-bottom: 1rpx solid $border-color-extra-light;
+
+      .modal-title {
+        font-size: $font-size-medium;
+        font-weight: $font-weight-medium;
+        color: $text-primary;
+      }
+
+      .modal-close-btn {
+        background: transparent;
+        border: none;
+        font-size: 32rpx;
+        color: $text-secondary;
+        width: 40rpx;
+        height: 40rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .modal-body {
+      padding: $padding-base;
+      max-height: 50vh;
+      overflow-y: auto;
+
+      .all-achievements-list {
+        .achievement-item-large {
+          display: flex;
+          align-items: flex-start;
+          padding: 16rpx 0;
+          border-bottom: 1rpx solid $border-color-extra-light;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .achievement-index-large {
+            width: 40rpx;
+            color: $warning-color;
+            font-weight: $font-weight-medium;
+            font-size: $font-size-small;
+          }
+
+          .achievement-content-large {
+            flex: 1;
+            font-size: $font-size-small;
+            color: $text-regular;
+            line-height: 1.5;
+          }
+        }
+      }
+    }
+  }
+}
+
 .placeholder-text {
   color: $text-placeholder;
   font-size: $font-size-base;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: $screen-md) {
@@ -753,6 +1012,18 @@ onReachBottom(() => {
   }
 
   .work-item {
+    padding-left: 60rpx;
+
+    .item-index {
+      left: 10rpx;
+      width: 30rpx;
+      height: 30rpx;
+
+      .index-number {
+        font-size: $font-size-extra-small;
+      }
+    }
+
     .work-header {
       flex-direction: column;
       align-items: flex-start;
@@ -766,6 +1037,12 @@ onReachBottom(() => {
     .work-footer {
       flex-direction: column;
       gap: 8rpx;
+    }
+  }
+
+  .achievements-modal {
+    .modal-content {
+      max-width: 90vw;
     }
   }
 }

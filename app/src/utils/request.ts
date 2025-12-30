@@ -116,7 +116,7 @@ class Request {
 	};
 
 	// 分页查询专用方法
-	page<T = any>(url : string, params : PageQuery, data ?: any, config ?: Partial<RequestConfig>) : Promise<T> {
+	page<T = any>(url : string, params : PageParam, data ?: any, config ?: Partial<RequestConfig>) : Promise<T> {
 		return this.request<T>({
 			url: url,
 			data: data, // 查询条件放在 body

@@ -9,11 +9,11 @@
           class="search-input"
           placeholder="搜索简历模板名称"
           placeholder-class="search-placeholder"
-          v-model="searchKeyword"
+          v-model="searchKeywords"
           @input="handleSearch"
           @confirm="handleSearch"
         />
-        <view v-if="searchKeyword" class="search-clear" @click="clearSearch">
+        <view v-if="searchKeywords" class="search-clear" @click="clearSearch">
           <text class="clear-icon">×</text>
         </view>
       </view>
@@ -136,7 +136,7 @@
               </view>
               <view class="meta-item">
                 <text class="meta-icon">📊</text>
-                <text class="meta-text">v{{ template.version || '1.0.0' }}</text>
+                <text class="meta-text">v{{ template.version || "1.0.0" }}</text>
               </view>
               <view class="meta-item">
                 <text class="meta-icon">👥</text>
@@ -206,21 +206,24 @@
           </view>
 
           <view class="card-footer flex-between">
-          <view class="card-actions flex-between">
-            <button class="btn-action btn btn-primary" @click.stop="handleSelected(template)">
-              <text class="action-text">使用</text>
-            </button>
+            <view class="card-actions flex-between">
+              <button class="btn-action btn btn-primary" @click.stop="handleSelected(template)">
+                <text class="action-text">使用</text>
+              </button>
+            </view>
           </view>
+        </view>
+
+        <!-- 加载更多 -->
+        <view v-if="hasMore && !loading" class="load-more" @click="loadMoreTemplates">
+          <text class="load-more-text">加载更多</text>
         </view>
       </view>
 
-      <!-- 加载更多 -->
-      <view v-if="hasMore && !loading" class="load-more" @click="loadMoreTemplates">
-        <text class="load-more-text">加载更多</text>
-      </view>
     </view>
 
   </view>
+
 </template>
 
 <script setup lang="ts">
@@ -246,7 +249,7 @@ const {
 } = useTemplate();
 
 // 响应式状态
-const searchKeyword = ref("");
+const searchKeywords = ref("");
 const activeFilters = ref<Filter[]>([]);
 const sortField = ref("updatedAt");
 const sortOrder = ref<"asc" | "desc">("desc");
@@ -258,8 +261,8 @@ const displayList = computed(() => {
   let list = [...templateList.value];
 
   // 搜索过滤
-  if (searchKeyword.value.trim()) {
-    const keyword = searchKeyword.value.toLowerCase();
+  if (searchKeywords.value.trim()) {
+    const keyword = searchKeywords.value.toLowerCase();
     list = list.filter(
       (template: TemplateResult) =>
         template.name.toLowerCase().includes(keyword) ||
@@ -294,15 +297,15 @@ const displayList = computed(() => {
 
 // 搜索处理
 const handleSearch = () => {
-  if (searchKeyword.value.trim()) {
-    searchTemplates(searchKeyword.value);
+  if (searchKeywords.value.trim()) {
+    searchTemplates(searchKeywords.value);
   } else {
     loadListTemplates(1, { isActive: true });
   }
 };
 
 const clearSearch = () => {
-  searchKeyword.value = "";
+  searchKeywords.value = "";
   loadListTemplates(1, { isActive: true });
 };
 
@@ -381,10 +384,10 @@ const getTemplateFeatures = (template: TemplateResult) => {
   // 根据布局添加特征
   if (template.globalLayout?.type) {
     const layoutMap: Record<string, string> = {
-      'single-column': '单栏',
-      'two-column': '双栏',
-      'three-column': '三栏',
-      'creative': '创意'
+      "single-column": "单栏",
+      "two-column": "双栏",
+      "three-column": "三栏",
+      "creative": "创意",
     };
     const layoutName = layoutMap[template.globalLayout.type] || template.globalLayout.type;
     features.push(layoutName);
@@ -399,7 +402,7 @@ const getTemplateFeatures = (template: TemplateResult) => {
       professional: "专业",
       simple: "简约",
       light: "明亮",
-      dark: "深色"
+      dark: "深色",
     };
     const themeName = themeMap[template.globalStyle.theme] || template.globalStyle.theme;
     features.push(themeName);
@@ -518,7 +521,7 @@ onMounted(async () => {
 
 .btn-filter {
   padding: 12rpx 20rpx;
-  background-color: $primary-light;
+  background-color: $primary-color-light;
   border: 1px solid $border-color-light;
   border-radius: $border-radius-small;
   font-size: $font-size-small;
@@ -546,7 +549,7 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   padding: 4rpx 12rpx;
-  background-color: $primary-light;
+  background-color: $primary-color-light;
   border-radius: $border-radius-small;
   margin-right: $margin-mini;
   border: 1px solid $border-color-light;
@@ -601,7 +604,7 @@ onMounted(async () => {
   color: $text-secondary;
 
   &.active {
-    background-color: $primary-light;
+    background-color: $primary-color-light;
     color: $primary-color;
   }
 }
@@ -627,7 +630,7 @@ onMounted(async () => {
 
   &.active {
     color: $primary-color;
-    background-color: $primary-light;
+    background-color: $primary-color-light;
     border-radius: $border-radius-small;
   }
 }
@@ -770,7 +773,7 @@ onMounted(async () => {
   &.active {
     @extend .status-success;
   }
-  
+
   &.inactive {
     @extend .status-info;
   }
@@ -901,6 +904,7 @@ onMounted(async () => {
   margin-bottom: $margin-small;
   min-height: 80rpx;
 }
+
 .description-text {
   font-size: $font-size-small;
   color: $text-secondary;

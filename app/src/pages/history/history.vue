@@ -249,7 +249,7 @@ const handleViewDetail = (item: HistoryItem) => {
     })
   } else {
     uni.navigateTo({
-      url: `/pages/company/detail?id=${item.id}`
+      url: `/pages/company/company?id=${item.id}`
     })
   }
 }
@@ -421,7 +421,7 @@ onMounted(() => {
 .type-icon {
   width: 60rpx;
   height: 60rpx;
-  background: $primary-light;
+  background: $primary-color-light;
   border-radius: $border-radius-round;
   display: flex;
   align-items: center;

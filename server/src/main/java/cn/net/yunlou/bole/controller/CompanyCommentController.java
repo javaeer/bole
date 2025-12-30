@@ -1,6 +1,7 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
+import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.entity.CompanyComment;
 import cn.net.yunlou.bole.model.create.CompanyCommentCreate;
 import cn.net.yunlou.bole.model.edit.CompanyCommentEdit;
@@ -29,7 +30,6 @@ public class CompanyCommentController {
 
     @PostMapping("add")
     @Operation(summary = "新增企业评价")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> add(@RequestBody CompanyCommentCreate request) {
         return BusinessResponse.success(companyCommentService.saveByCreate(request));
     }

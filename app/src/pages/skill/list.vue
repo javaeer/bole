@@ -6,13 +6,13 @@
       <view class="search-box">
         <text class="icon">🔍</text>
         <input
-          v-model="searchKeyword"
+          v-model="searchKeywords"
           class="search-input"
           placeholder="搜索技能名称、分类或标签"
           placeholder-class="placeholder-text"
           @input="handleSearch"
         />
-        <button v-if="searchKeyword" class="clear-btn" @click="clearSearch">
+        <button v-if="searchKeywords" class="clear-btn" @click="clearSearch">
           <text class="icon">×</text>
         </button>
       </view>
@@ -218,7 +218,7 @@ import { SkillItem } from "@/types/skill";
 import { dateUtils } from "../../utils/date";
 
 // 响应式数据
-const searchKeyword = ref('')
+const searchKeywords = ref('')
 const selectedCategory = ref('')
 const selectedLevel = ref('')
 const filterTags = ref<string[]>([])
@@ -376,7 +376,7 @@ const handleSearch = () => {
 }
 
 const clearSearch = () => {
-  searchKeyword.value = ''
+  searchKeywords.value = ''
   currentPage.value = 1
   loadData(true)
 }
@@ -472,8 +472,8 @@ const loadData = (reset = false) => {
     let filtered = [...mockData]
 
     // 关键字搜索
-    if (searchKeyword.value) {
-      const keyword = searchKeyword.value.toLowerCase()
+    if (searchKeywords.value) {
+      const keyword = searchKeywords.value.toLowerCase()
       filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(keyword) ||
         item.category.toLowerCase().includes(keyword) ||
@@ -657,7 +657,7 @@ onReachBottom(() => {
       align-items: center;
       gap: 8rpx;
       padding: 8rpx 16rpx;
-      background: $primary-light;
+      background: $primary-color-light;
       border-radius: $border-radius-round;
       font-size: $font-size-extra-small;
       color: $primary-color;
@@ -725,7 +725,7 @@ onReachBottom(() => {
           }
 
           &-certified {
-            background: $primary-light;
+            background: $primary-color-light;
             color: $primary-color;
             border: 1rpx solid $primary-border;
           }

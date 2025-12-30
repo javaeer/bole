@@ -257,43 +257,13 @@
       }
 	},
 	{
-		"path": "pages/company/detail",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
-		"path": "pages/education/detail",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
 		"path": "pages/skill/detail",
 		"style": {
 			"navigationBarTitleText": ""
 		}
 	},
 	{
-		"path": "pages/work/detail",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
 		"path": "pages/project/detail",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
-		"path": "pages/evaluation/detail",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
-		"path": "pages/intention/detail",
 		"style": {
 			"navigationBarTitleText": ""
 		}
@@ -306,6 +276,18 @@
 	},
 	{
 		"path": "pages/profile/bind",
+		"style": {
+			"navigationBarTitleText": ""
+		}
+	},
+	{
+		"path": "pages/university/university",
+		"style": {
+			"navigationBarTitleText": ""
+		}
+	},
+	{
+		"path": "pages/university/list",
 		"style": {
 			"navigationBarTitleText": ""
 		}

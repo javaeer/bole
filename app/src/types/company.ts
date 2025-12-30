@@ -1,5 +1,5 @@
 // 查询条件
-import { CompanyComment } from "@/types/company-comment";
+import { CompanyCommentResult } from "@/types/company-comment";
 
 export interface CompanyQuery extends BodyQuery {
   name?: string;
@@ -24,7 +24,7 @@ export interface CompanyResult {
   followers: number;
   fans: number;
   likes: number;
-  companyComments: CompanyComment[] | null;
+  companyComments: CompanyCommentResult[] | null;
   isFollowed?: boolean;
 }
 

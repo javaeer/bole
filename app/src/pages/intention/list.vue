@@ -4,16 +4,16 @@
     <view class="filter-container card-container">
       <!-- 搜索框 -->
       <view class="search-box">
-        <uni-icons type="search" size="20" color="#999" />
+        <view class="search-icon">🔍</view>
         <input
-          v-model="searchKeyword"
+          v-model="searchKeywords"
           class="search-input"
           placeholder="搜索职位或城市"
           placeholder-class="placeholder-text"
           @input="handleSearch"
         />
-        <button v-if="searchKeyword" class="clear-btn" @click="clearSearch">
-          <uni-icons type="clear" size="18" color="#999" />
+        <button v-if="searchKeywords" class="clear-btn" @click="clearSearch">
+          <view class="clear-icon">×</view>
         </button>
       </view>
 
@@ -29,7 +29,7 @@
           >
             <view class="filter-select">
               {{ jobTypeOptions[jobTypeIndex] }}
-              <uni-icons type="arrowdown" size="14" color="#999" />
+              <view class="arrow-icon">▼</view>
             </view>
           </picker>
         </view>
@@ -44,7 +44,7 @@
           >
             <view class="filter-select">
               {{ sortOptions[sortIndex] }}
-              <uni-icons type="arrowdown" size="14" color="#999" />
+              <view class="arrow-icon">▼</view>
             </view>
           </picker>
         </view>
@@ -60,11 +60,12 @@
     >
       <!-- 空状态 -->
       <view v-if="loading && listData.length === 0" class="empty-state">
-        <uni-load-more status="loading"></uni-load-more>
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载中...</text>
       </view>
 
       <view v-else-if="!loading && listData.length === 0" class="empty-state">
-        <uni-icons type="briefcase" size="60" color="#c0c4cc" />
+        <view class="empty-icon">💼</view>
         <text class="empty-text">暂无求职意向</text>
         <button class="btn btn-primary" @click="addNewIntention">添加求职意向</button>
       </view>
@@ -96,10 +97,10 @@
           <!-- 城市和工作类型 -->
           <view class="intention-info">
             <view class="info-row">
-              <uni-icons type="location" size="16" color="#909399" />
+              <view class="location-icon">📍</view>
               <text class="info-text">{{ item.city || '未指定城市' }}</text>
               <text class="info-separator">|</text>
-              <uni-icons type="time" size="16" color="#909399" />
+              <view class="time-icon">🕒</view>
               <text class="info-text">{{ item.jobType }}</text>
             </view>
           </view>
@@ -127,21 +128,23 @@
 
           <!-- 时间信息 -->
           <view class="intention-footer">
-            <text class="time-text">创建：{{ dateUtils.format(item.createdAt) }}</text>
-            <text class="time-text">更新：{{ dateUtils.format(item.updatedAt) }}</text>
+            <text class="time-text">创建：{{ formatDate(item.createdAt) }}</text>
+            <text class="time-text">更新：{{ formatDate(item.updatedAt) }}</text>
           </view>
         </view>
 
         <!-- 加载更多 -->
         <view v-if="hasMore" class="load-more">
-          <uni-load-more
-            :status="loading ? 'loading' : 'more'"
-            :content-text="{
-              contentdown: '上拉加载更多',
-              contentrefresh: '正在加载...',
-              contentnomore: '没有更多了'
-            }"
-          />
+          <view v-if="loading" class="loading-more">
+            <view class="loading-spinner-small"></view>
+            <text>加载中...</text>
+          </view>
+          <view v-else class="load-more-btn" @click="loadMore">
+            上拉加载更多
+          </view>
+        </view>
+        <view v-else-if="listData.length > 0" class="no-more">
+          <text>没有更多了</text>
         </view>
       </view>
     </scroll-view>
@@ -154,86 +157,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
-import { dateUtils } from '@/utils/date'
-import { JobIntentionItem } from "@/types/job-intention";
-
+import type { JobIntentionResult } from "@/types/job-intention";
+import JobIntentionAPI from "@/api/job-intention";
 
 // 响应式数据
-const searchKeyword = ref('')
+const searchKeywords = ref('')
 const jobTypeIndex = ref(0)
 const sortIndex = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const loading = ref(false)
 const hasMore = ref(true)
-
-// 模拟数据
-const mockData: JobIntentionItem[] = [
-  {
-    id: 1,
-    createdAt: "2025-12-22 03:55:22",
-    updatedAt: "2025-12-22 10:30:15",
-    deleted: 0,
-    userId: 1,
-    position: "前端开发工程师",
-    city: "北京",
-    salary: "25000",
-    jobType: "全职"
-  },
-  {
-    id: 2,
-    createdAt: "2025-12-21 14:20:30",
-    updatedAt: "2025-12-22 08:45:20",
-    deleted: 0,
-    userId: 1,
-    position: "Java开发工程师",
-    city: "上海",
-    salary: "30000",
-    jobType: "全职"
-  },
-  {
-    id: 3,
-    createdAt: "2025-12-20 09:15:40",
-    updatedAt: "2025-12-21 16:30:50",
-    deleted: 0,
-    userId: 1,
-    position: "产品经理",
-    city: "深圳",
-    salary: "35000",
-    jobType: "全职"
-  },
-  {
-    id: 4,
-    createdAt: "2025-12-19 11:30:25",
-    updatedAt: "2025-12-20 14:25:35",
-    deleted: 0,
-    userId: 1,
-    position: "UI设计师",
-    city: "杭州",
-    salary: "20000",
-    jobType: "兼职"
-  },
-  {
-    id: 5,
-    createdAt: "2025-12-18 16:45:10",
-    updatedAt: "2025-12-19 09:20:45",
-    deleted: 0,
-    userId: 1,
-    position: "测试工程师",
-    city: "广州",
-    salary: "18000",
-    jobType: "实习"
-  }
-]
-
-const listData = ref<JobIntentionItem[]>([])
-const filteredData = ref<JobIntentionItem[]>([])
+const listData = ref<JobIntentionResult[]>([])
 
 // 筛选选项
 const jobTypeOptions = ['全部类型', '全职', '兼职', '实习', '远程']
 const sortOptions = ['创建时间', '更新时间', '薪资降序', '薪资升序']
+
+// 格式化日期
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  } catch {
+    return dateStr;
+  }
+};
 
 // 获取工作类型样式
 const getJobTypeClass = (jobType: string) => {
@@ -283,7 +235,7 @@ const handleSearch = () => {
 }
 
 const clearSearch = () => {
-  searchKeyword.value = ''
+  searchKeywords.value = ''
   currentPage.value = 1
   loadData(true)
 }
@@ -297,120 +249,117 @@ const onJobTypeChange = (e: any) => {
 
 const onSortChange = (e: any) => {
   sortIndex.value = e.detail.value
-  sortData()
+  currentPage.value = 1
+  loadData(true)
 }
 
-// 排序数据
-const sortData = () => {
-  switch(sortIndex.value) {
-    case 0: // 创建时间
-      filteredData.value.sort((a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-      break
-    case 1: // 更新时间
-      filteredData.value.sort((a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      )
-      break
-    case 2: // 薪资降序
-      filteredData.value.sort((a, b) =>
-        parseInt(b.salary || '0') - parseInt(a.salary || '0')
-      )
-      break
-    case 3: // 薪资升序
-      filteredData.value.sort((a, b) =>
-        parseInt(a.salary || '0') - parseInt(b.salary || '0')
-      )
-      break
+// 构建查询参数
+const buildQueryParams = () => {
+  const query: any = {};
+
+  // 添加搜索条件
+  if (searchKeywords.value) {
+    query.keyword = searchKeywords.value;
   }
 
-  // 更新分页数据
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  listData.value = filteredData.value.slice(start, end)
+  // 添加工作类型筛选
+  if (jobTypeIndex.value > 0) {
+    const selectedType = jobTypeOptions[jobTypeIndex.value];
+    query.jobType = selectedType;
+  }
+
+  // 添加排序条件
+  if (sortIndex.value === 0) {
+    query.orderBy = 'createdAt';
+    query.orderDirection = 'DESC';
+  } else if (sortIndex.value === 1) {
+    query.orderBy = 'updatedAt';
+    query.orderDirection = 'DESC';
+  } else if (sortIndex.value === 2) {
+    query.orderBy = 'salary';
+    query.orderDirection = 'DESC';
+  } else if (sortIndex.value === 3) {
+    query.orderBy = 'salary';
+    query.orderDirection = 'ASC';
+  }
+
+  return query;
 }
 
 // 加载数据
-const loadData = (reset = false) => {
-  if (loading.value) return
+const loadData = async (reset = false) => {
+  if (loading.value) return;
 
-  loading.value = true
+  loading.value = true;
 
   if (reset) {
-    currentPage.value = 1
-    hasMore.value = true
-    listData.value = []
+    currentPage.value = 1;
+    hasMore.value = true;
+    listData.value = [];
   }
 
-  // 模拟API请求延迟
-  setTimeout(() => {
-    // 筛选数据
-    let filtered = [...mockData]
+  try {
+    // 构建查询参数
+    const pageParam = {
+      page: currentPage.value,
+      size: pageSize.value,
+    };
 
-    // 关键字搜索
-    if (searchKeyword.value) {
-      const keyword = searchKeyword.value.toLowerCase()
-      filtered = filtered.filter(item =>
-        item.position.toLowerCase().includes(keyword) ||
-        item.city.toLowerCase().includes(keyword)
-      )
+    const query = buildQueryParams();
+
+    // 调用API
+    const response = await JobIntentionAPI.page(pageParam, query);
+
+    if (response) {
+      const { records = [], total = 0 } = response;
+
+      if (reset) {
+        listData.value = records;
+      } else {
+        listData.value = [...listData.value, ...records];
+      }
+
+      // 更新是否有更多数据
+      hasMore.value = listData.value.length < total;
+
+      // 如果当前页有数据，且数据条数等于pageSize，说明可能还有下一页
+      if (records.length === pageSize.value) {
+        currentPage.value++;
+      }
     }
-
-    // 工作类型筛选
-    if (jobTypeIndex.value > 0) {
-      const selectedType = jobTypeOptions[jobTypeIndex.value]
-      filtered = filtered.filter(item => item.jobType === selectedType)
-    }
-
-    filteredData.value = filtered
-
-    // 排序
-    sortData()
-
-    // 更新是否有更多数据
-    hasMore.value = listData.value.length < filtered.length
-    loading.value = false
-    currentPage.value++
-  }, 500)
-}
+  } catch (error) {
+    console.error("加载数据失败:", error);
+    uni.showToast({
+      title: "加载失败",
+      icon: "error",
+    });
+  } finally {
+    loading.value = false;
+  }
+};
 
 // 加载更多
 const loadMore = () => {
-  if (!hasMore.value || loading.value) return
-
-  // 模拟API请求延迟
-  loading.value = true
-  setTimeout(() => {
-    const start = (currentPage.value - 1) * pageSize.value
-    const end = start + pageSize.value
-    const pageData = filteredData.value.slice(start, end)
-
-    listData.value = [...listData.value, ...pageData]
-
-    // 更新是否有更多数据
-    hasMore.value = listData.value.length < filteredData.value.length
-    loading.value = false
-    currentPage.value++
-  }, 500)
-}
+  if (!hasMore.value || loading.value) return;
+  loadData();
+};
 
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/intention/detail?id=${id}`
+    url: `/pages/intention/intention?id=${id}`
   })
 }
 
 const editIntention = (id: number) => {
   uni.navigateTo({
-    url: `/pages/intention/detail?id=${id}&edit=true`
+    url: `/pages/intention/intention?id=${id}&edit=true`
   })
 }
 
 const addNewIntention = () => {
   uni.navigateTo({
-    url: '/pages/intention/detail'
+    url: '/pages/intention/intention'
   })
 }
 
@@ -432,7 +381,6 @@ onReachBottom(() => {
 </script>
 
 <style lang="scss">
-
 .page-container {
   min-height: 100vh;
   background-color: $background-color;
@@ -457,6 +405,11 @@ onReachBottom(() => {
   margin-bottom: $margin-small;
   border: 1rpx solid $border-color-light;
 
+  .search-icon {
+    font-size: 32rpx;
+    color: $text-secondary;
+  }
+
   .search-input {
     flex: 1;
     font-size: $font-size-base;
@@ -473,6 +426,16 @@ onReachBottom(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    .clear-icon {
+      font-size: 36rpx;
+      color: $text-secondary;
+      width: 40rpx;
+      height: 40rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
@@ -501,6 +464,11 @@ onReachBottom(() => {
       display: flex;
       align-items: center;
       justify-content: space-between;
+
+      .arrow-icon {
+        font-size: 18rpx;
+        color: $text-secondary;
+      }
     }
   }
 }
@@ -559,7 +527,7 @@ onReachBottom(() => {
           }
 
           &.type-remote {
-            background: $primary-light;
+            background: $primary-color-light;
             color: $primary-color;
             border: 1rpx solid $primary-border;
           }
@@ -588,7 +556,12 @@ onReachBottom(() => {
     .info-row {
       display: flex;
       align-items: center;
-      gap: 12rpx;
+      gap: 8rpx;
+
+      .location-icon, .time-icon {
+        font-size: 28rpx;
+        color: $text-secondary;
+      }
 
       .info-text {
         font-size: $font-size-small;
@@ -605,7 +578,7 @@ onReachBottom(() => {
   .salary-details {
     margin-bottom: $margin-base;
     padding: 16rpx;
-    background: $primary-light;
+    background: $primary-color-light;
     border-radius: $border-radius-small;
     border: 1rpx solid $primary-border;
 
@@ -667,6 +640,21 @@ onReachBottom(() => {
   justify-content: center;
   padding: 100rpx 0;
 
+  .loading-spinner {
+    width: 60rpx;
+    height: 60rpx;
+    border: 4rpx solid rgba($primary-color, 0.2);
+    border-top-color: $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20rpx;
+  }
+
+  .empty-icon {
+    font-size: 80rpx;
+    margin-bottom: 20rpx;
+  }
+
   .empty-text {
     font-size: $font-size-base;
     color: $empty-text-color;
@@ -680,7 +668,42 @@ onReachBottom(() => {
 }
 
 .load-more {
-  padding: $margin-base 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx 0;
+
+  .loading-more {
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+    color: $text-secondary;
+    font-size: $font-size-small;
+
+    .loading-spinner-small {
+      width: 24rpx;
+      height: 24rpx;
+      border: 2rpx solid rgba($primary-color, 0.2);
+      border-top-color: $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .load-more-btn {
+    padding: 16rpx 32rpx;
+    background: $background-color;
+    border-radius: $border-radius;
+    color: $text-primary;
+    font-size: $font-size-small;
+  }
+}
+
+.no-more {
+  text-align: center;
+  padding: 40rpx 0;
+  color: $text-secondary;
+  font-size: $font-size-small;
 }
 
 .add-btn {
@@ -707,6 +730,10 @@ onReachBottom(() => {
 .placeholder-text {
   color: $text-placeholder;
   font-size: $font-size-base;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: $screen-md) {

@@ -5,7 +5,7 @@
       <view class="search-bar" :class="{ active: showSearch }">
         <text class="icon">🔍</text>
         <input
-          v-model="searchKeyword"
+          v-model="searchKeywords"
           class="search-input"
           placeholder="搜索公司名称"
           placeholder-class="placeholder"
@@ -13,7 +13,7 @@
           @blur="showSearch = false"
           @focus="showSearch = true"
         />
-        <view v-if="searchKeyword" class="search-actions">
+        <view v-if="searchKeywords" class="search-actions">
           <text class="icon" @click="resetSearch">×</text>
         </view>
       </view>
@@ -153,11 +153,11 @@ import { CompanyQuery, CompanyResult } from "@/types/company";
 const loading = ref(false);
 const refreshing = ref(false);
 const hasMore = ref(true);
-const searchKeyword = ref("");
+const searchKeywords = ref("");
 const showSearch = ref(false);
 
 // 列表参数
-const listParams = reactive<PageQuery>({});
+const listParams = reactive<PageParam>({});
 
 const bodyParams = ref<CompanyQuery>(
   {
@@ -182,7 +182,7 @@ const sortOptions = [
 // 搜索公司名称
 const handleSearch = () => {
   bodyParams.keyField = "name"
-  bodyParams.keyWords = searchKeyword.value.trim();
+  bodyParams.keyWords = searchKeywords.value.trim();
   listParams.page = 1;
   companyList.value = [];
   loadCompanyList();
@@ -190,7 +190,7 @@ const handleSearch = () => {
 
 // 重置搜索
 const resetSearch = () => {
-  searchKeyword.value = "";
+  searchKeywords.value = "";
   bodyParams.kayword = "";
   listParams.page = 1;
   companyList.value = [];
@@ -260,7 +260,7 @@ const handleRefresh = () => {
 // 跳转到详情页
 const navigateToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/company/detail?id=${id}`,
+    url: `/pages/company/company?id=${id}`,
   });
 };
 
@@ -382,7 +382,7 @@ onPullDownRefresh(() => {
         transition: all $transition-fast;
 
         &.active {
-          background: $primary-light;
+          background: $primary-color-light;
           color: $primary-color;
           border-color: $primary-color;
 

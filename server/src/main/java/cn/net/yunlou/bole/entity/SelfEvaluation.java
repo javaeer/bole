@@ -16,13 +16,14 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_self_evaluation")
+@TableName(value = "t_self_evaluation", autoResultMap = true, resultMap = "BaseResultMap")
 public class SelfEvaluation extends BaseEntity {
 
     private Long userId;
 
     private String content;
 
+    //亮点
     @TableField(typeHandler = JsonbTypeHandler.class)
-    private List<String> keywords;
+    private List<String> highlights;
 }

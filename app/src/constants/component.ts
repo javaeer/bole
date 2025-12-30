@@ -39,7 +39,7 @@ export const COMPONENT_LIBRARY = [
     id: 4,
     key: "EducationExperience",
     name: "教育背景",
-    icon: "school",
+    icon: "university",
     description: "学历和教育经历",
     category: "education",
     defaultConfig: {
@@ -82,18 +82,6 @@ export const COMPONENT_LIBRARY = [
       showTechnologies: true,
     },
 
-  },
-  {
-    id: 8,
-    key: "CompanyExperience",
-    name: "公司经历",
-    icon: "assignment",
-    description: "公司经历",
-    category: "project",
-    defaultConfig: {
-      showRole: true,
-      showTechnologies: true,
-    },
-  },
+  }
 ];
 

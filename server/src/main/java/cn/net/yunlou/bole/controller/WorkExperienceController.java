@@ -29,29 +29,26 @@ public class WorkExperienceController {
 
     @PostMapping("add")
     @Operation(summary = "新增工作经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> add(@RequestBody WorkExperienceCreate request) {
         return BusinessResponse.success(workExperienceService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除工作经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(workExperienceService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑工作经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> edit(@RequestBody @Valid WorkExperienceEdit request) {
         return BusinessResponse.success(workExperienceService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
     @Operation(summary = "获取工作经历信息")
-    public BusinessResponse<WorkExperience> get(@PathVariable(value = "id") Long id) {
-        return BusinessResponse.success(workExperienceService.getById(id));
+    public BusinessResponse<WorkExperienceView> get(@PathVariable(value = "id") Long id) {
+        return BusinessResponse.success(workExperienceService.getViewById(id));
     }
 
     @PostMapping("page")

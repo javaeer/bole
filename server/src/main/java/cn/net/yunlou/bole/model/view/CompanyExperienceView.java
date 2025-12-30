@@ -13,6 +13,9 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class CompanyExperienceView extends BaseView {
+
+    private Long companyId;
+
     private String position;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -25,7 +28,6 @@ public class CompanyExperienceView extends BaseView {
 
     private String description;
 
-    private List<String> website;
-
     private Integer sort;
+
 }

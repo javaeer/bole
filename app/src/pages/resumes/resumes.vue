@@ -252,7 +252,7 @@ export default {
             props: {
               educations: [
                 {
-                  school: "清华大学",
+                  university: "清华大学",
                   degree: "硕士",
                   major: "计算机科学与技术",
                   startDate: "2015-09",
@@ -260,7 +260,7 @@ export default {
                   achievements: ["优秀毕业生", "国家奖学金", "校级三好学生"],
                 },
                 {
-                  school: "北京大学",
+                  university: "北京大学",
                   degree: "本科",
                   major: "软件工程",
                   startDate: "2011-09",
@@ -277,7 +277,7 @@ export default {
             component: "ResumeSelfEvaluation",
             props: {
               content: "5年前端开发经验，精通Vue和React技术栈。对前端性能优化有深入研究，曾主导多个大型项目的前端架构设计。具备良好的团队协作和沟通能力，热衷于技术分享和团队建设。拥有强烈的主人翁意识，能够主动发现问题并提出解决方案。",
-              keywords: ["技术驱动", "团队协作", "持续学习", "结果导向", "精益求精"],
+              highlights: ["技术驱动", "团队协作", "持续学习", "结果导向", "精益求精"],
             },
           },
         ],

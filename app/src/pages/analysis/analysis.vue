@@ -504,7 +504,7 @@ onMounted(() => {
 }
 
 .upload-card {
-  background: linear-gradient(135deg, $primary-lighter 0%, color.adjust($primary-lighter, $lightness:  5%) 100%);
+  background: linear-gradient(135deg, $primary-color-lighter 0%, color.adjust($primary-color-lighter, $lightness:  5%) 100%);
   border: 2rpx dashed $primary-color;
   border-radius: $border-radius;
   padding: $padding-base * 1.5;
@@ -516,7 +516,7 @@ onMounted(() => {
 
   &:active {
     transform: scale(0.98);
-    background: color.adjust($primary-lighter, $lightness:  -5%);
+    background: color.adjust($primary-color-lighter, $lightness:  -5%);
   }
 }
 
@@ -610,7 +610,7 @@ onMounted(() => {
   font-weight: $font-weight-bold;
   color: $primary-color;
   padding: $padding-mini;
-  background: $primary-lighter;
+  background: $primary-color-lighter;
   border-radius: $border-radius-small;
 }
 
@@ -816,7 +816,7 @@ onMounted(() => {
   }
 
   &.priority-low {
-    background: $primary-lighter;
+    background: $primary-color-lighter;
     color: $primary-color;
   }
 }
@@ -838,7 +838,7 @@ onMounted(() => {
 .tag {
   font-size: $font-size-extra-small;
   color: $primary-color;
-  background: $primary-lighter;
+  background: $primary-color-lighter;
   padding: calc($padding-mini / 2) $padding-mini;
   border-radius: $border-radius-small;
 }
@@ -877,7 +877,7 @@ onMounted(() => {
   color: $primary-color;
   font-weight: $font-weight-medium;
   padding: $padding-mini $padding-small;
-  background: $primary-lighter;
+  background: $primary-color-lighter;
   border-radius: $border-radius;
   transition: all $transition-fast;
 
@@ -939,7 +939,7 @@ onMounted(() => {
   }
 
   &--active {
-    background: $primary-lighter;
+    background: $primary-color-lighter;
     border-color: $primary-color;
   }
 }

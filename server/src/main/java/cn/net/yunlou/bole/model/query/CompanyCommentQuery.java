@@ -2,6 +2,7 @@ package cn.net.yunlou.bole.model.query;
 
 import cn.net.yunlou.bole.common.BaseQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 /**
@@ -11,4 +12,6 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "查询企业评论请求")
-public class CompanyCommentQuery extends BaseQuery {}
+public class CompanyCommentQuery extends BaseQuery {
+    private Long companyId;
+}

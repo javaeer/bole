@@ -1,7 +1,8 @@
 package cn.net.yunlou.bole.model.view;
 
 import cn.net.yunlou.bole.common.BaseView;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * FileName: UserBasicInfoView Description: Created By laughtiger Created At 2025/12/14 02:42
@@ -16,6 +17,8 @@ public class UserBasicInfoView extends BaseView {
     private String phone;
 
     private String name;
+
+    private Integer gender;
 
     private String avatar;
 

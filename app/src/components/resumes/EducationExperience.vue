@@ -17,9 +17,9 @@
       <block v-for="(edu, index) in experiences" :key="index">
         <view class="education-item" :style="itemStyle">
           <!-- 学校信息 -->
-          <view class="school-header">
-            <view class="school-main">
-              <text class="school-name">{{ edu.school || '未知学校' }}</text>
+          <view class="university-header">
+            <view class="university-main">
+              <text class="university-name">{{ edu.university || '未知学校' }}</text>
               <view class="degree-info">
                 <text class="degree">{{ edu.degree || '学历未填写' }}</text>
                 <text v-if="edu.major" class="major"> · {{ edu.major }}</text>
@@ -115,7 +115,7 @@ const experiences = computed(() => {
   const raw = componentProps.value.experiences || []
   return raw.map(edu => ({
     id: edu.id || Date.now(),
-    school: edu.school || '未知学校',
+    university: edu.university || '未知学校',
     degree: edu.degree || '学历未填写',
     major: edu.major || '',
     startDate: edu.startDate || '',
@@ -221,16 +221,16 @@ console.log('教育背景组件加载完成', {
   }
 
   // 学校头部信息
-  .school-header {
+  .university-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 20rpx;
 
-    .school-main {
+    .university-main {
       flex: 1;
 
-      .school-name {
+      .university-name {
         font-size: 32rpx;
         font-weight: 600;
         color: #333;
@@ -384,7 +384,7 @@ console.log('教育背景组件加载完成', {
 // 响应式调整
 @media (max-width: 375px) {
   .education-section {
-    .school-header {
+    .university-header {
       flex-direction: column;
 
       .education-time {

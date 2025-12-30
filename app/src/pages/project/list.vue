@@ -6,13 +6,13 @@
       <view class="search-box">
         <uni-icons type="search" size="20" color="#999" />
         <input
-          v-model="searchKeyword"
+          v-model="searchKeywords"
           class="search-input"
           placeholder="搜索项目名称或描述"
           placeholder-class="placeholder-text"
           @input="handleSearch"
         />
-        <button v-if="searchKeyword" class="clear-btn" @click="clearSearch">
+        <button v-if="searchKeywords" class="clear-btn" @click="clearSearch">
           <uni-icons type="clear" size="18" color="#999" />
         </button>
       </view>
@@ -172,7 +172,7 @@ import { dateUtils } from "@/utils/date";
 
 
 // 响应式数据
-const searchKeyword = ref("");
+const searchKeywords = ref("");
 const statusIndex = ref(0);
 const sortIndex = ref(0);
 const currentPage = ref(1);
@@ -337,7 +337,7 @@ const handleSearch = () => {
 };
 
 const clearSearch = () => {
-  searchKeyword.value = "";
+  searchKeywords.value = "";
   currentPage.value = 1;
   loadData(true);
 };
@@ -403,8 +403,8 @@ const loadData = (reset = false) => {
     let filtered = [...mockData];
 
     // 关键字搜索
-    if (searchKeyword.value) {
-      const keyword = searchKeyword.value.toLowerCase();
+    if (searchKeywords.value) {
+      const keyword = searchKeywords.value.toLowerCase();
       filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(keyword) ||
         item.description.toLowerCase().includes(keyword) ||
@@ -605,7 +605,7 @@ onReachBottom(() => {
           }
 
           &.status-in-progress {
-            background: $primary-light;
+            background: $primary-color-light;
             color: $primary-color;
             border: 1rpx solid $primary-border;
           }

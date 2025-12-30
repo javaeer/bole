@@ -735,7 +735,7 @@ onBeforeUnmount(() => {
 .auth-container {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(135deg, $primary-lighter 0%, $background-color 100%);
+  background: linear-gradient(135deg, $primary-color-lighter 0%, $background-color 100%);
   padding: $padding-base;
   overflow: hidden;
 }
@@ -1580,7 +1580,7 @@ onBeforeUnmount(() => {
 /* 修复所有按钮的基线对齐 */
 button {
   vertical-align: middle;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-keyword-color: transparent;
   padding: 0;
   background: none;
   border: none;

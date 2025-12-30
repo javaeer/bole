@@ -251,7 +251,7 @@ const handleContactUs = () => {
 .feature-icon {
   width: 60rpx;
   height: 60rpx;
-  background: $primary-light;
+  background: $primary-color-light;
   border-radius: $border-radius-round;
   display: flex;
   align-items: center;

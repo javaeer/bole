@@ -34,7 +34,6 @@ public class WorkExperienceComponentDataPopulatorStrategy
 
             List<Map<String, Object>> realProps = Lists.newArrayList();
             for (WorkExperienceView view : workExperienceViews) {
-
                 Map<String, Object> map = BeanUtils.toMap(view);
                 realProps.add(map);
             }

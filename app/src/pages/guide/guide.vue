@@ -14,10 +14,10 @@
             class="search-input"
             placeholder="搜索求职问题..."
             placeholder-class="placeholder"
-            v-model="searchKeyword"
+            v-model="searchKeywords"
             @confirm="handleSearch"
           />
-          <view v-if="searchKeyword" class="search-clear" @click="searchKeyword = ''">
+          <view v-if="searchKeywords" class="search-clear" @click="searchKeywords = ''">
             <text>✕</text>
           </view>
         </view>
@@ -152,7 +152,7 @@
 import { ref, computed, onMounted } from 'vue'
 
 // 搜索关键词
-const searchKeyword = ref('')
+const searchKeywords = ref('')
 
 // 当前激活的分类
 const activeCategory = ref(0)
@@ -281,13 +281,13 @@ const switchCategory = (index: number) => {
 }
 
 const handleSearch = () => {
-  if (!searchKeyword.value.trim()) return
+  if (!searchKeywords.value.trim()) return
   
   uni.showLoading({ title: '搜索中...' })
   setTimeout(() => {
     uni.hideLoading()
     uni.showToast({
-      title: `搜索: ${searchKeyword.value}`,
+      title: `搜索: ${searchKeywords.value}`,
       icon: 'none'
     })
     // 实际项目中这里应该调用搜索API
@@ -566,7 +566,7 @@ onMounted(() => {
 .article-tag {
   font-size: $font-size-extra-small;
   color: $primary-color;
-  background: $primary-light;
+  background: $primary-color-light;
   padding: 2rpx 10rpx;
   border-radius: $border-radius-small;
 }
@@ -657,7 +657,7 @@ onMounted(() => {
   margin-left: auto;
   font-size: $font-size-extra-small;
   color: $primary-color;
-  background: $primary-light;
+  background: $primary-color-light;
   padding: 2rpx 8rpx;
   border-radius: $border-radius-small;
 }
@@ -677,7 +677,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   font-size: $font-size-extra-large;
-  background: $primary-light;
+  background: $primary-color-light;
   border-radius: $border-radius-small;
   color: $primary-color;
 }

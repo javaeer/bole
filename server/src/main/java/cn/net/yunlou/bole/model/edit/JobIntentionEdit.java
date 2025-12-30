@@ -9,4 +9,13 @@ import lombok.*;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class JobIntentionEdit extends BaseEdit {}
+public class JobIntentionEdit extends BaseEdit {
+
+    private String position;
+
+    private String city;
+
+    private String salary;
+
+    private String jobType;
+}

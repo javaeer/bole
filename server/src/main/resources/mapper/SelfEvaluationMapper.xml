@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.net.yunlou.bole.mapper.SelfEvaluationMapper">
+
+    <resultMap id="BaseResultMap" type="cn.net.yunlou.bole.entity.SelfEvaluation">
+        <!-- 继承 BaseEntity 的字段 -->
+        <id column="id" property="id"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="deleted" property="deleted"/>
+
+        <!-- EducationExperience 特有字段 -->
+
+        <result column="user_id" property="userId"/>
+        <result column="content" property="content"/>
+
+
+        <!-- JSON 类型字段，使用 typeHandler -->
+        <result column="highlights" property="highlights"
+                typeHandler="cn.net.yunlou.bole.common.handler.JsonbTypeHandler"/>
+    </resultMap>
+
+</mapper>

@@ -18,5 +18,4 @@ public interface JobIntentionService
                 JobIntentionView,
                 JobIntentionEdit,
                 JobIntentionQuery> {
-    JobIntention getLatest(Long userId);
 }

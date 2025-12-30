@@ -588,8 +588,8 @@ export default {
   .tech-tag {
     @extend .flex-center;
     padding: 8rpx 16rpx;
-    background: $primary-lighter;
-    border: 1rpx solid $primary-light;
+    background: $primary-color-lighter;
+    border: 1rpx solid $primary-color-light;
     border-radius: $border-radius-small;
 
     .tag-text {

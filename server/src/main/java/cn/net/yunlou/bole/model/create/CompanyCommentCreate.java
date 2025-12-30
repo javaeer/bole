@@ -14,6 +14,8 @@ import lombok.*;
 @Schema(description = "新增企业评论请求")
 public class CompanyCommentCreate extends BaseCreate {
 
+    private Long userId;
+
     @NotNull(message = "企业ID不能为空")
     @Schema(description = "企业ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long companyId;

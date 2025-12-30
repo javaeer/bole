@@ -25,7 +25,7 @@ const CompanyAPI = {
 		return request.put(`${COMPANY_BASE_URL}/update`, form);
 	},
 
-	page(params : PageQuery, query ?: CompanyQuery) {
+	page(params : PageParam, query ?: CompanyQuery) {
 		return request.page<PageResult<CompanyResult>>(`${COMPANY_BASE_URL}/page`, params, query);
 	},
 

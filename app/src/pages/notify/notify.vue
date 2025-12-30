@@ -610,13 +610,13 @@ const handleReport = () => {
   display: flex;
   align-items: center;
   padding: $padding-small;
-  background: $primary-lighter;
+  background: $primary-color-lighter;
   border-radius: $border-radius;
   border: 1rpx solid rgba($primary-color, 0.2);
   transition: all $transition-fast;
   
   &:active {
-    background: color.adjust($primary-lighter, $lightness:  -5%);
+    background: color.adjust($primary-color-lighter, $lightness:  -5%);
   }
 }
 

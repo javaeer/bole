@@ -1,31 +1,35 @@
 export interface EducationExperienceForm {
-  company?: string;
-  position?: string;
+  id?: number;
+  universityId: number;
+  university: string;
+  major: string;
+  degree: string;
+  startDate: string;
+  endDate: string;
+  isHighest: number;
   description?: string;
-  startDate?: string;
-  endDate?: string;
-  skills?: string[];
-  achievements?: string[];
+  achievements?: string[] | null;
 }
 
-export interface EducationExperienceQuery extends PageQuery {
-
+export interface EducationExperienceQuery extends BodyQuery {
+  university?: string;
 }
 
 
-export interface EducationExperienceItem {
+export interface EducationExperienceResult {
   id: number;
   createdAt: string;
   updatedAt: string;
   deleted: number;
   userId: number;
-  school: string;
+  universityId: number;
+  university: string;
   major: string;
   degree: string;
   startDate: string;
   endDate: string;
   isHighest: number;
   description: string | null;
-  achievements: string | null;
+  achievements: string[] | null;
   sort: number;
 }

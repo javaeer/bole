@@ -764,7 +764,7 @@ onShow(() => {
       }
 
       &-certified {
-        background: $primary-light;
+        background: $primary-color-light;
         color: $primary-color;
         border: 1rpx solid $primary-border;
       }
