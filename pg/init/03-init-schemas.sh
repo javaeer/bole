@@ -146,8 +146,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         -- 基础信息字段
         company_id BIGINT,
         gender INTEGER DEFAULT 0,
-        username VARCHAR(100) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
+        username VARCHAR(100),
+        password VARCHAR(255),
         email VARCHAR(100),
         phone VARCHAR(20),
         name VARCHAR(100),
@@ -530,9 +530,10 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         
         -- 关联字段
         user_id BIGINT NOT NULL,
-        
+        university_id BIGINT,
+
         -- 教育信息字段
-        school VARCHAR(200) NOT NULL,
+        university VARCHAR(200) NOT NULL,
         major VARCHAR(100),
         degree VARCHAR(50),
         
@@ -564,7 +565,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 创建索引
     CREATE INDEX IF NOT EXISTS idx_education_experience_user_id ON bole_app.t_education_experience(user_id);
-    CREATE INDEX IF NOT EXISTS idx_education_experience_school ON bole_app.t_education_experience(school);
+    CREATE INDEX IF NOT EXISTS idx_education_experience_university ON bole_app.t_education_experience(university);
     CREATE INDEX IF NOT EXISTS idx_education_experience_degree ON bole_app.t_education_experience(degree);
     CREATE INDEX IF NOT EXISTS idx_education_experience_start_date ON bole_app.t_education_experience(start_date);
     CREATE INDEX IF NOT EXISTS idx_education_experience_is_highest ON bole_app.t_education_experience(is_highest);
@@ -574,7 +575,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON TABLE bole_app.t_education_experience IS '教育经历表';
     COMMENT ON COLUMN bole_app.t_education_experience.id IS '主键ID';
     COMMENT ON COLUMN bole_app.t_education_experience.user_id IS '用户ID';
-    COMMENT ON COLUMN bole_app.t_education_experience.school IS '学校名称';
+    COMMENT ON COLUMN bole_app.t_education_experience.university_id IS '学校ID';
+    COMMENT ON COLUMN bole_app.t_education_experience.university IS '学校名称';
     COMMENT ON COLUMN bole_app.t_education_experience.major IS '专业';
     COMMENT ON COLUMN bole_app.t_education_experience.degree IS '学位(如:本科,硕士,博士)';
     COMMENT ON COLUMN bole_app.t_education_experience.start_date IS '开始日期';
@@ -654,6 +656,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         -- 关联字段
         user_id BIGINT NOT NULL,
         company_id BIGINT NOT NULL,
+        company VARCHAR(200) NOT NULL,
         
         -- 工作信息字段
         position VARCHAR(200) NOT NULL,
@@ -703,6 +706,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_work_experiences.id IS '主键ID';
     COMMENT ON COLUMN bole_app.t_work_experiences.user_id IS '用户ID';
     COMMENT ON COLUMN bole_app.t_work_experiences.company_id IS '公司ID';
+    COMMENT ON COLUMN bole_app.t_work_experiences.company IS '公司名称';
     COMMENT ON COLUMN bole_app.t_work_experiences.position IS '职位名称';
     COMMENT ON COLUMN bole_app.t_work_experiences.start_date IS '开始日期';
     COMMENT ON COLUMN bole_app.t_work_experiences.end_date IS '结束日期（为空表示至今）';
@@ -909,7 +913,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         id BIGSERIAL PRIMARY KEY,
         user_id BIGINT NOT NULL,
         content TEXT,
-        keywords JSONB,
+        highlights JSONB,
         
         -- 时间字段
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -929,7 +933,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     CREATE INDEX IF NOT EXISTS idx_self_evaluation_created_at ON bole_app.t_self_evaluation(created_at);
 
     -- 如果需要查询 JSONB 字段中的特定属性，可以创建 GIN 索引
-    CREATE INDEX IF NOT EXISTS idx_self_evaluation_keywords ON bole_app.t_self_evaluation USING GIN (keywords);
+    CREATE INDEX IF NOT EXISTS idx_self_evaluation_highlights ON bole_app.t_self_evaluation USING GIN (highlights);
     
 
     -- 注释
@@ -1142,6 +1146,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         -- 主键字段（联合主键）
         user_id BIGINT NOT NULL,
         template_id BIGINT NOT NULL,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         
         -- 添加联合主键约束
         PRIMARY KEY (user_id, template_id),
@@ -1167,6 +1173,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON TABLE bole_app.t_favorite_template IS '用户收藏模板关联表';
     COMMENT ON COLUMN bole_app.t_favorite_template.user_id IS '用户ID';
     COMMENT ON COLUMN bole_app.t_favorite_template.template_id IS '简历模板ID';
+    COMMENT ON COLUMN bole_app.t_favorite_template.created_at IS '收藏时间';
 
     -- 关注公司表
     CREATE TABLE IF NOT EXISTS bole_app.t_follow_company (
@@ -1237,6 +1244,45 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_msg_template.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_msg_template.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
+    -- 短信表
+    CREATE TABLE IF NOT EXISTS bole_app.t_sms (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        phone VARCHAR(255) NOT NULL,
+        text TEXT,
+        content TEXT,
+        template_id BIGINT,
+        state INTEGER DEFAULT 0,
+        
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_ems_phone ON bole_app.t_sms(phone);
+    CREATE INDEX IF NOT EXISTS idx_ems_template_id ON bole_app.t_sms(template_id);
+    CREATE INDEX IF NOT EXISTS idx_ems_state ON bole_app.t_sms(state);
+    CREATE INDEX IF NOT EXISTS idx_ems_created_at ON bole_app.t_sms(created_at);
+
+    -- 添加外键约束（如果存在模板表）
+    -- ALTER TABLE bole_app.t_sms ADD CONSTRAINT fk_ems_template 
+    -- FOREIGN KEY (template_id) REFERENCES bole_app.t_message_template(id);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_sms IS '邮件发送记录表';
+    COMMENT ON COLUMN bole_app.t_sms.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_sms.phone IS '收件人邮箱地址';
+    COMMENT ON COLUMN bole_app.t_sms.text IS '邮件文本内容';
+    COMMENT ON COLUMN bole_app.t_sms.content IS '核心内容（如验证码）';
+    COMMENT ON COLUMN bole_app.t_sms.template_id IS '邮件模板ID';
+    COMMENT ON COLUMN bole_app.t_sms.state IS '发送状态（0:待发送,1:发送中,2:发送成功,3:发送失败）';
+    COMMENT ON COLUMN bole_app.t_sms.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_sms.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_sms.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
     -- 邮件表
     CREATE TABLE IF NOT EXISTS bole_app.t_ems (

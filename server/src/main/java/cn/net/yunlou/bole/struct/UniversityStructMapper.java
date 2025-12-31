@@ -10,13 +10,10 @@ import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 
 /**
- * FileName: UniversityStructMapper
- * Description:
- * Created By laughtiger
- * Created At 2025/12/30 17:51
- * Modified By
- * Modified At
+ * FileName: UniversityStructMapper Description: Created By laughtiger Created At 2025/12/30 17:51
+ * Modified By Modified At
  */
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
-public interface UniversityStructMapper extends BaseStructMapper<University, UniversityCreate, UniversityView, UniversityEdit, UniversityQuery> {
-}
+public interface UniversityStructMapper
+        extends BaseStructMapper<
+                University, UniversityCreate, UniversityView, UniversityEdit, UniversityQuery> {}

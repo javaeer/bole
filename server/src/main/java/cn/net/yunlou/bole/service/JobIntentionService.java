@@ -17,5 +17,4 @@ public interface JobIntentionService
                 JobIntentionCreate,
                 JobIntentionView,
                 JobIntentionEdit,
-                JobIntentionQuery> {
-}
+                JobIntentionQuery> {}

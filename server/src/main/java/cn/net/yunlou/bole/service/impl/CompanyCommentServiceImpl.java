@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CompanyCommentServiceImpl
         extends BaseService<
-        CompanyCommentMapper,
-        CompanyComment,
-        CompanyCommentCreate,
-        CompanyCommentView,
-        CompanyCommentEdit,
-        CompanyCommentQuery,
-        CompanyCommentStructMapper>
+                CompanyCommentMapper,
+                CompanyComment,
+                CompanyCommentCreate,
+                CompanyCommentView,
+                CompanyCommentEdit,
+                CompanyCommentQuery,
+                CompanyCommentStructMapper>
         implements CompanyCommentService {
 
     @Override

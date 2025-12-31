@@ -24,13 +24,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EducationExperienceServiceImpl
         extends BaseService<
-        EducationExperienceMapper,
-        EducationExperience,
-        EducationExperienceCreate,
-        EducationExperienceView,
-        EducationExperienceEdit,
-        EducationExperienceQuery,
-        EducationExperienceStructMapper>
+                EducationExperienceMapper,
+                EducationExperience,
+                EducationExperienceCreate,
+                EducationExperienceView,
+                EducationExperienceEdit,
+                EducationExperienceQuery,
+                EducationExperienceStructMapper>
         implements EducationExperienceService {
 
     private final UniversityService universityService;
@@ -51,7 +51,9 @@ public class EducationExperienceServiceImpl
     @Override
     public QueryWrapper<EducationExperience> getBaseQueryWrapper(EducationExperience entity) {
         QueryWrapper<EducationExperience> queryWrapper = super.getBaseQueryWrapper(entity);
-        queryWrapper.lambda().eq(EducationExperience::getUserId, SecurityContextUtils.getCurrentUserId());
+        queryWrapper
+                .lambda()
+                .eq(EducationExperience::getUserId, SecurityContextUtils.getCurrentUserId());
         queryWrapper.lambda().orderByDesc(EducationExperience::getEndDate);
         return queryWrapper;
     }

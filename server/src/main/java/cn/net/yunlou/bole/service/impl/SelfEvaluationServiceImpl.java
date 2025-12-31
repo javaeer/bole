@@ -21,15 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SelfEvaluationServiceImpl
         extends BaseService<
-        SelfEvaluationMapper,
-        SelfEvaluation,
-        SelfEvaluationCreate,
-        SelfEvaluationView,
-        SelfEvaluationEdit,
-        SelfEvaluationQuery,
-        SelfEvaluationStructMapper>
+                SelfEvaluationMapper,
+                SelfEvaluation,
+                SelfEvaluationCreate,
+                SelfEvaluationView,
+                SelfEvaluationEdit,
+                SelfEvaluationQuery,
+                SelfEvaluationStructMapper>
         implements SelfEvaluationService {
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -44,7 +43,9 @@ public class SelfEvaluationServiceImpl
     @Override
     public QueryWrapper<SelfEvaluation> getBaseQueryWrapper(SelfEvaluation entity) {
         QueryWrapper<SelfEvaluation> queryWrapper = super.getBaseQueryWrapper(entity);
-        queryWrapper.lambda().eq(SelfEvaluation::getUserId, SecurityContextUtils.getCurrentUserId());
+        queryWrapper
+                .lambda()
+                .eq(SelfEvaluation::getUserId, SecurityContextUtils.getCurrentUserId());
 
         return queryWrapper;
     }

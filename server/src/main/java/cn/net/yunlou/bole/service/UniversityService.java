@@ -8,12 +8,9 @@ import cn.net.yunlou.bole.model.query.UniversityQuery;
 import cn.net.yunlou.bole.model.view.UniversityView;
 
 /**
- * FileName: UniversityService
- * Description:
- * Created By laughtiger
- * Created At 2025/12/30 17:48
- * Modified By
- * Modified At
+ * FileName: UniversityService Description: Created By laughtiger Created At 2025/12/30 17:48
+ * Modified By Modified At
  */
-public interface UniversityService extends IBaseService<University, UniversityCreate, UniversityView, UniversityEdit, UniversityQuery> {
-}
+public interface UniversityService
+        extends IBaseService<
+                University, UniversityCreate, UniversityView, UniversityEdit, UniversityQuery> {}

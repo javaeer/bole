@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class WorkExperienceServiceImpl
         extends BaseService<
-        WorkExperienceMapper,
-        WorkExperience,
-        WorkExperienceCreate,
-        WorkExperienceView,
-        WorkExperienceEdit,
-        WorkExperienceQuery,
-        WorkExperienceStructMapper>
+                WorkExperienceMapper,
+                WorkExperience,
+                WorkExperienceCreate,
+                WorkExperienceView,
+                WorkExperienceEdit,
+                WorkExperienceQuery,
+                WorkExperienceStructMapper>
         implements WorkExperienceService {
 
     @Override
@@ -41,7 +41,9 @@ public class WorkExperienceServiceImpl
     @Override
     public QueryWrapper<WorkExperience> getBaseQueryWrapper(WorkExperience entity) {
         QueryWrapper<WorkExperience> queryWrapper = super.getBaseQueryWrapper(entity);
-        queryWrapper.lambda().eq(WorkExperience::getUserId, SecurityContextUtils.getCurrentUserId());
+        queryWrapper
+                .lambda()
+                .eq(WorkExperience::getUserId, SecurityContextUtils.getCurrentUserId());
         queryWrapper.lambda().orderByDesc(WorkExperience::getStartDate);
         return queryWrapper;
     }

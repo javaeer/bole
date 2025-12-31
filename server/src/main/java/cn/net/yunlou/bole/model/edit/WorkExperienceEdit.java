@@ -1,14 +1,11 @@
 package cn.net.yunlou.bole.model.edit;
 
 import cn.net.yunlou.bole.common.BaseEdit;
-import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.util.List;
+import lombok.*;
 
 /**
  * FileName: WorkExperienceEditRequest Description: Created By MR. WANG Created At 2025/11/25 00:08

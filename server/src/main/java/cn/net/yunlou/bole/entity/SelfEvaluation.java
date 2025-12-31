@@ -23,7 +23,7 @@ public class SelfEvaluation extends BaseEntity {
 
     private String content;
 
-    //亮点
+    // 亮点
     @TableField(typeHandler = JsonbTypeHandler.class)
     private List<String> highlights;
 }

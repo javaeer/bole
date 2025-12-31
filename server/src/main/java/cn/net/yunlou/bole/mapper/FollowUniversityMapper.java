@@ -6,12 +6,7 @@ import cn.net.yunlou.bole.entity.University;
 import cn.net.yunlou.bole.entity.User;
 
 /**
- * FileName: FollowUniversityMapper
- * Description:
- * Created By laughtiger
- * Created At 2025/12/30 17:54
- * Modified By
- * Modified At
+ * FileName: FollowUniversityMapper Description: Created By laughtiger Created At 2025/12/30 17:54
+ * Modified By Modified At
  */
-public interface FollowUniversityMapper extends IMultiMapper<FollowUniversity, User, University> {
-}
+public interface FollowUniversityMapper extends IMultiMapper<FollowUniversity, User, University> {}

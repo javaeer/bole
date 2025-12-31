@@ -4,7 +4,9 @@ import cn.net.yunlou.bole.common.BaseDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "刷新令牌请求")
 public class RefreshTokenDTO extends BaseDTO {

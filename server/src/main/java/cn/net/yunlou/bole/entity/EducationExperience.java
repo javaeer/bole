@@ -2,14 +2,12 @@ package cn.net.yunlou.bole.entity;
 
 import cn.net.yunlou.bole.common.BaseEntity;
 import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
-import cn.net.yunlou.bole.common.handler.JsonbTypeListHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.util.List;
+import lombok.*;
 
 /**
  * FileName: EducationExperience Description: Created By MR. WANG Created At 2025/11/24 20:44
@@ -47,5 +45,4 @@ public class EducationExperience extends BaseEntity {
     private List<String> achievements;
 
     private Integer sort;
-
 }

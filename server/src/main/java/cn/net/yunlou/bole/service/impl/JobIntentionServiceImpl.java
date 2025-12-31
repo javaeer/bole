@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class JobIntentionServiceImpl
         extends BaseService<
-        JobIntentionMapper,
-        JobIntention,
-        JobIntentionCreate,
-        JobIntentionView,
-        JobIntentionEdit,
-        JobIntentionQuery,
-        JobIntentionStructMapper>
+                JobIntentionMapper,
+                JobIntention,
+                JobIntentionCreate,
+                JobIntentionView,
+                JobIntentionEdit,
+                JobIntentionQuery,
+                JobIntentionStructMapper>
         implements JobIntentionService {
 
     @Override

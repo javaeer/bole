@@ -2,8 +2,8 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.University;
 import cn.net.yunlou.bole.entity.FollowUniversity;
+import cn.net.yunlou.bole.entity.University;
 import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.model.create.UniversityCreate;
 import cn.net.yunlou.bole.model.edit.UniversityEdit;
@@ -15,16 +15,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
-
 /**
- * FileName: UniversityController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
- * By Modified At
+ * FileName: UniversityController Description: Created By MR. WANG Created At 2025/11/24 21:27
+ * Modified By Modified At
  */
 @RestController
 @RequestMapping("university")
@@ -82,7 +81,10 @@ public class UniversityController {
             Long currentUserId = SecurityContextUtils.getCurrentUserId();
             view.setFollowed(
                     followUniversityService.exists(
-                            FollowUniversity.builder().userId(currentUserId).universityId(id).build()));
+                            FollowUniversity.builder()
+                                    .userId(currentUserId)
+                                    .universityId(id)
+                                    .build()));
         }
         return BusinessResponse.success(view);
     }

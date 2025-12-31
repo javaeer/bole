@@ -4,9 +4,8 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
-
 import java.time.LocalDate;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

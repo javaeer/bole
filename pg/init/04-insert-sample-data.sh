@@ -96,11 +96,8 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 插入用户数据
     INSERT INTO bole_app.t_user (id, company_id, username, password, email, phone, name, avatar, title, location, website, github, wechat, bio, followers, fans, likes, status, work_years, last_login_at) VALUES
-    (1, 1, 'admin', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'zhangsan@tencent.com', '13800138001', '张三', 'https://example.com/avatar1.jpg', '高级工程师', '深圳', 'https://zhangsan.dev', 'zhangsan', 'zhangsan_wx', '专注于后端开发和系统架构', 150, 80, 300, 1, 5, '2024-01-15 10:30:00'),
-    (2, 1, 'lisi', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'lisi@tencent.com', '13800138002', '李四', 'https://example.com/avatar2.jpg', '前端开发专家', '北京', 'https://lisi.dev', 'lisi', 'lisi_wx', '热爱前端技术和用户体验设计', 200, 120, 450, 1, 7, '2024-01-14 15:20:00'),
-    (3, 2, 'wangwu', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'wangwu@alibaba.com', '13800138003', '王五', 'https://example.com/avatar3.jpg', '架构师', '杭州', 'https://wangwu.dev', 'wangwu', 'wangwu_wx', '专注于分布式系统和云原生架构', 300, 150, 600, 1, 8, '2024-01-13 09:15:00'),
-    (4, 3, 'zhaoliu', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'zhaoliu@bytedance.com', '13800138004', '赵六', 'https://example.com/avatar4.jpg', '全栈工程师', '上海', 'https://zhaoliu.dev', 'zhaoliu', 'zhaoliu_wx', '全栈开发，热爱新技术', 180, 90, 350, 1, 4, '2024-01-12 14:45:00');
-
+    (1, 1, 'admin', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'zhangsan@tencent.com', '18610880038', '王彦博', 'https://example.com/avatar1.jpg', '高级工程师', '深圳', 'https://zhangsan.dev', 'zhangsan', 'zhangsan_wx', '专注于后端开发和系统架构', 150, 80, 300, 1, 5, '2024-01-15 10:30:00'),
+ 
     -- 插入角色数据
     INSERT INTO bole_app.t_role (id, name, code, description) VALUES
     (1, '超级管理员', 'SUPER', '系统超级管理员，拥有所有权限'),
@@ -131,7 +128,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     (3, 2, 'Java开发工程师', '2019-01-15', '2021-12-31', false, '参与电商平台后端开发', '[]', 1);
 
     -- 插入教育经历数据
-    INSERT INTO bole_app.t_education_experience (id, user_id, school, major, degree, start_date, end_date, is_highest, sort, description, achievements) VALUES
+    INSERT INTO bole_app.t_education_experience (id, user_id, university, major, degree, start_date, end_date, is_highest, sort, description, achievements) VALUES
     (1, 1, '清华大学', '计算机科学与技术', '本科', '2014-09-01', '2018-06-30', 0, 1, '主修计算机相关课程', '["校级优秀毕业生", "ACM竞赛二等奖"]'),
     (2, 1, '北京大学', '软件工程', '硕士', '2018-09-01', '2021-06-30', 1, 2, '研究方向：分布式系统', '["发表论文2篇", "国家奖学金"]'),
     (3, 2, '浙江大学', '电子信息工程', '本科', '2015-09-01', '2019-06-30', 1, 1, '学习电子技术和编程', '["优秀学生干部", "创新项目奖"]'),
@@ -145,13 +142,13 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     (4, 3, '云原生容器平台', 0, '2023-03-01', NULL, 1, '基于Kubernetes的容器管理平台', '["支持千级节点管理", "实现自动化部署"]', 1);
 
     -- 插入工作经历数据
-    INSERT INTO bole_app.t_work_experiences (id, user_id, company_id, position, start_date, end_date, is_current, description, achievements, sort) VALUES
-    (1, 1, 1, '软件工程师', '2021-07-01', '2023-06-30', false, '负责核心业务功能开发', '["完成3个重大项目", "获得年度优秀员工"]', 1),
-    (2, 1, 1, '高级软件工程师', '2023-07-01', NULL, true, '负责系统架构设计和团队指导', '["主导系统重构", "培养3名初级工程师"]', 2),
-    (3, 2, 1, '前端开发工程师', '2019-07-01', '2022-12-31', false, '负责Web前端开发', '["开发10+核心页面", "性能优化成果显著"]', 1),
-    (4, 2, 1, '前端开发专家', '2023-01-01', NULL, true, '负责前端架构和技术选型', '["引入微前端架构", "建立前端规范"]', 2),
-    (5, 3, 2, 'Java开发工程师', '2018-07-01', '2021-08-31', false, '参与电商平台开发', '["处理高并发场景", "系统稳定性提升"]', 1),
-    (6, 3, 2, '系统架构师', '2021-09-01', NULL, true, '负责系统架构设计', '["设计微服务架构", "技术团队建设"]', 2);
+    INSERT INTO bole_app.t_work_experiences (id, user_id,company_id, company, position, start_date, end_date, is_current, description, achievements, sort) VALUES
+    (1, 1, 1, '伯乐科技', '软件工程师', '2021-07-01', '2023-06-30', false, '负责核心业务功能开发', '["完成3个重大项目", "获得年度优秀员工"]', 1),
+    (2, 1, 1, '伯乐科技', '高级软件工程师', '2023-07-01', NULL, true, '负责系统架构设计和团队指导', '["主导系统重构", "培养3名初级工程师"]', 2),
+    (3, 2, 1, '伯乐科技', '前端开发工程师', '2019-07-01', '2022-12-31', false, '负责Web前端开发', '["开发10+核心页面", "性能优化成果显著"]', 1),
+    (4, 2, 1, '伯乐科技', '前端开发专家', '2023-01-01', NULL, true, '负责前端架构和技术选型', '["引入微前端架构", "建立前端规范"]', 2),
+    (5, 3, 1, '伯乐科技', 'Java开发工程师', '2018-07-01', '2021-08-31', false, '参与电商平台开发', '["处理高并发场景", "系统稳定性提升"]', 1),
+    (6, 3, 1, '伯乐科技', '系统架构师', '2021-09-01', NULL, true, '负责系统架构设计', '["设计微服务架构", "技术团队建设"]', 2);
 
     -- 插入5个简历模板
     INSERT INTO bole_app.t_resumes_template ("id", "name", "code", "description", "preview_image", "is_active", "version", "global_style", "global_layout", "created_at", "updated_at", "deleted") VALUES
@@ -168,8 +165,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
      (6, '技能专长', 'Skills', '{"props": {"title": "技能专长", "showSkillLevel": true, "skillLevelType": "progress", "groupByCategory": true, "skillCategories": ["编程语言", "框架工具", "数据库", "其他技能"], "showExperienceYears": true, "maxSkillsPerCategory": 8}, "styles": {"padding": "20px", "fontSize": "14px", "titleColor": "#333333", "borderRadius": "8px", "skillSpacing": "12px", "progressColor": "#1890ff", "skillNameColor": "#555555", "backgroundColor": "#FFFFFF", "categorySpacing": "24px"}}', '2025-12-17 20:06:50.75858', '2025-12-18 23:17:48.730472', 0),
      (3, '工作经历', 'WorkExperience', '{"props": {"title": "工作经历", "orderBy": "startDate", "maxItems": 5, "showSkills": true, "showJobTitle": true, "orderDirection": "desc", "showDepartment": true, "showWorkPeriod": true, "showCompanyLogo": true, "showCompanyName": true, "showWorkContent": true, "showAchievements": true}, "styles": {"padding": "20px", "fontSize": "14px", "titleColor": "#333333", "itemSpacing": "16px", "periodColor": "#999999", "borderRadius": "8px", "companyColor": "#1890ff", "timelineColor": "#e8e8e8", "backgroundColor": "#FFFFFF"}}', '2025-12-17 20:06:50.729911', '2025-12-18 23:18:01.110219', 0),
      (5, '自我评价', 'SelfEvaluation', '{"props": {"title": "自我评价", "format": "paragraph", "maxLength": 500, "showHobbies": true, "allowRichText": true, "showStrengths": true, "characterTraits": ["责任心强", "学习能力强", "团队协作"], "showCareerGoals": true, "showSkillsSummary": true, "showCharacterTraits": true}, "styles": {"border": "1px solid #f0f0f0", "padding": "20px", "fontSize": "14px", "lineHeight": "1.8", "titleColor": "#333333", "borderRadius": "8px", "contentColor": "#555555", "backgroundColor": "#fafafa", "highlightBackground": "#fff7e6"}}', '2025-12-17 20:06:50.754145', '2025-12-18 23:18:08.082836', 0),
-     (4, '教育背景', 'EducationExperience', '{"props": {"title": "教育背景", "orderBy": "graduationDate", "showGPA": true, "maxItems": 3, "showMajor": true, "showDegree": true, "showHonors": true, "showCourses": true, "degreeFormat": "full", "orderDirection": "desc", "showSchoolLogo": true, "showSchoolName": true, "showEducationPeriod": true}, "styles": {"padding": "20px", "fontSize": "14px", "borderLeft": "3px solid #52c41a", "majorColor": "#666666", "titleColor": "#333333", "itemSpacing": "12px", "schoolColor": "#52c41a", "borderRadius": "8px", "backgroundColor": "#FFFFFF"}}', '2025-12-17 20:06:50.748877', '2025-12-18 23:18:18.43145', 0),
-     (7, '公司经历组件', 'CompanyExperience', '{"props": {"title": "公司经历", "orderBy": "startDate", "maxItems": 5, "showSkills": true, "showJobTitle": true, "orderDirection": "desc", "showDepartment": true, "showWorkPeriod": true, "showCompanyLogo": true, "showCompanyName": true, "showWorkContent": true, "showAchievements": true}, "styles": {"padding": "20px", "fontSize": "14px", "titleColor": "#333333", "itemSpacing": "16px", "periodColor": "#999999", "borderRadius": "8px", "companyColor": "#1890ff", "timelineColor": "#e8e8e8", "backgroundColor": "#FFFFFF"}}', '2025-12-22 03:44:40.655621', '2025-12-22 03:45:23.615624', 0),
+     (4, '教育背景', 'EducationExperience', '{"props": {"title": "教育背景", "orderBy": "graduationDate", "showGPA": true, "maxItems": 3, "showMajor": true, "showDegree": true, "showHonors": true, "showCourses": true, "degreeFormat": "full", "orderDirection": "desc", "showUniversityLogo": true, "showUniversityName": true, "showEducationPeriod": true}, "styles": {"padding": "20px", "fontSize": "14px", "borderLeft": "3px solid #52c41a", "majorColor": "#666666", "titleColor": "#333333", "itemSpacing": "12px", "universityColor": "#52c41a", "borderRadius": "8px", "backgroundColor": "#FFFFFF"}}', '2025-12-17 20:06:50.748877', '2025-12-18 23:18:18.43145', 0),
      (8, '项目经历', 'ProjectExperience', '{"props": {"title": "项目经历", "orderBy": "startDate", "maxItems": 5, "showSkills": true, "showJobTitle": true, "orderDirection": "desc", "showDepartment": true, "showWorkPeriod": true, "showCompanyLogo": true, "showCompanyName": true, "showWorkContent": true, "showAchievements": true}, "styles": {"padding": "20px", "fontSize": "14px", "titleColor": "#333333", "itemSpacing": "16px", "periodColor": "#999999", "borderRadius": "8px", "companyColor": "#1890ff", "timelineColor": "#e8e8e8", "backgroundColor": "#FFFFFF"}}', '2025-12-22 03:45:55.973934', '2025-12-22 03:46:18.403335', 0);
 
     --插入模板组件
@@ -228,13 +224,13 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
   ('上海交通大学', '10248', '985', '教育部', '上海市闵行区', 'https://www.sjtu.edu.cn', 'https://github.com/SJTU-University', '上海交通大学是我国历史最悠久、享誉海内外的高等学府之一', 92000, 68000, 110000);
 
     -- 插入默认验证码模板（根据类中的VALIDATE_CODE_ID = 1L）
-    INSERT INTO bole_app.t_msg_template (id, subject, template, is_verify, length, duration, deleted)
+    INSERT INTO bole_app.t_msg_template (id, subject, template, is_verify, length, duration)
     VALUES 
-    (1, '注册验证码', '[伯乐简历大师]您的验证码是#code#（#minutes#分钟内有效，如非本人操作，请忽略）', NULL, NULL, NULL, 't', 6, 5),
-    (2, '登录验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', NULL, NULL, NULL, 't', 6, 5),
-    (3, '忘记密码验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', NULL, NULL, NULL, 't', 6, 5),
-    (4, '绑定类验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', NULL, NULL, NULL, 't', 6, 5),
-    (5, '解绑类验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', NULL, NULL, NULL, 't', 6, 5);
+    (1, '注册验证码', '[伯乐简历大师]您的验证码是#code#（#minutes#分钟内有效，如非本人操作，请忽略）', 't', 6, 5),
+    (2, '登录验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', 't', 6, 5),
+    (3, '忘记密码验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', 't', 6, 5),
+    (4, '绑定类验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', 't', 6, 5),
+    (5, '解绑类验证码', '[伯乐简历大师]您的验证码是#code#，有效时间#minutes#分钟。', 't', 6, 5);
 
     -- 插入审计日志数据
     INSERT INTO bole_audit.audit_logs (id, table_name, record_id, action, old_data, new_data, changed_by) VALUES
@@ -246,12 +242,10 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 更新序列值，确保后续插入的主键不会冲突
     SELECT setval('bole_app.t_banner_id_seq', (SELECT MAX(id) FROM bole_app.t_banner));
-    SELECT setval('bole_app.t_config_id_seq', (SELECT MAX(id) FROM bole_app.t_config));
     SELECT setval('bole_app.t_dict_id_seq', (SELECT MAX(id) FROM bole_app.t_dict));
     SELECT setval('bole_app.t_user_id_seq', (SELECT MAX(id) FROM bole_app.t_user));
     SELECT setval('bole_app.t_company_id_seq', (SELECT MAX(id) FROM bole_app.t_company));
     SELECT setval('bole_app.t_role_id_seq', (SELECT MAX(id) FROM bole_app.t_role));
-    SELECT setval('bole_app.t_user_role_id_seq', (SELECT MAX(id) FROM bole_app.t_user_role));
     SELECT setval('bole_app.t_company_comment_id_seq', (SELECT MAX(id) FROM bole_app.t_company_comment));
     SELECT setval('bole_app.t_company_experiences_id_seq', (SELECT MAX(id) FROM bole_app.t_company_experiences));
     SELECT setval('bole_app.t_education_experience_id_seq', (SELECT MAX(id) FROM bole_app.t_education_experience));

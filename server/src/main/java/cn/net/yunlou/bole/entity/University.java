@@ -5,11 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 /**
- * FileName: University
- * Description:
- * Created By laughtiger
- * Created At 2025/12/30 17:33
- * Modified By
+ * FileName: University Description: Created By laughtiger Created At 2025/12/30 17:33 Modified By
  * Modified At
  */
 @EqualsAndHashCode(callSuper = true)
@@ -24,9 +20,7 @@ public class University extends BaseEntity {
 
     private String code;
 
-    /**
-     * 985 211 重点 普通
-     */
+    /** 985 211 重点 普通 */
     private String type;
 
     private String holder;

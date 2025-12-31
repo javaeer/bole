@@ -3,7 +3,6 @@ package cn.net.yunlou.bole.model.view;
 import cn.net.yunlou.bole.common.BaseView;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.*;
 
 /**
@@ -29,5 +28,4 @@ public class CompanyExperienceView extends BaseView {
     private String description;
 
     private Integer sort;
-
 }
