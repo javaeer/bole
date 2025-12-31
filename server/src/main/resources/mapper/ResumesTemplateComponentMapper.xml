@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.net.yunlou.bole.mapper.ResumesTemplateComponentMapper">
 
-    <resultMap id="BaseResultMap" type="cn.net.yunlou.bole.entity.ResumesTemplateComponent">
+    <resultMap id="BaseResultMap" type="cn.net.yunlou.bole.model.entity.ResumesTemplateComponent">
 
         <!-- ResumesTemplate 特有字段 -->
         <result column="name" property="name"/>

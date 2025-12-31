@@ -2,7 +2,7 @@ package cn.net.yunlou.bole.handler;
 
 import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
-import cn.net.yunlou.bole.entity.WorkExperience;
+import cn.net.yunlou.bole.model.entity.WorkExperience;
 import cn.net.yunlou.bole.model.view.WorkExperienceView;
 import cn.net.yunlou.bole.service.WorkExperienceService;
 import com.google.common.collect.Lists;

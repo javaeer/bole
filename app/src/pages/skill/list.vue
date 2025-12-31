@@ -28,7 +28,7 @@
             @change="onCategoryChange"
           >
             <view class="filter-select">
-              {{ selectedCategory || '全部' }}
+              {{ selectedCategory || "全部" }}
               <text class="icon">▼</text>
             </view>
           </picker>
@@ -43,7 +43,7 @@
             @change="onLevelChange"
           >
             <view class="filter-select">
-              {{ selectedLevel || '全部' }}
+              {{ selectedLevel || "全部" }}
               <text class="icon">▼</text>
             </view>
           </picker>
@@ -88,7 +88,8 @@
     >
       <!-- 空状态 -->
       <view v-if="loading && listData.length === 0" class="empty-state">
-        <uni-load-more status="loading"></uni-load-more>
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载中...</text>
       </view>
 
       <view v-else-if="!loading && listData.length === 0" class="empty-state">
@@ -100,7 +101,7 @@
       <!-- 列表内容 -->
       <view v-else>
         <view
-          v-for="item in listData"
+          v-for="(item, index) in listData"
           :key="item.id"
           class="skill-item card-container"
           @click="goToDetail(item.id)"
@@ -137,7 +138,7 @@
             </view>
 
             <!-- 标签 -->
-            <view class="skill-tags" v-if="item.tags">
+            <view class="skill-tags" v-if="item.tags && getTagsArray(item.tags).length > 0">
               <view
                 v-for="tag in getTagsArray(item.tags)"
                 :key="tag"
@@ -185,21 +186,23 @@
 
           <!-- 时间信息 -->
           <view class="skill-footer">
-            <text class="time-text">创建：{{ dateUtils.format(item.createdAt) }}</text>
-            <text class="time-text">更新：{{ dateUtils.format(item.updatedAt) }}</text>
+            <text class="time-text">创建：{{ formatDate(item.createdAt) }}</text>
+            <text class="time-text">更新：{{ formatDate(item.updatedAt) }}</text>
           </view>
         </view>
 
         <!-- 加载更多 -->
         <view v-if="hasMore" class="load-more">
-          <uni-load-more
-            :status="loading ? 'loading' : 'more'"
-            :content-text="{
-              contentdown: '上拉加载更多',
-              contentrefresh: '正在加载...',
-              contentnomore: '没有更多了'
-            }"
-          />
+          <view v-if="loading" class="loading-more">
+            <view class="loading-spinner-small"></view>
+            <text>加载中...</text>
+          </view>
+          <view v-else class="load-more-btn" @click="loadMore">
+            上拉加载更多
+          </view>
+        </view>
+        <view v-else-if="listData.length > 0" class="no-more">
+          <text>没有更多了</text>
         </view>
       </view>
     </scroll-view>
@@ -212,363 +215,289 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
-import { onLoad, onReachBottom } from '@dcloudio/uni-app'
-import { SkillItem } from "@/types/skill";
-import { dateUtils } from "../../utils/date";
+import { computed, ref, onMounted } from "vue";
+import { onLoad, onReachBottom } from "@dcloudio/uni-app";
+import type { SkillResult } from "@/types/skill";
+import SkillAPI from "@/api/skill";
 
 // 响应式数据
-const searchKeywords = ref('')
-const selectedCategory = ref('')
-const selectedLevel = ref('')
-const filterTags = ref<string[]>([])
-const sortIndex = ref(0)
-const currentPage = ref(1)
-const pageSize = ref(10)
-const loading = ref(false)
-const hasMore = ref(true)
-
-// 模拟数据
-const mockData: SkillItem[] = [
-  {
-    id: 1,
-    createdAt: "2025-12-17 20:06:50",
-    updatedAt: "2025-12-18 14:30:25",
-    deleted: 0,
-    userId: 1,
-    name: "Java编程",
-    level: "高级",
-    category: "编程语言",
-    description: "熟练掌握Java语言特性，包括集合、多线程、IO等。熟悉Spring框架，有微服务开发经验。",
-    proficiencyPercent: 85,
-    experienceYears: 5.5,
-    isCertified: true,
-    certificateName: "Oracle Certified Professional",
-    certificateDate: "2022-03-15",
-    tags: "Java,后端,编程,Spring",
-    isPublic: true,
-    sort: 1
-  },
-  {
-    id: 2,
-    createdAt: "2025-12-16 09:15:30",
-    updatedAt: "2025-12-17 11:20:45",
-    deleted: 0,
-    userId: 1,
-    name: "Python数据分析",
-    level: "中级",
-    category: "数据分析",
-    description: "熟悉Pandas、NumPy等数据处理库，能够进行数据清洗、分析和可视化。",
-    proficiencyPercent: 75,
-    experienceYears: 3,
-    isCertified: false,
-    certificateName: null,
-    certificateDate: null,
-    tags: "Python,数据分析,机器学习,Pandas",
-    isPublic: true,
-    sort: 2
-  },
-  {
-    id: 3,
-    createdAt: "2025-12-15 16:45:20",
-    updatedAt: "2025-12-16 10:10:10",
-    deleted: 0,
-    userId: 1,
-    name: "React前端开发",
-    level: "高级",
-    category: "前端框架",
-    description: "精通React及生态，熟悉Hooks、Redux、TypeScript，有大型项目开发经验。",
-    proficiencyPercent: 90,
-    experienceYears: 4,
-    isCertified: true,
-    certificateName: "React Developer Certification",
-    certificateDate: "2023-08-20",
-    tags: "React,前端,TypeScript,Redux",
-    isPublic: true,
-    sort: 3
-  },
-  {
-    id: 4,
-    createdAt: "2025-12-14 13:25:40",
-    updatedAt: "2025-12-15 09:45:15",
-    deleted: 0,
-    userId: 1,
-    name: "Docker容器化",
-    level: "中级",
-    category: "运维部署",
-    description: "熟悉Docker容器技术，能够编写Dockerfile，管理容器编排。",
-    proficiencyPercent: 70,
-    experienceYears: 2,
-    isCertified: true,
-    certificateName: "Docker Certified Associate",
-    certificateDate: "2023-11-10",
-    tags: "Docker,容器,运维,CI/CD",
-    isPublic: false,
-    sort: 4
-  },
-  {
-    id: 5,
-    createdAt: "2025-12-13 11:30:50",
-    updatedAt: "2025-12-14 15:20:30",
-    deleted: 0,
-    userId: 1,
-    name: "MySQL数据库",
-    level: "高级",
-    category: "数据库",
-    description: "精通MySQL数据库设计、优化和调优，熟悉SQL语句编写和索引优化。",
-    proficiencyPercent: 88,
-    experienceYears: 6,
-    isCertified: true,
-    certificateName: "MySQL 8.0 Database Administrator",
-    certificateDate: "2024-01-15",
-    tags: "MySQL,数据库,SQL,优化",
-    isPublic: true,
-    sort: 5
-  }
-]
-
-const listData = ref<SkillItem[]>([])
-const filteredData = ref<SkillItem[]>([])
+const searchKeywords = ref("");
+const selectedCategory = ref("");
+const selectedLevel = ref("");
+const filterTags = ref<string[]>([]);
+const sortIndex = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const loading = ref(false);
+const hasMore = ref(true);
+const listData = ref<SkillResult[]>([]);
 
 // 筛选选项
-const categoryOptions = ['全部', '编程语言', '前端框架', '后端框架', '数据库', '数据分析', '人工智能', '运维部署', '工具软件', '其他']
-const levelOptions = ['全部', '初级', '中级', '高级', '专家']
-const sortOptions = ['熟练度↓', '熟练度↑', '经验年数↓', '经验年数↑', '创建时间↓', '创建时间↑']
+const categoryOptions = ["全部", "编程语言", "前端框架", "后端框架", "数据库", "数据分析", "人工智能", "运维部署", "工具软件", "其他"];
+const levelOptions = ["全部", "初级", "中级", "高级", "专家"];
+const sortOptions = ["熟练度↓", "熟练度↑", "经验年数↓", "经验年数↑", "创建时间↓", "创建时间↑"];
 
 // 索引计算
 const categoryIndex = computed(() =>
-  selectedCategory.value ? categoryOptions.indexOf(selectedCategory.value) : 0
-)
+  selectedCategory.value ? categoryOptions.indexOf(selectedCategory.value) : 0,
+);
 
 const levelIndex = computed(() =>
-  selectedLevel.value ? levelOptions.indexOf(selectedLevel.value) : 0
-)
+  selectedLevel.value ? levelOptions.indexOf(selectedLevel.value) : 0,
+);
+
+// 格式化日期
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  } catch {
+    return dateStr;
+  }
+};
 
 // 获取等级样式
 const getLevelClass = (level: string) => {
-  switch(level) {
-    case '初级': return 'level-beginner'
-    case '中级': return 'level-intermediate'
-    case '高级': return 'level-advanced'
-    case '专家': return 'level-expert'
-    default: return 'level-default'
+  switch (level) {
+    case "初级":
+      return "level-beginner";
+    case "中级":
+      return "level-intermediate";
+    case "高级":
+      return "level-advanced";
+    case "专家":
+      return "level-expert";
+    default:
+      return "level-default";
   }
-}
+};
 
 // 获取熟练度样式
 const getProficiencyClass = (percent: number) => {
-  if (percent >= 90) return 'proficiency-expert'
-  if (percent >= 70) return 'proficiency-advanced'
-  if (percent >= 50) return 'proficiency-intermediate'
-  return 'proficiency-beginner'
-}
+  if (percent >= 90) return "proficiency-expert";
+  if (percent >= 70) return "proficiency-advanced";
+  if (percent >= 50) return "proficiency-intermediate";
+  return "proficiency-beginner";
+};
 
 // 解析标签字符串
-const getTagsArray = (tagsStr: string): string[] => {
-  if (!tagsStr) return []
-  return tagsStr.split(',').map(tag => tag.trim()).filter(tag => tag)
-}
+const getTagsArray = (tagsStr: string | null): string[] => {
+  if (!tagsStr) return [];
+  return tagsStr.split(",").map(tag => tag.trim()).filter(tag => tag);
+};
 
 // 搜索处理
 const handleSearch = () => {
-  currentPage.value = 1
-  loadData(true)
-}
+  currentPage.value = 1;
+  loadData(true);
+};
 
 const clearSearch = () => {
-  searchKeywords.value = ''
-  currentPage.value = 1
-  loadData(true)
-}
+  searchKeywords.value = "";
+  currentPage.value = 1;
+  loadData(true);
+};
 
 // 筛选处理
 const onCategoryChange = (e: any) => {
-  const index = e.detail.value
-  selectedCategory.value = index === 0 ? '' : categoryOptions[index]
-  currentPage.value = 1
-  loadData(true)
-}
+  const index = e.detail.value;
+  selectedCategory.value = index === 0 ? "" : categoryOptions[index];
+  currentPage.value = 1;
+  loadData(true);
+};
 
 const onLevelChange = (e: any) => {
-  const index = e.detail.value
-  selectedLevel.value = index === 0 ? '' : levelOptions[index]
-  currentPage.value = 1
-  loadData(true)
-}
+  const index = e.detail.value;
+  selectedLevel.value = index === 0 ? "" : levelOptions[index];
+  currentPage.value = 1;
+  loadData(true);
+};
 
 const onSortChange = (e: any) => {
-  sortIndex.value = e.detail.value
-  sortData()
-}
+  sortIndex.value = e.detail.value;
+  currentPage.value = 1;
+  loadData(true);
+};
 
 // 标签筛选处理
 const addTagFilter = (tag: string) => {
   if (!filterTags.value.includes(tag)) {
-    filterTags.value.push(tag)
-    currentPage.value = 1
-    loadData(true)
+    filterTags.value.push(tag);
+    currentPage.value = 1;
+    loadData(true);
   }
-}
+};
 
 const removeTag = (tag: string) => {
-  const index = filterTags.value.indexOf(tag)
+  const index = filterTags.value.indexOf(tag);
   if (index > -1) {
-    filterTags.value.splice(index, 1)
-    currentPage.value = 1
-    loadData(true)
+    filterTags.value.splice(index, 1);
+    currentPage.value = 1;
+    loadData(true);
   }
-}
+};
 
 const clearTags = () => {
-  filterTags.value = []
-  currentPage.value = 1
-  loadData(true)
-}
-
-// 排序数据
-const sortData = () => {
-  switch(sortIndex.value) {
-    case 0: // 熟练度↓
-      filteredData.value.sort((a, b) => b.proficiencyPercent - a.proficiencyPercent)
-      break
-    case 1: // 熟练度↑
-      filteredData.value.sort((a, b) => a.proficiencyPercent - b.proficiencyPercent)
-      break
-    case 2: // 经验年数↓
-      filteredData.value.sort((a, b) => b.experienceYears - a.experienceYears)
-      break
-    case 3: // 经验年数↑
-      filteredData.value.sort((a, b) => a.experienceYears - b.experienceYears)
-      break
-    case 4: // 创建时间↓
-      filteredData.value.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      break
-    case 5: // 创建时间↑
-      filteredData.value.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-      break
-  }
-
-  // 更新分页数据
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  listData.value = filteredData.value.slice(start, end)
-}
+  filterTags.value = [];
+  currentPage.value = 1;
+  loadData(true);
+};
 
 // 加载数据
-const loadData = (reset = false) => {
-  if (loading.value) return
+const loadData = async (reset = false) => {
+  if (loading.value) return;
 
-  loading.value = true
+  loading.value = true;
 
   if (reset) {
-    currentPage.value = 1
-    hasMore.value = true
-    listData.value = []
+    currentPage.value = 1;
+    hasMore.value = true;
+    listData.value = [];
   }
 
-  // 模拟API请求延迟
-  setTimeout(() => {
-    // 筛选数据
-    let filtered = [...mockData]
+  try {
+    // 构建查询参数
+    const pageParam = {
+      page: currentPage.value,
+      size: pageSize.value,
+    };
 
-    // 关键字搜索
+    const query: any = {};
+
+    // 添加搜索条件
     if (searchKeywords.value) {
-      const keyword = searchKeywords.value.toLowerCase()
-      filtered = filtered.filter(item =>
-        item.name.toLowerCase().includes(keyword) ||
-        item.category.toLowerCase().includes(keyword) ||
-        item.tags.toLowerCase().includes(keyword) ||
-        item.description.toLowerCase().includes(keyword)
-      )
+      query.keyword = searchKeywords.value;
     }
-    // 分类筛选
+
+    // 添加分类筛选
     if (selectedCategory.value) {
-      filtered = filtered.filter(item => item.category === selectedCategory.value)
+      query.category = selectedCategory.value;
     }
 
-    // 等级筛选
+    // 添加等级筛选
     if (selectedLevel.value) {
-      filtered = filtered.filter(item => item.level === selectedLevel.value)
+      query.level = selectedLevel.value;
     }
 
-    // 标签筛选
+    // 添加标签筛选
     if (filterTags.value.length > 0) {
-      filtered = filtered.filter(item => {
-        const itemTags = getTagsArray(item.tags)
-        return filterTags.value.every(tag => itemTags.includes(tag))
-      })
+      query.tags = filterTags.value;
     }
 
-    filteredData.value = filtered
+    // 添加排序条件
+    if (sortIndex.value !== undefined) {
+      switch (sortIndex.value) {
+        case 0: // 熟练度↓
+          query.orderBy = 'proficiencyPercent';
+          query.orderDirection = 'DESC';
+          break;
+        case 1: // 熟练度↑
+          query.orderBy = 'proficiencyPercent';
+          query.orderDirection = 'ASC';
+          break;
+        case 2: // 经验年数↓
+          query.orderBy = 'experienceYears';
+          query.orderDirection = 'DESC';
+          break;
+        case 3: // 经验年数↑
+          query.orderBy = 'experienceYears';
+          query.orderDirection = 'ASC';
+          break;
+        case 4: // 创建时间↓
+          query.orderBy = 'createdAt';
+          query.orderDirection = 'DESC';
+          break;
+        case 5: // 创建时间↑
+          query.orderBy = 'createdAt';
+          query.orderDirection = 'ASC';
+          break;
+      }
+    }
 
-    // 排序
-    sortData()
+    // 调用API
+    const response = await SkillAPI.page(pageParam, query);
 
-    // 更新是否有更多数据
-    hasMore.value = listData.value.length < filtered.length
-    loading.value = false
-    currentPage.value++
-  }, 500)
-}
+    if (response) {
+      const { records = [], total = 0 } = response;
+
+      // 处理数据格式
+      const processedRecords = records.map(record => ({
+        ...record,
+        // 确保tags是字符串格式
+        tags: Array.isArray(record.tags)
+          ? record.tags.join(',')
+          : record.tags || ''
+      }));
+
+      if (reset) {
+        listData.value = processedRecords;
+      } else {
+        listData.value = [...listData.value, ...processedRecords];
+      }
+
+      // 更新是否有更多数据
+      hasMore.value = listData.value.length < total;
+
+      // 如果当前页有数据，且数据条数等于pageSize，说明可能还有下一页
+      if (records.length === pageSize.value) {
+        currentPage.value++;
+      }
+    }
+  } catch (error) {
+    console.error("加载数据失败:", error);
+    uni.showToast({
+      title: "加载失败",
+      icon: "error",
+    });
+  } finally {
+    loading.value = false;
+  }
+};
 
 // 加载更多
 const loadMore = () => {
-  if (!hasMore.value || loading.value) return
-
-  // 模拟API请求延迟
-  loading.value = true
-  setTimeout(() => {
-    const start = (currentPage.value - 1) * pageSize.value
-    const end = start + pageSize.value
-    const pageData = filteredData.value.slice(start, end)
-
-    listData.value = [...listData.value, ...pageData]
-
-    // 更新是否有更多数据
-    hasMore.value = listData.value.length < filteredData.value.length
-    loading.value = false
-    currentPage.value++
-  }, 500)
-}
+  if (!hasMore.value || loading.value) return;
+  loadData();
+};
 
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/skill/detail?id=${id}`
-  })
-}
+    url: `/pages/skill/skill?id=${id}`,
+  });
+};
 
 const editSkill = (id: number) => {
   uni.navigateTo({
-    url: `/pages/skill/detail?id=${id}&edit=true`
-  })
-}
+    url: `/pages/skill/skill?id=${id}&edit=true`,
+  });
+};
 
 const addNewSkill = () => {
   uni.navigateTo({
-    url: '/pages/skill/detail'
-  })
-}
+    url: "/pages/skill/skill",
+  });
+};
 
 // 生命周期
 onMounted(() => {
-  loadData(true)
-})
+  loadData(true);
+});
 
 onLoad((options) => {
-  const refresh = options?.refresh === 'true'
+  const refresh = options?.refresh === "true";
   if (refresh) {
-    loadData(true)
+    loadData(true);
   }
-})
+});
 
 onReachBottom(() => {
-  loadMore()
-})
+  loadMore();
+});
 </script>
 
 <style lang="scss">
-
 .page-container {
   min-height: 100vh;
   background-color: $background-color;
@@ -593,6 +522,11 @@ onReachBottom(() => {
   margin-bottom: $margin-small;
   border: 1rpx solid $border-color-light;
 
+  .icon {
+    font-size: 32rpx;
+    color: $text-secondary;
+  }
+
   .search-input {
     flex: 1;
     font-size: $font-size-base;
@@ -609,6 +543,15 @@ onReachBottom(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    .icon {
+      font-size: 36rpx;
+      width: 40rpx;
+      height: 40rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
@@ -662,6 +605,10 @@ onReachBottom(() => {
       font-size: $font-size-extra-small;
       color: $primary-color;
       border: 1rpx solid $primary-border;
+
+      .icon {
+        font-size: 24rpx;
+      }
     }
 
     .tag-clear {
@@ -782,6 +729,10 @@ onReachBottom(() => {
       gap: 12rpx;
       margin-bottom: $margin-mini;
 
+      .icon {
+        font-size: 24rpx;
+      }
+
       .info-text {
         font-size: $font-size-small;
         color: $text-regular;
@@ -843,19 +794,19 @@ onReachBottom(() => {
         transition: width $transition-normal $ease-in-out;
 
         &.proficiency-beginner {
-          background: linear-gradient(90deg, $info-color, color.adjust($info-color, $lightness:  20%));
+          background: linear-gradient(90deg, $info-color, color.adjust($info-color, $lightness: 20%));
         }
 
         &.proficiency-intermediate {
-          background: linear-gradient(90deg, $success-color, color.adjust($success-color, $lightness:  20%));
+          background: linear-gradient(90deg, $success-color, color.adjust($success-color, $lightness: 20%));
         }
 
         &.proficiency-advanced {
-          background: linear-gradient(90deg, $warning-color, color.adjust($warning-color, $lightness:  20%));
+          background: linear-gradient(90deg, $warning-color, color.adjust($warning-color, $lightness: 20%));
         }
 
         &.proficiency-expert {
-          background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness:  20%));
+          background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
         }
       }
     }
@@ -910,6 +861,26 @@ onReachBottom(() => {
   justify-content: center;
   padding: 100rpx 0;
 
+  .loading-spinner {
+    width: 60rpx;
+    height: 60rpx;
+    border: 4rpx solid rgba($primary-color, 0.2);
+    border-top-color: $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20rpx;
+  }
+
+  .loading-text {
+    font-size: $font-size-base;
+    color: $text-secondary;
+  }
+
+  .icon {
+    font-size: 80rpx;
+    margin-bottom: 20rpx;
+  }
+
   .empty-text {
     font-size: $font-size-base;
     color: $empty-text-color;
@@ -923,7 +894,42 @@ onReachBottom(() => {
 }
 
 .load-more {
-  padding: $margin-base 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx 0;
+
+  .loading-more {
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+    color: $text-secondary;
+    font-size: $font-size-small;
+
+    .loading-spinner-small {
+      width: 24rpx;
+      height: 24rpx;
+      border: 2rpx solid rgba($primary-color, 0.2);
+      border-top-color: $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .load-more-btn {
+    padding: 16rpx 32rpx;
+    background: $background-color;
+    border-radius: $border-radius;
+    color: $text-primary;
+    font-size: $font-size-small;
+  }
+}
+
+.no-more {
+  text-align: center;
+  padding: 40rpx 0;
+  color: $text-secondary;
+  font-size: $font-size-small;
 }
 
 .add-btn {
@@ -950,6 +956,10 @@ onReachBottom(() => {
 .placeholder-text {
   color: $text-placeholder;
   font-size: $font-size-base;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: $screen-md) {

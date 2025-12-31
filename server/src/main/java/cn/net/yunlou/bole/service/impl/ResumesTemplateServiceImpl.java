@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
-import cn.net.yunlou.bole.entity.ResumesTemplate;
+import cn.net.yunlou.bole.model.entity.ResumesTemplate;
 import cn.net.yunlou.bole.mapper.ResumesTemplateMapper;
 import cn.net.yunlou.bole.model.ResumesTemplateComponentDTO;
 import cn.net.yunlou.bole.model.create.ResumesTemplateCreate;

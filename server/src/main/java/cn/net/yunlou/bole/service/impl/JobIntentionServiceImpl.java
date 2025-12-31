@@ -2,7 +2,7 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.JobIntention;
+import cn.net.yunlou.bole.model.entity.JobIntention;
 import cn.net.yunlou.bole.mapper.JobIntentionMapper;
 import cn.net.yunlou.bole.model.create.JobIntentionCreate;
 import cn.net.yunlou.bole.model.edit.JobIntentionEdit;

@@ -8,7 +8,7 @@ import cn.net.yunlou.bole.common.constant.UserKeyField;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.User;
 import cn.net.yunlou.bole.mapper.UserMapper;
 import cn.net.yunlou.bole.model.ProfileDTO;
 import cn.net.yunlou.bole.model.create.UserCreate;

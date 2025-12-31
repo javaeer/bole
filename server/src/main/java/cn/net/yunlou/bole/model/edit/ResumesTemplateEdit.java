@@ -1,8 +1,8 @@
 package cn.net.yunlou.bole.model.edit;
 
 import cn.net.yunlou.bole.common.BaseEdit;
-import cn.net.yunlou.bole.entity.ResumesTemplateLayout;
-import cn.net.yunlou.bole.entity.ResumesTemplateStyle;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateStyle;
 import cn.net.yunlou.bole.model.ResumesTemplateComponentDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;

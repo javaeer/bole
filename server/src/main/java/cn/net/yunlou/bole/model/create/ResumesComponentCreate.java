@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.model.create;
 
 import cn.net.yunlou.bole.common.BaseCreate;
-import cn.net.yunlou.bole.entity.ResumesComponentDefaultConfig;
+import cn.net.yunlou.bole.model.entity.ResumesComponentDefaultConfig;
 import lombok.*;
 
 /**

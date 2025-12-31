@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
-import cn.net.yunlou.bole.entity.ResumesTemplate;
+import cn.net.yunlou.bole.model.entity.ResumesTemplate;
 import cn.net.yunlou.bole.model.create.ResumesTemplateCreate;
 import cn.net.yunlou.bole.model.edit.ResumesTemplateEdit;
 import cn.net.yunlou.bole.model.query.ResumesTemplateQuery;

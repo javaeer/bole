@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.entity.ProjectExperience;
+import cn.net.yunlou.bole.model.entity.ProjectExperience;
 import cn.net.yunlou.bole.model.create.ProjectExperienceCreate;
 import cn.net.yunlou.bole.model.edit.ProjectExperienceEdit;
 import cn.net.yunlou.bole.model.query.ProjectExperienceQuery;
@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -29,21 +28,18 @@ public class ProjectExperienceController {
 
     @PostMapping("add")
     @Operation(summary = "新增项目经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> add(@RequestBody ProjectExperienceCreate create) {
         return BusinessResponse.success(projectExperienceService.saveByCreate(create));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除项目经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(projectExperienceService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑项目经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> edit(@RequestBody @Valid ProjectExperienceEdit edit) {
         return BusinessResponse.success(projectExperienceService.updateByEdit(edit));
     }

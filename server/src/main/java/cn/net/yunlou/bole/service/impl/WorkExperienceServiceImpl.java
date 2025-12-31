@@ -2,7 +2,7 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.WorkExperience;
+import cn.net.yunlou.bole.model.entity.WorkExperience;
 import cn.net.yunlou.bole.mapper.WorkExperienceMapper;
 import cn.net.yunlou.bole.model.create.WorkExperienceCreate;
 import cn.net.yunlou.bole.model.edit.WorkExperienceEdit;

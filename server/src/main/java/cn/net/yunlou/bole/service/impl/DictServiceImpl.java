@@ -2,7 +2,7 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseTreeService;
 import cn.net.yunlou.bole.common.annotation.TreeServiceConfig;
-import cn.net.yunlou.bole.entity.Dict;
+import cn.net.yunlou.bole.model.entity.Dict;
 import cn.net.yunlou.bole.mapper.DictMapper;
 import cn.net.yunlou.bole.model.create.DictCreate;
 import cn.net.yunlou.bole.model.edit.DictEdit;

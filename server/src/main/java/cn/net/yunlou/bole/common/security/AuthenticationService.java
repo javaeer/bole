@@ -5,7 +5,7 @@ import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.BaseConstant;
 import cn.net.yunlou.bole.common.utils.RedisCacheUtils;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.User;
 import cn.net.yunlou.bole.model.AccessTokenDTO;
 import cn.net.yunlou.bole.model.RefreshTokenViewDTO;
 import cn.net.yunlou.bole.service.UserService;

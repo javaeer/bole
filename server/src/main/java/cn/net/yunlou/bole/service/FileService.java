@@ -2,7 +2,7 @@ package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
 import cn.net.yunlou.bole.common.constant.StorageType;
-import cn.net.yunlou.bole.entity.File;
+import cn.net.yunlou.bole.model.entity.File;
 import cn.net.yunlou.bole.model.create.FileCreate;
 import cn.net.yunlou.bole.model.edit.FileEdit;
 import cn.net.yunlou.bole.model.query.FileQuery;

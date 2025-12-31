@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
-import cn.net.yunlou.bole.entity.MessageTemplate;
+import cn.net.yunlou.bole.model.entity.MessageTemplate;
 import cn.net.yunlou.bole.mapper.MessageTemplateMapper;
 import cn.net.yunlou.bole.model.create.MessageTemplateCreate;
 import cn.net.yunlou.bole.model.edit.MessageTemplateEdit;

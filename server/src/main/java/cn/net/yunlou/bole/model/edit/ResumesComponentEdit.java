@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.model.edit;
 
 import cn.net.yunlou.bole.common.BaseEdit;
-import cn.net.yunlou.bole.entity.ResumesComponentDefaultConfig;
+import cn.net.yunlou.bole.model.entity.ResumesComponentDefaultConfig;
 import lombok.*;
 
 /**

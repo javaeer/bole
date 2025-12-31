@@ -2,7 +2,7 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseTreeService;
 import cn.net.yunlou.bole.common.annotation.TreeServiceConfig;
-import cn.net.yunlou.bole.entity.City;
+import cn.net.yunlou.bole.model.entity.City;
 import cn.net.yunlou.bole.mapper.CityMapper;
 import cn.net.yunlou.bole.model.create.CityCreate;
 import cn.net.yunlou.bole.model.edit.CityEdit;

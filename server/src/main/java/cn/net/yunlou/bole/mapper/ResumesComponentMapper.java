@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.mapper;
 
-import cn.net.yunlou.bole.entity.ResumesComponent;
+import cn.net.yunlou.bole.model.entity.ResumesComponent;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

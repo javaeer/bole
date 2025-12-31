@@ -3,7 +3,7 @@
 <mapper namespace="cn.net.yunlou.bole.mapper.WorkExperienceMapper">
 
 
-    <resultMap id="BaseResultMap" type="cn.net.yunlou.bole.entity.WorkExperience">
+    <resultMap id="BaseResultMap" type="cn.net.yunlou.bole.model.entity.WorkExperience">
         <!-- 继承 BaseEntity 的字段 -->
         <id column="id" property="id"/>
         <result column="created_at" property="createdAt"/>

@@ -4,7 +4,7 @@ import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.common.IEnum;
 import cn.net.yunlou.bole.common.constant.CompanyKeyField;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
-import cn.net.yunlou.bole.entity.Company;
+import cn.net.yunlou.bole.model.entity.Company;
 import cn.net.yunlou.bole.mapper.CompanyMapper;
 import cn.net.yunlou.bole.model.create.CompanyCreate;
 import cn.net.yunlou.bole.model.edit.CompanyEdit;

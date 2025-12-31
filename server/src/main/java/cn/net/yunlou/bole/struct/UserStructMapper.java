@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.User;
 import cn.net.yunlou.bole.model.create.UserCreate;
 import cn.net.yunlou.bole.model.edit.UserEdit;
 import cn.net.yunlou.bole.model.query.UserQuery;

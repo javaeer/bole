@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.entity.File;
+import cn.net.yunlou.bole.model.entity.File;
 import cn.net.yunlou.bole.model.create.FileCreate;
 import cn.net.yunlou.bole.model.edit.FileEdit;
 import cn.net.yunlou.bole.model.query.FileQuery;

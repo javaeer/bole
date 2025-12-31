@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.handler;
 
 import cn.net.yunlou.bole.common.constant.StorageType;
-import cn.net.yunlou.bole.entity.File;
+import cn.net.yunlou.bole.model.entity.File;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;

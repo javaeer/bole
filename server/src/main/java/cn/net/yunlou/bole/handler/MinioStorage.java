@@ -5,7 +5,7 @@ import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.StorageType;
 import cn.net.yunlou.bole.common.utils.FileHashUtils;
 import cn.net.yunlou.bole.config.StorageMinioProperties;
-import cn.net.yunlou.bole.entity.File;
+import cn.net.yunlou.bole.model.entity.File;
 import io.minio.*;
 import io.minio.http.Method;
 import java.io.ByteArrayOutputStream;

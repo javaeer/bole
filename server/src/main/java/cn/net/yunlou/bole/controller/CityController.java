@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.entity.City;
+import cn.net.yunlou.bole.model.entity.City;
 import cn.net.yunlou.bole.model.create.CityCreate;
 import cn.net.yunlou.bole.model.edit.CityEdit;
 import cn.net.yunlou.bole.model.query.CityQuery;

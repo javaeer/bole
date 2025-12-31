@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.entity.Resumes;
+import cn.net.yunlou.bole.model.entity.Resumes;
 import cn.net.yunlou.bole.model.create.ResumesCreate;
 import cn.net.yunlou.bole.model.edit.ResumesEdit;
 import cn.net.yunlou.bole.model.query.ResumesQuery;

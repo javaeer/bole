@@ -3,7 +3,7 @@ package cn.net.yunlou.bole.controller;
 import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
-import cn.net.yunlou.bole.entity.ResumesComponent;
+import cn.net.yunlou.bole.model.entity.ResumesComponent;
 import cn.net.yunlou.bole.model.create.ResumesComponentCreate;
 import cn.net.yunlou.bole.model.edit.ResumesComponentEdit;
 import cn.net.yunlou.bole.model.query.ResumesComponentQuery;

@@ -2,7 +2,7 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.SelfEvaluation;
+import cn.net.yunlou.bole.model.entity.SelfEvaluation;
 import cn.net.yunlou.bole.mapper.SelfEvaluationMapper;
 import cn.net.yunlou.bole.model.create.SelfEvaluationCreate;
 import cn.net.yunlou.bole.model.edit.SelfEvaluationEdit;

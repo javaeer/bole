@@ -1,0 +1,18 @@
+package cn.net.yunlou.bole.model.entity;
+
+import cn.net.yunlou.bole.common.BaseEntity;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@TableName(value = "t_city_grade")
+public class CityGrade extends BaseEntity {
+
+    private String name;
+
+    private String level; // 洲，国，省，市，区/县,乡镇，街道
+}

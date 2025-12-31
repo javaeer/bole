@@ -2,14 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.net.yunlou.bole.mapper.FollowCompanyMapper">
 
-    <select id="selectListLeft" resultType="cn.net.yunlou.bole.entity.User">
+    <select id="selectListLeft" resultType="cn.net.yunlou.bole.model.entity.User">
         select l.*
         from t_user as l
                  left join t_follow_company as et on et.user_id = l.id
         where et.company_id = #{et.companyId}
     </select>
 
-    <select id="selectListRight" resultType="cn.net.yunlou.bole.entity.Company">
+    <select id="selectListRight" resultType="cn.net.yunlou.bole.model.entity.Company">
         select r.*
         from t_company as r
                  left join t_follow_company as et on et.company_id = r.id

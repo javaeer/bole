@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.mapper;
 
 import cn.net.yunlou.bole.common.IBaseMapper;
-import cn.net.yunlou.bole.entity.Sms;
+import cn.net.yunlou.bole.model.entity.Sms;
 
 /**
  * FileName: SmsMapper Description: Created By laughtiger Created At 2025/12/25 01:23 Modified By

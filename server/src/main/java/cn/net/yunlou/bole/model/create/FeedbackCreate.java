@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.model.create;
 
 import cn.net.yunlou.bole.common.BaseCreate;
-import cn.net.yunlou.bole.entity.Contact;
+import cn.net.yunlou.bole.model.entity.Contact;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

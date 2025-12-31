@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.entity.File;
+import cn.net.yunlou.bole.model.entity.File;
 import cn.net.yunlou.bole.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

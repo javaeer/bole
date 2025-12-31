@@ -2,7 +2,7 @@ package cn.net.yunlou.bole.handler;
 
 import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
-import cn.net.yunlou.bole.entity.JobIntention;
+import cn.net.yunlou.bole.model.entity.JobIntention;
 import cn.net.yunlou.bole.model.view.JobIntentionView;
 import cn.net.yunlou.bole.service.JobIntentionService;
 import com.google.common.collect.Lists;

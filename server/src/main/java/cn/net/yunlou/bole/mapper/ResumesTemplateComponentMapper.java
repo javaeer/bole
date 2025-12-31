@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.mapper;
 
 import cn.net.yunlou.bole.common.IMultiMapper;
-import cn.net.yunlou.bole.entity.ResumesComponent;
-import cn.net.yunlou.bole.entity.ResumesTemplate;
-import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
+import cn.net.yunlou.bole.model.entity.ResumesComponent;
+import cn.net.yunlou.bole.model.entity.ResumesTemplate;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

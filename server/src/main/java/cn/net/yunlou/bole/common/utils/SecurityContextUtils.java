@@ -4,7 +4,7 @@ import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.BaseConstant;
 import cn.net.yunlou.bole.common.security.UnifiedUserDetails;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.User;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;

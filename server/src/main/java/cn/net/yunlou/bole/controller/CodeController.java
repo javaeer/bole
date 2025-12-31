@@ -4,7 +4,7 @@ import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.User;
 import cn.net.yunlou.bole.model.create.EmailCreate;
 import cn.net.yunlou.bole.model.create.SmsCreate;
 import cn.net.yunlou.bole.service.EmailService;

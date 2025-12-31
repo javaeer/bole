@@ -149,9 +149,9 @@
       }
     },
     {
-      "path": "pages/project/create",
+      "path": "pages/project/project",
       "style": {
-        "navigationBarTitleText": "新增项目经历"
+        "navigationBarTitleText": ""
       }
     },
     {
@@ -255,18 +255,6 @@
       "style": {
         "navigationBarTitleText": "字典测试"
       }
-	},
-	{
-		"path": "pages/skill/detail",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
-		"path": "pages/project/detail",
-		"style": {
-			"navigationBarTitleText": ""
-		}
 	},
 	{
 		"path": "pages/auth/forgot",

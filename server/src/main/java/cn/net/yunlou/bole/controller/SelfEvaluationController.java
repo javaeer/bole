@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.entity.SelfEvaluation;
+import cn.net.yunlou.bole.model.entity.SelfEvaluation;
 import cn.net.yunlou.bole.model.create.SelfEvaluationCreate;
 import cn.net.yunlou.bole.model.edit.SelfEvaluationEdit;
 import cn.net.yunlou.bole.model.query.SelfEvaluationQuery;

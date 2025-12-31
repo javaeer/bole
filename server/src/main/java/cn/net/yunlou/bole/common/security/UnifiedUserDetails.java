@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.common.security;
 
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.User;
 import java.util.Collection;
 import lombok.Builder;
 import lombok.Data;

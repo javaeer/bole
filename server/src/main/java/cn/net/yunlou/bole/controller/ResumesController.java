@@ -4,7 +4,7 @@ import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.Resumes;
+import cn.net.yunlou.bole.model.entity.Resumes;
 import cn.net.yunlou.bole.model.create.ResumesCreate;
 import cn.net.yunlou.bole.model.edit.ResumesEdit;
 import cn.net.yunlou.bole.model.query.ResumesQuery;

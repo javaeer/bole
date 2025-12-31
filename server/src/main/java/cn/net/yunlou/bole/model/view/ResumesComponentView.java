@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.model.view;
 
 import cn.net.yunlou.bole.common.BaseView;
-import cn.net.yunlou.bole.entity.ResumesComponentDefaultConfig;
+import cn.net.yunlou.bole.model.entity.ResumesComponentDefaultConfig;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

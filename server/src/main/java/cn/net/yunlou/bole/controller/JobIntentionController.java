@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.entity.JobIntention;
+import cn.net.yunlou.bole.model.entity.JobIntention;
 import cn.net.yunlou.bole.model.create.JobIntentionCreate;
 import cn.net.yunlou.bole.model.edit.JobIntentionEdit;
 import cn.net.yunlou.bole.model.query.JobIntentionQuery;

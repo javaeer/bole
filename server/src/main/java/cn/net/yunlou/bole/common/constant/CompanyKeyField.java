@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.common.constant;
 
 import cn.net.yunlou.bole.common.KeyFieldEnum;
-import cn.net.yunlou.bole.entity.Company;
+import cn.net.yunlou.bole.model.entity.Company;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

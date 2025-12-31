@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.mapper;
 
 import cn.net.yunlou.bole.common.IMultiMapper;
-import cn.net.yunlou.bole.entity.FavoriteTemplate;
-import cn.net.yunlou.bole.entity.ResumesTemplate;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.FavoriteTemplate;
+import cn.net.yunlou.bole.model.entity.ResumesTemplate;
+import cn.net.yunlou.bole.model.entity.User;
 
 /**
  * FileName: CollectionTemplateMapper Description: Created By laughtiger Created At 2025/12/24 20:02

@@ -1,7 +1,7 @@
 import { request } from "@/utils/request";
 import {
 	ProjectExperienceForm,
-	ProjectExperienceItem,
+	ProjectExperienceResult,
 	ProjectExperienceQuery,
 } from "@/types/project-experience";
 
@@ -10,7 +10,15 @@ const PROJECT_EXPERIENCE_BASE_URL = "/project/experience";
 const ProjectExperienceAPI = {
 
 	getById(id : number) {
-		return request.get<ProjectExperienceItem>(`${PROJECT_EXPERIENCE_BASE_URL}/${id}`);
+		return request.get<ProjectExperienceResult>(`${PROJECT_EXPERIENCE_BASE_URL}/${id}`);
+	},
+
+	delete(id : number) {
+		return request.delete<boolean>(`${PROJECT_EXPERIENCE_BASE_URL}/${id}`);
+	},
+
+	update(form : ProjectExperienceForm) {
+		return request.put(`${PROJECT_EXPERIENCE_BASE_URL}/edit`, form);
 	},
 
 	add(form : ProjectExperienceForm) {
@@ -18,7 +26,7 @@ const ProjectExperienceAPI = {
 	},
 
 	page(params : PageParam, query ?: ProjectExperienceQuery) {
-		return request.page<PageResult<ProjectExperienceItem>>(`${PROJECT_EXPERIENCE_BASE_URL}/page`, params, query);
+		return request.page<PageResult<ProjectExperienceResult>>(`${PROJECT_EXPERIENCE_BASE_URL}/page`, params, query);
 	},
 
 };

@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.model;
 
 import cn.net.yunlou.bole.common.BaseDTO;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 

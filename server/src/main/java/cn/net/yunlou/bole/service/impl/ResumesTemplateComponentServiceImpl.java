@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.MultiService;
-import cn.net.yunlou.bole.entity.ResumesComponent;
-import cn.net.yunlou.bole.entity.ResumesTemplate;
-import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
+import cn.net.yunlou.bole.model.entity.ResumesComponent;
+import cn.net.yunlou.bole.model.entity.ResumesTemplate;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
 import cn.net.yunlou.bole.mapper.ResumesTemplateComponentMapper;
 import cn.net.yunlou.bole.model.ResumesTemplateComponentDTO;
 import cn.net.yunlou.bole.service.ResumesComponentService;

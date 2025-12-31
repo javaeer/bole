@@ -2,8 +2,8 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.EducationExperience;
-import cn.net.yunlou.bole.entity.University;
+import cn.net.yunlou.bole.model.entity.EducationExperience;
+import cn.net.yunlou.bole.model.entity.University;
 import cn.net.yunlou.bole.mapper.EducationExperienceMapper;
 import cn.net.yunlou.bole.model.create.EducationExperienceCreate;
 import cn.net.yunlou.bole.model.edit.EducationExperienceEdit;

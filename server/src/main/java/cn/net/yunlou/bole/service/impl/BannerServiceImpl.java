@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
-import cn.net.yunlou.bole.entity.Banner;
+import cn.net.yunlou.bole.model.entity.Banner;
 import cn.net.yunlou.bole.mapper.BannerMapper;
 import cn.net.yunlou.bole.model.create.BannerCreate;
 import cn.net.yunlou.bole.model.edit.BannerEdit;

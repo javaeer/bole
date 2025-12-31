@@ -1,8 +1,8 @@
 package cn.net.yunlou.bole.model.query;
 
 import cn.net.yunlou.bole.common.BaseQuery;
-import cn.net.yunlou.bole.entity.ResumesTemplateLayout;
-import cn.net.yunlou.bole.entity.ResumesTemplateStyle;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateStyle;
 import lombok.*;
 
 /**

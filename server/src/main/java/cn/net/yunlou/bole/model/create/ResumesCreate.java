@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.model.create;
 
 import cn.net.yunlou.bole.common.BaseCreate;
-import cn.net.yunlou.bole.entity.ResumesTemplateComponent;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.*;

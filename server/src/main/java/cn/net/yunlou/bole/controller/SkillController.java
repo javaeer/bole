@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.entity.Skill;
+import cn.net.yunlou.bole.model.entity.Skill;
 import cn.net.yunlou.bole.model.create.SkillCreate;
 import cn.net.yunlou.bole.model.edit.SkillEdit;
 import cn.net.yunlou.bole.model.query.SkillQuery;
@@ -29,21 +29,18 @@ public class SkillController {
 
     @PostMapping("add")
     @Operation(summary = "新增职业技能")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> add(@RequestBody SkillCreate request) {
         return BusinessResponse.success(skillService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除职业技能")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
         return BusinessResponse.success(skillService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑职业技能")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
     public BusinessResponse<Boolean> edit(@RequestBody @Valid SkillEdit request) {
         return BusinessResponse.success(skillService.updateByEdit(request));
     }

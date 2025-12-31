@@ -2,8 +2,8 @@ package cn.net.yunlou.bole.common.security;
 
 import cn.net.yunlou.bole.common.constant.BaseConstant;
 import cn.net.yunlou.bole.common.constant.UserStatus;
-import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.entity.UserRole;
+import cn.net.yunlou.bole.model.entity.User;
+import cn.net.yunlou.bole.model.entity.UserRole;
 import cn.net.yunlou.bole.service.UserRoleService;
 import cn.net.yunlou.bole.service.UserService;
 import com.google.common.collect.Lists;

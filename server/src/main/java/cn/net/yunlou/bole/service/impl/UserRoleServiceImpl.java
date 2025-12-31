@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.MultiService;
-import cn.net.yunlou.bole.entity.Role;
-import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.entity.UserRole;
+import cn.net.yunlou.bole.model.entity.Role;
+import cn.net.yunlou.bole.model.entity.User;
+import cn.net.yunlou.bole.model.entity.UserRole;
 import cn.net.yunlou.bole.mapper.UserRoleMapper;
 import cn.net.yunlou.bole.service.UserRoleService;
 import org.springframework.stereotype.Service;

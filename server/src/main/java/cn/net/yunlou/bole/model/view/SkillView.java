@@ -3,6 +3,8 @@ package cn.net.yunlou.bole.model.view;
 import cn.net.yunlou.bole.common.BaseView;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+
 import lombok.*;
 
 /**
@@ -30,7 +32,7 @@ public class SkillView extends BaseView {
 
     private LocalDate certificateDate;
 
-    private String tags;
+    private List<String> tags;
 
     private Boolean isPublic;
 

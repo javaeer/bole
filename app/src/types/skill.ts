@@ -1,28 +1,5 @@
 export interface SkillForm {
   id?: number;
-  name?: string;
-  category?: string;
-  proficiencyPercent?: number;
-  level?: string;
-  experienceYears?: number;
-  description?: string;
-  tags?: string;
-  isCertified?: boolean;
-  certificateName?: string;
-  certificateDate?: string;
-}
-
-export interface SkillQuery extends BodyQuery {
-
-}
-
-
-export interface SkillItem {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
-  deleted: number;
-  userId: number;
   name: string;
   level: string;
   category: string;
@@ -32,7 +9,30 @@ export interface SkillItem {
   isCertified: boolean;
   certificateName: string | null;
   certificateDate: string | null;
-  tags: string;
+  tags: string[]; // 改为数组类型
+  isPublic: boolean;
+}
+
+export interface SkillQuery extends BodyQuery {
+
+}
+
+
+export interface SkillResult {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  deleted: number;
+  name: string;
+  level: string;
+  category: string;
+  description: string;
+  proficiencyPercent: number;
+  experienceYears: number;
+  isCertified: boolean;
+  certificateName: string | null;
+  certificateDate: string | null;
+  tags: string[];
   isPublic: boolean;
   sort: number;
 }

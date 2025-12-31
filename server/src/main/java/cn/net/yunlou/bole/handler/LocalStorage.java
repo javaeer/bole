@@ -6,7 +6,7 @@ import cn.net.yunlou.bole.common.constant.StorageType;
 import cn.net.yunlou.bole.common.utils.FileHashUtils;
 import cn.net.yunlou.bole.config.AppConfigProperties;
 import cn.net.yunlou.bole.config.StorageLocalProperties;
-import cn.net.yunlou.bole.entity.File;
+import cn.net.yunlou.bole.model.entity.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;

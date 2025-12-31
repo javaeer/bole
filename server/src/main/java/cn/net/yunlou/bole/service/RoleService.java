@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
-import cn.net.yunlou.bole.entity.Role;
+import cn.net.yunlou.bole.model.entity.Role;
 import cn.net.yunlou.bole.model.create.RoleCreate;
 import cn.net.yunlou.bole.model.edit.RoleEdit;
 import cn.net.yunlou.bole.model.query.RoleQuery;

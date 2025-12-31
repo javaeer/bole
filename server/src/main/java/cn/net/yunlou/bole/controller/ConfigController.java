@@ -2,7 +2,7 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.Config;
+import cn.net.yunlou.bole.model.entity.Config;
 import cn.net.yunlou.bole.model.query.ConfigQuery;
 import cn.net.yunlou.bole.service.ConfigService;
 import io.swagger.v3.oas.annotations.Operation;

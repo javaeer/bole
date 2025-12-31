@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.mapper;
 
-import cn.net.yunlou.bole.entity.SelfEvaluation;
+import cn.net.yunlou.bole.model.entity.SelfEvaluation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

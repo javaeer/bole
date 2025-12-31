@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseTreeService;
-import cn.net.yunlou.bole.entity.Dict;
+import cn.net.yunlou.bole.model.entity.Dict;
 import cn.net.yunlou.bole.model.create.DictCreate;
 import cn.net.yunlou.bole.model.edit.DictEdit;
 import cn.net.yunlou.bole.model.query.DictQuery;

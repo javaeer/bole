@@ -4,7 +4,7 @@ import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.StorageType;
 import cn.net.yunlou.bole.config.StorageProperties;
-import cn.net.yunlou.bole.entity.File;
+import cn.net.yunlou.bole.model.entity.File;
 import cn.net.yunlou.bole.handler.IStorage;
 import cn.net.yunlou.bole.handler.StorageStrategyRegistry;
 import cn.net.yunlou.bole.service.StorageService;

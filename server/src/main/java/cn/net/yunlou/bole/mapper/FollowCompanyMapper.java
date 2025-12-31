@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.mapper;
 
 import cn.net.yunlou.bole.common.IMultiMapper;
-import cn.net.yunlou.bole.entity.Company;
-import cn.net.yunlou.bole.entity.FollowCompany;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.Company;
+import cn.net.yunlou.bole.model.entity.FollowCompany;
+import cn.net.yunlou.bole.model.entity.User;
 
 /**
  * FileName: FollowCompanyMapper Description: Created By laughtiger Created At 2025/12/24 19:44

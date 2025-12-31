@@ -6,7 +6,7 @@ import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.StorageType;
 import cn.net.yunlou.bole.common.utils.FileHashUtils;
 import cn.net.yunlou.bole.common.utils.FileSecurityUtils;
-import cn.net.yunlou.bole.entity.File;
+import cn.net.yunlou.bole.model.entity.File;
 import cn.net.yunlou.bole.mapper.FileMapper;
 import cn.net.yunlou.bole.model.create.FileCreate;
 import cn.net.yunlou.bole.model.edit.FileEdit;

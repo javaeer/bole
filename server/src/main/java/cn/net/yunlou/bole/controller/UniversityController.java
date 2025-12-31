@@ -2,9 +2,9 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.FollowUniversity;
-import cn.net.yunlou.bole.entity.University;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.FollowUniversity;
+import cn.net.yunlou.bole.model.entity.University;
+import cn.net.yunlou.bole.model.entity.User;
 import cn.net.yunlou.bole.model.create.UniversityCreate;
 import cn.net.yunlou.bole.model.edit.UniversityEdit;
 import cn.net.yunlou.bole.model.query.UniversityQuery;
