@@ -11,10 +11,9 @@ import cn.net.yunlou.bole.model.view.ProjectExperienceView;
 import cn.net.yunlou.bole.service.ProjectExperienceService;
 import cn.net.yunlou.bole.struct.ProjectExperienceStructMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * FileName: ProjectExperienceServiceImpl Description: Created By MR. WANG Created At 2025/11/24
@@ -23,13 +22,13 @@ import java.util.List;
 @Service
 public class ProjectExperienceServiceImpl
         extends BaseService<
-        ProjectExperienceMapper,
-        ProjectExperience,
-        ProjectExperienceCreate,
-        ProjectExperienceView,
-        ProjectExperienceEdit,
-        ProjectExperienceQuery,
-        ProjectExperienceStructMapper>
+                ProjectExperienceMapper,
+                ProjectExperience,
+                ProjectExperienceCreate,
+                ProjectExperienceView,
+                ProjectExperienceEdit,
+                ProjectExperienceQuery,
+                ProjectExperienceStructMapper>
         implements ProjectExperienceService {
     @Override
     public List<ProjectExperience> listByUserId(Long userId) {
@@ -50,7 +49,9 @@ public class ProjectExperienceServiceImpl
     @Override
     public QueryWrapper<ProjectExperience> getBaseQueryWrapper(ProjectExperience entity) {
         QueryWrapper<ProjectExperience> queryWrapper = super.getBaseQueryWrapper(entity);
-        queryWrapper.lambda().eq(ProjectExperience::getUserId, SecurityContextUtils.getCurrentUserId());
+        queryWrapper
+                .lambda()
+                .eq(ProjectExperience::getUserId, SecurityContextUtils.getCurrentUserId());
         queryWrapper.lambda().orderByDesc(ProjectExperience::getStartDate);
         return queryWrapper;
     }

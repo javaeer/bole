@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SkillServiceImpl
         extends BaseService<
-        SkillMapper,
-        Skill,
-        SkillCreate,
-        SkillView,
-        SkillEdit,
-        SkillQuery,
-        SkillStructMapper>
+                SkillMapper,
+                Skill,
+                SkillCreate,
+                SkillView,
+                SkillEdit,
+                SkillQuery,
+                SkillStructMapper>
         implements SkillService {
 
     @Override

@@ -3,7 +3,6 @@ package cn.net.yunlou.bole.common;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;

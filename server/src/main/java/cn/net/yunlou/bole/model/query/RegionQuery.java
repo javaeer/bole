@@ -6,11 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: RegionQuery
- * Description:
- * Created By laughtiger
- * Created At 2026/1/2 23:11
- * Modified By
+ * FileName: RegionQuery Description: Created By laughtiger Created At 2026/1/2 23:11 Modified By
  * Modified At
  */
 @EqualsAndHashCode(callSuper = true)
@@ -19,5 +15,4 @@ public class RegionQuery extends BaseTreeQuery {
 
     @Parameter(description = "是否包含禁用数据")
     private Boolean includeDisabled = false;
-
 }

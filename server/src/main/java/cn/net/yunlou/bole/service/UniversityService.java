@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
-import cn.net.yunlou.bole.model.entity.University;
 import cn.net.yunlou.bole.model.create.UniversityCreate;
 import cn.net.yunlou.bole.model.edit.UniversityEdit;
+import cn.net.yunlou.bole.model.entity.University;
 import cn.net.yunlou.bole.model.query.UniversityQuery;
 import cn.net.yunlou.bole.model.view.UniversityView;
 

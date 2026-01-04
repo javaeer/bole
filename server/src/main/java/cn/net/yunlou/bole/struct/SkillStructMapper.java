@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.model.entity.Skill;
 import cn.net.yunlou.bole.model.create.SkillCreate;
 import cn.net.yunlou.bole.model.edit.SkillEdit;
+import cn.net.yunlou.bole.model.entity.Skill;
 import cn.net.yunlou.bole.model.query.SkillQuery;
 import cn.net.yunlou.bole.model.view.SkillView;
 import org.mapstruct.Builder;

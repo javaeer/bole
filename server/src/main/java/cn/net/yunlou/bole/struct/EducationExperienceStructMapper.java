@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.model.entity.EducationExperience;
 import cn.net.yunlou.bole.model.create.EducationExperienceCreate;
 import cn.net.yunlou.bole.model.edit.EducationExperienceEdit;
+import cn.net.yunlou.bole.model.entity.EducationExperience;
 import cn.net.yunlou.bole.model.query.EducationExperienceQuery;
 import cn.net.yunlou.bole.model.view.EducationExperienceView;
 import org.mapstruct.Builder;

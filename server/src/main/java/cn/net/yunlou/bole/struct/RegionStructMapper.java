@@ -9,12 +9,7 @@ import cn.net.yunlou.bole.model.view.RegionView;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 
-;
-
-/**
- * 映射器
- */
+/** 映射器 */
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface RegionStructMapper
-        extends BaseStructMapper<Region, RegionCreate, RegionView, RegionEdit, RegionQuery> {
-}
+        extends BaseStructMapper<Region, RegionCreate, RegionView, RegionEdit, RegionQuery> {}

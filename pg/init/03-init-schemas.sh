@@ -1089,6 +1089,87 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_city.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_city.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
+    -- 区域表
+    CREATE TABLE IF NOT EXISTS bole_app.t_region (
+        -- 主键字段
+        id BIGSERIAL PRIMARY KEY,
+        parent_id BIGINT DEFAULT 0,
+        path VARCHAR(255),
+        level INTEGER DEFAULT 1,
+        name VARCHAR(255) NOT NULL,
+        short_name VARCHAR(255),
+        merger_name VARCHAR(255),
+        initial VARCHAR(10),
+        pinyin VARCHAR(255),
+        jianpin VARCHAR(255),
+        longitude DOUBLE PRECISION,
+        latitude DOUBLE PRECISION,
+        tel_code INTEGER,
+        zip_code INTEGER,
+        car_code VARCHAR(50),
+        cnw_station_code VARCHAR(100),
+        nmc_station_code VARCHAR(100),
+        nmc_province_code VARCHAR(100),
+        nmc_weather_url VARCHAR(255),
+        cma_station_code VARCHAR(100),
+        status INTEGER DEFAULT 1,
+        sort INTEGER DEFAULT 0,
+        is_hot INTEGER DEFAULT 0,
+        -- 时间字段
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        -- 逻辑删除字段
+        deleted INTEGER DEFAULT 0,
+        
+        -- 添加外键约束
+        CONSTRAINT fk_region_parent 
+        FOREIGN KEY (parent_id) 
+        REFERENCES bole_app.t_region(id)
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_region_parent_id ON bole_app.t_region(parent_id);
+    CREATE INDEX IF NOT EXISTS idx_region_level ON bole_app.t_region(level);
+    CREATE INDEX IF NOT EXISTS idx_region_name ON bole_app.t_region(name);
+    CREATE INDEX IF NOT EXISTS idx_region_pinyin ON bole_app.t_region(pinyin);
+    CREATE INDEX IF NOT EXISTS idx_region_jianpin ON bole_app.t_region(jianpin);
+    CREATE INDEX IF NOT EXISTS idx_region_initial ON bole_app.t_region(initial);
+    CREATE INDEX IF NOT EXISTS idx_region_status ON bole_app.t_region(status);
+    CREATE INDEX IF NOT EXISTS idx_region_is_hot ON bole_app.t_region(is_hot);
+    CREATE INDEX IF NOT EXISTS idx_region_created_at ON bole_app.t_region(created_at);
+    CREATE INDEX IF NOT EXISTS idx_region_deleted ON bole_app.t_region(deleted);
+
+    -- 如果需要按地理位置查询，可以添加复合索引
+    CREATE INDEX IF NOT EXISTS idx_region_location ON bole_app.t_region(longitude, latitude);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_region IS '区域表（行政区划）';
+    COMMENT ON COLUMN bole_app.t_region.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_region.parent_id IS '父节点ID';
+    COMMENT ON COLUMN bole_app.t_region.path IS '路径';
+    COMMENT ON COLUMN bole_app.t_region.level IS '层级';
+    COMMENT ON COLUMN bole_app.t_region.name IS '区域名称';
+    COMMENT ON COLUMN bole_app.t_region.short_name IS '简称';
+    COMMENT ON COLUMN bole_app.t_region.merger_name IS '全称';
+    COMMENT ON COLUMN bole_app.t_region.initial IS '首字母';
+    COMMENT ON COLUMN bole_app.t_region.pinyin IS '拼音（全拼）';
+    COMMENT ON COLUMN bole_app.t_region.jianpin IS '拼音（简拼）';
+    COMMENT ON COLUMN bole_app.t_region.longitude IS '经度';
+    COMMENT ON COLUMN bole_app.t_region.latitude IS '纬度';
+    COMMENT ON COLUMN bole_app.t_region.tel_code IS '电话区号';
+    COMMENT ON COLUMN bole_app.t_region.zip_code IS '邮政编码';
+    COMMENT ON COLUMN bole_app.t_region.car_code IS '车牌编码';
+    COMMENT ON COLUMN bole_app.t_region.cnw_station_code IS '中国天气网站点编码';
+    COMMENT ON COLUMN bole_app.t_region.nmc_station_code IS '中央气象台站点编码';
+    COMMENT ON COLUMN bole_app.t_region.nmc_province_code IS '中央气象台省份编码';
+    COMMENT ON COLUMN bole_app.t_region.nmc_weather_url IS '中央气象台天气URL';
+    COMMENT ON COLUMN bole_app.t_region.cma_station_code IS '中国气象局站点编码';
+    COMMENT ON COLUMN bole_app.t_region.status IS '状态：0-禁用，1-启用';
+    COMMENT ON COLUMN bole_app.t_region.sort IS '排序';
+    COMMENT ON COLUMN bole_app.t_region.is_hot IS '是否热门：0-否，1-是';
+    COMMENT ON COLUMN bole_app.t_region.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_region.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_region.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
     -- 文件表
     CREATE TABLE IF NOT EXISTS bole_app.t_file (
@@ -1328,7 +1409,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     CREATE TABLE IF NOT EXISTS bole_app.t_feedback (
         -- 主键字段
         id BIGSERIAL PRIMARY KEY,
-        user_id BIGINT NOT NULL,
+        user_id BIGINT,
         type VARCHAR(50),
         content TEXT,
         images JSONB,
@@ -1491,7 +1572,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
                 't_education_experience', 't_project_experience',
                 't_resumes','t_resumes_component', 't_resumes_template',
                 't_skill','t_city_grade','t_self_evaluation',
-                't_city','t_file','t_msg_template',
+                't_city','t_region','t_file','t_msg_template',
                 't_sms','t_ems','t_feedback',
                 't_university','t_follow_university','audit_logs'
             )

@@ -5,11 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * FileName: BaseStatus
- * Description:
- * Created By laughtiger
- * Created At 2026/1/3 00:45
- * Modified By
+ * FileName: BaseStatus Description: Created By laughtiger Created At 2026/1/3 00:45 Modified By
  * Modified At
  */
 @Getter

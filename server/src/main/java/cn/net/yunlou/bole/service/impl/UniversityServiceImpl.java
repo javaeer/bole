@@ -1,10 +1,10 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
-import cn.net.yunlou.bole.model.entity.University;
 import cn.net.yunlou.bole.mapper.UniversityMapper;
 import cn.net.yunlou.bole.model.create.UniversityCreate;
 import cn.net.yunlou.bole.model.edit.UniversityEdit;
+import cn.net.yunlou.bole.model.entity.University;
 import cn.net.yunlou.bole.model.query.UniversityQuery;
 import cn.net.yunlou.bole.model.view.UniversityView;
 import cn.net.yunlou.bole.service.UniversityService;

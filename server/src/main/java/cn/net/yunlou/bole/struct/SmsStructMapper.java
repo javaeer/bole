@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.model.entity.Sms;
 import cn.net.yunlou.bole.model.create.SmsCreate;
 import cn.net.yunlou.bole.model.edit.SmsEdit;
+import cn.net.yunlou.bole.model.entity.Sms;
 import cn.net.yunlou.bole.model.query.SmsQuery;
 import cn.net.yunlou.bole.model.view.SmsView;
 import org.mapstruct.Builder;

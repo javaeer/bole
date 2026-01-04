@@ -9,13 +9,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Validated
@@ -29,7 +28,8 @@ public class RegionController {
 
     @GetMapping("/children")
     @Operation(summary = "根据父级编码查询子区域")
-    public BusinessResponse<List<RegionView>> getChildren(@RequestBody(required = false) RegionQuery query) {
+    public BusinessResponse<List<RegionView>> getChildren(
+            @RequestBody(required = false) RegionQuery query) {
         List<RegionView> children = regionService.listViewByQuery(query);
         return BusinessResponse.success(children);
     }
@@ -45,18 +45,16 @@ public class RegionController {
     @PostMapping("/batch")
     @Operation(summary = "批量查询区域")
     public BusinessResponse<Map<Long, List<Region>>> batchQuery(
-            @Parameter(description = "行政区划代码列表", required = true)
-            @RequestBody List<Long> list) {
+            @Parameter(description = "行政区划代码列表", required = true) @RequestBody List<Long> list) {
         Map<Long, List<Region>> listMap = regionService.listDirectChildrenByParentIds(list);
         return BusinessResponse.success(listMap);
     }
 
-
     @GetMapping("/tree")
     @Operation(summary = "获取区域树")
     public BusinessResponse<Region> getTree(
-            @Parameter(description = "根节点编码，不传则返回省级树")
-            @RequestParam(required = false) Long parentId) {
+            @Parameter(description = "根节点编码，不传则返回省级树") @RequestParam(required = false)
+                    Long parentId) {
         if (parentId == null || parentId == 0L) {
             parentId = 86L;
         }
@@ -80,14 +78,10 @@ public class RegionController {
     @GetMapping("/nearest")
     @Operation(summary = "根据经纬度查找最近区域")
     public BusinessResponse<RegionView> findNearestRegion(
-            @Parameter(description = "经度", required = true)
-            @RequestParam Double longitude,
-
-            @Parameter(description = "纬度", required = true)
-            @RequestParam Double latitude,
-
-            @Parameter(description = "区域级别：1-省，2-市，3-区县")
-            @RequestParam(required = false) Integer level) {
+            @Parameter(description = "经度", required = true) @RequestParam Double longitude,
+            @Parameter(description = "纬度", required = true) @RequestParam Double latitude,
+            @Parameter(description = "区域级别：1-省，2-市，3-区县") @RequestParam(required = false)
+                    Integer level) {
 
         RegionView region = regionService.findNearestRegion(longitude, latitude, level);
         return BusinessResponse.success(region);
@@ -114,8 +108,7 @@ public class RegionController {
 
     @GetMapping("/cities/{provinceId}")
     @Operation(summary = "获取省份下的城市")
-    public BusinessResponse<List<RegionView>> getCitiesByProvince(
-            @PathVariable Long provinceId) {
+    public BusinessResponse<List<RegionView>> getCitiesByProvince(@PathVariable Long provinceId) {
         Region region = new Region();
         region.setParentId(provinceId);
         region.setLevel(2);

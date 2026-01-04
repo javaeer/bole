@@ -1,10 +1,10 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.MultiService;
+import cn.net.yunlou.bole.mapper.FavoriteTemplateMapper;
 import cn.net.yunlou.bole.model.entity.FavoriteTemplate;
 import cn.net.yunlou.bole.model.entity.ResumesTemplate;
 import cn.net.yunlou.bole.model.entity.User;
-import cn.net.yunlou.bole.mapper.FavoriteTemplateMapper;
 import cn.net.yunlou.bole.service.FavoriteTemplateService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;

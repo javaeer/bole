@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
-import cn.net.yunlou.bole.model.entity.Email;
 import cn.net.yunlou.bole.model.create.EmailCreate;
 import cn.net.yunlou.bole.model.edit.EmailEdit;
+import cn.net.yunlou.bole.model.entity.Email;
 import cn.net.yunlou.bole.model.query.EmailQuery;
 import cn.net.yunlou.bole.model.view.EmailView;
 import jakarta.validation.Valid;

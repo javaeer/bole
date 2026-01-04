@@ -22,5 +22,4 @@ public class DictCreate extends BaseTreeCreate {
     private String label;
 
     private Integer state;
-
 }

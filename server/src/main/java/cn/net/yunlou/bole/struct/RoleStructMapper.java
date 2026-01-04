@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.model.entity.Role;
 import cn.net.yunlou.bole.model.create.RoleCreate;
 import cn.net.yunlou.bole.model.edit.RoleEdit;
+import cn.net.yunlou.bole.model.entity.Role;
 import cn.net.yunlou.bole.model.query.RoleQuery;
 import cn.net.yunlou.bole.model.view.RoleView;
 import org.mapstruct.Builder;

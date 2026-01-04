@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
-import cn.net.yunlou.bole.model.entity.Company;
 import cn.net.yunlou.bole.model.create.CompanyCreate;
 import cn.net.yunlou.bole.model.edit.CompanyEdit;
+import cn.net.yunlou.bole.model.entity.Company;
 import cn.net.yunlou.bole.model.query.CompanyQuery;
 import cn.net.yunlou.bole.model.view.CompanyView;
 

@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.model.entity.Dict;
 import cn.net.yunlou.bole.model.create.DictCreate;
 import cn.net.yunlou.bole.model.edit.DictEdit;
+import cn.net.yunlou.bole.model.entity.Dict;
 import cn.net.yunlou.bole.model.query.DictQuery;
 import cn.net.yunlou.bole.model.view.DictView;
 import cn.net.yunlou.bole.service.DictService;

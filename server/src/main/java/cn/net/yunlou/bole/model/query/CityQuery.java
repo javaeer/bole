@@ -5,7 +5,4 @@ import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class CityQuery extends BaseTreeQuery {
-
-
-}
+public class CityQuery extends BaseTreeQuery {}

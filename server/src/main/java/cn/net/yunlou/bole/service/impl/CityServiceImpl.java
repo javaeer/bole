@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @TreeServiceConfig(cacheName = "cityTree", keyPrefix = "city")
 public class CityServiceImpl
         extends BaseTreeService<
-        CityMapper, City, CityCreate, CityView, CityEdit, CityQuery, CityStructMapper>
+                CityMapper, City, CityCreate, CityView, CityEdit, CityQuery, CityStructMapper>
         implements CityService {
 
     public CityServiceImpl(RedissonLockUtils redissonLockUtils) {

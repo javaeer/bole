@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @TreeServiceConfig(cacheName = "dictTree", keyPrefix = "dict")
 public class DictServiceImpl
         extends BaseTreeService<
-        DictMapper, Dict, DictCreate, DictView, DictEdit, DictQuery, DictStructMapper>
+                DictMapper, Dict, DictCreate, DictView, DictEdit, DictQuery, DictStructMapper>
         implements DictService {
 
     public DictServiceImpl(RedissonLockUtils redissonLockUtils) {

@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.model.entity.CompanyComment;
 import cn.net.yunlou.bole.model.create.CompanyCommentCreate;
 import cn.net.yunlou.bole.model.edit.CompanyCommentEdit;
+import cn.net.yunlou.bole.model.entity.CompanyComment;
 import cn.net.yunlou.bole.model.query.CompanyCommentQuery;
 import cn.net.yunlou.bole.model.view.CompanyCommentView;
 import cn.net.yunlou.bole.service.CompanyCommentService;

@@ -2,11 +2,11 @@ package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
+import cn.net.yunlou.bole.model.create.CompanyCreate;
+import cn.net.yunlou.bole.model.edit.CompanyEdit;
 import cn.net.yunlou.bole.model.entity.Company;
 import cn.net.yunlou.bole.model.entity.FollowCompany;
 import cn.net.yunlou.bole.model.entity.User;
-import cn.net.yunlou.bole.model.create.CompanyCreate;
-import cn.net.yunlou.bole.model.edit.CompanyEdit;
 import cn.net.yunlou.bole.model.query.CompanyQuery;
 import cn.net.yunlou.bole.model.view.CompanyView;
 import cn.net.yunlou.bole.service.CompanyService;

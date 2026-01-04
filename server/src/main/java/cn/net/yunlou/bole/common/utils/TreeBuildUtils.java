@@ -2,12 +2,11 @@ package cn.net.yunlou.bole.common.utils;
 
 import cn.net.yunlou.bole.common.BaseEntity;
 import cn.net.yunlou.bole.common.BaseTreeEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 树形结构构建工具类
@@ -42,7 +41,7 @@ public class TreeBuildUtils {
      * 构建完整的树形结构（从根节点开始）
      *
      * @param allNodes 所有节点列表
-     * @param <T>      节点类型
+     * @param <T> 节点类型
      * @return 完整的树形结构
      */
     public static <T extends BaseTreeEntity<T>> List<T> buildTree(List<T> allNodes) {
@@ -53,8 +52,8 @@ public class TreeBuildUtils {
      * 构建树形结构（基础版本）
      *
      * @param allNodes 所有节点列表
-     * @param rootId   根节点ID
-     * @param <T>      节点类型
+     * @param rootId 根节点ID
+     * @param <T> 节点类型
      * @return 树形结构列表
      */
     public static <T extends BaseTreeEntity<T>> List<T> buildTree(List<T> allNodes, Long rootId) {
@@ -64,13 +63,14 @@ public class TreeBuildUtils {
     /**
      * 构建树形结构（带排序）
      *
-     * @param allNodes   所有节点列表
-     * @param rootId     根节点ID
+     * @param allNodes 所有节点列表
+     * @param rootId 根节点ID
      * @param comparator 排序比较器
-     * @param <T>        节点类型
+     * @param <T> 节点类型
      * @return 树形结构列表
      */
-    public static <T extends BaseTreeEntity<T>> List<T> buildTree(List<T> allNodes, Long rootId, Comparator<T> comparator) {
+    public static <T extends BaseTreeEntity<T>> List<T> buildTree(
+            List<T> allNodes, Long rootId, Comparator<T> comparator) {
         // 参数校验
         if (CollectionUtils.isEmpty(allNodes)) {
             return new ArrayList<>();
@@ -119,10 +119,7 @@ public class TreeBuildUtils {
         return childrenMap.getOrDefault(rootId, new ArrayList<>());
     }
 
-
-    /**
-     * 检测循环引用
-     */
+    /** 检测循环引用 */
     private static <T extends BaseTreeEntity<T>> void checkCircularReference(List<T> allNodes) {
         Map<Long, T> nodeMap =
                 allNodes.stream().collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
@@ -140,9 +137,7 @@ public class TreeBuildUtils {
         }
     }
 
-    /**
-     * 递归检测循环引用
-     */
+    /** 递归检测循环引用 */
     private static <T extends BaseTreeEntity<T>> boolean hasCircularReference(
             T node, Map<Long, T> nodeMap, Set<Long> path) {
         Long nodeId = node.getId();
@@ -173,7 +168,7 @@ public class TreeBuildUtils {
      * 扁平化树形结构
      *
      * @param tree 树形结构
-     * @param <T>  节点类型
+     * @param <T> 节点类型
      * @return 扁平化的节点列表
      */
     public static <T extends BaseTreeEntity<T>> List<T> flattenTree(List<T> tree) {
@@ -182,10 +177,9 @@ public class TreeBuildUtils {
         return result;
     }
 
-    /**
-     * 递归扁平化树形结构
-     */
-    private static <T extends BaseTreeEntity<T>> void flattenTreeRecursive(List<T> nodes, List<T> result) {
+    /** 递归扁平化树形结构 */
+    private static <T extends BaseTreeEntity<T>> void flattenTreeRecursive(
+            List<T> nodes, List<T> result) {
         if (CollectionUtils.isEmpty(nodes)) {
             return;
         }
@@ -200,11 +194,12 @@ public class TreeBuildUtils {
      * 查找节点路径
      *
      * @param allNodes 所有节点
-     * @param nodeId   目标节点ID
-     * @param <T>      节点类型
+     * @param nodeId 目标节点ID
+     * @param <T> 节点类型
      * @return 从根节点到目标节点的路径
      */
-    public static <T extends BaseTreeEntity<T>> List<T> findNodePath(List<T> allNodes, Long nodeId) {
+    public static <T extends BaseTreeEntity<T>> List<T> findNodePath(
+            List<T> allNodes, Long nodeId) {
         Map<Long, T> nodeMap =
                 allNodes.stream().collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
 

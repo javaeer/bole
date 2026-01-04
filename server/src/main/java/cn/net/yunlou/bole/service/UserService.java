@@ -1,10 +1,10 @@
 package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
-import cn.net.yunlou.bole.model.entity.User;
 import cn.net.yunlou.bole.model.ProfileDTO;
 import cn.net.yunlou.bole.model.create.UserCreate;
 import cn.net.yunlou.bole.model.edit.UserEdit;
+import cn.net.yunlou.bole.model.entity.User;
 import cn.net.yunlou.bole.model.query.UserQuery;
 import cn.net.yunlou.bole.model.view.UserView;
 import jakarta.validation.Valid;

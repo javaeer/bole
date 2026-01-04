@@ -1,10 +1,10 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.MultiService;
+import cn.net.yunlou.bole.mapper.FollowCompanyMapper;
 import cn.net.yunlou.bole.model.entity.Company;
 import cn.net.yunlou.bole.model.entity.FollowCompany;
 import cn.net.yunlou.bole.model.entity.User;
-import cn.net.yunlou.bole.mapper.FollowCompanyMapper;
 import cn.net.yunlou.bole.service.FollowCompanyService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.service;
 
 import cn.net.yunlou.bole.common.IBaseService;
-import cn.net.yunlou.bole.model.entity.ResumesComponent;
 import cn.net.yunlou.bole.model.create.ResumesComponentCreate;
 import cn.net.yunlou.bole.model.edit.ResumesComponentEdit;
+import cn.net.yunlou.bole.model.entity.ResumesComponent;
 import cn.net.yunlou.bole.model.query.ResumesComponentQuery;
 import cn.net.yunlou.bole.model.view.ResumesComponentView;
 

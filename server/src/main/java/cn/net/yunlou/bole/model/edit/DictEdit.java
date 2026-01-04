@@ -21,5 +21,4 @@ public class DictEdit extends BaseTreeEdit {
     private String label;
 
     private Integer state;
-
 }

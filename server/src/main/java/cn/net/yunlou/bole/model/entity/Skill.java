@@ -4,11 +4,10 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.*;
 
 /**
  * FileName: Skill Description: Created By MR. WANG Created At 2025/11/19 13:31 Modified By Modified
@@ -19,7 +18,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "t_skill",autoResultMap = true,resultMap = "BaseResultMap")
+@TableName(value = "t_skill", autoResultMap = true, resultMap = "BaseResultMap")
 public class Skill extends BaseEntity {
 
     private Long userId;

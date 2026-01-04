@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.model.entity.Banner;
 import cn.net.yunlou.bole.model.create.BannerCreate;
 import cn.net.yunlou.bole.model.edit.BannerEdit;
+import cn.net.yunlou.bole.model.entity.Banner;
 import cn.net.yunlou.bole.model.query.BannerQuery;
 import cn.net.yunlou.bole.model.view.BannerView;
 import org.mapstruct.Builder;

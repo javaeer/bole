@@ -2,11 +2,10 @@ package cn.net.yunlou.bole.model.edit;
 
 import cn.net.yunlou.bole.common.BaseEdit;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.*;
 
 /**
  * FileName: SkillEditRequest Description: Created By MR. WANG Created At 2025/11/25 00:07 Modified

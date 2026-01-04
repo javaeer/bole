@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.model.entity.JobIntention;
 import cn.net.yunlou.bole.model.create.JobIntentionCreate;
 import cn.net.yunlou.bole.model.edit.JobIntentionEdit;
+import cn.net.yunlou.bole.model.entity.JobIntention;
 import cn.net.yunlou.bole.model.query.JobIntentionQuery;
 import cn.net.yunlou.bole.model.view.JobIntentionView;
 import org.mapstruct.Builder;

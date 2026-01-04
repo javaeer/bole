@@ -11,11 +11,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * FileName: CityController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified By
@@ -56,7 +55,6 @@ public class CityController {
     public BusinessResponse<CityView> get(@PathVariable(value = "id") Long id) {
         return BusinessResponse.success(cityService.getViewById(id));
     }
-
 
     @PostMapping("page")
     @Operation(summary = "获取城市列表")
