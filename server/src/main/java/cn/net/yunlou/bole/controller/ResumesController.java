@@ -33,7 +33,6 @@ public class ResumesController {
     @PostMapping("add")
     @Operation(summary = "新增简历")
     public BusinessResponse<Boolean> add(@RequestBody ResumesCreate request) {
-        request.setUserId(SecurityContextUtils.getCurrentUserId());
         return BusinessResponse.success(resumesService.saveByCreate(request));
     }
 

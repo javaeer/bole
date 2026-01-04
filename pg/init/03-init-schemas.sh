@@ -978,6 +978,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     CREATE TABLE IF NOT EXISTS bole_app.t_resumes (
         -- 主键字段
         id BIGSERIAL PRIMARY KEY,
+        name VARCHAR(255),
         user_id BIGINT NOT NULL,
         template_id BIGINT,
         status VARCHAR(50),
@@ -1017,6 +1018,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     -- 注释
     COMMENT ON TABLE bole_app.t_resumes IS '简历表';
     COMMENT ON COLUMN bole_app.t_resumes.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_resumes.name IS '简历名称';
     COMMENT ON COLUMN bole_app.t_resumes.user_id IS '用户ID';
     COMMENT ON COLUMN bole_app.t_resumes.template_id IS '模板ID';
     COMMENT ON COLUMN bole_app.t_resumes.status IS '简历状态';

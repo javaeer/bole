@@ -5,6 +5,7 @@ import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.IEnum;
 import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
+import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.handler.ComponentDataPopulatorFactory;
 import cn.net.yunlou.bole.mapper.ResumesMapper;
 import cn.net.yunlou.bole.model.create.ResumesCreate;
@@ -19,9 +20,6 @@ import cn.net.yunlou.bole.service.ResumesTemplateComponentService;
 import cn.net.yunlou.bole.service.ResumesTemplateService;
 import cn.net.yunlou.bole.struct.ResumesStructMapper;
 import com.google.common.collect.Lists;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -29,6 +27,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * FileName: ResumesServiceImpl Description: Created By MR. WANG Created At 2025/11/24 22:00
@@ -38,13 +40,13 @@ import org.springframework.util.CollectionUtils;
 @RequiredArgsConstructor
 public class ResumesServiceImpl
         extends BaseService<
-                ResumesMapper,
-                Resumes,
-                ResumesCreate,
-                ResumesView,
-                ResumesEdit,
-                ResumesQuery,
-                ResumesStructMapper>
+        ResumesMapper,
+        Resumes,
+        ResumesCreate,
+        ResumesView,
+        ResumesEdit,
+        ResumesQuery,
+        ResumesStructMapper>
         implements ResumesService {
 
     private final ComponentDataPopulatorFactory populatorFactory;
@@ -52,6 +54,15 @@ public class ResumesServiceImpl
     private final ResumesTemplateService resumesTemplateService;
 
     private final ResumesTemplateComponentService resumesTemplateComponentService;
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean saveByCreate(ResumesCreate create) {
+        Resumes entity = structMapper.createToEntity(create);
+        entity.setUserId(SecurityContextUtils.getCurrentUserId());
+        return save(entity);
+    }
 
     @Override
     @Cacheable(

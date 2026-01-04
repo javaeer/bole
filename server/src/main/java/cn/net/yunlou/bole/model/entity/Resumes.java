@@ -12,12 +12,14 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_resumes")
+@TableName(value = "t_resumes", autoResultMap = true, resultMap = "BaseResultMap")
 public class Resumes extends BaseEntity {
 
     private Long userId;
 
     private Long templateId;
+
+    private String name;
 
     private String status;
 

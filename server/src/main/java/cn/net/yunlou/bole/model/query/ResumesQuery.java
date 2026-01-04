@@ -11,4 +11,7 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "查询简历请求")
-public class ResumesQuery extends BaseQuery {}
+public class ResumesQuery extends BaseQuery {
+
+    private String name;
+}

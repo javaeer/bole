@@ -19,6 +19,8 @@ public class ResumesView extends BaseView {
 
     private Long templateId;
 
+    private String name;
+
     private String status;
 
     private Integer viewCount;

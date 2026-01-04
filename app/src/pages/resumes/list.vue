@@ -48,7 +48,7 @@
 
       <view class="sort-dropdown" @click="showSortPanel = !showSortPanel">
         <text>{{ currentSort.label }}</text>
-        <text class="icon">{{ showSortPanel ? '▲' : '▼' }}</text>
+        <text class="icon">{{ showSortPanel ? "▲" : "▼" }}</text>
       </view>
     </view>
 
@@ -85,7 +85,7 @@
       <view v-else-if="filteredResumes.length === 0" class="empty-state">
         <text class="icon">📄</text>
         <text class="empty-text">暂无简历</text>
-        <text v-if="searchKeywords" class="empty-hint">未找到匹配的简历</text>
+        <text v-if="searchText" class="empty-hint">未找到匹配的简历</text>
       </view>
 
       <view v-else>
@@ -97,7 +97,7 @@
         >
           <view class="resume-header flex-between">
             <view class="resume-title-section">
-              <text class="resume-name">{{ resume.name || '未命名简历' }}</text>
+              <text class="resume-name">{{ resume.name || "未命名简历" }}</text>
               <view class="resume-meta">
                 <text class="meta-item">
                   <text class="icon">📅</text>
@@ -189,322 +189,432 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { onLoad, onReachBottom } from '@dcloudio/uni-app'
-
-// 类型定义
-interface Resume {
-  id: number
-  name?: string
-  createdAt: string
-  updatedAt: string
-  status: string
-  viewCount: number
-  downloadCount: number
-  components: Array<{
-    name: string
-    key: string
-  }>
-}
+import { computed, ref } from "vue";
+import { onLoad, onReachBottom } from "@dcloudio/uni-app";
+import { ResumesQuery, ResumesResult } from "@/types/resumes";
+import ResumesAPI from "@/api/resumes";
 
 // 响应式数据
-const searchText = ref('')
-const isSearchFocused = ref(false)
-const showSortPanel = ref(false)
-const activeFilter = ref('all')
-const sortBy = ref('updatedAt')
-const loading = ref(true)
-const loadingMore = ref(false)
-const refreshing = ref(false)
-const currentPage = ref(1)
-const pageSize = ref(10)
-const total = ref(0)
-const resumeList = ref<Resume[]>([])
-const searchTimer = ref<number | null>(null)
+const searchText = ref("");
+const isSearchFocused = ref(false);
+const showSortPanel = ref(false);
+const activeFilter = ref("all");
+const sortBy = ref("updatedAt");
+const loading = ref(true);
+const loadingMore = ref(false);
+const refreshing = ref(false);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const total = ref(0);
+const resumeList = ref<ResumesResult[]>([]);
+const searchTimer = ref<number | null>(null);
 
 // 筛选标签
-const filterTabs = [
-  { label: '全部', value: 'all' },
-  { label: '草稿', value: 'draft', badge: null },
-  { label: '已发布', value: 'published', badge: null },
-  { label: '已归档', value: 'archived', badge: null },
-  { label: '最近使用', value: 'recent' }
-]
+const filterTabs = ref([
+  { label: "全部", value: "all" },
+  { label: "草稿", value: "draft", badge: null as string | null },
+  { label: "已发布", value: "published", badge: null as string | null },
+  { label: "已归档", value: "archived", badge: null as string | null },
+]);
 
 // 排序选项
 const sortOptions = [
-  { label: '最近更新', value: 'updatedAt' },
-  { label: '最近创建', value: 'createdAt' },
-  { label: '名称 A-Z', value: 'nameAsc' },
-  { label: '名称 Z-A', value: 'nameDesc' },
-  { label: '查看最多', value: 'viewCount' },
-  { label: '下载最多', value: 'downloadCount' }
-]
-
-// 状态选项
-const statusOptions = [
-  { label: '草稿', value: 'draft' },
-  { label: '已发布', value: 'published' },
-  { label: '已归档', value: 'archived' }
-]
+  { label: "最近更新", value: "updatedAt" },
+  { label: "最近创建", value: "createdAt" },
+  { label: "名称 A-Z", value: "nameAsc" },
+  { label: "名称 Z-A", value: "nameDesc" },
+  { label: "查看最多", value: "viewCount" },
+  { label: "下载最多", value: "downloadCount" },
+];
 
 // 当前排序方式
 const currentSort = computed(() => {
-  return sortOptions.find(option => option.value === sortBy.value) || sortOptions[0]
-})
+  return sortOptions.find(option => option.value === sortBy.value) || sortOptions[0];
+});
 
 // 过滤后的简历列表
 const filteredResumes = computed(() => {
-  let filtered = [...resumeList.value]
+  let filtered = [...resumeList.value];
 
   // 搜索过滤
   if (searchText.value) {
     filtered = filtered.filter(resume => {
-      const searchLower = searchText.value.toLowerCase()
+      const searchLower = searchText.value.toLowerCase();
       return (
         resume.name?.toLowerCase().includes(searchLower) ||
-        // 这里可以添加其他搜索字段，比如技能、职位等
         resume.components?.some(comp =>
-          comp.name.toLowerCase().includes(searchLower)
+          comp.name.toLowerCase().includes(searchLower),
         )
-      )
-    })
+      );
+    });
   }
 
   // 状态过滤
-  if (activeFilter.value !== 'all' && activeFilter.value !== 'recent') {
-    filtered = filtered.filter(resume => resume.status === activeFilter.value)
-  }
-
-  // 最近使用过滤
-  if (activeFilter.value === 'recent') {
-    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-    filtered = filtered.filter(resume =>
-      new Date(resume.updatedAt) > oneWeekAgo
-    )
+  if (activeFilter.value !== "all") {
+    filtered = filtered.filter(resume => resume.status === activeFilter.value);
   }
 
   // 排序
   filtered.sort((a, b) => {
     switch (sortBy.value) {
-      case 'updatedAt':
-        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      case 'createdAt':
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      case 'nameAsc':
-        return (a.name || '').localeCompare(b.name || '')
-      case 'nameDesc':
-        return (b.name || '').localeCompare(a.name || '')
-      case 'viewCount':
-        return (b.viewCount || 0) - (a.viewCount || 0)
-      case 'downloadCount':
-        return (b.downloadCount || 0) - (a.downloadCount || 0)
+      case "updatedAt":
+        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      case "createdAt":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "nameAsc":
+        return (a.name || "").localeCompare(b.name || "");
+      case "nameDesc":
+        return (b.name || "").localeCompare(a.name || "");
+      case "viewCount":
+        return (b.viewCount || 0) - (a.viewCount || 0);
+      case "downloadCount":
+        return (b.downloadCount || 0) - (a.downloadCount || 0);
       default:
-        return 0
+        return 0;
     }
-  })
+  });
 
-  return filtered
-})
+  return filtered;
+});
 
 // 是否没有更多数据
 const noMore = computed(() => {
-  return resumeList.value.length >= total.value
-})
+  return resumeList.value.length >= total.value;
+});
 
 // 搜索相关方法
 const handleInput = (event: any) => {
-  searchText.value = event.detail.value
+  searchText.value = event.detail.value;
 
   // 清除之前的定时器
   if (searchTimer.value) {
-    clearTimeout(searchTimer.value)
+    clearTimeout(searchTimer.value);
   }
 
   // 设置新的定时器（防抖）
   searchTimer.value = setTimeout(() => {
-    performSearch()
-  }, 500)
-}
+    performSearch();
+  }, 500);
+};
 
 const handleFocus = () => {
-  isSearchFocused.value = true
-}
+  isSearchFocused.value = true;
+};
 
 const handleBlur = () => {
-  isSearchFocused.value = false
-}
+  isSearchFocused.value = false;
+};
 
 const handleSearch = () => {
-  performSearch()
-}
+  performSearch();
+};
 
 const handleClear = () => {
-  searchText.value = ''
-  performSearch()
-}
+  searchText.value = "";
+  performSearch();
+};
 
 const performSearch = () => {
   if (searchTimer.value) {
-    clearTimeout(searchTimer.value)
+    clearTimeout(searchTimer.value);
   }
-  fetchResumes(1, true)
-}
+  fetchResumes(1, true);
+};
 
-// 方法
+// 获取简历列表
 const fetchResumes = async (page = 1, isRefresh = false) => {
   if (page === 1) {
-    loading.value = true
+    loading.value = true;
   } else {
-    loadingMore.value = true
+    loadingMore.value = true;
   }
 
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // 构建分页参数
+    const pageParam = {
+      page: page,
+      size: pageSize.value,
+    };
 
-    // 模拟数据
-    const mockData: Resume[] = Array.from({ length: pageSize.value }, (_, i) => ({
-      id: (page - 1) * pageSize.value + i + 1,
-      name: `王彦博的简历 ${(page - 1) * pageSize.value + i + 1}`,
-      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-      status: ['draft', 'published', 'archived'][Math.floor(Math.random() * 3)],
-      viewCount: Math.floor(Math.random() * 100),
-      downloadCount: Math.floor(Math.random() * 20),
-      components: [
-        { name: '基本信息', key: 'UserBasicInfo' },
-        { name: '工作经历', key: 'WorkExperience' },
-        { name: '教育背景', key: 'EducationExperience' },
-        { name: '技能专长', key: 'Skills' }
-      ].slice(0, Math.floor(Math.random() * 4) + 1)
-    }))
+    // 构建查询参数
+    const query: ResumesQuery = {};
 
-    if (isRefresh || page === 1) {
-      resumeList.value = mockData
-    } else {
-      resumeList.value.push(...mockData)
+    // 添加搜索关键词
+    if (searchText.value.trim()) {
+      query.keyword = searchText.value.trim();
     }
 
-    total.value = 100 // 模拟总数
-    currentPage.value = page
+    // 添加状态筛选（排除"all"）
+    if (activeFilter.value !== "all") {
+      query.status = activeFilter.value;
+    }
+
+    // 添加排序条件
+    switch (sortBy.value) {
+      case "updatedAt":
+        query.orderBy = "updatedAt";
+        query.orderDirection = "DESC";
+        break;
+      case "createdAt":
+        query.orderBy = "createdAt";
+        query.orderDirection = "DESC";
+        break;
+      case "nameAsc":
+        query.orderBy = "name";
+        query.orderDirection = "ASC";
+        break;
+      case "nameDesc":
+        query.orderBy = "name";
+        query.orderDirection = "DESC";
+        break;
+      case "viewCount":
+        query.orderBy = "viewCount";
+        query.orderDirection = "DESC";
+        break;
+      case "downloadCount":
+        query.orderBy = "downloadCount";
+        query.orderDirection = "DESC";
+        break;
+    }
+
+    // 调用真实API
+    const response = await ResumesAPI.page(pageParam, query);
+
+    // 根据实际API响应结构调整
+    const data = response;
+
+    if (data && data.records) {
+      const resumes = data.records;
+
+      if (isRefresh || page === 1) {
+        resumeList.value = resumes;
+      } else {
+        resumeList.value.push(...resumes);
+      }
+
+      total.value = data.total || resumes.length;
+      currentPage.value = page;
+    } else {
+      // 如果API返回的是数组格式
+      const resumes = Array.isArray(data) ? data : [];
+      if (isRefresh || page === 1) {
+        resumeList.value = resumes;
+      } else {
+        resumeList.value.push(...resumes);
+      }
+      total.value = resumes.length;
+    }
+
+    // 更新筛选标签的徽章数量
+    updateFilterBadges();
+
   } catch (error) {
+    console.error("获取简历列表失败:", error);
     uni.showToast({
-      title: '加载失败',
-      icon: 'error'
-    })
+      title: "加载失败",
+      icon: "error",
+    });
   } finally {
-    loading.value = false
-    loadingMore.value = false
-    refreshing.value = false
+    loading.value = false;
+    loadingMore.value = false;
+    refreshing.value = false;
   }
-}
+};
 
 const onFilterChange = (filter: string) => {
-  activeFilter.value = filter
-  fetchResumes(1, true)
-}
+  activeFilter.value = filter;
+  showSortPanel.value = false;
+  fetchResumes(1, true);
+};
 
 const onSortChange = (value: string) => {
-  sortBy.value = value
-  showSortPanel.value = false
-}
-
+  sortBy.value = value;
+  showSortPanel.value = false;
+  fetchResumes(1, true);
+};
 
 const loadMore = () => {
-  if (loadingMore.value || noMore.value) return
-  fetchResumes(currentPage.value + 1)
-}
+  if (loadingMore.value || noMore.value) return;
+  fetchResumes(currentPage.value + 1);
+};
 
 const onRefresh = () => {
-  refreshing.value = true
-  fetchResumes(1, true)
-}
+  refreshing.value = true;
+  fetchResumes(1, true);
+};
 
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
+  if (!dateString) return "-";
 
-  // 今天
-  if (diff < 24 * 60 * 60 * 1000) {
-    return date.getHours().toString().padStart(2, '0') + ':' +
-      date.getMinutes().toString().padStart(2, '0')
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+
+    // 今天
+    if (diff < 24 * 60 * 60 * 1000) {
+      return date.getHours().toString().padStart(2, "0") + ":" +
+        date.getMinutes().toString().padStart(2, "0");
+    }
+
+    // 今年
+    if (date.getFullYear() === now.getFullYear()) {
+      return `${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+    }
+
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+  } catch (error) {
+    return dateString;
   }
-
-  // 今年
-  if (date.getFullYear() === now.getFullYear()) {
-    return `${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
-  }
-
-  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
-}
+};
 
 const getStatusClass = (status: string) => {
   switch (status) {
-    case 'draft': return 'status-draft'
-    case 'published': return 'status-published'
-    case 'archived': return 'status-archived'
-    default: return ''
+    case "draft":
+      return "status-draft";
+    case "published":
+      return "status-published";
+    case "archived":
+      return "status-archived";
+    default:
+      return "";
   }
-}
+};
 
 const getStatusText = (status: string) => {
   switch (status) {
-    case 'draft': return '草稿'
-    case 'published': return '已发布'
-    case 'archived': return '已归档'
-    default: return status
+    case "draft":
+      return "草稿";
+    case "published":
+      return "已发布";
+    case "archived":
+      return "已归档";
+    default:
+      return status;
   }
-}
+};
 
 const getTopComponents = (components: any[], count: number) => {
-  return components?.slice(0, count) || []
-}
+  return components?.slice(0, count) || [];
+};
 
-const goToDetail = (resume: Resume) => {
+const goToDetail = (resume: ResumesResult) => {
   uni.navigateTo({
-    url: `/pages/resumes/detail?id=${resume.id}`
-  })
-}
+    url: `/pages/resumes/resumes?id=${resume.id}`,
+  });
+};
 
-const editResume = (resume: Resume) => {
+const editResume = (resume: ResumesResult) => {
   uni.navigateTo({
-    url: `/pages/resumes/edit?id=${resume.id}`
-  })
-}
+    url: `/pages/resumes/edit?id=${resume.id}`,
+  });
+};
 
 const createNewResume = () => {
   uni.navigateTo({
-    url: '/pages/resumes/edit'
-  })
-}
+    url: "/pages/resumes/edit",
+  });
+};
+
+// 更新筛选标签的徽章数量
+const updateFilterBadges = async () => {
+  try {
+    // 获取各状态的简历数量
+    const statusCounts = await ResumesAPI.getStatusCounts();
+
+    // 更新徽章
+    filterTabs.value.forEach(tab => {
+      if (tab.value === "draft") {
+        tab.badge = statusCounts.draft?.toString() || null;
+      } else if (tab.value === "published") {
+        tab.badge = statusCounts.published?.toString() || null;
+      } else if (tab.value === "archived") {
+        tab.badge = statusCounts.archived?.toString() || null;
+      }
+    });
+  } catch (error) {
+    console.error("获取状态数量失败:", error);
+    // 可以设置默认值或留空
+  }
+};
 
 // 生命周期
 onLoad(() => {
-  updateFilterBadges()
-  fetchResumes()
-})
+  fetchResumes();
+});
 
 onReachBottom(() => {
-  loadMore()
-})
-
-const updateFilterBadges = () => {
-  // 这里可以调用API获取各状态的简历数量
-  // 暂时使用模拟数据
-  filterTabs.forEach(tab => {
-    if (tab.value === 'draft') tab.badge = '3'
-    if (tab.value === 'published') tab.badge = '5'
-    if (tab.value === 'archived') tab.badge = '2'
-  })
-}
+  loadMore();
+});
 </script>
 
 <style lang="scss">
 
+// 通用类
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-container {
+  background: $background-color-white;
+  border-radius: $border-radius;
+  padding: $padding-base;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.06);
+}
+
+.btn {
+  border: none;
+  border-radius: $border-radius-small;
+  padding: 0 24rpx;
+  font-size: $font-size-small;
+  font-weight: $font-weight-medium;
+  line-height: 1;
+  transition: all $transition-fast $ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+
+  &.btn-primary {
+    background: $primary-color;
+    color: white;
+  }
+
+  &.btn-secondary {
+    background: $background-color;
+    color: $text-primary;
+    border: 1rpx solid $border-color-light;
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &[size="mini"] {
+    font-size: $font-size-extra-small;
+    padding: 8rpx 16rpx;
+    height: 50rpx;
+  }
+}
+
 .resume-list-page {
   padding: 0;
+  background: $background-color;
+  min-height: 100vh;
 }
 
 .search-header {
@@ -537,7 +647,7 @@ const updateFilterBadges = () => {
       box-shadow: $input-focus-shadow;
     }
 
-    .search-icon {
+    .icon {
       font-size: $font-size-base;
       color: $text-secondary;
       margin-right: 12rpx;
@@ -550,11 +660,11 @@ const updateFilterBadges = () => {
       background: transparent;
       height: 40rpx;
       line-height: 40rpx;
+    }
 
-      .placeholder {
-        color: $text-placeholder;
-        font-size: $font-size-base;
-      }
+    .placeholder {
+      color: $text-placeholder;
+      font-size: $font-size-base;
     }
 
     .clear-btn {
@@ -566,7 +676,7 @@ const updateFilterBadges = () => {
       .clear-icon {
         font-size: 24rpx;
         color: $text-secondary;
-        font-weight: $font-weight-bold;
+        font-weight: bold;
         line-height: 1;
       }
     }
@@ -591,7 +701,7 @@ const updateFilterBadges = () => {
     }
 
     &:active:not(:disabled) {
-      background: color.adjust($primary-color, $lightness: -10%);
+      background: darken($primary-color, 10%);
       transform: scale(0.98);
     }
   }
@@ -667,10 +777,6 @@ const updateFilterBadges = () => {
     font-size: $font-size-small;
     color: $text-regular;
     white-space: nowrap;
-
-    uni-icons {
-      transition: transform $transition-fast $ease-in-out;
-    }
   }
 }
 
@@ -720,7 +826,6 @@ const updateFilterBadges = () => {
   }
 }
 
-
 .resume-list {
   height: calc(100vh - 300rpx);
   padding: $margin-base;
@@ -755,9 +860,14 @@ const updateFilterBadges = () => {
   padding: $margin-base * 3;
   color: $text-placeholder;
 
+  .icon {
+    font-size: 80rpx;
+    margin-bottom: $margin-base;
+  }
+
   .empty-text {
     font-size: $font-size-base;
-    margin: $margin-base 0 $margin-mini;
+    margin-bottom: $margin-mini;
   }
 
   .empty-hint {
@@ -765,7 +875,6 @@ const updateFilterBadges = () => {
     color: $text-secondary;
   }
 }
-
 
 .resume-item {
   margin-bottom: $margin-base;
@@ -907,9 +1016,14 @@ const updateFilterBadges = () => {
     padding: 16rpx 24rpx;
     border-radius: 50rpx;
     box-shadow: $box-shadow-dark;
+    background: $primary-color;
+    color: white;
+    border: none;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
 
-    uni-icons {
-      margin: 0;
+    .icon {
+      font-size: $font-size-base;
     }
   }
 }

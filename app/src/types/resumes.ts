@@ -26,6 +26,12 @@ export interface ResumesResult {
   components: TemplateComponentItem[];
 }
 
+export interface ResumesStatusCountResult {
+  draft: number;
+  published: number;
+  archived: number;
+}
+
 // 简历表单
 export interface ResumesForm {
   id?: number;
