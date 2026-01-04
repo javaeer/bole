@@ -15,4 +15,7 @@ public interface ResumesService
         extends IBaseService<Resumes, ResumesCreate, ResumesView, ResumesEdit, ResumesQuery> {
 
     ResumesView preview(Resumes entity);
+
+    Boolean viewById(Long id);
+
 }

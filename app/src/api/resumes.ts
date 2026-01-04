@@ -12,6 +12,10 @@ const ResumesAPI = {
     return request.get <ResumesStatusCountResult>(`${RESUMES_BASE_URL}/status`);
   },
 
+  incrementViewCount(id: number) {
+    return request.put(`${RESUMES_BASE_URL}/view/${id}`);
+  },
+
   getPreview(templateId: number) {
     return request.get<ResumesResult>(`${RESUMES_BASE_URL}/preview/${templateId}`);
   },

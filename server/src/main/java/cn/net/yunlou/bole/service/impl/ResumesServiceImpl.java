@@ -112,6 +112,18 @@ public class ResumesServiceImpl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(
+            value = {"resume:view"},
+            key = "#id",
+            beforeInvocation = true)
+    public Boolean viewById(Long id) {
+        Resumes entity = getById(id);
+        entity.setViewCount(entity.getViewCount() + 1);
+        return updateById(entity);
+    }
+
+    @Override
     @Cacheable(value = "resume:view", key = "#id", unless = "#result == null")
     public ResumesView getViewById(Serializable id) {
         return super.getViewById(id);

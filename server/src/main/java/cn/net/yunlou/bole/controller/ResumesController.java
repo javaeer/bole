@@ -76,6 +76,13 @@ public class ResumesController {
                                 .build()));
     }
 
+    @PutMapping("view/{id}")
+    @Operation(summary = "查看简历")
+    public BusinessResponse<Boolean> view(
+            @PathVariable(value = "id") Long id) {
+        return BusinessResponse.success(resumesService.viewById(id));
+    }
+
     @GetMapping("{id}")
     @Operation(summary = "获取简历信息")
     public BusinessResponse<ResumesView> get(@PathVariable(value = "id") Long id) {
