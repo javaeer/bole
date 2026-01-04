@@ -2,10 +2,11 @@ package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseTreeService;
 import cn.net.yunlou.bole.common.annotation.TreeServiceConfig;
-import cn.net.yunlou.bole.model.entity.City;
+import cn.net.yunlou.bole.common.utils.RedissonLockUtils;
 import cn.net.yunlou.bole.mapper.CityMapper;
 import cn.net.yunlou.bole.model.create.CityCreate;
 import cn.net.yunlou.bole.model.edit.CityEdit;
+import cn.net.yunlou.bole.model.entity.City;
 import cn.net.yunlou.bole.model.query.CityQuery;
 import cn.net.yunlou.bole.model.view.CityView;
 import cn.net.yunlou.bole.service.CityService;
@@ -20,5 +21,15 @@ import org.springframework.stereotype.Service;
 @TreeServiceConfig(cacheName = "cityTree", keyPrefix = "city")
 public class CityServiceImpl
         extends BaseTreeService<
-                CityMapper, City, CityCreate, CityView, CityEdit, CityQuery, CityStructMapper>
-        implements CityService {}
+        CityMapper, City, CityCreate, CityView, CityEdit, CityQuery, CityStructMapper>
+        implements CityService {
+
+    public CityServiceImpl(RedissonLockUtils redissonLockUtils) {
+        super(redissonLockUtils);
+    }
+
+    @Override
+    protected String getTableName() {
+        return "t_city";
+    }
+}

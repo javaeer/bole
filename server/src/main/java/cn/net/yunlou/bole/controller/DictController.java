@@ -59,13 +59,13 @@ public class DictController {
     @GetMapping("children")
     @Operation(summary = "获取字典下级信息")
     public BusinessResponse<List<Dict>> getChildren() {
-        return BusinessResponse.success(dictService.listAllChildren());
+        return BusinessResponse.success(dictService.listWholeTree());
     }
 
     @GetMapping("children/{id}")
     @Operation(summary = "获取字典下级信息")
     public BusinessResponse<Dict> getChildren(@PathVariable(value = "id") Long id) {
-        return BusinessResponse.success(dictService.getChildren(id));
+        return BusinessResponse.success(dictService.getNodeWithChildren(id));
     }
 
     @PostMapping("list")
@@ -78,7 +78,7 @@ public class DictController {
     @PostMapping("tree")
     @Operation(summary = "获取字典树形列表")
     public BusinessResponse<List<Dict>> tree() {
-        return BusinessResponse.success(dictService.listAllChildren());
+        return BusinessResponse.success(dictService.listWholeTree());
     }
 
     @PostMapping("page")

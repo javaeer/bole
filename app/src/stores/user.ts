@@ -169,7 +169,7 @@ export const useUserStore = defineStore("user", () => {
 
     try {
       const result = await AuthAPI.refreshToken({
-        refresh_token: refreshToken.value,
+        refreshToken: refreshToken.value,
       });
 
       setToken(result);
@@ -209,9 +209,7 @@ export const useUserStore = defineStore("user", () => {
     isRefreshing.value = true;
 
     try {
-      const result = await AuthAPI.refreshToken({
-        refresh_token: refreshToken.value,
-      });
+      const result = await AuthAPI.refreshToken(refreshToken.value);
 
       // 更新所有token
       setToken(result);

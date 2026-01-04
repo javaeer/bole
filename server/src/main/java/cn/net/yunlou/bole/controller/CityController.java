@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.model.entity.City;
 import cn.net.yunlou.bole.model.create.CityCreate;
 import cn.net.yunlou.bole.model.edit.CityEdit;
+import cn.net.yunlou.bole.model.entity.City;
 import cn.net.yunlou.bole.model.query.CityQuery;
 import cn.net.yunlou.bole.model.view.CityView;
 import cn.net.yunlou.bole.service.CityService;
@@ -11,10 +11,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * FileName: CityController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified By
@@ -52,9 +53,10 @@ public class CityController {
 
     @GetMapping("{id}")
     @Operation(summary = "获取城市信息")
-    public BusinessResponse<City> get(@PathVariable(value = "id") Long id) {
-        return BusinessResponse.success(cityService.getById(id));
+    public BusinessResponse<CityView> get(@PathVariable(value = "id") Long id) {
+        return BusinessResponse.success(cityService.getViewById(id));
     }
+
 
     @PostMapping("page")
     @Operation(summary = "获取城市列表")
@@ -65,9 +67,15 @@ public class CityController {
         return BusinessResponse.success(cityService.pageViewByQuery(page, size, request));
     }
 
+    @PostMapping("province")
+    @Operation(summary = "获取省级列表")
+    public BusinessResponse<List<City>> province() {
+        return BusinessResponse.success(cityService.listRootDirectChildren());
+    }
+
     @PostMapping("tree")
     @Operation(summary = "获取城市树形列表")
     public BusinessResponse<List<City>> tree() {
-        return BusinessResponse.success(cityService.listAllChildren());
+        return BusinessResponse.success(cityService.listWholeTree());
     }
 }

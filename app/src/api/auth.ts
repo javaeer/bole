@@ -49,7 +49,7 @@ const AuthAPI = {
   async refreshToken(refreshToken: string): Promise<TokenResult> {
     return await request.post<TokenResult>(
       `${AUTH_BASE_URL}/refresh`,
-      { refreshToken },
+      { refreshToken: refreshToken },
       { skipAuth: true },
     );
   },

@@ -9,4 +9,18 @@ import lombok.*;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class DictCreate extends BaseTreeCreate {}
+public class DictCreate extends BaseTreeCreate {
+
+    private String name;
+
+    private String type;
+
+    private String code;
+
+    private String value;
+
+    private String label;
+
+    private Integer state;
+
+}

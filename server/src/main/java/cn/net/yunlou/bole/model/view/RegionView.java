@@ -1,24 +1,22 @@
-package cn.net.yunlou.bole.model.entity;
+package cn.net.yunlou.bole.model.view;
 
-import cn.net.yunlou.bole.common.BaseTreeEntity;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.*;
+import cn.net.yunlou.bole.common.BaseTreeView;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.Version;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * FileName: City Description: Created By MR. WANG Created At 2025/11/25 21:57 Modified By Modified
- * At
+ * FileName: 
+ * Description:
+ * Created By laughtiger
+ * Created At 2026/1/2 23:10
+ * Modified By
+ * Modified At
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@TableName("t_city")
-public class City extends BaseTreeEntity<City> {
-
-    // 直接使用 编码作为主键 中国区号均为数字
-    // private String code;
-    // private Long id;
+public class RegionView extends BaseTreeView<RegionView> {
 
     private String name;
 
@@ -55,12 +53,12 @@ public class City extends BaseTreeEntity<City> {
     /**
      * 电话区号
      */
-    private String telCode;
+    private Integer telCode;
 
     /**
      * 邮政编码
      */
-    private String zipCode;
+    private Integer zipCode;
 
     /**
      * 车牌编码 京 A
@@ -84,4 +82,9 @@ public class City extends BaseTreeEntity<City> {
      * 中国气象局 站点编码 https://weather.cma.cn/web/weather/54511.html
      */
     private String cmaStationCode;
+
+    // 关联属性（非数据库字段）
+    private String parentName;
+
+    private Integer childrenCount;
 }

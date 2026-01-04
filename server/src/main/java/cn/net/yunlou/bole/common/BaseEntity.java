@@ -49,4 +49,12 @@ public class BaseEntity implements Serializable {
     @JsonIgnore
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date queryStopAt;
+
+    @TableField(exist = false)
+    @JsonIgnore
+    private String sortBy;
+
+    @TableField(exist = false)
+    @JsonIgnore
+    private String sortOrder;
 }

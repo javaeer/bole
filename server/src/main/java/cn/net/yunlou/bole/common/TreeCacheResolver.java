@@ -3,6 +3,8 @@ package cn.net.yunlou.bole.common;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
@@ -17,15 +19,14 @@ public class TreeCacheResolver implements CacheResolver {
         this.cacheManager = cacheManager;
     }
 
+    @NotNull
     @Override
     public Collection<? extends Cache> resolveCaches(CacheOperationInvocationContext<?> context) {
         // 获取目标对象
         Object target = context.getTarget();
 
         // 如果是BaseTreeService，动态获取缓存名称
-        if (target instanceof BaseTreeService) {
-            BaseTreeService<?, ?, ?, ?, ?, ?, ?> service =
-                    (BaseTreeService<?, ?, ?, ?, ?, ?, ?>) target;
+        if (target instanceof BaseTreeService<?, ?, ?, ?, ?, ?, ?> service) {
             String cacheName = service.getCacheName();
 
             Cache cache = cacheManager.getCache(cacheName);

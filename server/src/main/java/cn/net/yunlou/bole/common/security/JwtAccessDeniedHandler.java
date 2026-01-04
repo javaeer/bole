@@ -27,7 +27,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletRequest request,
             HttpServletResponse response,
             AccessDeniedException accessDeniedException)
-            throws IOException, ServletException {
+            throws IOException {
         Long Uid =
                 SecurityContextUtils.getCurrentUserId() != null
                         ? SecurityContextUtils.getCurrentUserId()

@@ -9,11 +9,6 @@ import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -41,6 +36,12 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Redis 统一配置类 整合缓存配置和Redis模板配置
  *
@@ -61,11 +62,12 @@ public class RedisConfig {
     private static final String REDIS_SCHEMA = "redis://";
     private static final String REDISS_SCHEMA = "rediss://"; // SSL
 
-    /** 自定义缓存配置（可按缓存名称配置不同的TTL） */
+    /**
+     * 自定义缓存配置（可按缓存名称配置不同的TTL）
+     */
     @Bean
     @Primary
-    public CacheManager cacheManager(
-            RedisConnectionFactory connectionFactory, CacheProperties cacheProperties) {
+    public CacheManager cacheManager(RedisConnectionFactory connectionFactory, CacheProperties cacheProperties) {
         // 默认缓存配置
         RedisCacheConfiguration defaultConfig = createDefaultCacheConfig(cacheProperties);
 
@@ -86,7 +88,9 @@ public class RedisConfig {
                 .build();
     }
 
-    /** 创建默认缓存配置 */
+    /**
+     * 创建默认缓存配置
+     */
     private RedisCacheConfiguration createDefaultCacheConfig(CacheProperties cacheProperties) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
 
@@ -123,13 +127,17 @@ public class RedisConfig {
         return config;
     }
 
-    /** 树形服务缓存解析器 */
+    /**
+     * 树形服务缓存解析器
+     */
     @Bean
     public CacheResolver treeCacheResolver(CacheManager cacheManager) {
         return new TreeCacheResolver(cacheManager);
     }
 
-    /** 创建专用于Redis的序列化器 使用独立的ObjectMapper，不注册为通用Bean，避免影响Web接口 */
+    /**
+     * 创建专用于Redis的序列化器 使用独立的ObjectMapper，不注册为通用Bean，避免影响Web接口
+     */
     @Bean
     public RedisSerializer<Object> redisSerializer() {
         ObjectMapper redisObjectMapper = new ObjectMapper();
@@ -161,14 +169,16 @@ public class RedisConfig {
                 ObjectMapper.DefaultTyping.NON_FINAL,
                 // JsonTypeInfo.As.PROPERTY
                 JsonTypeInfo.As.WRAPPER_ARRAY // 使用WRAPPER_ARRAY比PROPERTY在循环引用上更安全
-                );
+        );
 
         // 配置null值序列化
         GenericJackson2JsonRedisSerializer.registerNullValueSerializer(redisObjectMapper, null);
         return new GenericJackson2JsonRedisSerializer(redisObjectMapper);
     }
 
-    /** RedisTemplate配置 */
+    /**
+     * RedisTemplate配置
+     */
     @Bean("redisTemplate")
     public RedisTemplate<String, Object> redisTemplate(
             LettuceConnectionFactory lettuceConnectionFactory,
@@ -190,7 +200,9 @@ public class RedisConfig {
         return template;
     }
 
-    /** Redisson客户端 */
+    /**
+     * Redisson客户端
+     */
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient(RedisProperties redisProperties) {
         Config config = new Config();
@@ -214,7 +226,9 @@ public class RedisConfig {
         }
     }
 
-    /** 配置Redisson服务器模式 */
+    /**
+     * 配置Redisson服务器模式
+     */
     private void configureRedissonServer(Config config, RedisProperties properties, String schema) {
         RedisProperties.Sentinel sentinel = properties.getSentinel();
         RedisProperties.Cluster cluster = properties.getCluster();
@@ -228,7 +242,9 @@ public class RedisConfig {
         }
     }
 
-    /** 集群模式配置 */
+    /**
+     * 集群模式配置
+     */
     private void configureCluster(
             Config config,
             RedisProperties properties,
@@ -250,7 +266,9 @@ public class RedisConfig {
         clusterConfig.setSubscriptionMode(SubscriptionMode.SLAVE);
     }
 
-    /** 哨兵模式配置 */
+    /**
+     * 哨兵模式配置
+     */
     private void configureSentinel(
             Config config,
             RedisProperties properties,
@@ -275,7 +293,9 @@ public class RedisConfig {
         }
     }
 
-    /** 单节点模式配置 */
+    /**
+     * 单节点模式配置
+     */
     private void configureSingle(Config config, RedisProperties properties, String schema) {
         SingleServerConfig singleConfig = config.useSingleServer();
 
@@ -295,7 +315,9 @@ public class RedisConfig {
         singleConfig.setRetryInterval(1500);
     }
 
-    /** 基础配置（通用） */
+    /**
+     * 基础配置（通用）
+     */
     private void configureBaseConfig(BaseConfig<?> config, RedisProperties properties) {
         // 密码
         if (StringUtils.hasText(properties.getPassword())) {

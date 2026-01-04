@@ -9,4 +9,17 @@ import lombok.*;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class DictEdit extends BaseTreeEdit {}
+public class DictEdit extends BaseTreeEdit {
+    private String name;
+
+    private String type;
+
+    private String code;
+
+    private String value;
+
+    private String label;
+
+    private Integer state;
+
+}

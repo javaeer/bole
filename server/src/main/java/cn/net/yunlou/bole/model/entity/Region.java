@@ -1,24 +1,18 @@
 package cn.net.yunlou.bole.model.entity;
 
 import cn.net.yunlou.bole.common.BaseTreeEntity;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.Version;
 import lombok.*;
 
-/**
- * FileName: City Description: Created By MR. WANG Created At 2025/11/25 21:57 Modified By Modified
- * At
- */
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_city")
-public class City extends BaseTreeEntity<City> {
-
-    // 直接使用 编码作为主键 中国区号均为数字
-    // private String code;
-    // private Long id;
+@TableName("t_region")
+public class Region extends BaseTreeEntity<Region> {
 
     private String name;
 
@@ -55,12 +49,12 @@ public class City extends BaseTreeEntity<City> {
     /**
      * 电话区号
      */
-    private String telCode;
+    private Integer telCode;
 
     /**
      * 邮政编码
      */
-    private String zipCode;
+    private Integer zipCode;
 
     /**
      * 车牌编码 京 A
@@ -84,4 +78,24 @@ public class City extends BaseTreeEntity<City> {
      * 中国气象局 站点编码 https://weather.cma.cn/web/weather/54511.html
      */
     private String cmaStationCode;
+
+    /**
+     * 状态：0-禁用，1-启用
+     */
+    private Integer status;
+
+    private Integer isHot;
+
+
+    // 关联属性（非数据库字段）
+    @TableField(exist = false)
+    private String parentName;
+
+    @TableField(exist = false)
+    private Integer childrenCount;
+
+    @TableField(exist = false)
+    private Boolean includeDisabled = false;
+
+
 }

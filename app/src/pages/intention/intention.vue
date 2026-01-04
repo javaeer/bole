@@ -1,4 +1,5 @@
 <template>
+  <!-- 模板部分保持不变 -->
   <view class="page-container">
     <!-- 头部 -->
     <view class="detail-header card-container">
@@ -9,17 +10,12 @@
       </view>
 
       <view v-if="!isEditMode && detailData.id" class="header-actions">
-        <button class="btn btn-secondary" @click="toggleEditMode">
-          编辑
-        </button>
+        <button class="btn btn-secondary" @click="toggleEditMode">编辑</button>
       </view>
 
       <view v-else-if="isEditMode" class="header-actions">
-        <button class="btn btn-secondary" @click="cancelEdit">
-          取消
-        </button>
-        <button class="btn btn-primary" :disabled="saving" @click="saveData">
-          {{ saving ? "保存中..." : "保存" }}
+        <button class="btn btn-secondary" @click="cancelEdit">取消</button>
+        <button class="btn btn-primary" :disabled="saving" @click="saveData">{{ saving ? "保存中..." : "保存" }}
         </button>
       </view>
     </view>
@@ -31,8 +27,8 @@
         <view class="info-card card-container">
           <view class="card-header">
             <text class="card-title">基本信息</text>
-            <view v-if="!isEditMode" class="type-tag" :class="getJobTypeClass(detailData.jobType)">
-              {{ detailData.jobType }}
+            <view v-if="!isEditMode" class="type-tag" :class="getJobTypeClass(detailData.jobType)">{{ detailData.jobType
+              }}
             </view>
           </view>
 
@@ -40,11 +36,12 @@
             <!-- 期望职位 -->
             <view class="form-group">
               <text class="form-label required">期望职位</text>
+              <view v-if="!isEditMode" class="form-input form-input-text">{{ formData.position || "未填写" }}</view>
               <input
+                v-else
                 v-model="formData.position"
                 class="form-input"
                 :class="{ 'error': errors.position }"
-                :disabled="!isEditMode"
                 placeholder="请输入期望职位"
                 @blur="validateField('position')"
               />
@@ -54,52 +51,71 @@
             <!-- 工作城市 -->
             <view class="form-group">
               <text class="form-label required">工作城市</text>
-              <picker
-                mode="region"
-                :value="cityArray"
-                :disabled="!isEditMode"
-                @change="onCityChange"
-              >
-                <view class="form-input" :class="{ 'error': errors.city }">
-                  {{ formData.city || "请选择工作城市" }}
-                </view>
-              </picker>
+              <view v-if="!isEditMode" class="form-input form-input-text">{{ formData.city || "未选择" }}</view>
+              <view v-else class="city-picker-container">
+                <picker
+                  mode="region"
+                  :value="cityArray"
+                  @change="onCityChange"
+                >
+                  <view class="form-input picker-input" :class="{ 'error': errors.city }">
+                    {{ formData.city || "请选择工作城市" }}
+                  </view>
+                </picker>
+              </view>
+              <!--              <region-picker-->
+              <!--                v-model="selectedCity"-->
+              <!--                placeholder="选择省市区"-->
+              <!--                level="3"-->
+              <!--                :show-hot-cities="true"-->
+              <!--                :enable-search="true"-->
+              <!--                :show-hint="true"-->
+              <!--                :auto-preload="true"-->
+              <!--                @change="onCityChange"-->
+              <!--                @error="onError"-->
+              <!--                @loading="onLoading"-->
+              <!--              />-->
               <text v-if="errors.city" class="error-text">{{ errors.city }}</text>
             </view>
 
             <!-- 工作类型 -->
             <view class="form-group">
               <text class="form-label required">工作类型</text>
-              <picker
-                :value="jobTypeIndex"
-                :range="jobTypeOptions"
-                :disabled="!isEditMode"
-                @change="onJobTypeChange"
-              >
-                <view class="form-input" :class="{ 'error': errors.jobType }">
-                  {{ formData.jobType || "请选择工作类型" }}
-                </view>
-              </picker>
+              <view v-if="!isEditMode" class="form-input form-input-text">{{ formData.jobType || "未选择" }}</view>
+              <view v-else class="job-type-picker-container">
+                <picker
+                  mode="selector"
+                  :value="jobTypeIndex"
+                  :range="jobTypeOptions"
+                  @change="onJobTypeChange"
+                >
+                  <view class="form-input picker-input" :class="{ 'error': errors.jobType }">
+                    {{ formData.jobType || "请选择工作类型" }}
+                  </view>
+                </picker>
+              </view>
               <text v-if="errors.jobType" class="error-text">{{ errors.jobType }}</text>
             </view>
 
             <!-- 期望薪资 -->
             <view class="form-group">
               <text class="form-label">期望薪资</text>
-              <view class="salary-input-group">
+              <view v-if="!isEditMode" class="form-input form-input-text">
+                {{ formData.salary ? formData.salary + "元/月" : "面议" }}
+              </view>
+              <view v-else class="salary-input-group">
                 <input
                   v-model="formData.salary"
-                  type="number"
                   class="salary-input"
                   :class="{ 'error': errors.salary }"
-                  :disabled="!isEditMode"
                   placeholder="请输入期望月薪"
+                  @input="onSalaryInput"
                   @blur="validateField('salary')"
                 />
                 <text class="salary-unit">元/月</text>
               </view>
               <text v-if="errors.salary" class="error-text">{{ errors.salary }}</text>
-              <view class="salary-preview" v-if="formData.salary">
+              <view class="salary-preview" v-if="formData.salary && formData.salary !== ''">
                 <text class="preview-text">{{ formatSalary(formData.salary) }}</text>
                 <text class="preview-analysis">{{ getSalaryAnalysis(formData.salary) }}</text>
               </view>
@@ -108,7 +124,7 @@
         </view>
 
         <!-- 薪资分析卡片 -->
-        <view class="info-card card-container" v-if="formData.salary">
+        <view class="info-card card-container" v-if="formData.salary && formData.salary !== ''">
           <view class="card-header">
             <text class="card-title">薪资分析</text>
           </view>
@@ -122,10 +138,7 @@
                 <text class="analysis-value">{{ getSalaryLevel(formData.salary) }}</text>
               </view>
               <view class="analysis-progress">
-                <view
-                  class="progress-bar"
-                  :style="{ width: `${getSalaryPercentage(formData.salary)}%` }"
-                ></view>
+                <view class="progress-bar" :style="{ width: `${getSalaryPercentage(formData.salary)}%` }"></view>
               </view>
             </view>
 
@@ -172,9 +185,7 @@
 
     <!-- 底部操作栏（编辑模式下） -->
     <view v-if="isEditMode && detailData.id" class="detail-footer">
-      <button class="btn btn-danger btn-block" @click="showDeleteConfirm" :disabled="saving">
-        删除
-      </button>
+      <button class="btn btn-danger btn-block" @click="showDeleteConfirm" :disabled="saving">删除</button>
     </view>
   </view>
 </template>
@@ -208,9 +219,9 @@ const detailData = ref<JobIntentionResult>({
   jobType: "",
 });
 
-// 将id也包含在formData中
+// 表单数据
 const formData = reactive<JobIntentionForm>({
-  id: 0,
+  id: undefined,
   position: "",
   city: "",
   salary: "",
@@ -227,12 +238,15 @@ const jobTypeOptions = ["全职", "兼职", "实习", "远程"];
 
 // 计算属性
 const jobTypeIndex = computed(() => {
+  if (!formData.jobType) return 0;
   const index = jobTypeOptions.findIndex(opt => opt === formData.jobType);
   return index >= 0 ? index : 0;
 });
 
 // 获取工作类型样式
-const getJobTypeClass = (jobType: string) => {
+const getJobTypeClass = (jobType?: string) => {
+  if (!jobType) return "type-default";
+
   switch (jobType) {
     case "全职":
       return "type-fulltime";
@@ -248,7 +262,7 @@ const getJobTypeClass = (jobType: string) => {
 };
 
 // 格式化日期时间
-const formatDateTime = (dateStr: string) => {
+const formatDateTime = (dateStr?: string) => {
   if (!dateStr) return "";
   try {
     const date = new Date(dateStr);
@@ -259,10 +273,10 @@ const formatDateTime = (dateStr: string) => {
 };
 
 // 格式化薪资
-const formatSalary = (salary: string): string => {
-  if (!salary) return "面议";
+const formatSalary = (salary?: string): string => {
+  if (!salary || salary === "") return "面议";
 
-  const num = parseInt(salary);
+  const num = parseFloat(salary);
   if (isNaN(num)) return "面议";
 
   if (num >= 10000) {
@@ -273,10 +287,10 @@ const formatSalary = (salary: string): string => {
 };
 
 // 薪资分析
-const getSalaryAnalysis = (salary: string): string => {
-  if (!salary) return "";
+const getSalaryAnalysis = (salary?: string): string => {
+  if (!salary || salary === "") return "";
 
-  const num = parseInt(salary);
+  const num = parseFloat(salary);
   if (isNaN(num)) return "";
 
   if (num >= 30000) {
@@ -289,10 +303,10 @@ const getSalaryAnalysis = (salary: string): string => {
 };
 
 // 薪资水平
-const getSalaryLevel = (salary: string): string => {
-  if (!salary) return "未设置";
+const getSalaryLevel = (salary?: string): string => {
+  if (!salary || salary === "") return "未设置";
 
-  const num = parseInt(salary);
+  const num = parseFloat(salary);
   if (isNaN(num)) return "未设置";
 
   if (num >= 50000) return "资深专家";
@@ -303,10 +317,10 @@ const getSalaryLevel = (salary: string): string => {
 };
 
 // 薪资百分比（用于进度条）
-const getSalaryPercentage = (salary: string): number => {
-  if (!salary) return 0;
+const getSalaryPercentage = (salary?: string): number => {
+  if (!salary || salary === "") return 0;
 
-  const num = parseInt(salary);
+  const num = parseFloat(salary);
   if (isNaN(num)) return 0;
 
   // 假设10万为最高薪资
@@ -316,10 +330,10 @@ const getSalaryPercentage = (salary: string): number => {
 };
 
 // 市场对比
-const getMarketComparison = (salary: string): string => {
-  if (!salary) return "未设置";
+const getMarketComparison = (salary?: string): string => {
+  if (!salary || salary === "") return "未设置";
 
-  const num = parseInt(salary);
+  const num = parseFloat(salary);
   if (isNaN(num)) return "未设置";
 
   if (num >= 40000) return "高于市场平均水平";
@@ -328,10 +342,10 @@ const getMarketComparison = (salary: string): string => {
 };
 
 // 薪资建议
-const getSalarySuggestion = (salary: string): string => {
-  if (!salary) return "请设置期望薪资";
+const getSalarySuggestion = (salary?: string): string => {
+  if (!salary || salary === "") return "请设置期望薪资";
 
-  const num = parseInt(salary);
+  const num = parseFloat(salary);
   if (isNaN(num)) return "请设置有效的期望薪资";
 
   if (num < 5000) {
@@ -347,25 +361,35 @@ const getSalarySuggestion = (salary: string): string => {
 const loadDetailData = async (id?: number) => {
   try {
     if (id) {
-      // API请求
+      // API请求获取详情
       const result = await JobIntentionAPI.getById(id);
 
       if (result) {
         detailData.value = result;
-        // 填充表单数据，包括id
-        formData.id = result.id || 0;
+
+        // 填充表单数据
+        formData.id = result.id;
         formData.position = result.position || "";
         formData.city = result.city || "";
         formData.salary = result.salary || "";
         formData.jobType = result.jobType || "";
 
         // 初始化城市数组
-        cityArray.value = result.city ? [result.city] : [];
+        if (result.city) {
+          // 如果城市数据包含分隔符，则分割
+          if (result.city.includes("/")) {
+            cityArray.value = result.city.split("/");
+          } else {
+            cityArray.value = ["", result.city, ""];
+          }
+        } else {
+          cityArray.value = ["", "", ""];
+        }
       }
     } else {
       // 新增模式
       detailData.value = {
-        id: null,
+        id: 0,
         createdAt: "",
         updatedAt: "",
         deleted: 0,
@@ -376,15 +400,14 @@ const loadDetailData = async (id?: number) => {
         jobType: "",
       };
 
-      // 重置formData，id为0表示新增
-      formData.id = null;
+      // 重置表单数据
+      formData.id = undefined;
       formData.position = "";
       formData.city = "";
       formData.salary = "";
       formData.jobType = "";
-
+      cityArray.value = ["", "", ""];
       isEditMode.value = true;
-      cityArray.value = [];
     }
   } catch (error) {
     console.error("加载数据失败:", error);
@@ -403,6 +426,8 @@ const validateField = (field: keyof FormErrors) => {
     case "position":
       if (!value?.toString().trim()) {
         errors.position = "请输入期望职位";
+      } else if (value.toString().trim().length > 50) {
+        errors.position = "职位名称不能超过50个字符";
       } else {
         delete errors.position;
       }
@@ -425,10 +450,12 @@ const validateField = (field: keyof FormErrors) => {
       break;
 
     case "salary":
-      if (value) {
-        const num = parseInt(value);
-        if (isNaN(num) || num < 0) {
+      if (value && value.toString().trim() !== "") {
+        const num = parseFloat(value.toString());
+        if (isNaN(num)) {
           errors.salary = "请输入有效的薪资数字";
+        } else if (num < 0) {
+          errors.salary = "薪资不能为负数";
         } else if (num > 1000000) {
           errors.salary = "薪资不能超过100万";
         } else {
@@ -453,17 +480,56 @@ const validateForm = (): boolean => {
 // 表单事件处理
 const onCityChange = (e: any) => {
   const value = e.detail.value;
+  console.log("城市选择结果:", value);
+
   if (value && value.length > 0) {
-    formData.city = value[value.length - 1]; // 取最后一级（城市）
-    cityArray.value = value;
+    // region 模式返回的是 [省, 市, 区]
+    // 我们只需要城市（第二个元素）
+    let selectedCity = "";
+    if (value.length >= 2) {
+      selectedCity = value[1] || value[0]; // 如果城市为空，则使用省份
+    } else if (value.length === 1) {
+      selectedCity = value[0]; // 直辖市
+    }
+
+    if (selectedCity) {
+      formData.city = selectedCity;
+      cityArray.value = value;
+
+      // 触发验证
+      validateField("city");
+    }
   }
-  validateField("city");
 };
 
 const onJobTypeChange = (e: any) => {
   const index = e.detail.value;
-  formData.jobType = jobTypeOptions[index];
-  validateField("jobType");
+  if (index >= 0 && index < jobTypeOptions.length) {
+    formData.jobType = jobTypeOptions[index];
+    validateField("jobType");
+  }
+};
+
+// 薪资输入处理
+const onSalaryInput = (e: any) => {
+  // 获取输入值
+  let value = e.detail.value;
+
+  // 允许数字和小数点
+  value = value.replace(/[^\d.]/g, "");
+
+  // 确保只有一个小数点
+  const parts = value.split(".");
+  if (parts.length > 2) {
+    value = parts[0] + "." + parts.slice(1).join("");
+  }
+
+  // 限制小数点后最多两位
+  if (parts.length === 2 && parts[1].length > 2) {
+    value = parts[0] + "." + parts[1].substring(0, 2);
+  }
+
+  formData.salary = value;
 };
 
 // 保存数据
@@ -479,16 +545,31 @@ const saveData = async () => {
   saving.value = true;
 
   try {
-    // 准备提交数据（排除不需要的字段）
-    const { id, position, city, salary, jobType } = formData;
-    const submitData = { id, position, city, salary, jobType };
+    // 准备提交数据
+    const submitData: JobIntentionForm = {
+      id: formData.id,
+      position: formData.position?.trim(),
+      city: formData.city,
+      salary: formData.salary,
+      jobType: formData.jobType,
+    };
 
-    if (id) {
+    // 清理空字符串字段
+    Object.keys(submitData).forEach(key => {
+      const typedKey = key as keyof JobIntentionForm;
+      if (submitData[typedKey] === "" || submitData[typedKey] === null || submitData[typedKey] === undefined) {
+        // @ts-ignore
+        delete submitData[typedKey];
+      }
+    });
+
+    if (formData.id) {
       // 更新现有记录
       await JobIntentionAPI.update(submitData);
     } else {
-      // 新增记录
-      await JobIntentionAPI.add(submitData);
+      // 新增记录 - 移除 id 字段
+      const { id, ...addData } = submitData;
+      await JobIntentionAPI.add(addData);
     }
 
     uni.showToast({
@@ -505,10 +586,10 @@ const saveData = async () => {
       });
     }, 1000);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("保存失败:", error);
     uni.showToast({
-      title: "保存失败",
+      title: error.message || "保存失败",
       icon: "error",
     });
   } finally {
@@ -562,7 +643,7 @@ const toggleEditMode = () => {
 
 const cancelEdit = () => {
   if (detailData.value.id) {
-    // 恢复原始数据，包括id
+    // 恢复原始数据
     formData.id = detailData.value.id;
     formData.position = detailData.value.position || "";
     formData.city = detailData.value.city || "";
@@ -570,7 +651,15 @@ const cancelEdit = () => {
     formData.jobType = detailData.value.jobType || "";
 
     // 恢复城市数组
-    cityArray.value = detailData.value.city ? [detailData.value.city] : [];
+    if (detailData.value.city) {
+      if (detailData.value.city.includes("/")) {
+        cityArray.value = detailData.value.city.split("/");
+      } else {
+        cityArray.value = ["", detailData.value.city, ""];
+      }
+    } else {
+      cityArray.value = ["", "", ""];
+    }
 
     isEditMode.value = false;
     // 清空错误信息
@@ -737,6 +826,8 @@ onLoad((options: any) => {
       transition: all $transition-fast $ease-in-out;
       min-height: 80rpx;
       box-sizing: border-box;
+      display: flex;
+      align-items: center;
 
       &:focus {
         border-color: $primary-color;
@@ -749,6 +840,17 @@ onLoad((options: any) => {
         box-shadow: $input-error-shadow;
       }
 
+      &.form-input-text {
+        background: $background-color;
+        border: 2rpx solid $border-color-lighter;
+        color: $text-primary;
+      }
+
+      &.picker-input {
+        cursor: pointer;
+        user-select: none;
+      }
+
       &[disabled] {
         background: $background-color;
         color: $text-secondary;
@@ -758,8 +860,11 @@ onLoad((options: any) => {
 
     .salary-input-group {
       position: relative;
+      display: flex;
+      align-items: center;
 
       .salary-input {
+        flex: 1;
         width: 100%;
         padding: 20rpx 24rpx;
         padding-right: 120rpx;
@@ -770,6 +875,7 @@ onLoad((options: any) => {
         background: $background-color-white;
         transition: all $transition-fast $ease-in-out;
         box-sizing: border-box;
+        min-height: 80rpx;
 
         &:focus {
           border-color: $primary-color;
@@ -780,12 +886,6 @@ onLoad((options: any) => {
         &.error {
           border-color: $danger-color;
           box-shadow: $input-error-shadow;
-        }
-
-        &[disabled] {
-          background: $background-color;
-          color: $text-secondary;
-          cursor: not-allowed;
         }
       }
 
