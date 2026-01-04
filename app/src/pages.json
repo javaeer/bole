@@ -285,6 +285,12 @@
 		"style": {
 			"navigationBarTitleText": ""
 		}
+	},
+	{
+		"path": "pages/template/template",
+		"style": {
+			"navigationBarTitleText": ""
+		}
 	}
   ],
   "globalStyle": {
