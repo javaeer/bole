@@ -53,29 +53,34 @@
               <text class="form-label required">工作城市</text>
               <view v-if="!isEditMode" class="form-input form-input-text">{{ formData.city || "未选择" }}</view>
               <view v-else class="city-picker-container">
-                <picker
-                  mode="region"
-                  :value="cityArray"
-                  @change="onCityChange"
-                >
-                  <view class="form-input picker-input" :class="{ 'error': errors.city }">
-                    {{ formData.city || "请选择工作城市" }}
-                  </view>
-                </picker>
+                <!-- 替换为 RegionPicker 组件 -->
+                <RegionPicker
+                  v-model="selectedRegion"
+                  :show-district="false"
+                :disabled="false"
+                :show-selected-text="false"
+                :show-clear="true"
+                :province-placeholder="'请选择省份'"
+                :city-placeholder="'请选择城市'"
+                :auto-load-provinces="true"
+                :preload-top-provinces="5"
+                :force-refresh="forceRefresh"
+                class="custom-region-picker"
+                @change="onCityChange"
+                @province-change="onProvinceChange"
+                @city-change="onCitySelected"
+                @error="onRegionError"
+                @loading="onRegionLoading"
+                />
               </view>
-              <!--              <region-picker-->
-              <!--                v-model="selectedCity"-->
-              <!--                placeholder="选择省市区"-->
-              <!--                level="3"-->
-              <!--                :show-hot-cities="true"-->
-              <!--                :enable-search="true"-->
-              <!--                :show-hint="true"-->
-              <!--                :auto-preload="true"-->
-              <!--                @change="onCityChange"-->
-              <!--                @error="onError"-->
-              <!--                @loading="onLoading"-->
-              <!--              />-->
               <text v-if="errors.city" class="error-text">{{ errors.city }}</text>
+              <!-- 显示当前选择的城市 -->
+              <view v-if="isEditMode && selectedRegion.city" class="selected-city-preview">
+                <text class="preview-label">已选择：</text>
+                <text class="preview-value">
+                  {{ selectedRegion.province?.name }}{{ selectedRegion.province?.name && selectedRegion.city?.name ? '/' : '' }}{{ selectedRegion.city?.name }}
+                </text>
+              </view>
             </view>
 
             <!-- 工作类型 -->
@@ -191,10 +196,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, onMounted } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import type { JobIntentionForm, JobIntentionResult } from "@/types/job-intention";
+import type { SelectedRegion, Province, City } from "@/types/region";
 import JobIntentionAPI from "@/api/job-intention";
+import RegionPicker from "@/components/region-picker/RegionPicker.vue";
+import { useRegionStore } from "@/stores/region";
 
 interface FormErrors {
   position?: string;
@@ -228,7 +236,11 @@ const formData = reactive<JobIntentionForm>({
   jobType: "",
 });
 
-const cityArray = ref<string[]>([]);
+// RegionPicker 相关数据
+const selectedRegion = ref<SelectedRegion>({});
+const regionStore = useRegionStore();
+const forceRefresh = ref(false);
+
 const errors = reactive<FormErrors>({});
 const isEditMode = ref(false);
 const saving = ref(false);
@@ -357,6 +369,45 @@ const getSalarySuggestion = (salary?: string): string => {
   }
 };
 
+// 根据城市名称查找区域信息
+const findRegionByCityName = async (cityName: string) => {
+  if (!cityName) return;
+
+  try {
+    // 使用 store 的搜索功能查找城市
+    const searchResults = regionStore.searchByPinyin(cityName);
+
+    // 查找城市级别的结果
+    const cityResult = searchResults.find(item =>
+      item.level === 2 &&
+      (item.name === cityName || item.shortName === cityName)
+    );
+
+    if (cityResult) {
+      // 找到城市，现在需要找到对应的省份
+      const provinces = await regionStore.loadProvinces();
+      const province = provinces.find(p => p.id === cityResult.parentId);
+
+      if (province) {
+        // 加载城市数据
+        await regionStore.loadCities(province.id);
+        const cities = regionStore.getCitiesByProvince(province.id);
+        const city = cities.find(c => c.id === cityResult.id);
+
+        if (city) {
+          selectedRegion.value = {
+            province,
+            city
+          };
+          console.log('根据城市名称找到区域:', selectedRegion.value);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('查找区域信息失败:', error);
+  }
+};
+
 // 加载数据
 const loadDetailData = async (id?: number) => {
   try {
@@ -374,16 +425,13 @@ const loadDetailData = async (id?: number) => {
         formData.salary = result.salary || "";
         formData.jobType = result.jobType || "";
 
-        // 初始化城市数组
-        if (result.city) {
-          // 如果城市数据包含分隔符，则分割
-          if (result.city.includes("/")) {
-            cityArray.value = result.city.split("/");
-          } else {
-            cityArray.value = ["", result.city, ""];
-          }
-        } else {
-          cityArray.value = ["", "", ""];
+        // 如果有城市信息，初始化 RegionPicker
+        if (result.city && result.city.trim()) {
+          // 等待省份数据加载完成
+          await regionStore.loadProvinces();
+
+          // 尝试根据城市名称查找区域信息
+          await findRegionByCityName(result.city.trim());
         }
       }
     } else {
@@ -406,8 +454,14 @@ const loadDetailData = async (id?: number) => {
       formData.city = "";
       formData.salary = "";
       formData.jobType = "";
-      cityArray.value = ["", "", ""];
+      selectedRegion.value = {};
+
       isEditMode.value = true;
+
+      // 预加载省份数据
+      regionStore.loadProvinces().catch(error => {
+        console.error('预加载省份数据失败:', error);
+      });
     }
   } catch (error) {
     console.error("加载数据失败:", error);
@@ -477,30 +531,53 @@ const validateForm = (): boolean => {
   return Object.keys(errors).length === 0;
 };
 
-// 表单事件处理
-const onCityChange = (e: any) => {
-  const value = e.detail.value;
-  console.log("城市选择结果:", value);
+// RegionPicker 事件处理
+const onProvinceChange = (province: Province | null) => {
+  console.log('省份变化:', province);
+  // 省份变化时，城市会自动清空
+}
 
-  if (value && value.length > 0) {
-    // region 模式返回的是 [省, 市, 区]
-    // 我们只需要城市（第二个元素）
-    let selectedCity = "";
-    if (value.length >= 2) {
-      selectedCity = value[1] || value[0]; // 如果城市为空，则使用省份
-    } else if (value.length === 1) {
-      selectedCity = value[0]; // 直辖市
-    }
+const onCitySelected = (city: City | null) => {
+  console.log('城市变化:', city);
 
-    if (selectedCity) {
-      formData.city = selectedCity;
-      cityArray.value = value;
-
-      // 触发验证
-      validateField("city");
-    }
+  if (city) {
+    // 更新表单中的城市字段
+    formData.city = city.name;
+    validateField('city');
+  } else {
+    formData.city = "";
+    errors.city = "请选择工作城市";
   }
-};
+}
+
+const onCityChange = (region: SelectedRegion) => {
+  console.log('区域选择变化:', region);
+  selectedRegion.value = region;
+
+  // 更新表单中的城市字段
+  if (region.city) {
+    formData.city = region.city.name;
+    validateField('city');
+  } else {
+    formData.city = "";
+    errors.city = "请选择工作城市";
+  }
+}
+
+const onRegionError = (error: string | null) => {
+  console.error('RegionPicker 错误:', error);
+  if (error) {
+    uni.showToast({
+      title: `地区选择错误: ${error}`,
+      icon: 'error',
+      duration: 3000
+    });
+  }
+}
+
+const onRegionLoading = (isLoading: boolean) => {
+  console.log('RegionPicker 加载状态:', isLoading);
+}
 
 const onJobTypeChange = (e: any) => {
   const index = e.detail.value;
@@ -537,6 +614,15 @@ const saveData = async () => {
   if (!validateForm()) {
     uni.showToast({
       title: "请填写完整信息",
+      icon: "error",
+    });
+    return;
+  }
+
+  // 确保城市已选择
+  if (!formData.city) {
+    uni.showToast({
+      title: "请选择工作城市",
       icon: "error",
     });
     return;
@@ -650,15 +736,11 @@ const cancelEdit = () => {
     formData.salary = detailData.value.salary || "";
     formData.jobType = detailData.value.jobType || "";
 
-    // 恢复城市数组
-    if (detailData.value.city) {
-      if (detailData.value.city.includes("/")) {
-        cityArray.value = detailData.value.city.split("/");
-      } else {
-        cityArray.value = ["", detailData.value.city, ""];
-      }
+    // 恢复城市选择
+    if (detailData.value.city && detailData.value.city.trim()) {
+      findRegionByCityName(detailData.value.city.trim());
     } else {
-      cityArray.value = ["", "", ""];
+      selectedRegion.value = {};
     }
 
     isEditMode.value = false;
@@ -855,6 +937,79 @@ onLoad((options: any) => {
         background: $background-color;
         color: $text-secondary;
         cursor: not-allowed;
+      }
+    }
+
+    .city-picker-container {
+      .custom-region-picker {
+        :deep(.region-cascader) {
+          flex-direction: column;
+          gap: 12rpx;
+
+          .picker-wrapper {
+            margin-bottom: 0;
+          }
+        }
+
+        :deep(.picker-view) {
+          border: 2rpx solid $border-color-lighter;
+          border-radius: $border-radius;
+          font-size: $font-size-base;
+          color: $text-primary;
+          background: $background-color-white;
+          transition: all $transition-fast $ease-in-out;
+          min-height: 80rpx;
+          padding: 0 24rpx;
+
+          &:focus, &:active {
+            border-color: $primary-color;
+            box-shadow: $input-focus-shadow;
+          }
+
+          &.disabled {
+            background: $background-color;
+            color: $text-secondary;
+            cursor: not-allowed;
+          }
+        }
+
+        :deep(.selected-region) {
+          margin-top: 12rpx;
+          padding: 12rpx;
+          background: $background-color;
+          border-radius: $border-radius-small;
+          border: 1rpx solid $border-color-lighter;
+          font-size: $font-size-small;
+          color: $text-secondary;
+        }
+
+        :deep(.error-message) {
+          margin-top: 8rpx;
+          font-size: $font-size-extra-small;
+          color: $danger-color;
+        }
+      }
+    }
+
+    .selected-city-preview {
+      margin-top: 12rpx;
+      padding: 16rpx;
+      background: $primary-color-light;
+      border-radius: $border-radius-small;
+      border: 1rpx solid $primary-border;
+      display: flex;
+      align-items: center;
+
+      .preview-label {
+        font-size: $font-size-small;
+        color: $text-secondary;
+        margin-right: 8rpx;
+      }
+
+      .preview-value {
+        font-size: $font-size-base;
+        color: $primary-color;
+        font-weight: $font-weight-medium;
       }
     }
 
