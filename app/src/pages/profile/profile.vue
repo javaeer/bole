@@ -44,9 +44,6 @@
           <view class="stat-card-inner">
             <text class="stat-icon">📝</text>
             <text class="stat-title">简历管理</text>
-            <view class="stat-badge" v-if="resumeStats.total > 0">
-              {{ resumeStats.total }}
-            </view>
           </view>
         </view>
 
