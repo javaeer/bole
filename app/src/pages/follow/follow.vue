@@ -178,7 +178,7 @@ const handleUnfavoriteTemplate = async (id: number) => {
 // 使用模板
 const handleUseTemplate = (id: number) => {
   uni.navigateTo({
-    url: `/pages/resumes/edit?templateId=${id}`,
+    url: `/pages/resumes/resumes?templateId=${id}`,
   });
 };
 

@@ -27,6 +27,10 @@ export interface UserInfo {
   company: any | null;
 }
 
+export interface UserBasicInfo {
+
+}
+
 export interface Authority {
   id: number;
   name: string;

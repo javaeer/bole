@@ -1,27 +1,6 @@
 <template>
   <!-- 查看模式 -->
   <view v-if="currentMode === 'view'" class="resume-view-container">
-    <!-- 顶部操作栏 -->
-    <view class="view-header">
-      <view class="header-right">
-        <button class="preview-action-btn" @click="switchToEditMode">
-          <text class="action-icon">✏️</text>
-          <text class="action-text">编辑</text>
-        </button>
-        <button class="preview-action-btn" @click="handleDelete">
-          <text class="footer-icon">🗑️</text>
-          <text class="action-text">删除</text>
-        </button>
-        <button class="preview-action-btn" @click="handleDownload">
-          <text class="action-icon">⬇️</text>
-          <text class="action-text">下载</text>
-        </button>
-        <button class="preview-action-btn" @click="showShareOptions">
-          <text class="action-icon">📤</text>
-          <text class="action-text">分享</text>
-        </button>
-      </view>
-    </view>
 
     <!-- 简历预览内容 -->
     <scroll-view class="preview-content" scroll-y="true">
@@ -31,7 +10,28 @@
         ref="dynamicResumesRenderer"
       />
     </scroll-view>
-    <!-- 自定义分享弹窗 -->
+
+    <!-- 底部操作栏 -->
+    <view class="view-footer">
+      <button class="footer-btn edit-btn" @click="switchToEditMode">
+        <text class="footer-icon">✏️</text>
+        <text class="footer-text">编辑</text>
+      </button>
+      <button class="footer-btn delete-btn" @click="handleDelete">
+        <text class="footer-icon">🗑️</text>
+        <text class="footer-text">删除</text>
+      </button>
+      <button class="footer-btn download-btn" @click="handleDownload">
+        <text class="footer-icon">⬇️</text>
+        <text class="footer-text">下载</text>
+      </button>
+      <button class="footer-btn share-btn" @click="showShareOptions">
+        <text class="footer-icon">📤</text>
+        <text class="footer-text">分享</text>
+      </button>
+    </view>
+
+    <!-- 分享弹窗 -->
     <view v-if="showShareModal" class="custom-modal-overlay" @click="hideShareOptions">
       <view class="custom-modal" @click.stop>
         <view class="modal-header">
@@ -54,11 +54,6 @@
               <view class="option-icon link">🔗</view>
               <text class="option-text">复制链接</text>
             </button>
-
-            <button class="share-option" @click="exportAsImage">
-              <view class="option-icon image">🖼️</view>
-              <text class="option-text">导出图片</text>
-            </button>
           </view>
 
           <!-- 二维码显示区域 -->
@@ -72,11 +67,8 @@
     </view>
   </view>
 
-  <!-- 编辑模式保持不变 -->
+  <!-- 编辑模式 -->
   <view v-else-if="currentMode === 'edit'" class="page-container">
-    <!-- 顶部安全区域占位（仅APP环境需要） -->
-    <view v-if="isApp && safeAreaTop > 0" class="safe-area-top" :style="{ height: safeAreaTop + 'px' }"></view>
-
     <!-- 主要内容区域 -->
     <view class="main-content" :class="layoutClass">
       <!-- 左侧表单区域 -->
@@ -84,33 +76,8 @@
         class="form-section"
         scroll-y="true"
         :style="formSectionStyle"
-        :scroll-top="formScrollTop"
-        @scroll="handleFormScroll"
       >
         <view class="form-container">
-          <!-- 简历基本信息 -->
-          <view class="resume-info-card">
-            <text class="info-title">简历信息</text>
-            <view class="info-content">
-              <view class="info-item">
-                <text class="item-label">模板ID</text>
-                <text class="item-value">{{ resumeConfig.templateId || "未设置" }}</text>
-              </view>
-              <view class="info-item">
-                <text class="item-label">主题风格</text>
-                <text class="item-value">{{ getThemeName(resumeConfig.globalStyle?.theme) }}</text>
-              </view>
-              <view class="info-item">
-                <text class="item-label">布局类型</text>
-                <text class="item-value">{{ getLayoutName(resumeConfig.globalLayout?.type) }}</text>
-              </view>
-              <view class="info-item">
-                <text class="item-label">最后更新</text>
-                <text class="item-value">{{ formatDate(resumeConfig.updatedAt) }}</text>
-              </view>
-            </view>
-          </view>
-
           <!-- 动态生成的表单区域 -->
           <template v-for="component in sortedComponents" :key="component.id">
             <!-- 用户基本信息 -->
@@ -121,9 +88,7 @@
                   <view class="section-divider"></view>
                 </view>
 
-                <!-- 动态表单字段 -->
                 <view class="dynamic-form-grid">
-                  <!-- 基础字段 -->
                   <view class="form-item">
                     <text class="item-label">姓名</text>
                     <input
@@ -131,7 +96,6 @@
                       :value="component.props.name || ''"
                       @input="(e) => updateComponentProp(component.id, 'name', e.detail.value)"
                       placeholder="请输入姓名"
-                      placeholder-class="input-placeholder"
                     />
                   </view>
 
@@ -150,17 +114,6 @@
                   </view>
 
                   <view class="form-item">
-                    <text class="item-label">出生日期</text>
-                    <input
-                      class="form-input"
-                      :value="component.props.birthday || ''"
-                      @input="(e) => updateComponentProp(component.id, 'birthday', e.detail.value)"
-                      placeholder="YYYY-MM-DD"
-                      placeholder-class="input-placeholder"
-                    />
-                  </view>
-
-                  <view class="form-item">
                     <text class="item-label">电话</text>
                     <input
                       class="form-input"
@@ -168,7 +121,6 @@
                       :value="component.props.phone || ''"
                       @input="(e) => updateComponentProp(component.id, 'phone', e.detail.value)"
                       placeholder="请输入联系电话"
-                      placeholder-class="input-placeholder"
                     />
                   </view>
 
@@ -180,7 +132,6 @@
                       :value="component.props.email || ''"
                       @input="(e) => updateComponentProp(component.id, 'email', e.detail.value)"
                       placeholder="请输入邮箱"
-                      placeholder-class="input-placeholder"
                     />
                   </view>
 
@@ -191,7 +142,6 @@
                       :value="component.props.location || ''"
                       @input="(e) => updateComponentProp(component.id, 'location', e.detail.value)"
                       placeholder="请输入所在城市"
-                      placeholder-class="input-placeholder"
                     />
                   </view>
 
@@ -203,18 +153,6 @@
                       :value="component.props.workYears || ''"
                       @input="(e) => updateComponentProp(component.id, 'workYears', parseInt(e.detail.value) || 0)"
                       placeholder="请输入工作年限"
-                      placeholder-class="input-placeholder"
-                    />
-                  </view>
-
-                  <view class="form-item full-width">
-                    <text class="item-label">头像链接</text>
-                    <input
-                      class="form-input"
-                      :value="component.props.avatar || ''"
-                      @input="(e) => updateComponentProp(component.id, 'avatar', e.detail.value)"
-                      placeholder="请输入头像URL链接"
-                      placeholder-class="input-placeholder"
                     />
                   </view>
 
@@ -225,136 +163,8 @@
                       :value="component.props.title || ''"
                       @input="(e) => updateComponentProp(component.id, 'title', e.detail.value)"
                       placeholder="例如：高级工程师"
-                      placeholder-class="input-placeholder"
                     />
                   </view>
-
-                  <!-- 额外字段 -->
-                  <view class="form-item full-width">
-                    <text class="item-label">个人网站</text>
-                    <input
-                      class="form-input"
-                      :value="component.props.website || ''"
-                      @input="(e) => updateComponentProp(component.id, 'website', e.detail.value)"
-                      placeholder="请输入个人网站"
-                      placeholder-class="input-placeholder"
-                    />
-                  </view>
-
-                  <view class="form-item">
-                    <text class="item-label">GitHub</text>
-                    <input
-                      class="form-input"
-                      :value="component.props.github || ''"
-                      @input="(e) => updateComponentProp(component.id, 'github', e.detail.value)"
-                      placeholder="GitHub用户名"
-                      placeholder-class="input-placeholder"
-                    />
-                  </view>
-
-                  <view class="form-item">
-                    <text class="item-label">微信</text>
-                    <input
-                      class="form-input"
-                      :value="component.props.wechat || ''"
-                      @input="(e) => updateComponentProp(component.id, 'wechat', e.detail.value)"
-                      placeholder="微信ID"
-                      placeholder-class="input-placeholder"
-                    />
-                  </view>
-                </view>
-              </view>
-            </template>
-
-            <!-- 求职意向 -->
-            <template v-if="getComponentKey(component) === 'JobIntention'">
-              <view class="form-section-card">
-                <view class="form-section-header">
-                  <text class="section-title">{{ component.name || "求职意向" }}</text>
-                  <view class="section-divider"></view>
-                </view>
-
-                <!-- 多求职意向列表 -->
-                <view class="intentions-list">
-                  <view
-                    v-for="(intention, index) in component.props.intentions || []"
-                    :key="intention.id || index"
-                    class="intention-item"
-                  >
-                    <view class="item-header">
-                      <text class="item-title">意向 {{ index + 1 }}</text>
-                      <text
-                        v-if="(component.props.intentions || []).length > 1"
-                        class="remove-btn"
-                        @click="removeArrayItem(component.id, 'intentions', index)"
-                      >
-                        删除
-                      </text>
-                    </view>
-
-                    <view class="dynamic-form-grid">
-                      <view class="form-item">
-                        <text class="item-label">期望职位</text>
-                        <input
-                          class="form-input"
-                          :value="intention.position || ''"
-                          @input="(e) => updateArrayField(component.id, 'intentions', index, 'position', e.detail.value)"
-                          placeholder="请输入期望职位"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">期望城市</text>
-                        <input
-                          class="form-input"
-                          :value="intention.city || ''"
-                          @input="(e) => updateArrayField(component.id, 'intentions', index, 'city', e.detail.value)"
-                          placeholder="请输入期望城市"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">期望薪资</text>
-                        <view class="salary-input">
-                          <input
-                            class="form-input"
-                            type="text"
-                            :value="intention.salary || ''"
-                            @input="(e) => updateArrayField(component.id, 'intentions', index, 'salary', e.detail.value)"
-                            placeholder="薪资"
-                            placeholder-class="input-placeholder"
-                          />
-                          <text class="salary-unit">元/月</text>
-                        </view>
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">工作类型</text>
-                        <picker
-                          class="form-input"
-                          :value="getPickerIndex(intention.jobType, jobTypeOptions)"
-                          :range="jobTypeOptions"
-                          @change="(e) => updateArrayField(component.id, 'intentions', index, 'jobType', jobTypeOptions[e.detail.value])"
-                        >
-                          <view class="picker-content">
-                            {{ intention.jobType || "请选择工作类型" }}
-                          </view>
-                        </picker>
-                      </view>
-                    </view>
-                  </view>
-
-                  <button class="add-section-btn" @click="addArrayItem(component.id, 'intentions', {
-                    position: '',
-                    city: '',
-                    salary: '',
-                    jobType: '全职'
-                  })">
-                    <text class="icon-add">+</text>
-                    添加求职意向
-                  </button>
                 </view>
               </view>
             </template>
@@ -392,7 +202,6 @@
                           :value="exp.company || ''"
                           @input="(e) => updateArrayField(component.id, 'experiences', index, 'company', e.detail.value)"
                           placeholder="请输入公司名称"
-                          placeholder-class="input-placeholder"
                         />
                       </view>
 
@@ -403,18 +212,6 @@
                           :value="exp.position || ''"
                           @input="(e) => updateArrayField(component.id, 'experiences', index, 'position', e.detail.value)"
                           placeholder="请输入职位"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">部门</text>
-                        <input
-                          class="form-input"
-                          :value="exp.department || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'department', e.detail.value)"
-                          placeholder="请输入部门"
-                          placeholder-class="input-placeholder"
                         />
                       </view>
 
@@ -448,19 +245,6 @@
                         </picker>
                       </view>
 
-                      <view class="form-item">
-                        <text class="item-label">是否在职</text>
-                        <view class="checkbox-group">
-                          <label class="checkbox-label">
-                            <checkbox
-                              :checked="exp.isCurrent || false"
-                              @change="(e) => updateArrayField(component.id, 'experiences', index, 'isCurrent', e.detail.value)"
-                            />
-                            <text class="checkbox-text">当前在职</text>
-                          </label>
-                        </view>
-                      </view>
-
                       <view class="form-item full-width">
                         <text class="item-label">工作描述</text>
                         <textarea
@@ -468,37 +252,6 @@
                           :value="exp.description || ''"
                           @input="(e) => updateArrayField(component.id, 'experiences', index, 'description', e.detail.value)"
                           placeholder="请描述工作职责和成就"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">主要成就</text>
-                        <textarea
-                          class="form-textarea"
-                          :value="Array.isArray(exp.achievements) ? exp.achievements.join('、') : exp.achievements || ''"
-                          @input="(e) => {
-                            const value = e.detail.value;
-                            const achievements = value.split('、').filter(item => item.trim());
-                            updateArrayField(component.id, 'experiences', index, 'achievements', achievements);
-                          }"
-                          placeholder="请描述主要工作成就，用中文顿号分隔"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">使用技能</text>
-                        <input
-                          class="form-input"
-                          :value="Array.isArray(exp.skills) ? exp.skills.join(', ') : exp.skills || ''"
-                          @input="(e) => {
-                            const value = e.detail.value;
-                            const skills = value.split(',').map(item => item.trim()).filter(item => item);
-                            updateArrayField(component.id, 'experiences', index, 'skills', skills);
-                          }"
-                          placeholder="请输入使用的技能，用逗号分隔"
-                          placeholder-class="input-placeholder"
                         />
                       </view>
                     </view>
@@ -507,332 +260,13 @@
                   <button class="add-section-btn" @click="addArrayItem(component.id, 'experiences', {
                     company: '',
                     position: '',
-                    department: '',
                     startDate: '',
                     endDate: '',
                     description: '',
-                    achievements: [],
-                    skills: [],
                     isCurrent: false
                   })">
                     <text class="icon-add">+</text>
                     添加工作经历
-                  </button>
-                </view>
-              </view>
-            </template>
-
-            <!-- 公司经历 -->
-            <template v-if="getComponentKey(component) === 'CompanyExperience'">
-              <view class="form-section-card">
-                <view class="form-section-header">
-                  <text class="section-title">{{ component.name || "公司经历" }}</text>
-                  <view class="section-divider"></view>
-                </view>
-
-                <view class="experience-list">
-                  <view
-                    v-for="(exp, index) in component.props.experiences || []"
-                    :key="exp.id || index"
-                    class="experience-item"
-                  >
-                    <view class="item-header">
-                      <text class="item-title">公司经历 {{ index + 1 }}</text>
-                      <text
-                        v-if="(component.props.experiences || []).length > 1"
-                        class="remove-btn"
-                        @click="removeArrayItem(component.id, 'experiences', index)"
-                      >
-                        删除
-                      </text>
-                    </view>
-
-                    <view class="dynamic-form-grid">
-                      <view class="form-item">
-                        <text class="item-label">公司名称</text>
-                        <input
-                          class="form-input"
-                          :value="exp.name || exp.company || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'name', e.detail.value)"
-                          placeholder="请输入公司名称"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">职位</text>
-                        <input
-                          class="form-input"
-                          :value="exp.position || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'position', e.detail.value)"
-                          placeholder="请输入职位"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">部门</text>
-                        <input
-                          class="form-input"
-                          :value="exp.department || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'department', e.detail.value)"
-                          placeholder="请输入部门"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">开始时间</text>
-                        <picker
-                          class="form-input"
-                          mode="date"
-                          fields="month"
-                          :value="exp.startDate || ''"
-                          @change="(e) => updateArrayField(component.id, 'experiences', index, 'startDate', e.detail.value)"
-                        >
-                          <view class="picker-content">
-                            {{ exp.startDate || "选择开始时间" }}
-                          </view>
-                        </picker>
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">结束时间</text>
-                        <picker
-                          class="form-input"
-                          mode="date"
-                          fields="month"
-                          :value="exp.endDate || ''"
-                          @change="(e) => updateArrayField(component.id, 'experiences', index, 'endDate', e.detail.value)"
-                        >
-                          <view class="picker-content">
-                            {{ exp.isCurrent ? "至今" : (exp.endDate || "选择结束时间") }}
-                          </view>
-                        </picker>
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">是否在职</text>
-                        <view class="checkbox-group">
-                          <label class="checkbox-label">
-                            <checkbox
-                              :checked="exp.isCurrent || false"
-                              @change="(e) => updateArrayField(component.id, 'experiences', index, 'isCurrent', e.detail.value)"
-                            />
-                            <text class="checkbox-text">当前在职</text>
-                          </label>
-                        </view>
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">工作描述</text>
-                        <textarea
-                          class="form-textarea"
-                          :value="exp.description || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'description', e.detail.value)"
-                          placeholder="请描述工作职责和成就"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">工作成就</text>
-                        <textarea
-                          class="form-textarea"
-                          :value="Array.isArray(exp.achievements) ? exp.achievements.join('、') : exp.achievements || ''"
-                          @input="(e) => {
-                            const value = e.detail.value;
-                            const achievements = value.split('、').filter(item => item.trim());
-                            updateArrayField(component.id, 'experiences', index, 'achievements', achievements);
-                          }"
-                          placeholder="请描述工作成就，用中文顿号分隔"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">所用技能</text>
-                        <input
-                          class="form-input"
-                          :value="Array.isArray(exp.skills) ? exp.skills.join(', ') : exp.skills || ''"
-                          @input="(e) => {
-                            const value = e.detail.value;
-                            const skills = value.split(',').map(item => item.trim()).filter(item => item);
-                            updateArrayField(component.id, 'experiences', index, 'skills', skills);
-                          }"
-                          placeholder="请输入使用的技能，用逗号分隔"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-                    </view>
-                  </view>
-
-                  <button class="add-section-btn" @click="addArrayItem(component.id, 'experiences', {
-                    name: '',
-                    position: '',
-                    department: '',
-                    startDate: '',
-                    endDate: '',
-                    description: '',
-                    achievements: [],
-                    skills: [],
-                    isCurrent: false
-                  })">
-                    <text class="icon-add">+</text>
-                    添加公司经历
-                  </button>
-                </view>
-              </view>
-            </template>
-
-            <!-- 项目经历 -->
-            <template v-if="getComponentKey(component) === 'ProjectExperience'">
-              <view class="form-section-card">
-                <view class="form-section-header">
-                  <text class="section-title">{{ component.name || "项目经历" }}</text>
-                  <view class="section-divider"></view>
-                </view>
-
-                <view class="project-list">
-                  <view
-                    v-for="(project, index) in component.props.experiences || []"
-                    :key="project.id || index"
-                    class="project-item"
-                  >
-                    <view class="item-header">
-                      <text class="item-title">项目 {{ index + 1 }}</text>
-                      <text
-                        v-if="(component.props.experiences || []).length > 1"
-                        class="remove-btn"
-                        @click="removeArrayItem(component.id, 'experiences', index)"
-                      >
-                        删除
-                      </text>
-                    </view>
-
-                    <view class="dynamic-form-grid">
-                      <view class="form-item">
-                        <text class="item-label">项目名称</text>
-                        <input
-                          class="form-input"
-                          :value="project.name || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'name', e.detail.value)"
-                          placeholder="请输入项目名称"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">担任角色</text>
-                        <input
-                          class="form-input"
-                          :value="project.role || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'role', e.detail.value)"
-                          placeholder="例如：项目经理、开发工程师"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">开始时间</text>
-                        <picker
-                          class="form-input"
-                          mode="date"
-                          fields="month"
-                          :value="project.startDate || ''"
-                          @change="(e) => updateArrayField(component.id, 'experiences', index, 'startDate', e.detail.value)"
-                        >
-                          <view class="picker-content">
-                            {{ project.startDate || "选择开始时间" }}
-                          </view>
-                        </picker>
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">结束时间</text>
-                        <picker
-                          class="form-input"
-                          mode="date"
-                          fields="month"
-                          :value="project.endDate || ''"
-                          @change="(e) => updateArrayField(component.id, 'experiences', index, 'endDate', e.detail.value)"
-                        >
-                          <view class="picker-content">
-                            {{ project.endDate || "选择结束时间" }}
-                          </view>
-                        </picker>
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">项目描述</text>
-                        <textarea
-                          class="form-textarea"
-                          :value="project.description || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'description', e.detail.value)"
-                          placeholder="请描述项目背景、目标和成果"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">使用技术</text>
-                        <input
-                          class="form-input"
-                          :value="Array.isArray(project.technologies) ? project.technologies.join(', ') : project.technologies || ''"
-                          @input="(e) => {
-                            const value = e.detail.value;
-                            const technologies = value.split(',').map(item => item.trim()).filter(item => item);
-                            updateArrayField(component.id, 'experiences', index, 'technologies', technologies);
-                          }"
-                          placeholder="请输入使用的技术栈，用逗号分隔"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">项目职责</text>
-                        <textarea
-                          class="form-textarea"
-                          :value="Array.isArray(project.responsibilities) ? project.responsibilities.join('、') : project.responsibilities || ''"
-                          @input="(e) => {
-                            const value = e.detail.value;
-                            const responsibilities = value.split('、').filter(item => item.trim());
-                            updateArrayField(component.id, 'experiences', index, 'responsibilities', responsibilities);
-                          }"
-                          placeholder="请描述您在项目中的具体职责，用中文顿号分隔"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">项目成果</text>
-                        <textarea
-                          class="form-textarea"
-                          :value="Array.isArray(project.achievements) ? project.achievements.join('、') : project.achievements || ''"
-                          @input="(e) => {
-                            const value = e.detail.value;
-                            const achievements = value.split('、').filter(item => item.trim());
-                            updateArrayField(component.id, 'experiences', index, 'achievements', achievements);
-                          }"
-                          placeholder="请描述项目的主要成果和影响，用中文顿号分隔"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-                    </view>
-                  </view>
-
-                  <button class="add-section-btn" @click="addArrayItem(component.id, 'experiences', {
-                    name: '',
-                    role: '',
-                    startDate: '',
-                    endDate: '',
-                    description: '',
-                    technologies: [],
-                    responsibilities: [],
-                    achievements: []
-                  })">
-                    <text class="icon-add">+</text>
-                    添加项目经历
                   </button>
                 </view>
               </view>
@@ -846,7 +280,6 @@
                   <view class="section-divider"></view>
                 </view>
 
-                <!-- 动态渲染教育经历列表 -->
                 <view class="education-list">
                   <view
                     v-for="(edu, index) in component.props.experiences || []"
@@ -872,7 +305,6 @@
                           :value="edu.university || ''"
                           @input="(e) => updateArrayField(component.id, 'experiences', index, 'university', e.detail.value)"
                           placeholder="请输入学校名称"
-                          placeholder-class="input-placeholder"
                         />
                       </view>
 
@@ -897,7 +329,6 @@
                           :value="edu.major || ''"
                           @input="(e) => updateArrayField(component.id, 'experiences', index, 'major', e.detail.value)"
                           placeholder="请输入专业"
-                          placeholder-class="input-placeholder"
                         />
                       </view>
 
@@ -930,69 +361,6 @@
                           </view>
                         </picker>
                       </view>
-
-                      <view class="form-item">
-                        <text class="item-label">GPA成绩</text>
-                        <input
-                          class="form-input"
-                          :value="edu.gpa || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'gpa', e.detail.value)"
-                          placeholder="例如：3.8/4.0"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">排名</text>
-                        <input
-                          class="form-input"
-                          :value="edu.ranking || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'ranking', e.detail.value)"
-                          placeholder="例如：前10%"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">在校描述</text>
-                        <textarea
-                          class="form-textarea"
-                          :value="edu.description || ''"
-                          @input="(e) => updateArrayField(component.id, 'experiences', index, 'description', e.detail.value)"
-                          placeholder="请描述在校期间的成就和荣誉"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">相关课程</text>
-                        <input
-                          class="form-input"
-                          :value="Array.isArray(edu.courses) ? edu.courses.join(', ') : edu.courses || ''"
-                          @input="(e) => {
-                            const value = e.detail.value;
-                            const courses = value.split(',').map(item => item.trim()).filter(item => item);
-                            updateArrayField(component.id, 'experiences', index, 'courses', courses);
-                          }"
-                          placeholder="请输入相关课程，用逗号分隔"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">在校成就</text>
-                        <textarea
-                          class="form-textarea"
-                          :value="Array.isArray(edu.achievements) ? edu.achievements.join('、') : edu.achievements || ''"
-                          @input="(e) => {
-                            const value = e.detail.value;
-                            const achievements = value.split('、').filter(item => item.trim());
-                            updateArrayField(component.id, 'experiences', index, 'achievements', achievements);
-                          }"
-                          placeholder="请描述在校成就，用中文顿号分隔"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
                     </view>
                   </view>
 
@@ -1001,12 +369,7 @@
                     degree: '',
                     major: '',
                     startDate: '',
-                    endDate: '',
-                    gpa: '',
-                    ranking: '',
-                    description: '',
-                    courses: [],
-                    achievements: []
+                    endDate: ''
                   })">
                     <text class="icon-add">+</text>
                     添加教育经历
@@ -1048,7 +411,6 @@
                           :value="skill.name || ''"
                           @input="(e) => updateArrayField(component.id, 'skills', index, 'name', e.detail.value)"
                           placeholder="请输入技能名称"
-                          placeholder-class="input-placeholder"
                         />
                       </view>
 
@@ -1061,48 +423,9 @@
                             :value="skill.proficiencyPercent || ''"
                             @input="(e) => updateArrayField(component.id, 'skills', index, 'proficiencyPercent', parseInt(e.detail.value) || 0)"
                             placeholder="0-100"
-                            placeholder-class="input-placeholder"
                           />
                           <text class="proficiency-unit">%</text>
                         </view>
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">经验年限</text>
-                        <input
-                          class="form-input"
-                          type="number"
-                          step="0.5"
-                          :value="skill.experienceYears || ''"
-                          @input="(e) => updateArrayField(component.id, 'skills', index, 'experienceYears', parseFloat(e.detail.value) || 0)"
-                          placeholder="请输入经验年限"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">技能等级</text>
-                        <picker
-                          class="form-input"
-                          :value="getPickerIndex(skill.level, skillLevelOptions)"
-                          :range="skillLevelOptions"
-                          @change="(e) => updateArrayField(component.id, 'skills', index, 'level', skillLevelOptions[e.detail.value])"
-                        >
-                          <view class="picker-content">
-                            {{ skill.level || "请选择技能等级" }}
-                          </view>
-                        </picker>
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">技能分类</text>
-                        <input
-                          class="form-input"
-                          :value="skill.category || ''"
-                          @input="(e) => updateArrayField(component.id, 'skills', index, 'category', e.detail.value)"
-                          placeholder="请输入技能分类"
-                          placeholder-class="input-placeholder"
-                        />
                       </view>
 
                       <view class="form-item full-width">
@@ -1111,128 +434,19 @@
                           class="form-textarea"
                           :value="skill.description || ''"
                           @input="(e) => updateArrayField(component.id, 'skills', index, 'description', e.detail.value)"
-                          placeholder="请描述技能掌握情况和应用场景"
-                          placeholder-class="input-placeholder"
+                          placeholder="请描述技能掌握情况"
                         />
                       </view>
-
-                      <view class="form-item full-width">
-                        <text class="item-label">技能标签</text>
-                        <input
-                          class="form-input"
-                          :value="skill.tags || ''"
-                          @input="(e) => updateArrayField(component.id, 'skills', index, 'tags', e.detail.value)"
-                          placeholder="请输入技能标签，用逗号分隔"
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-
-                      <view class="form-item">
-                        <text class="item-label">是否认证</text>
-                        <view class="checkbox-group">
-                          <label class="checkbox-label">
-                            <checkbox
-                              :checked="skill.isCertified || false"
-                              @change="(e) => updateArrayField(component.id, 'skills', index, 'isCertified', e.detail.value)"
-                            />
-                            <text class="checkbox-text">已认证</text>
-                          </label>
-                        </view>
-                      </view>
-
-                      <template v-if="skill.isCertified">
-                        <view class="form-item">
-                          <text class="item-label">证书名称</text>
-                          <input
-                            class="form-input"
-                            :value="skill.certificateName || ''"
-                            @input="(e) => updateArrayField(component.id, 'skills', index, 'certificateName', e.detail.value)"
-                            placeholder="请输入证书名称"
-                            placeholder-class="input-placeholder"
-                          />
-                        </view>
-
-                        <view class="form-item">
-                          <text class="item-label">获证日期</text>
-                          <picker
-                            class="form-input"
-                            mode="date"
-                            :value="skill.certificateDate || ''"
-                            @change="(e) => updateArrayField(component.id, 'skills', index, 'certificateDate', e.detail.value)"
-                          >
-                            <view class="picker-content">
-                              {{ skill.certificateDate || "选择获证日期" }}
-                            </view>
-                          </picker>
-                        </view>
-                      </template>
                     </view>
                   </view>
 
                   <button class="add-section-btn" @click="addArrayItem(component.id, 'skills', {
                     name: '',
                     proficiencyPercent: 0,
-                    experienceYears: 0,
-                    level: '中级',
-                    category: '',
-                    description: '',
-                    tags: '',
-                    isCertified: false,
-                    certificateName: '',
-                    certificateDate: ''
+                    description: ''
                   })">
                     <text class="icon-add">+</text>
                     添加技能
-                  </button>
-                </view>
-              </view>
-            </template>
-
-            <!-- 自我评价 -->
-            <template v-if="getComponentKey(component) === 'SelfEvaluation'">
-              <view class="form-section-card">
-                <view class="form-section-header">
-                  <text class="section-title">{{ component.name || "自我评价" }}</text>
-                  <view class="section-divider"></view>
-                </view>
-
-                <!-- 多评价内容 -->
-                <view class="evaluations-list">
-                  <view
-                    v-for="(evaluation, index) in component.props.evaluations || []"
-                    :key="evaluation.id || index"
-                    class="evaluation-item"
-                  >
-                    <view class="item-header">
-                      <text class="item-title">评价 {{ index + 1 }}</text>
-                      <text
-                        v-if="(component.props.evaluations || []).length > 1"
-                        class="remove-btn"
-                        @click="removeArrayItem(component.id, 'evaluations', index)"
-                      >
-                        删除
-                      </text>
-                    </view>
-
-                    <view class="dynamic-form-grid">
-                      <view class="form-item full-width">
-                        <text class="item-label">自我评价</text>
-                        <textarea
-                          class="form-textarea large"
-                          :value="evaluation.content || ''"
-                          @input="(e) => updateArrayField(component.id, 'evaluations', index, 'content', e.detail.value)"
-                          placeholder="请描述您的个人优势、工作态度和职业目标..."
-                          placeholder-class="input-placeholder"
-                        />
-                      </view>
-                    </view>
-                  </view>
-
-                  <button class="add-section-btn" @click="addArrayItem(component.id, 'evaluations', {
-                    content: ''
-                  })">
-                    <text class="icon-add">+</text>
-                    添加评价
                   </button>
                 </view>
               </view>
@@ -1241,17 +455,15 @@
         </view>
       </scroll-view>
 
-      <!-- 右侧/底部预览区域 -->
+      <!-- 右侧预览区域 -->
       <view class="preview-section fixed-preview" :style="previewSectionStyle">
         <view class="preview-container">
           <view class="preview-header">
             <text class="preview-title">简历预览</text>
-            <view class="preview-actions">
-              <button class="preview-action-btn" @click="refreshPreviewEdit">
-                <text class="action-icon">🔄</text>
-                <text class="action-text">刷新</text>
-              </button>
-            </view>
+            <button class="preview-action-btn" @click="refreshPreviewEdit">
+              <text class="action-icon">🔄</text>
+              <text class="action-text">刷新</text>
+            </button>
           </view>
 
           <!-- 动态模板引擎渲染 -->
@@ -1269,10 +481,10 @@
       </view>
     </view>
 
-    <!-- 编辑模式操作按钮区域 -->
+    <!-- 编辑模式操作按钮 -->
     <view class="action-buttons-edit">
-      <button class="reset-btn" @click="handleReset" :disabled="loading">重置修改</button>
       <button class="save-btn" @click="handleSave" :disabled="loading">保存简历</button>
+      <button class="back-btn" @click="switchToViewMode" :disabled="loading">返回查看</button>
     </view>
   </view>
 
@@ -1286,16 +498,21 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import DynamicResumesRenderer from "@/components/DynamicResumesRenderer.vue";
 import ResumesAPI from "@/api/resumes";
 
 // 当前模式：view（查看模式）、edit（编辑模式）
 const currentMode = ref("view");
+const loading = ref(false);
+const resumeId = ref(null);
+const templateId = ref(null);
+const showShareModal = ref(false);
+const qrcodeUrl = ref("");
+const dynamicResumesRenderer = ref(null);
 
 // 查看模式数据
-const loading = ref(false);
 const resumeData = ref({
   id: null,
   createdAt: null,
@@ -1310,12 +527,6 @@ const resumeData = ref({
   components: [],
 });
 
-const resumeId = ref(null);
-const templateId = ref(null);
-const showShareModal = ref(false);
-const qrcodeUrl = ref("");
-const dynamicResumesRenderer = ref(null);
-
 // 编辑模式数据
 const hasLoadedData = ref(false);
 const editingData = ref({
@@ -1326,34 +537,16 @@ const editingData = ref({
   components: [],
 });
 
-const resumeConfig = ref({
-  templateId: null,
-  globalStyle: {},
-  globalLayout: {},
-  updatedAt: null,
-});
-
 const dynamicResumesRendererEdit = ref(null);
 
 // 响应式布局相关变量
 const screenWidth = ref(0);
-const screenHeight = ref(0);
 const isH5 = ref(false);
-const isApp = ref(false);
 const isWideScreen = ref(false);
-const formScrollTop = ref(0);
-
-// 安全区域变量
-const safeAreaTop = ref(0);
-const safeAreaBottom = ref(0);
 
 // 计算布局类名
 const layoutClass = computed(() => {
   if (currentMode.value !== "edit") return "";
-
-  if (isApp.value) {
-    return "app-layout"; // APP始终使用下侧布局
-  }
 
   if (isH5.value) {
     return isWideScreen.value ? "h5-wide-layout" : "h5-narrow-layout";
@@ -1362,43 +555,20 @@ const layoutClass = computed(() => {
   return "default-layout";
 });
 
-// 计算顶部偏移量
-const topOffset = computed(() => {
-  if (isApp.value) {
-    return `${safeAreaTop.value}px`;
-  } else if (isH5.value && isWideScreen.value) {
-    // H5宽屏模式下，给一个默认的顶部间距，避免内容贴着浏览器顶部
-    return "50px";
-  }
-  return "0px";
-});
-
-// 计算顶部偏移的像素值（用于高度计算）
-const topOffsetValue = computed(() => {
-  if (isApp.value) {
-    return safeAreaTop.value;
-  } else if (isH5.value && isWideScreen.value) {
-    return 20; // 20px
-  }
-  return 0;
-});
-
 // 计算表单区域样式
 const formSectionStyle = computed(() => {
   const bottomButtonHeight = "120rpx";
 
   if (isWideScreen.value && isH5.value) {
-    // 大屏幕时，表单占据左侧50%，高度减去底部按钮和顶部偏移
     return {
       width: "50%",
-      height: `calc(100vh - ${bottomButtonHeight} - ${topOffsetValue.value}px)`,
+      height: `calc(100vh - ${bottomButtonHeight})`,
       position: "fixed",
       left: "0",
-      top: topOffset.value,
+      top: "0",
       overflow: "hidden",
     };
   } else {
-    // 小屏幕时，表单占据整个宽度，高度50%减去底部按钮
     return {
       width: "100%",
       height: `calc(50% - ${bottomButtonHeight})`,
@@ -1415,19 +585,17 @@ const previewSectionStyle = computed(() => {
   const bottomButtonHeight = "120rpx";
 
   if (isWideScreen.value && isH5.value) {
-    // 大屏幕时，预览占据右侧50%，高度减去底部按钮和顶部偏移
     return {
       width: "50%",
-      height: `calc(100vh - ${bottomButtonHeight} - ${topOffsetValue.value}px)`,
+      height: `calc(100vh - ${bottomButtonHeight})`,
       position: "fixed",
       right: "0",
-      top: topOffset.value,
+      top: "0",
       borderLeft: "1px solid #e5e5e5",
       boxSizing: "border-box",
       overflow: "hidden",
     };
   } else {
-    // 小屏幕时，预览占据整个宽度，高度50%减去底部按钮
     return {
       width: "100%",
       height: `calc(50% - ${bottomButtonHeight})`,
@@ -1443,62 +611,16 @@ const previewSectionStyle = computed(() => {
 
 // 计算预览容器样式
 const previewContainerStyle = computed(() => {
-  // 预览头部高度
   const previewHeaderHeight = "60px";
-
-  if (isWideScreen.value && isH5.value) {
-    // 大屏幕时，预览容器高度减去头部高度
-    return {
-      height: `calc(100% - ${previewHeaderHeight})`,
-      overflowY: "auto",
-    };
-  } else {
-    // 小屏幕时，预览容器高度减去头部高度
-    return {
-      height: `calc(100% - ${previewHeaderHeight})`,
-      overflowY: "auto",
-    };
-  }
+  return {
+    height: `calc(100% - ${previewHeaderHeight})`,
+    overflowY: "auto",
+  };
 });
-
-// 共享的映射数据
-const themeMap = {
-  "light": "明亮",
-  "dark": "深色",
-  "modern": "现代",
-  "classic": "经典",
-  "academic": "学术",
-};
-
-const layoutMap = {
-  "single-column": "单列",
-  "two-column": "双列",
-  "three-column": "三列",
-  "creative": "创意",
-};
-
-const statusMap = {
-  0: "草稿",
-  1: "已发布",
-  2: "已归档",
-};
-
-const componentIconMap = {
-  "UserBasicInfo": "👤",
-  "JobIntention": "🎯",
-  "WorkExperience": "💼",
-  "EducationExperience": "🎓",
-  "SelfEvaluation": "💭",
-  "Skills": "⭐",
-  "ProjectExperience": "📁",
-  "CompanyExperience": "🏢",
-};
 
 // 编辑模式选项列表
 const genderOptions = ["男", "女"];
-const jobTypeOptions = ["全职", "兼职", "实习", "远程"];
 const degreeOptions = ["初中", "高中", "大专", "本科", "硕士", "博士"];
-const skillLevelOptions = ["入门", "初级", "中级", "高级", "专家"];
 
 // 查看模式计算属性
 const previewData = computed(() => {
@@ -1526,53 +648,19 @@ const getComponentKey = (component) => {
 
 const sortedComponents = computed(() => {
   if (!editingData.value?.components) return [];
-
-  const components = [...editingData.value.components];
-  const componentOrder = editingData.value.globalLayout?.componentOrder || [];
-
-  if (componentOrder.length === 0) {
-    return components;
-  }
-
-  const sorted = [];
-  const componentMap = {};
-
-  // 建立组件映射
-  components.forEach(component => {
-    const key = getComponentKey(component);
-    componentMap[key] = component;
-  });
-
-  // 按照顺序添加组件
-  componentOrder.forEach(key => {
-    if (componentMap[key]) {
-      sorted.push(componentMap[key]);
-      delete componentMap[key];
-    }
-  });
-
-  // 添加剩余组件
-  Object.values(componentMap).forEach(component => {
-    sorted.push(component);
-  });
-
-  return sorted;
+  return [...editingData.value.components];
 });
 
 const previewDataEdit = computed(() => {
-  // 处理组件数据，确保与渲染器期望的数据结构一致
-  const components = (editingData.value.components || []).map(component => {
-    // 确保每个组件都有正确的数据结构
-    return {
-      id: component.id,
-      componentId: component.componentId,
-      name: component.name,
-      key: component.key,
-      defaultConfig: component.defaultConfig || {},
-      props: component.props || {},
-      styles: component.styles || {},
-    };
-  });
+  const components = (editingData.value.components || []).map(component => ({
+    id: component.id,
+    componentId: component.componentId,
+    name: component.name,
+    key: component.key,
+    defaultConfig: component.defaultConfig || {},
+    props: component.props || {},
+    styles: component.styles || {},
+  }));
 
   return {
     id: editingData.value.id,
@@ -1583,72 +671,21 @@ const previewDataEdit = computed(() => {
   };
 });
 
-// 监听编辑数据变化，实时更新预览
-watch(editingData, () => {
-  // 编辑模式下数据变化时，可以触发预览更新
-  if (currentMode.value === "edit" && dynamicResumesRendererEdit.value) {
-    // 可以在这里添加预览更新逻辑
-    console.log("编辑数据已更新，预览将自动刷新");
-  }
-}, { deep: true });
-
 // 检测屏幕宽度变化
 const checkScreenWidth = () => {
   try {
     const systemInfo = uni.getSystemInfoSync();
     screenWidth.value = systemInfo.windowWidth;
-    screenHeight.value = systemInfo.windowHeight;
-
-    // 获取安全区域
-    safeAreaTop.value = systemInfo.safeAreaInsets?.top || systemInfo.statusBarHeight || 0;
-    safeAreaBottom.value = systemInfo.safeAreaInsets?.bottom || 0;
-
-    // 宽屏阈值设置为768px
     isWideScreen.value = screenWidth.value > 768;
-
-    // 检测平台
     const platform = systemInfo.platform?.toLowerCase() || "";
-    const appVersion = systemInfo.appVersion || "";
-
     isH5.value = platform.includes("h5") ||
-      (typeof window !== "undefined" && window.navigator) ||
-      appVersion.includes("HBuilder");
-    isApp.value = ["ios", "android"].includes(platform);
-
-    console.log("屏幕信息:", {
-      width: screenWidth.value,
-      height: screenHeight.value,
-      safeAreaTop: safeAreaTop.value,
-      safeAreaBottom: safeAreaBottom.value,
-      platform: platform,
-      appVersion: appVersion,
-      isH5: isH5.value,
-      isApp: isApp.value,
-      isWideScreen: isWideScreen.value,
-      windowHeight: systemInfo.windowHeight,
-      screenHeight: systemInfo.screenHeight,
-    });
+      (typeof window !== "undefined" && window.navigator);
   } catch (error) {
     console.error("获取屏幕信息失败:", error);
-    // 默认值
     screenWidth.value = 375;
-    screenHeight.value = 667;
-    safeAreaTop.value = 0;
-    safeAreaBottom.value = 0;
     isH5.value = true;
-    isApp.value = false;
     isWideScreen.value = false;
   }
-};
-
-// 监听屏幕旋转和尺寸变化
-const onResize = () => {
-  checkScreenWidth();
-};
-
-// 处理表单滚动
-const handleFormScroll = (e) => {
-  formScrollTop.value = e.detail.scrollTop;
 };
 
 // 模式切换方法
@@ -1689,10 +726,6 @@ const loadResumeData = async () => {
 
   try {
     resumeData.value = await ResumesAPI.getById(resumeId.value);
-
-    // 增加浏览数
-    await ResumesAPI.incrementViewCount(resumeId.value);
-
     console.log("简历详情加载完成:", resumeData.value);
   } catch (error) {
     console.error("加载简历详情失败:", error);
@@ -1706,22 +739,6 @@ const loadResumeData = async () => {
   } finally {
     loading.value = false;
   }
-};
-
-const getThemeName = (theme) => {
-  return themeMap[theme] || theme || "默认";
-};
-
-const getLayoutName = (layout) => {
-  return layoutMap[layout] || layout || "默认";
-};
-
-const getStatusText = (status) => {
-  return statusMap[status] || "未知";
-};
-
-const getComponentIcon = (key) => {
-  return componentIconMap[key] || "📄";
 };
 
 const handleBack = () => {
@@ -1846,23 +863,11 @@ const shareToWeChat = () => {
 
 const generateQRCode = async () => {
   const shareUrl = `${getBaseUrl()}/resume/share/${resumeId.value}`;
-
-  try {
-    // 这里可以调用生成二维码的接口
-    // 暂时使用模拟数据
-    qrcodeUrl.value = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(shareUrl);
-
-    uni.showToast({
-      title: "二维码生成成功",
-      icon: "success",
-    });
-  } catch (error) {
-    console.error("生成二维码失败:", error);
-    uni.showToast({
-      title: "生成失败",
-      icon: "error",
-    });
-  }
+  qrcodeUrl.value = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(shareUrl);
+  uni.showToast({
+    title: "二维码生成成功",
+    icon: "success",
+  });
 };
 
 const copyShareLink = () => {
@@ -1886,32 +891,7 @@ const copyShareLink = () => {
   });
 };
 
-const exportAsImage = () => {
-  uni.showModal({
-    title: "导出为图片",
-    content: "确定要将简历导出为图片吗？",
-    success: (res) => {
-      if (res.confirm) {
-        uni.showLoading({
-          title: "正在生成图片...",
-        });
-
-        // 这里可以调用截图或生成图片的接口
-        setTimeout(() => {
-          uni.hideLoading();
-          uni.showToast({
-            title: "图片已保存到相册",
-            icon: "success",
-          });
-          hideShareOptions();
-        }, 2000);
-      }
-    },
-  });
-};
-
 const getBaseUrl = () => {
-  // 返回基础URL，这里需要根据实际情况修改
   return "https://your-domain.com";
 };
 
@@ -1924,15 +904,6 @@ const initializeEditData = (data) => {
     globalLayout: data.globalLayout || {},
     components: data.components || [],
   };
-
-  // 更新简历配置
-  resumeConfig.value = {
-    templateId: data.templateId || null,
-    globalStyle: data.globalStyle || {},
-    globalLayout: data.globalLayout || {},
-    updatedAt: data.updatedAt || null,
-  };
-
   hasLoadedData.value = true;
 };
 
@@ -1942,40 +913,24 @@ const loadEditData = async () => {
   try {
     let response;
 
-    // 根据 resumeId 或 templateId 加载数据
     if (resumeId.value) {
-      console.log("加载已有的简历数据，resumeId:", resumeId.value);
       response = await ResumesAPI.getById(resumeId.value);
     } else if (templateId.value) {
-      console.log("基于模板创建新简历，templateId:", templateId.value);
       response = await ResumesAPI.getPreview(templateId.value);
     } else {
-      console.error("不应该执行到这里：resumeId和templateId都为空");
+      console.error("resumeId和templateId都为空");
       return;
     }
 
-    console.log("简历数据：" + JSON.stringify(response));
-    // 初始化数据
     initializeEditData(response);
-
     console.log("简历数据加载完成:", editingData.value);
 
   } catch (error) {
     console.error("加载简历数据失败:", error);
-
-    if (error.response && error.response.status === 404) {
-      uni.showToast({
-        title: "简历或模板不存在",
-        icon: "error",
-      });
-    } else {
-      uni.showToast({
-        title: "加载失败",
-        icon: "error",
-      });
-    }
-
-    // 延迟返回
+    uni.showToast({
+      title: "加载失败",
+      icon: "error",
+    });
     setTimeout(() => {
       uni.navigateBack();
     }, 2000);
@@ -1988,16 +943,8 @@ const updateComponentProp = (componentId, propName, value) => {
   const componentIndex = editingData.value.components.findIndex(c => c.id === componentId);
   if (componentIndex !== -1) {
     const component = editingData.value.components[componentIndex];
-
-    // 确保props对象存在
-    if (!component.props) {
-      component.props = {};
-    }
-
-    // 更新属性
+    if (!component.props) component.props = {};
     component.props[propName] = value;
-
-    // 触发响应式更新
     editingData.value.components.splice(componentIndex, 1, { ...component });
   }
 };
@@ -2006,26 +953,10 @@ const updateArrayField = (componentId, arrayPath, index, fieldName, value) => {
   const componentIndex = editingData.value.components.findIndex(c => c.id === componentId);
   if (componentIndex !== -1) {
     const component = editingData.value.components[componentIndex];
-
-    // 确保props对象存在
-    if (!component.props) {
-      component.props = {};
-    }
-
-    // 确保数组存在
-    if (!component.props[arrayPath]) {
-      component.props[arrayPath] = [];
-    }
-
-    // 确保数组项存在
-    if (!component.props[arrayPath][index]) {
-      component.props[arrayPath][index] = {};
-    }
-
-    // 更新数组项字段
+    if (!component.props) component.props = {};
+    if (!component.props[arrayPath]) component.props[arrayPath] = [];
+    if (!component.props[arrayPath][index]) component.props[arrayPath][index] = {};
     component.props[arrayPath][index][fieldName] = value;
-
-    // 触发响应式更新
     editingData.value.components.splice(componentIndex, 1, { ...component });
   }
 };
@@ -2034,24 +965,12 @@ const addArrayItem = (componentId, arrayPath, defaultValue = {}) => {
   const componentIndex = editingData.value.components.findIndex(c => c.id === componentId);
   if (componentIndex !== -1) {
     const component = editingData.value.components[componentIndex];
-
-    // 确保props对象存在
-    if (!component.props) {
-      component.props = {};
-    }
-
-    // 确保数组存在
-    if (!component.props[arrayPath]) {
-      component.props[arrayPath] = [];
-    }
-
-    // 添加新项
+    if (!component.props) component.props = {};
+    if (!component.props[arrayPath]) component.props[arrayPath] = [];
     component.props[arrayPath].push({
       id: Date.now() + Math.random(),
       ...defaultValue,
     });
-
-    // 触发响应式更新
     editingData.value.components.splice(componentIndex, 1, { ...component });
   }
 };
@@ -2060,12 +979,8 @@ const removeArrayItem = (componentId, arrayPath, index) => {
   const componentIndex = editingData.value.components.findIndex(c => c.id === componentId);
   if (componentIndex !== -1) {
     const component = editingData.value.components[componentIndex];
-
     if (component.props && component.props[arrayPath] && component.props[arrayPath].length > index) {
-      // 删除指定索引的项
       component.props[arrayPath].splice(index, 1);
-
-      // 触发响应式更新
       editingData.value.components.splice(componentIndex, 1, { ...component });
     }
   }
@@ -2075,22 +990,6 @@ const getPickerIndex = (value, options) => {
   if (!value || !options) return 0;
   const index = options.indexOf(value);
   return index >= 0 ? index : 0;
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return "未知";
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("zh-CN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch (error) {
-    return dateString;
-  }
 };
 
 const getFormData = () => {
@@ -2112,7 +1011,6 @@ const getFormData = () => {
 };
 
 const handleSave = async () => {
-  // 检查是否已加载数据
   if (!hasLoadedData.value) {
     uni.showToast({
       title: "请先选择模板或简历",
@@ -2126,12 +1024,9 @@ const handleSave = async () => {
     const formData = getFormData();
     console.log("保存简历数据:", formData);
 
-    // 调用API保存
     if (resumeId.value) {
-      // 更新已有简历
       await ResumesAPI.edit(formData);
     } else {
-      // 创建新简历
       await ResumesAPI.add(formData);
     }
 
@@ -2155,34 +1050,7 @@ const handleSave = async () => {
   }
 };
 
-const handleReset = () => {
-  // 检查是否已加载数据
-  if (!hasLoadedData.value) {
-    uni.showToast({
-      title: "请先选择模板或简历",
-      icon: "none",
-    });
-    return;
-  }
-
-  uni.showModal({
-    title: "确认重置",
-    content: "确定要重置所有修改吗？",
-    success: (res) => {
-      if (res.confirm) {
-        // 重新加载数据
-        loadEditData();
-        uni.showToast({
-          title: "已重置",
-          icon: "success",
-        });
-      }
-    },
-  });
-};
-
 const refreshPreviewEdit = () => {
-  // 检查是否已加载数据
   if (!hasLoadedData.value) {
     uni.showToast({
       title: "请先选择模板或简历",
@@ -2198,50 +1066,15 @@ const refreshPreviewEdit = () => {
   });
 };
 
-const downloadResumeEdit = () => {
-  // 检查是否已加载数据
-  if (!hasLoadedData.value) {
-    uni.showToast({
-      title: "请先选择模板或简历",
-      icon: "none",
-    });
-    return;
-  }
-
-  uni.showModal({
-    title: "下载简历",
-    content: "确定要下载当前简历吗？",
-    success: (res) => {
-      if (res.confirm) {
-        uni.showToast({
-          title: "开始下载",
-          icon: "success",
-        });
-      }
-    },
-  });
-};
-
 // 生命周期
 onMounted(() => {
   checkScreenWidth();
-  // 监听窗口尺寸变化（仅H5环境）
-  if (isH5.value) {
-    window.addEventListener("resize", onResize);
-  }
-});
-
-onUnmounted(() => {
-  if (isH5.value) {
-    window.removeEventListener("resize", onResize);
-  }
 });
 
 onLoad((options) => {
   console.log("页面参数:", options);
-  checkScreenWidth(); // 初始化时检查一次
+  checkScreenWidth();
 
-  // 根据参数决定进入哪种模式
   if (options.resumeId) {
     resumeId.value = options.resumeId;
     if (options.mode === "edit") {
@@ -2256,7 +1089,6 @@ onLoad((options) => {
     currentMode.value = "edit";
     loadEditData();
   } else {
-    // 如果没有参数，默认返回
     uni.showToast({
       title: "参数错误",
       icon: "error",
@@ -2268,9 +1100,8 @@ onLoad((options) => {
 });
 
 onShow(() => {
-  checkScreenWidth(); // 每次显示时检查一次
+  checkScreenWidth();
 
-  // 页面显示时检查是否需要重新加载
   if (currentMode.value === "view" && resumeId.value && !resumeData.value.id) {
     loadResumeData();
   } else if (currentMode.value === "edit" && (resumeId.value || templateId.value) && !hasLoadedData.value) {
@@ -2288,7 +1119,6 @@ onShow(() => {
   flex-direction: column;
 }
 
-/* 顶部操作栏 */
 .view-header {
   background: $background-color-white;
   padding: 0 $padding-small;
@@ -2304,51 +1134,42 @@ onShow(() => {
   z-index: $z-index-modal;
   flex-shrink: 0;
 
-  .header-left {
-    flex: 1;
+  .header-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    background: transparent;
+    border: none;
+    padding: 0;
 
-    .back-btn {
-      display: flex;
-      align-items: center;
-      gap: 8rpx;
-      background: transparent;
-      border: none;
-      padding: 0;
+    .back-icon {
+      font-size: $font-size-large;
+      color: $text-secondary;
+    }
 
-      .back-icon {
-        font-size: $font-size-large;
-        color: $text-secondary;
-      }
+    .back-text {
+      font-size: $font-size-base;
+      color: $text-secondary;
+    }
 
-      .back-text {
-        font-size: $font-size-base;
-        color: $text-secondary;
-      }
-
-      &:active {
-        opacity: 0.8;
-      }
+    &:active {
+      opacity: 0.8;
     }
   }
 
-  .header-center {
-    flex: 2;
+  .header-title {
+    font-size: $font-size-medium;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    flex: 1;
     text-align: center;
-
-    .header-title {
-      font-size: $font-size-medium;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
-    }
   }
 
   .header-right {
-    flex: 1;
     display: flex;
     justify-content: flex-end;
-    gap: 16rpx;
 
-    .header-action-btn {
+    .action-btn {
       width: 40px;
       height: 40px;
       display: flex;
@@ -2362,15 +1183,9 @@ onShow(() => {
         font-size: $font-size-medium;
       }
 
-      &.share-btn {
-        .action-icon {
-          color: $primary-color;
-        }
-      }
-
       &.edit-btn {
         .action-icon {
-          color: $success-color;
+          color: $primary-color;
         }
       }
 
@@ -2381,7 +1196,6 @@ onShow(() => {
   }
 }
 
-/* 简历预览内容区域 */
 .preview-content {
   flex: 1;
   background: $background-color-white;
@@ -2389,7 +1203,6 @@ onShow(() => {
   box-sizing: border-box;
 }
 
-/* 底部操作按钮栏 */
 .view-footer {
   background: $background-color-white;
   padding: $padding-mini $padding-small;
@@ -2437,10 +1250,18 @@ onShow(() => {
         background: color.adjust($success-color, $alpha: -0.9);
       }
     }
+
+    &.share-btn {
+      background: rgba($primary-color, 0.1);
+      color: $primary-color;
+
+      &:active {
+        background: rgba($primary-color, 0.2);
+      }
+    }
   }
 }
 
-/* 自定义分享弹窗 */
 .custom-modal-overlay {
   position: fixed;
   top: 0;
@@ -2540,11 +1361,6 @@ onShow(() => {
           background: $warning-color;
           color: $background-color-white;
         }
-
-        &.image {
-          background: $info-color;
-          color: $background-color-white;
-        }
       }
 
       .option-text {
@@ -2594,18 +1410,7 @@ onShow(() => {
   }
 }
 
-/* ==================== 安全区域样式 ==================== */
-.safe-area-top {
-  background: transparent;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* ==================== 编辑模式响应式布局 ==================== */
+/* ==================== 编辑模式样式 ==================== */
 .page-container {
   min-height: 100vh;
   background: $background-color;
@@ -2616,17 +1421,16 @@ onShow(() => {
   box-sizing: border-box;
 }
 
-/* 主要内容区域 */
 .main-content {
   flex: 1;
   position: relative;
   width: 100%;
-  height: calc(100vh - 120rpx); /* 减去底部按钮高度 */
+  height: calc(100vh - 120rpx);
   overflow: hidden;
   box-sizing: border-box;
 }
 
-/* 默认布局（适用于未知平台或默认情况） */
+/* 默认布局 */
 .default-layout {
   .form-section {
     width: 100%;
@@ -2651,7 +1455,7 @@ onShow(() => {
   }
 }
 
-/* H5环境 - 窄屏布局（预览固定在底部） */
+/* H5窄屏布局 */
 .h5-narrow-layout {
   .form-section {
     width: 100%;
@@ -2676,11 +1480,11 @@ onShow(() => {
   }
 }
 
-/* H5环境 - 宽屏布局（预览固定在右侧） */
+/* H5宽屏布局 */
 .h5-wide-layout {
   .form-section {
     width: 50%;
-    height: calc(100vh - 120rpx); /* 减去底部按钮高度 */
+    height: calc(100vh - 120rpx);
     position: fixed;
     left: 0;
     top: 0;
@@ -2693,7 +1497,7 @@ onShow(() => {
 
   .preview-section.fixed-preview {
     width: 50%;
-    height: calc(100vh - 120rpx); /* 减去底部按钮高度 */
+    height: calc(100vh - 120rpx);
     position: fixed;
     right: 0;
     top: 0;
@@ -2707,87 +1511,12 @@ onShow(() => {
   }
 }
 
-/* APP环境布局（预览固定在底部） */
-.app-layout {
-  .form-section {
-    width: 100%;
-    height: 50%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 10;
-    background: $background-color-white;
-    border-bottom: 1px solid $border-color-lighter;
-    overflow-y: auto;
-  }
-
-  .preview-section.fixed-preview {
-    width: 100%;
-    height: 50%;
-    position: fixed;
-    left: 0;
-    bottom: 60px; /* 底部按钮高度 */
-    z-index: 10;
-    background: $background-color-white;
-    border-top: 1px solid $border-color-lighter;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-/* 表单区域 */
 .form-section {
   overflow: hidden;
 
   .form-container {
     padding: $padding-small;
     padding-bottom: 180rpx;
-  }
-}
-
-.resume-info-card {
-  background: $background-color-white;
-  border-radius: $border-radius;
-  padding: $padding-small;
-  margin-bottom: $margin-base * 0.75;
-  box-shadow: $box-shadow-light;
-  border: 1rpx solid $border-color-lighter;
-
-  .info-title {
-    display: block;
-    font-size: $font-size-medium;
-    font-weight: $font-weight-semibold;
-    color: $text-primary;
-    margin-bottom: $margin-mini;
-  }
-
-  .info-content {
-    display: grid;
-    gap: 16rpx;
-  }
-
-  .info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12rpx 0;
-    border-bottom: 1rpx solid $background-color;
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    .item-label {
-      font-size: $font-size-small;
-      color: $text-secondary;
-    }
-
-    .item-value {
-      font-size: $font-size-small;
-      color: $text-primary;
-      font-weight: $font-weight-medium;
-    }
   }
 }
 
@@ -2818,23 +1547,15 @@ onShow(() => {
   }
 }
 
-/* 动态表单网格响应式调整 */
 .dynamic-form-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 24rpx;
 
-  // 在H5宽屏布局下使用两列
   .h5-wide-layout & {
     @media (min-width: 769px) {
       grid-template-columns: repeat(2, 1fr);
     }
-  }
-
-  // 在APP和H5窄屏布局下始终使用单列
-  .h5-narrow-layout &,
-  .app-layout & {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -2886,7 +1607,6 @@ onShow(() => {
     }
   }
 
-  .salary-input,
   .proficiency-input {
     display: flex;
     align-items: center;
@@ -2896,23 +1616,10 @@ onShow(() => {
       flex: 1;
     }
 
-    .salary-unit,
     .proficiency-unit {
       font-size: $font-size-base;
       color: $text-secondary;
       min-width: 40rpx;
-    }
-  }
-
-  .checkbox-group {
-    margin-top: 10rpx;
-
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 10rpx;
-      font-size: $font-size-base;
-      color: $text-primary;
     }
   }
 
@@ -2931,25 +1638,15 @@ onShow(() => {
       border-color: $primary-color;
       box-shadow: $input-focus-shadow;
     }
-
-    &.large {
-      min-height: 180rpx;
-    }
   }
 }
 
-.intentions-list,
-.education-list,
 .experience-list,
-.project-list,
-.skills-list,
-.evaluations-list {
-  .intention-item,
-  .education-item,
+.education-list,
+.skills-list {
   .experience-item,
-  .project-item,
-  .skill-item,
-  .evaluation-item {
+  .education-item,
+  .skill-item {
     background: $background-color;
     border-radius: $border-radius-small;
     padding: 24rpx;
@@ -3011,7 +1708,6 @@ onShow(() => {
   }
 }
 
-/* 预览区域 */
 .preview-section.fixed-preview {
   display: flex;
   flex-direction: column;
@@ -3044,43 +1740,32 @@ onShow(() => {
       line-height: 1.4;
     }
 
-    .preview-actions {
+    .preview-action-btn {
       display: flex;
-      gap: 8rpx;
-      flex-wrap: nowrap;
+      align-items: center;
+      gap: 4rpx;
+      background: $background-color;
+      border: 1rpx solid $border-color;
+      border-radius: $border-radius-small;
+      padding: 8rpx 12rpx;
+      font-size: $font-size-extra-small;
+      color: $text-secondary;
+      white-space: nowrap;
+      transition: background-color $transition-fast $ease-in-out;
+      height: 32px;
+      min-height: 32px;
+      box-sizing: border-box;
 
-      .preview-action-btn {
-        display: flex;
-        align-items: center;
-        gap: 4rpx;
-        background: $background-color;
-        border: 1rpx solid $border-color;
-        border-radius: $border-radius-small;
-        padding: 8rpx 12rpx;
+      .action-icon {
+        font-size: $font-size-small;
+      }
+
+      .action-text {
         font-size: $font-size-extra-small;
-        color: $text-secondary;
-        white-space: nowrap;
-        transition: background-color $transition-fast $ease-in-out;
-        height: 32px;
-        min-height: 32px;
-        box-sizing: border-box;
+      }
 
-        .action-icon {
-          font-size: $font-size-small;
-        }
-
-        .action-text {
-          font-size: $font-size-extra-small;
-        }
-
-        &:active {
-          background: $border-color-lighter;
-        }
-
-        &.mode-switch-btn {
-          background: $success-color;
-          color: $background-color-white;
-        }
+      &:active {
+        background: $border-color-lighter;
       }
     }
   }
@@ -3089,7 +1774,7 @@ onShow(() => {
     flex: 1;
     overflow-y: auto;
     width: 100%;
-    height: calc(100% - 48px); /* 减去头部高度 */
+    height: calc(100% - 48px);
 
     .resume-preview {
       padding: $padding-small;
@@ -3100,7 +1785,6 @@ onShow(() => {
   }
 }
 
-/* 编辑模式操作按钮区域 */
 .action-buttons-edit {
   background: $background-color-white;
   padding: $padding-mini $padding-small;
@@ -3123,9 +1807,8 @@ onShow(() => {
     padding: 8rpx;
   }
 
-  .reset-btn,
   .save-btn,
-  .mode-switch-btn {
+  .back-btn {
     flex: 1;
     height: 44px;
     min-height: 44px;
@@ -3136,7 +1819,6 @@ onShow(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6rpx;
     transition: opacity $transition-fast $ease-in-out;
     white-space: nowrap;
     padding: 0 8rpx;
@@ -3147,29 +1829,18 @@ onShow(() => {
     }
   }
 
-  .reset-btn {
-    background: $background-color;
-    color: $text-secondary;
-  }
-
   .save-btn {
     background: $primary-color;
     color: $background-color-white;
   }
 
-  .mode-switch-btn {
-    background: color.adjust($primary-color, $saturation: 20%);
-    color: $background-color-white;
-    flex: 0.5;
-
-    @media (max-width: 768px) {
-      flex: 1;
-    }
+  .back-btn {
+    background: $background-color;
+    color: $text-secondary;
   }
 }
 
 /* ==================== 共享样式 ==================== */
-/* 加载状态 */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -3219,46 +1890,19 @@ onShow(() => {
   font-weight: $font-weight-medium;
 }
 
-/* 输入框占位符样式 */
-.input-placeholder {
-  color: $text-placeholder;
-  font-size: $font-size-base;
-}
-
-/* ==================== 屏幕旋转和尺寸变化的过渡效果 ==================== */
-.main-content {
-  transition: flex-direction 0.3s ease;
-}
-
-.preview-section,
-.form-section {
-  transition: border 0.3s ease;
-}
-
-/* ==================== 响应式通用调整 ==================== */
+/* ==================== 响应式调整 ==================== */
 @media (max-width: 768px) {
-  // 查看模式顶部操作栏响应式调整
   .view-header {
     height: 50px;
     padding: 0 $padding-mini;
 
-    .header-left {
-      .back-btn {
-        .back-text {
-          display: none;
-        }
-      }
-    }
-
-    .header-right {
-      .header-action-btn {
-        width: 36px;
-        height: 36px;
+    .header-back-btn {
+      .back-text {
+        display: none;
       }
     }
   }
 
-  // 查看模式底部操作栏响应式调整
   .view-footer {
     padding: $padding-mini $padding-mini;
     gap: 12rpx;
@@ -3270,18 +1914,6 @@ onShow(() => {
     }
   }
 
-  // 自定义分享弹窗响应式调整
-  .custom-modal {
-    width: 95%;
-    max-width: 95%;
-
-    .share-options {
-      grid-template-columns: repeat(2, 1fr);
-      gap: $margin-mini;
-    }
-  }
-
-  // 编辑模式预览头部小屏幕调整
   .preview-section.fixed-preview .preview-header {
     padding: 6rpx 12rpx;
     min-height: 44px;
@@ -3291,24 +1923,18 @@ onShow(() => {
       font-size: $font-size-small;
     }
 
-    .preview-actions {
-      gap: 6rpx;
+    .preview-action-btn {
+      padding: 6rpx 10rpx;
 
-      .preview-action-btn {
-        padding: 6rpx 10rpx;
-
-        .action-text {
-          display: none;
-        }
+      .action-text {
+        display: none;
       }
     }
   }
 }
 
-/* 宽屏时调整预览区域头部 */
 @media (min-width: 769px) {
   .preview-section.fixed-preview .preview-header {
-    // 大屏时已经优化，使用更紧凑的设计
     .preview-actions {
       .preview-action-btn {
         .action-text {
@@ -3316,131 +1942,6 @@ onShow(() => {
         }
       }
     }
-  }
-
-  // 大屏时表单区域增加内边距
-  .form-section .form-container {
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-  }
-}
-
-/* 超小屏幕优化 */
-@media (max-width: 320px) {
-  .view-header {
-    .header-title {
-      font-size: $font-size-small;
-    }
-  }
-
-  .view-footer {
-    .footer-btn {
-      .footer-text {
-        font-size: 18rpx;
-      }
-    }
-  }
-
-  .preview-section.fixed-preview .preview-header {
-    .preview-title {
-      font-size: $font-size-small;
-    }
-
-    .preview-actions {
-      .preview-action-btn {
-        padding: 4rpx 8rpx;
-
-        .action-icon {
-          margin: 0;
-        }
-
-        .action-text {
-          display: none;
-        }
-      }
-    }
-  }
-
-  .action-buttons-edit {
-    .reset-btn,
-    .save-btn,
-    .mode-switch-btn {
-      font-size: $font-size-extra-small;
-      padding: 0 4rpx;
-    }
-  }
-}
-
-/* 中等屏幕优化 */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .preview-section.fixed-preview .preview-header {
-    padding: 10rpx 16rpx;
-
-    .preview-title {
-      font-size: $font-size-base * 1.05;
-    }
-
-    .preview-actions {
-      .preview-action-btn {
-        padding: 10rpx 16rpx;
-
-        .action-text {
-          font-size: $font-size-small;
-        }
-      }
-    }
-  }
-}
-
-/* 大屏幕优化 */
-@media (min-width: 1025px) {
-  .preview-section.fixed-preview .preview-header {
-    padding: 12rpx 20rpx;
-
-    .preview-title {
-      font-size: $font-size-medium;
-    }
-
-    .preview-actions {
-      .preview-action-btn {
-        padding: 12rpx 20rpx;
-
-        .action-text {
-          font-size: $font-size-base;
-        }
-      }
-    }
-  }
-}
-
-/* 确保在宽屏模式下，表单和预览区域不会遮挡顶部 */
-@media (min-width: 769px) {
-  .h5-wide-layout {
-    .form-section {
-      top: 20px;
-      height: calc(100vh - 120rpx - 20px);
-    }
-
-    .preview-section.fixed-preview {
-      top: 20px;
-      height: calc(100vh - 120rpx - 20px);
-    }
-  }
-}
-
-/* 确保在横屏模式下的显示 */
-@media (orientation: landscape) and (max-height: 500px) {
-  .h5-wide-layout,
-  .app-layout {
-    .form-section,
-    .preview-section.fixed-preview {
-      height: calc(100vh - 80px); /* 横屏时减少底部空间 */
-    }
-  }
-
-  .action-buttons-edit {
-    height: 50px;
-    min-height: 50px;
   }
 }
 </style>

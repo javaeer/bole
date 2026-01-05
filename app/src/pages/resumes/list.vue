@@ -118,6 +118,11 @@
           </view>
 
           <view class="resume-content">
+
+            <text class="template-name">
+              模板名称：{{resume.template.name}}
+            </text>
+
             <text class="section-count">
               包含 {{ resume.components?.length || 0 }} 个模块
             </text>
@@ -942,6 +947,14 @@ onReachBottom(() => {
 
   .resume-content {
     margin-bottom: $margin-base;
+
+    .template-name {
+      display: block;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      color: $text-primary;
+      margin-bottom: $margin-mini;
+    }
 
     .section-count {
       display: block;

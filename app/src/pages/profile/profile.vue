@@ -74,13 +74,13 @@
           </view>
         </view>
 
-        <!-- 公司里程 -->
-        <view class="stat-card" @click="handleCompanyExperiences">
-          <view class="stat-card-inner">
-            <text class="stat-icon">🏢</text>
-            <text class="stat-title">公司里程</text>
-          </view>
-        </view>
+<!--        &lt;!&ndash; 公司里程 &ndash;&gt;-->
+<!--        <view class="stat-card" @click="handleCompanyExperiences">-->
+<!--          <view class="stat-card-inner">-->
+<!--            <text class="stat-icon">🏢</text>-->
+<!--            <text class="stat-title">公司里程</text>-->
+<!--          </view>-->
+<!--        </view>-->
 
         <!-- 项目经验 -->
         <view class="stat-card" @click="handleProjectExperiences">

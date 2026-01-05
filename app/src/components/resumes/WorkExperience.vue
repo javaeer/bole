@@ -1,8 +1,11 @@
 <template>
-  <view :class="['work-experience', `layout-${layout}`, `theme-${theme}`]" :style="computedStyle">
-    <view class="section-header">
-      <text class="section-title">{{ title }}</text>
-      <view class="section-divider"></view>
+  <view
+    :class="['work-experience', `layout-${layout}`, `theme-${theme}`]"
+    :style="rootStyle"
+  >
+    <view class="section-header" :style="headerStyle">
+      <text class="section-title" :style="titleStyle">{{ title }}</text>
+      <view class="section-divider" :style="dividerStyle"></view>
     </view>
 
     <!-- 空状态 -->
@@ -14,56 +17,62 @@
     <!-- 工作经历列表 -->
     <view v-else class="experiences-list">
       <block v-for="(exp, index) in sortedExperiences" :key="exp.id || index">
-        <view class="experience-item" :style="itemStyle">
+        <view class="experience-item" :style="getItemStyle(exp, index)">
           <!-- 时间线布局 -->
           <view v-if="layout === 'timeline'" class="timeline-layout">
-            <view class="timeline-dot"></view>
-            <view v-if="index < sortedExperiences.length - 1" class="timeline-line"></view>
+            <view class="timeline-dot" :style="dotStyle"></view>
+            <view
+              v-if="index < sortedExperiences.length - 1"
+              class="timeline-line"
+              :style="lineStyle"
+            ></view>
 
-            <view class="experience-content">
+            <view class="experience-content" :style="contentStyle">
               <view class="company-header">
                 <view class="company-info">
-                  <text class="company-name">{{ exp.company }}</text>
-                  <text class="duration">
+                  <text class="company-name" :style="companyNameStyle">{{ exp.company }}</text>
+                  <text class="duration" :style="durationStyle">
                     {{ formatDate(exp.startDate) }} - {{ exp.endDate ? formatDate(exp.endDate) : '至今' }}
                     <text v-if="exp.duration"> ({{ exp.duration }})</text>
                   </text>
                 </view>
-                <text class="position">{{ exp.position }}</text>
+                <text class="position" :style="positionStyle">{{ exp.position }}</text>
               </view>
 
-              <view v-if="exp.department && showDepartment" class="department">
+              <view v-if="exp.department && showDepartment" class="department" :style="departmentStyle">
                 <text class="department-label">部门：</text>
                 <text class="department-value">{{ exp.department }}</text>
               </view>
 
               <view v-if="exp.description && showWorkContent" class="experience-desc">
-                <text class="desc-text">{{ exp.description }}</text>
+                <text class="desc-text" :style="descStyle">{{ exp.description }}</text>
               </view>
 
               <!-- 工作成就 -->
               <view v-if="showAchievements && exp.achievements && exp.achievements.length > 0" class="achievements">
-                <text class="achievements-title">主要成就：</text>
+                <text class="achievements-title" :style="achievementsTitleStyle">主要成就：</text>
                 <view class="achievements-list">
                   <view
                     v-for="(achievement, aIndex) in exp.achievements"
                     :key="aIndex"
                     class="achievement-item"
+                    :style="achievementItemStyle"
                   >
-                    <text class="achievement-bullet">•</text>
-                    <text class="achievement-text">{{ achievement }}</text>
+                    <text class="achievement-bullet" :style="bulletStyle">•</text>
+                    <text class="achievement-text" :style="achievementTextStyle">{{ achievement }}</text>
                   </view>
                 </view>
               </view>
 
               <!-- 所用技能 -->
               <view v-if="showSkills && exp.skills && exp.skills.length > 0" class="skills-tags">
-                <text class="skills-title">使用技能：</text>
+                <text class="skills-title" :style="skillsTitleStyle">使用技能：</text>
                 <view class="skills-container">
                   <text
                     v-for="(skill, sIndex) in exp.skills"
                     :key="sIndex"
                     class="skill-tag"
+                    :style="tagStyle"
                   >
                     {{ skill }}
                   </text>
@@ -74,48 +83,50 @@
 
           <!-- 卡片布局 -->
           <view v-else class="card-layout">
-            <view class="experience-card">
+            <view class="experience-card" :style="cardStyle">
               <view class="card-header">
-                <text class="company-name">{{ exp.company }}</text>
-                <text class="position">{{ exp.position }}</text>
+                <text class="company-name" :style="companyNameStyle">{{ exp.company }}</text>
+                <text class="position" :style="positionStyle">{{ exp.position }}</text>
               </view>
 
-              <view class="card-meta">
-                <text class="duration">
+              <view class="card-meta" :style="metaStyle">
+                <text class="duration" :style="durationStyle">
                   {{ formatDate(exp.startDate) }} - {{ exp.endDate ? formatDate(exp.endDate) : '至今' }}
                 </text>
-                <text v-if="exp.department && showDepartment" class="department">
+                <text v-if="exp.department && showDepartment" class="department" :style="departmentTagStyle">
                   {{ exp.department }}
                 </text>
               </view>
 
               <view v-if="exp.description && showWorkContent" class="card-desc">
-                <text class="desc-text">{{ exp.description }}</text>
+                <text class="desc-text" :style="descStyle">{{ exp.description }}</text>
               </view>
 
               <!-- 卡片布局下的成就 -->
-              <view v-if="showAchievements && exp.achievements && exp.achievements.length > 0" class="card-achievements">
-                <text class="achievements-title">主要成就：</text>
+              <view v-if="showAchievements && exp.achievements && exp.achievements.length > 0" class="card-achievements" :style="achievementsStyle">
+                <text class="achievements-title" :style="achievementsTitleStyle">主要成就：</text>
                 <view class="achievements-list">
                   <view
                     v-for="(achievement, aIndex) in exp.achievements"
                     :key="aIndex"
                     class="achievement-item"
+                    :style="achievementItemStyle"
                   >
-                    <text class="achievement-bullet">•</text>
-                    <text class="achievement-text">{{ achievement }}</text>
+                    <text class="achievement-bullet" :style="bulletStyle">•</text>
+                    <text class="achievement-text" :style="achievementTextStyle">{{ achievement }}</text>
                   </view>
                 </view>
               </view>
 
               <!-- 卡片布局下的技能 -->
-              <view v-if="showSkills && exp.skills && exp.skills.length > 0" class="card-skills">
-                <text class="skills-title">使用技能：</text>
+              <view v-if="showSkills && exp.skills && exp.skills.length > 0" class="card-skills" :style="skillsStyle">
+                <text class="skills-title" :style="skillsTitleStyle">使用技能：</text>
                 <view class="skills-container">
                   <text
                     v-for="(skill, sIndex) in exp.skills"
                     :key="sIndex"
                     class="skill-tag"
+                    :style="tagStyle"
                   >
                     {{ skill }}
                   </text>
@@ -137,16 +148,85 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
+  globalStyle: {
+    type: Object,
+    default: () => ({})
+  },
   theme: {
     type: String,
-    default: 'modern'
+    default: 'light'
+  },
+  style: {
+    type: Object,
+    default: () => ({})
   }
 })
 
-// 提取配置
+// 🚀 提取配置 - 正确接收样式
 const componentProps = computed(() => props.component?.props || {})
-const componentStyles = computed(() => props.component?.styles || {})
+const componentStyles = computed(() => {
+  // 合并传入的样式：组件自定义样式 + 全局传入样式
+  const compStyles = props.component?.styles || {}
+  const globalStyles = props.globalStyle || {}
+  const styleProp = props.style || {}
+
+  return {
+    // CSS变量继承
+    ...globalStyles,
+    // 组件自定义样式（如果有）
+    ...compStyles,
+    // 内联样式（来自动态渲染器）
+    ...styleProp
+  }
+})
 const defaultConfig = computed(() => props.component?.defaultConfig || {})
+
+// 🚀 根元素样式
+const rootStyle = computed(() => {
+  const style = componentStyles.value
+
+  // 基础容器样式
+  const baseStyle = {
+    marginBottom: style.marginBottom || style.spacing?.sectionMargin || '40rpx',
+    padding: style.padding || '0rpx',
+    background: style.backgroundColor || 'transparent'
+  }
+
+  // CSS变量
+  const cssVariables = {
+    '--primary-color': style.primaryColor || '#2c3e50',
+    '--secondary-color': style.secondaryColor || '#2c3e50',
+    '--accent-color': style.accentColor || '#2c3e50',
+    '--text-color': style.textColor || '#333333',
+    '--font-family': style.fontFamily || "'Times New Roman', serif",
+    '--font-size-body': style.fontSizes?.body ? `${style.fontSizes.body}px` : '16px',
+    '--font-size-h1': style.fontSizes?.h1 ? `${style.fontSizes.h1}px` : '36px',
+    '--line-height': style.spacing?.lineHeight || '1.8'
+  }
+
+  return {
+    ...cssVariables,
+    ...baseStyle,
+    // 允许覆盖
+    ...style
+  }
+})
+
+// 🚀 标题相关样式
+const headerStyle = computed(() => ({
+  marginBottom: componentStyles.value.itemSpacing || '30rpx'
+}))
+
+const titleStyle = computed(() => ({
+  color: componentStyles.value.titleColor || 'var(--primary-color, #2c3e50)',
+  fontSize: componentStyles.value.titleFontSize || 'var(--font-size-h1, 36rpx)',
+  fontWeight: componentStyles.value.titleFontWeight || '600'
+}))
+
+const dividerStyle = computed(() => ({
+  background: componentStyles.value.timelineColor || 'var(--primary-color, #2c3e50)',
+  width: componentStyles.value.dividerWidth || '80rpx'
+}))
 
 // 工作经历数据
 const experiences = computed(() => {
@@ -217,13 +297,138 @@ const sortedExperiences = computed(() => {
   })
 })
 
-// 样式相关
-const computedStyle = computed(() => ({
-  '--primary-color': componentStyles.value.primaryColor || '#d4af37'
+// 🚀 项目项样式
+const getItemStyle = (exp, index) => {
+  const style = componentStyles.value
+
+  return {
+    marginBottom: style.itemSpacing || '24rpx',
+    transition: 'all 0.3s ease'
+  }
+}
+
+// 🚀 内容区域样式
+const contentStyle = computed(() => {
+  const style = componentStyles.value
+
+  return {
+    background: style.backgroundColor || '#ffffff',
+    borderRadius: style.borderRadius || '16rpx',
+    padding: style.padding || '30rpx',
+    border: style.border || '1rpx solid #f0f0f0'
+  }
+})
+
+// 🚀 卡片样式
+const cardStyle = computed(() => {
+  const style = componentStyles.value
+
+  return {
+    background: style.cardBackground || style.backgroundColor || '#ffffff',
+    borderRadius: style.borderRadius || '16rpx',
+    padding: style.padding || '30rpx',
+    border: style.border || '1rpx solid #f0f0f0'
+  }
+})
+
+// 🚀 文字样式
+const companyNameStyle = computed(() => ({
+  color: componentStyles.value.companyColor || '#333333',
+  fontSize: componentStyles.value.companyFontSize || '32rpx',
+  fontWeight: '600'
 }))
 
-const itemStyle = computed(() => ({
-  background: componentStyles.value.cardBackground || componentStyles.value.backgroundColor || '#ffffff'
+const positionStyle = computed(() => ({
+  color: componentStyles.value.positionColor || 'var(--primary-color, #2c3e50)',
+  fontSize: componentStyles.value.positionFontSize || '28rpx',
+  fontWeight: '500'
+}))
+
+const durationStyle = computed(() => ({
+  color: componentStyles.value.periodColor || '#999999',
+  fontSize: componentStyles.value.periodFontSize || '24rpx'
+}))
+
+const descStyle = computed(() => ({
+  color: componentStyles.value.descColor || '#666666',
+  fontSize: componentStyles.value.descFontSize || '26rpx',
+  lineHeight: componentStyles.value.descLineHeight || '1.6'
+}))
+
+const departmentStyle = computed(() => ({
+  color: componentStyles.value.departmentColor || '#666666',
+  fontSize: componentStyles.value.departmentFontSize || '24rpx'
+}))
+
+const departmentTagStyle = computed(() => ({
+  color: componentStyles.value.departmentColor || '#666666',
+  fontSize: componentStyles.value.departmentFontSize || '24rpx',
+  background: componentStyles.value.departmentBgColor || '#f5f7fa',
+  padding: '4rpx 12rpx',
+  borderRadius: '4rpx'
+}))
+
+const metaStyle = computed(() => ({
+  borderBottom: '1rpx solid #f0f0f0',
+  paddingBottom: '16rpx',
+  marginBottom: '16rpx'
+}))
+
+// 🚀 时间线样式
+const dotStyle = computed(() => ({
+  backgroundColor: componentStyles.value.timelineDotColor || 'var(--primary-color, #2c3e50)',
+  borderColor: componentStyles.value.timelineDotBorderColor || '#ffffff'
+}))
+
+const lineStyle = computed(() => ({
+  backgroundColor: componentStyles.value.timelineColor || '#e8e8e8'
+}))
+
+// 🚀 成就和技能样式
+const achievementsStyle = computed(() => ({
+  borderTop: '1rpx solid #f0f0f0',
+  paddingTop: '20rpx',
+  marginTop: '20rpx'
+}))
+
+const skillsStyle = computed(() => ({
+  borderTop: '1rpx solid #f0f0f0',
+  paddingTop: '20rpx',
+  marginTop: '20rpx'
+}))
+
+const achievementsTitleStyle = computed(() => ({
+  color: componentStyles.value.achievementsTitleColor || '#666666',
+  fontSize: componentStyles.value.achievementsTitleFontSize || '26rpx',
+  fontWeight: '500'
+}))
+
+const skillsTitleStyle = computed(() => ({
+  color: componentStyles.value.skillsTitleColor || '#666666',
+  fontSize: componentStyles.value.skillsTitleFontSize || '26rpx',
+  fontWeight: '500'
+}))
+
+const achievementItemStyle = computed(() => ({
+  marginBottom: componentStyles.value.achievementSpacing || '8rpx'
+}))
+
+const achievementTextStyle = computed(() => ({
+  color: componentStyles.value.achievementTextColor || '#555555',
+  fontSize: componentStyles.value.achievementTextFontSize || '24rpx',
+  lineHeight: componentStyles.value.achievementTextLineHeight || '1.5'
+}))
+
+const bulletStyle = computed(() => ({
+  color: componentStyles.value.bulletColor || 'var(--primary-color, #2c3e50)'
+}))
+
+const tagStyle = computed(() => ({
+  background: componentStyles.value.tagBackground || '#f5f7fa',
+  color: componentStyles.value.tagColor || '#555555',
+  fontSize: componentStyles.value.tagFontSize || '22rpx',
+  border: componentStyles.value.tagBorder || '1rpx solid #e4e7ed',
+  borderRadius: componentStyles.value.tagBorderRadius || '6rpx'
 }))
 
 // 格式化日期
@@ -237,38 +442,44 @@ const formatDate = (dateStr) => {
   return dateStr
 }
 
-// 组件加载日志
+// 🚀 调试日志
 console.log('工作经历组件加载完成', {
   工作经历数量: experiences.value.length,
   排序方式: orderBy.value,
   排序方向: orderDirection.value,
-  布局: layout.value
+  布局: layout.value,
+  组件样式: componentStyles.value,
+  全局样式: props.globalStyle
 })
 </script>
 
 <style lang="scss" scoped>
 .work-experience {
   margin-bottom: 40rpx;
+  font-family: var(--font-family, "'Times New Roman', serif");
+  font-size: var(--font-size-body, 16px);
+  line-height: var(--line-height, 1.8);
+  color: var(--text-color, #333333);
 
   // 布局样式
   &.layout-card, &.layout-default {
     .experience-card {
-      background: #ffffff;
-      border-radius: 16rpx;
-      padding: 30rpx;
-      margin-bottom: 24rpx;
-      box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
-      border: 1rpx solid #f0f0f0;
+      background: var(--card-background, #ffffff);
+      border-radius: var(--border-radius, 16rpx);
+      padding: var(--card-padding, 30rpx);
+      margin-bottom: var(--item-spacing, 24rpx);
+      box-shadow: var(--card-shadow, 0 2rpx 12rpx rgba(0, 0, 0, 0.05));
+      border: var(--card-border, 1rpx solid #f0f0f0);
 
       .card-achievements,
       .card-skills {
         margin-top: 20rpx;
         padding-top: 20rpx;
-        border-top: 1rpx solid #f0f0f0;
+        border-top: 1rpx solid var(--border-color, #f0f0f0);
 
         .achievements-title,
         .skills-title {
-          color: #666;
+          color: var(--subtitle-color, #666);
           font-size: 26rpx;
           font-weight: 500;
           display: block;
@@ -294,10 +505,10 @@ console.log('工作经历组件加载完成', {
         top: 10rpx;
         width: 16rpx;
         height: 16rpx;
-        background-color: #d4af37;
+        background-color: var(--primary-color, #2c3e50);
         border-radius: 50%;
         border: 3rpx solid white;
-        box-shadow: 0 0 0 2rpx #d4af37;
+        box-shadow: 0 0 0 2rpx var(--primary-color, #2c3e50);
         z-index: 2;
       }
 
@@ -307,16 +518,16 @@ console.log('工作经历组件加载完成', {
         top: 26rpx;
         bottom: -30rpx;
         width: 2rpx;
-        background-color: #e8e8e8;
+        background-color: var(--timeline-color, #e8e8e8);
         z-index: 1;
       }
 
       .experience-content {
-        background: #ffffff;
-        border-radius: 12rpx;
-        padding: 24rpx;
-        box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-        border: 1rpx solid #f0f0f0;
+        background: var(--card-background, #ffffff);
+        border-radius: var(--border-radius, 12rpx);
+        padding: var(--card-padding, 24rpx);
+        box-shadow: var(--card-shadow, 0 2rpx 8rpx rgba(0, 0, 0, 0.05));
+        border: var(--card-border, 1rpx solid #f0f0f0);
       }
     }
   }
@@ -324,8 +535,8 @@ console.log('工作经历组件加载完成', {
   // 主题样式
   &.theme-modern {
     .section-title {
-      color: #d4af37;
-      font-size: 36rpx;
+      color: var(--primary-color, #2c3e50);
+      font-size: var(--font-size-h1, 36rpx);
       font-weight: 600;
       margin-bottom: 16rpx;
       display: block;
@@ -333,19 +544,19 @@ console.log('工作经历组件加载完成', {
 
     .section-divider {
       height: 2rpx;
-      background: linear-gradient(90deg, #d4af37, #f7ef8a);
+      background: linear-gradient(90deg, var(--primary-color, #2c3e50), var(--accent-color, #2c3e50));
       margin-bottom: 30rpx;
       width: 80rpx;
     }
 
     .company-name {
-      color: #333;
+      color: var(--company-color, #333);
       font-size: 32rpx;
       font-weight: 600;
     }
 
     .position {
-      color: #d4af37;
+      color: var(--primary-color, #2c3e50);
       font-size: 28rpx;
       font-weight: 500;
     }
@@ -353,8 +564,8 @@ console.log('工作经历组件加载完成', {
 
   &.theme-classic {
     .section-title {
-      color: #1890ff;
-      font-size: 36rpx;
+      color: var(--primary-color, #1890ff);
+      font-size: var(--font-size-h1, 36rpx);
       font-weight: 600;
       margin-bottom: 16rpx;
       display: block;
@@ -362,15 +573,40 @@ console.log('工作经历组件加载完成', {
 
     .section-divider {
       height: 2rpx;
-      background: linear-gradient(90deg, #1890ff, #52c41a);
+      background: linear-gradient(90deg, var(--primary-color, #1890ff), var(--secondary-color, #52c41a));
       margin-bottom: 30rpx;
       width: 80rpx;
     }
 
     .position {
-      color: #1890ff;
+      color: var(--primary-color, #1890ff);
       font-size: 28rpx;
       font-weight: 500;
+    }
+  }
+
+  &.theme-light {
+    .section-title {
+      color: var(--primary-color, #1890ff);
+    }
+  }
+
+  &.theme-dark {
+    .section-title {
+      color: var(--primary-color, #177ddc);
+    }
+    .experience-content,
+    .experience-card {
+      background: #1f1f1f;
+      border-color: #333;
+      color: #fff;
+
+      .duration {
+        color: #aaa;
+      }
+      .desc-text {
+        color: #ccc;
+      }
     }
   }
 
@@ -410,11 +646,11 @@ console.log('工作经历组件加载完成', {
         .company-name {
           font-size: 30rpx;
           font-weight: 600;
-          color: #333;
+          color: var(--company-color, #333);
         }
 
         .duration {
-          color: #999;
+          color: var(--period-color, #999);
           font-size: 24rpx;
           text-align: right;
           min-width: 200rpx;
@@ -427,13 +663,13 @@ console.log('工作经历组件加载完成', {
       padding: 8rpx 0;
 
       .department-label {
-        color: #666;
+        color: var(--label-color, #666);
         font-size: 24rpx;
         font-weight: 500;
       }
 
       .department-value {
-        color: #666;
+        color: var(--department-color, #666);
         font-size: 24rpx;
       }
     }
@@ -442,7 +678,7 @@ console.log('工作经历组件加载完成', {
       margin-bottom: 16rpx;
 
       .desc-text {
-        color: #666;
+        color: var(--desc-color, #666);
         font-size: 26rpx;
         line-height: 1.6;
       }
@@ -452,7 +688,7 @@ console.log('工作经历组件加载完成', {
       margin-bottom: 16rpx;
 
       .achievements-title {
-        color: #666;
+        color: var(--subtitle-color, #666);
         font-size: 26rpx;
         font-weight: 500;
         display: block;
@@ -470,7 +706,7 @@ console.log('工作经历组件加载完成', {
           }
 
           .achievement-bullet {
-            color: #d4af37;
+            color: var(--primary-color, #2c3e50);
             margin-right: 12rpx;
             flex-shrink: 0;
             font-weight: bold;
@@ -478,7 +714,7 @@ console.log('工作经历组件加载完成', {
           }
 
           .achievement-text {
-            color: #555;
+            color: var(--text-color-secondary, #555);
             font-size: 24rpx;
             line-height: 1.5;
             flex: 1;
@@ -489,7 +725,7 @@ console.log('工作经历组件加载完成', {
 
     .skills-tags {
       .skills-title {
-        color: #666;
+        color: var(--subtitle-color, #666);
         font-size: 26rpx;
         font-weight: 500;
         display: block;
@@ -502,12 +738,12 @@ console.log('工作经历组件加载完成', {
         gap: 12rpx;
 
         .skill-tag {
-          background: #f5f7fa;
-          color: #555;
+          background: var(--tag-background, #f5f7fa);
+          color: var(--tag-color, #555);
           font-size: 22rpx;
           padding: 6rpx 12rpx;
           border-radius: 6rpx;
-          border: 1rpx solid #e4e7ed;
+          border: 1rpx solid var(--tag-border-color, #e4e7ed);
         }
       }
     }
@@ -522,7 +758,7 @@ console.log('工作经历组件加载完成', {
         .company-name {
           font-size: 32rpx;
           font-weight: 600;
-          color: #333;
+          color: var(--company-color, #333);
           display: block;
           margin-bottom: 8rpx;
         }
@@ -533,17 +769,17 @@ console.log('工作经历组件加载完成', {
         justify-content: space-between;
         margin-bottom: 16rpx;
         padding-bottom: 16rpx;
-        border-bottom: 1rpx solid #f0f0f0;
+        border-bottom: 1rpx solid var(--border-color, #f0f0f0);
 
         .duration {
-          color: #666;
+          color: var(--period-color, #666);
           font-size: 24rpx;
         }
 
         .department {
-          color: #666;
+          color: var(--department-color, #666);
           font-size: 24rpx;
-          background: #f5f7fa;
+          background: var(--department-bg-color, #f5f7fa);
           padding: 4rpx 12rpx;
           border-radius: 4rpx;
         }
@@ -553,7 +789,7 @@ console.log('工作经历组件加载完成', {
         margin-bottom: 16rpx;
 
         .desc-text {
-          color: #666;
+          color: var(--desc-color, #666);
           font-size: 26rpx;
           line-height: 1.6;
         }
@@ -571,7 +807,7 @@ console.log('工作经历组件加载完成', {
             }
 
             .achievement-bullet {
-              color: #d4af37;
+              color: var(--primary-color, #2c3e50);
               margin-right: 12rpx;
               flex-shrink: 0;
               font-weight: bold;
@@ -579,7 +815,7 @@ console.log('工作经历组件加载完成', {
             }
 
             .achievement-text {
-              color: #555;
+              color: var(--text-color-secondary, #555);
               font-size: 24rpx;
               line-height: 1.5;
               flex: 1;
@@ -595,12 +831,12 @@ console.log('工作经历组件加载完成', {
           gap: 12rpx;
 
           .skill-tag {
-            background: #f5f7fa;
-            color: #555;
+            background: var(--tag-background, #f5f7fa);
+            color: var(--tag-color, #555);
             font-size: 22rpx;
             padding: 6rpx 12rpx;
             border-radius: 6rpx;
-            border: 1rpx solid #e4e7ed;
+            border: 1rpx solid var(--tag-border-color, #e4e7ed);
           }
         }
       }

@@ -146,27 +146,39 @@ const orderedComponents = computed(() => {
   return [...ordered, ...unordered]
 })
 
-// 容器样式
+// 容器样式 - 修复：添加CSS变量支持
 const containerStyle = computed(() => {
   const style = globalStyle.value
   const spacing = style.spacing || {}
 
+  // 双栏布局的宽度设置
+  const leftWidth = globalLayout.value.columns?.left || 35
+  const rightWidth = globalLayout.value.columns?.right || 65
+
   return {
-    '--primary-color': style.primaryColor || '#1890ff',
-    '--secondary-color': style.secondaryColor || '#52c41a',
-    '--accent-color': style.accentColor || '#faad14',
-    '--background-color': style.backgroundColor || '#ffffff',
+    // CSS变量 - 用于全局样式继承
+    '--primary-color': style.primaryColor || '#2c3e50',
+    '--secondary-color': style.secondaryColor || '#2c3e50',
+    '--accent-color': style.accentColor || '#2c3e50',
+    '--background-color': style.backgroundColor || '#f8f9fa',
     '--text-color': style.textColor || '#333333',
-    '--font-family': style.fontFamily || "'Microsoft YaHei', 'PingFang SC', sans-serif",
-    '--font-size-body': style.fontSizes?.body ? `${style.fontSizes.body}px` : '14px',
-    '--font-size-h1': style.fontSizes?.h1 ? `${style.fontSizes.h1}px` : '32px',
-    '--section-margin': spacing.sectionMargin || '20px',
-    '--padding': spacing.padding || '15px',
-    '--line-height': spacing.lineHeight || '1.6',
-    'background-color': style.backgroundColor || '#ffffff',
-    'font-family': style.fontFamily || "'Microsoft YaHei', 'PingFang SC', sans-serif",
+    '--font-family': style.fontFamily || "'Times New Roman', serif",
+    '--font-size-body': style.fontSizes?.body ? `${style.fontSizes.body}px` : '16px',
+    '--font-size-h1': style.fontSizes?.h1 ? `${style.fontSizes.h1}px` : '36px',
+    '--section-margin': spacing.sectionMargin || '24px',
+    '--padding': spacing.padding || '20px',
+    '--line-height': spacing.lineHeight || '1.8',
+    // 双栏布局宽度
+    '--left-width': `${leftWidth}%`,
+    '--right-width': `${rightWidth}%`,
+
+    // 内联样式
+    'background-color': style.backgroundColor || '#f8f9fa',
+    'font-family': style.fontFamily || "'Times New Roman', serif",
     'padding': spacing.padding || '20px',
-    'color': style.textColor || '#333333'
+    'color': style.textColor || '#333333',
+    'font-size': style.fontSizes?.body ? `${style.fontSizes.body}px` : '16px',
+    'line-height': spacing.lineHeight || '1.8'
   }
 })
 
@@ -181,7 +193,7 @@ const safeValue = (value, defaultValue = null) => {
   return value
 }
 
-// 获取组件配置
+// 🚀 修复点1：获取组件配置 - 正确合并样式
 const getComponentConfig = (component) => {
   if (!component) {
     return {
@@ -193,10 +205,16 @@ const getComponentConfig = (component) => {
     }
   }
 
-  // 处理默认配置
+  // 获取默认配置
   const defaultConfig = component.defaultConfig || {}
   const propsData = component.props || {}
-  const styles = component.styles || {}
+  const componentStyles = component.styles || {}
+
+  // 🚀 关键修复：合并样式 - 优先级：自定义样式 > 默认样式 > 全局样式
+  const mergedStyles = {
+    ...defaultConfig.styles,
+    ...componentStyles
+  }
 
   // 特殊处理：根据组件类型转换数据结构
   const processedProps = processComponentData(component.key, propsData, defaultConfig)
@@ -206,9 +224,49 @@ const getComponentConfig = (component) => {
     name: component.name,
     key: component.key,
     props: { ...defaultConfig.props, ...processedProps },
-    styles: { ...defaultConfig.styles, ...styles },
+    styles: mergedStyles, // 🚀 返回合并后的样式
     defaultConfig: defaultConfig
   }
+}
+
+// 🚀 修复点2：获取区块样式 - 传递合并后的样式
+const getSectionStyle = (component) => {
+  const componentConfig = getComponentConfig(component)
+  const styles = componentConfig.styles || {}
+  const globalSpacing = globalStyle.value.spacing || {}
+
+  // 基础样式：全局间距 + 组件样式
+  const baseStyles = {
+    marginBottom: globalSpacing.sectionMargin || '24px',
+    ...styles // 🚀 包含合并后的组件样式
+  }
+
+  // 添加CSS变量支持
+  const cssVariables = {
+    '--primary-color': globalStyle.value.primaryColor || '#2c3e50',
+    '--secondary-color': globalStyle.value.secondaryColor || '#2c3e50',
+    '--accent-color': globalStyle.value.accentColor || '#2c3e50',
+    '--text-color': globalStyle.value.textColor || '#333333',
+    '--font-family': globalStyle.value.fontFamily || "'Times New Roman', serif",
+  }
+
+  return {
+    ...cssVariables,
+    ...baseStyles
+  }
+}
+
+// 🚀 新增：样式调试工具
+const debugComponentStyles = (component) => {
+  const componentConfig = getComponentConfig(component)
+  console.log('组件样式调试:', {
+    组件名称: component.name,
+    默认样式: component.defaultConfig?.styles,
+    自定义样式: component.styles,
+    合并后样式: componentConfig.styles,
+    全局样式: globalStyle.value
+  })
+  return componentConfig.styles
 }
 
 // 处理组件数据，确保数据结构统一
@@ -218,13 +276,15 @@ const processComponentData = (key, propsData, defaultConfig) => {
   switch (key) {
     case 'UserBasicInfo':
       // 确保基础信息字段存在
-      processed.name = safeValue(processed.name, '')
-      processed.email = safeValue(processed.email, '')
-      processed.phone = safeValue(processed.phone, '')
-      processed.location = safeValue(processed.location, '')
+      processed.name = safeValue(processed.name, '王彦博')
+      processed.email = safeValue(processed.email, 'zhangsan@tencent.com')
+      processed.phone = safeValue(processed.phone, '18610880038')
+      processed.location = safeValue(processed.location, '深圳')
       processed.avatar = safeValue(processed.avatar, '')
-      processed.title = safeValue(processed.title, '')
-      processed.workYears = safeValue(processed.workYears, 0)
+      processed.title = safeValue(processed.title, '高级工程师')
+      processed.workYears = safeValue(processed.workYears, 5)
+      processed.showAvatar = safeValue(processed.showAvatar, true)
+      processed.showContact = safeValue(processed.showContact, true)
       break
 
     case 'WorkExperience':
@@ -234,6 +294,14 @@ const processComponentData = (key, propsData, defaultConfig) => {
       if (!Array.isArray(experiences)) {
         experiences = []
       }
+
+      // 按照sort字段排序
+      experiences = experiences.sort((a, b) => {
+        const sortA = safeValue(a.sort, 0)
+        const sortB = safeValue(b.sort, 0)
+        return sortA - sortB
+      })
+
       processed.experiences = experiences.map(exp => ({
         ...exp,
         // 确保必要字段存在
@@ -257,6 +325,14 @@ const processComponentData = (key, propsData, defaultConfig) => {
       if (!Array.isArray(eduExperiences)) {
         eduExperiences = []
       }
+
+      // 按照sort字段排序
+      eduExperiences = eduExperiences.sort((a, b) => {
+        const sortA = safeValue(a.sort, 0)
+        const sortB = safeValue(b.sort, 0)
+        return sortA - sortB
+      })
+
       processed.experiences = eduExperiences.map(exp => ({
         ...exp,
         id: safeValue(exp.id, Date.now()),
@@ -329,22 +405,22 @@ const processComponentData = (key, propsData, defaultConfig) => {
   return processed
 }
 
-// 获取区块样式
-const getSectionStyle = (component) => {
-  const styles = component?.styles || {}
-
-  return {
-    marginBottom: globalStyle.value.spacing?.sectionMargin || '20px',
-    ...styles
-  }
-}
-
 onMounted(() => {
   console.log('动态渲染器加载完成', {
     组件总数: rawComponents.value.length,
-    排序后组件: orderedComponents.value.map(c => c.key),
+    排序后组件: orderedComponents.value.map(c => ({ key: c.key, name: c.name })),
     主题: currentTheme.value,
-    布局: globalLayout.value.type
+    布局: globalLayout.value.type,
+    样式配置: {
+      主色调: globalStyle.value.primaryColor,
+      字体: globalStyle.value.fontFamily,
+      字号: globalStyle.value.fontSizes
+    }
+  })
+
+  // 调试每个组件的样式
+  orderedComponents.value.forEach(comp => {
+    console.log(`组件 "${comp.name}" 样式:`, getComponentConfig(comp).styles)
   })
 })
 </script>
@@ -353,6 +429,21 @@ onMounted(() => {
 .resume-container {
   min-height: 100vh;
   transition: all 0.3s ease;
+
+  // 🚀 使用CSS变量
+  background-color: var(--background-color);
+  font-family: var(--font-family);
+  color: var(--text-color);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height);
+
+  // 主题
+  &.theme-classic {
+    --primary-color: #2c3e50;
+    --secondary-color: #2c3e50;
+    --background-color: #f8f9fa;
+    --text-color: #333333;
+  }
 
   &.theme-light {
     --primary-color: #1890ff;
@@ -368,6 +459,7 @@ onMounted(() => {
     --text-color: #ffffff;
   }
 
+  // 布局
   &.layout-single-column {
     max-width: 800px;
     margin: 0 auto;
@@ -375,8 +467,8 @@ onMounted(() => {
 
   &.layout-two-column {
     display: grid;
-    grid-template-columns: var(--left-width, 40%) var(--right-width, 60%);
-    gap: var(--section-margin, 20px);
+    grid-template-columns: var(--left-width, 35%) var(--right-width, 65%);
+    gap: var(--section-margin, 24px);
 
     .resume-section {
       margin-bottom: 0;
@@ -386,7 +478,7 @@ onMounted(() => {
   &.layout-three-column {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: var(--section-margin, 20px);
+    gap: var(--section-margin, 24px);
 
     .resume-section {
       margin-bottom: 0;
@@ -396,8 +488,15 @@ onMounted(() => {
   .resume-section {
     transition: transform 0.3s ease, opacity 0.3s ease;
 
+    // 🚀 基础样式，会被组件自定义样式覆盖
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
     &:hover {
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
   }
 
@@ -461,6 +560,7 @@ onMounted(() => {
     .resume-section {
       page-break-inside: avoid;
       margin-bottom: 16px;
+      box-shadow: none !important;
     }
   }
 }
