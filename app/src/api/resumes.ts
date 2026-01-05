@@ -16,6 +16,11 @@ const ResumesAPI = {
     return request.put(`${RESUMES_BASE_URL}/view/${id}`);
   },
 
+
+  delete(id: number) {
+    return request.delete(`${RESUMES_BASE_URL}/del`, { id });
+  },
+
   getPreview(templateId: number) {
     return request.get<ResumesResult>(`${RESUMES_BASE_URL}/preview/${templateId}`);
   },

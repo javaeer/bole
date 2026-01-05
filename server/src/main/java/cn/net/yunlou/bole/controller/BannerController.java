@@ -38,7 +38,7 @@ public class BannerController {
     @DeleteMapping("del")
     @Operation(summary = "删除轮播图")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(bannerService.removeById(id));
     }
 

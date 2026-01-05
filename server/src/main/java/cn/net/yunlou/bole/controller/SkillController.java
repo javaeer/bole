@@ -34,7 +34,7 @@ public class SkillController {
 
     @DeleteMapping("del")
     @Operation(summary = "删除职业技能")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(skillService.removeById(id));
     }
 

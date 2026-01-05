@@ -34,7 +34,7 @@ public class ProjectExperienceController {
 
     @DeleteMapping("del")
     @Operation(summary = "删除项目经历")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(projectExperienceService.removeById(id));
     }
 

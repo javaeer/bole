@@ -14,9 +14,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 /**
  * FileName: ResumesController Description: Created By MR. WANG Created At 2025/11/24 21:27 Modified
@@ -38,7 +39,7 @@ public class ResumesController {
 
     @DeleteMapping("del")
     @Operation(summary = "删除简历")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
 
         Resumes resumes = resumesService.getById(id);
         if (!Objects.equals(SecurityContextUtils.getCurrentUserId(), resumes.getUserId())) {
@@ -63,10 +64,10 @@ public class ResumesController {
         return BusinessResponse.success(resumesService.updateByEdit(request));
     }
 
-    @GetMapping("preview/{template_id}")
+    @GetMapping("preview/{templateId}")
     @Operation(summary = "预览简历")
     public BusinessResponse<ResumesView> preview(
-            @PathVariable(value = "template_id") Long templateId) {
+            @PathVariable(value = "templateId") Long templateId) {
 
         return BusinessResponse.success(
                 resumesService.preview(

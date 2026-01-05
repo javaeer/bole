@@ -30,21 +30,21 @@
 
     <!-- 筛选操作栏 -->
     <view class="filter-bar">
-      <view class="filter-tabs">
-        <scroll-view class="tab-scroll" scroll-x>
-          <view class="tab-container">
-            <text
-              v-for="tab in filterTabs"
-              :key="tab.value"
-              :class="['tab-item', { active: activeFilter === tab.value }]"
-              @click="onFilterChange(tab.value)"
-            >
-              {{ tab.label }}
-              <text v-if="tab.badge" class="tab-badge">{{ tab.badge }}</text>
-            </text>
-          </view>
-        </scroll-view>
-      </view>
+<!--      <view class="filter-tabs">-->
+<!--        <scroll-view class="tab-scroll" scroll-x>-->
+<!--          <view class="tab-container">-->
+<!--            <text-->
+<!--              v-for="tab in filterTabs"-->
+<!--              :key="tab.value"-->
+<!--              :class="['tab-item', { active: activeFilter === tab.value }]"-->
+<!--              @click="onFilterChange(tab.value)"-->
+<!--            >-->
+<!--              {{ tab.label }}-->
+<!--              <text v-if="tab.badge" class="tab-badge">{{ tab.badge }}</text>-->
+<!--            </text>-->
+<!--          </view>-->
+<!--        </scroll-view>-->
+<!--      </view>-->
 
       <view class="sort-dropdown" @click="showSortPanel = !showSortPanel">
         <text>{{ currentSort.label }}</text>
@@ -110,11 +110,11 @@
               </view>
             </view>
 
-            <view class="resume-status">
-              <view :class="['status-badge', getStatusClass(resume.status)]">
-                {{ getStatusText(resume.status) }}
-              </view>
-            </view>
+<!--            <view class="resume-status">-->
+<!--              <view :class="['status-badge', getStatusClass(resume.status)]">-->
+<!--                {{ getStatusText(resume.status) }}-->
+<!--              </view>-->
+<!--            </view>-->
           </view>
 
           <view class="resume-content">
@@ -406,7 +406,7 @@ const fetchResumes = async (page = 1, isRefresh = false) => {
     }
 
     // 更新筛选标签的徽章数量
-    updateFilterBadges();
+    // updateFilterBadges();
 
   } catch (error) {
     console.error("获取简历列表失败:", error);
@@ -500,19 +500,19 @@ const getTopComponents = (components: any[], count: number) => {
 
 const goToDetail = (resume: ResumesResult) => {
   uni.navigateTo({
-    url: `/pages/resumes/resumes?id=${resume.id}`,
+    url: `/pages/resumes/resumes?resumeId=${resume.id}`,
   });
 };
 
 const editResume = (resume: ResumesResult) => {
   uni.navigateTo({
-    url: `/pages/resumes/edit?id=${resume.id}`,
+    url: `/pages/resumes/resumes?resumeId=${resume.id}&mode=edit`,
   });
 };
 
 const createNewResume = () => {
   uni.navigateTo({
-    url: "/pages/resumes/edit",
+    url: "/pages/template/select",
   });
 };
 
@@ -701,7 +701,7 @@ onReachBottom(() => {
     }
 
     &:active:not(:disabled) {
-      background: darken($primary-color, 10%);
+      background: color.adjust($primary-color, $lightness: -10%);
       transform: scale(0.98);
     }
   }

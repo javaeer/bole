@@ -33,7 +33,7 @@ public class EducationExperienceController {
 
     @DeleteMapping("del")
     @Operation(summary = "删除教育经历")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(educationExperienceService.removeById(id));
     }
 

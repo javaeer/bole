@@ -39,7 +39,7 @@ public class ResumesComponentController {
     @DeleteMapping("del")
     @Operation(summary = "删除简历组件")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
 
         return BusinessResponse.success(resumesComponentService.removeById(id));
     }

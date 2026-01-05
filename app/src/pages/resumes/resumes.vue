@@ -1,259 +1,78 @@
 <template>
-  <!-- 模式选择区域 -->
-  <view v-if="!resumeId && !templateId" class="mode-selector">
-    <view class="mode-title">选择操作模式</view>
-    <view class="mode-buttons">
-      <button class="mode-btn view-mode" @click="enterViewMode">
-        <view class="mode-icon">👁️</view>
-        <text class="mode-text">查看简历</text>
-        <text class="mode-desc">查看已存在的简历详情</text>
-      </button>
-      <button class="mode-btn edit-mode" @click="enterEditMode">
-        <view class="mode-icon">✏️</view>
-        <text class="mode-text">编辑简历</text>
-        <text class="mode-desc">创建或编辑简历</text>
-      </button>
-    </view>
-
-    <!-- 输入简历ID区域 -->
-    <view v-if="selectedMode === 'view'" class="resume-input-section">
-      <view class="input-title">请输入简历ID</view>
-      <input
-        class="resume-id-input"
-        v-model="inputResumeId"
-        placeholder="输入要查看的简历ID"
-        placeholder-class="input-placeholder"
-      />
-      <button class="confirm-btn" @click="loadResumeById">确认</button>
-    </view>
-
-    <!-- 选择模板区域 -->
-    <view v-if="selectedMode === 'edit'" class="template-select-section">
-      <view class="select-title">选择创建方式</view>
-      <view class="select-options">
-        <button class="select-option" @click="createFromTemplate">
-          <view class="option-icon">📄</view>
-          <text class="option-text">从模板创建</text>
-        </button>
-        <button class="select-option" @click="createFromExisting">
-          <view class="option-icon">📋</view>
-          <text class="option-text">从现有简历复制</text>
-        </button>
-      </view>
-    </view>
-  </view>
-
   <!-- 查看模式 -->
-  <view v-else-if="currentMode === 'view'" class="resume-detail-container">
-    <!-- 页面头部 -->
-    <view class="page-header">
-      <view class="header-left">
-        <text class="icon-back" @click="handleBack">←</text>
-        <text class="header-title">简历详情</text>
-      </view>
-      <view class="header-actions">
-        <button v-if="resumeData.status === 1" class="share-btn" @click="handleShare">
-          <text class="icon-share">📤</text>
-          <text class="btn-text">分享</text>
+  <view v-if="currentMode === 'view'" class="resume-view-container">
+    <!-- 顶部操作栏 -->
+    <view class="view-header">
+      <view class="header-right">
+        <button class="preview-action-btn" @click="switchToEditMode">
+          <text class="action-icon">✏️</text>
+          <text class="action-text">编辑</text>
         </button>
-        <button class="edit-btn" @click="switchToEditMode">
-          <text class="icon-edit">✏️</text>
-          <text class="btn-text">编辑</text>
+        <button class="preview-action-btn" @click="handleDelete">
+          <text class="footer-icon">🗑️</text>
+          <text class="action-text">删除</text>
         </button>
-        <button class="mode-switch-btn" @click="switchToModeSelect">
-          <text class="icon-switch">🔄</text>
-          <text class="btn-text">切换</text>
+        <button class="preview-action-btn" @click="handleDownload">
+          <text class="action-icon">⬇️</text>
+          <text class="action-text">下载</text>
+        </button>
+        <button class="preview-action-btn" @click="showShareOptions">
+          <text class="action-icon">📤</text>
+          <text class="action-text">分享</text>
         </button>
       </view>
     </view>
 
-    <!-- 简历基本信息卡片 -->
-    <view class="info-card">
-      <view class="card-header">
-        <text class="card-title">简历信息</text>
-        <view class="status-badge" :class="statusClass">
-          {{ getStatusText(resumeData.status) }}
-        </view>
-      </view>
-
-      <view class="info-grid">
-        <view class="info-item">
-          <text class="info-label">简历ID</text>
-          <text class="info-value">{{ resumeData.id || "未设置" }}</text>
-        </view>
-
-        <view class="info-item">
-          <text class="info-label">创建时间</text>
-          <text class="info-value">{{ formatDateTime(resumeData.createdAt) }}</text>
-        </view>
-
-        <view class="info-item">
-          <text class="info-label">最后更新</text>
-          <text class="info-value">{{ formatDateTime(resumeData.updatedAt) }}</text>
-        </view>
-
-        <view class="info-item">
-          <text class="info-label">模板ID</text>
-          <text class="info-value">{{ resumeData.templateId || "未设置" }}</text>
-        </view>
-
-        <view class="info-item">
-          <text class="info-label">浏览数</text>
-          <text class="info-value">{{ resumeData.viewCount || 0 }} 次</text>
-        </view>
-
-        <view class="info-item">
-          <text class="info-label">下载数</text>
-          <text class="info-value">{{ resumeData.downloadCount || 0 }} 次</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 样式配置信息 -->
-    <view class="config-card">
-      <view class="card-header">
-        <text class="card-title">样式配置</text>
-      </view>
-
-      <view class="config-grid">
-        <view class="config-item">
-          <text class="config-label">主题风格</text>
-          <text class="config-value">{{ getThemeName(resumeData.globalStyle?.theme) }}</text>
-        </view>
-
-        <view class="config-item">
-          <text class="config-label">布局类型</text>
-          <text class="config-value">{{ getLayoutName(resumeData.globalLayout?.type) }}</text>
-        </view>
-
-        <view class="config-item" v-if="resumeData.globalStyle?.fontFamily">
-          <text class="config-label">字体</text>
-          <text class="config-value">{{ resumeData.globalStyle.fontFamily }}</text>
-        </view>
-
-        <view class="config-item">
-          <text class="config-label">主色调</text>
-          <view class="color-preview"
-                :style="{ backgroundColor: resumeData.globalStyle?.primaryColor || '#1890ff' }"></view>
-          <text class="config-value">{{ resumeData.globalStyle?.primaryColor || "#1890ff" }}</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 包含的组件 -->
-    <view class="components-card">
-      <view class="card-header">
-        <text class="card-title">包含组件</text>
-        <text class="components-count">{{ resumeData.components?.length || 0 }} 个</text>
-      </view>
-
-      <view class="components-list">
-        <view
-          v-for="component in resumeData.components"
-          :key="component.id"
-          class="component-item"
-        >
-          <text class="component-icon">{{ getComponentIcon(component.key) }}</text>
-          <text class="component-name">{{ component.name }}</text>
-          <text class="component-key">{{ component.key }}</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 简历预览区域 -->
-    <view class="preview-section">
-      <view class="preview-header">
-        <text class="preview-title">简历预览</text>
-        <view class="preview-actions">
-          <button class="preview-action-btn" @click="refreshPreview">
-            <text class="action-icon">🔄</text>
-            <text class="action-text">刷新</text>
-          </button>
-          <button class="preview-action-btn" @click="handleFullscreen">
-            <text class="action-icon">🖥️</text>
-            <text class="action-text">全屏</text>
-          </button>
-        </view>
-      </view>
-
+    <!-- 简历预览内容 -->
+    <scroll-view class="preview-content" scroll-y="true">
       <!-- 动态模板引擎渲染 -->
-      <view class="resume-preview">
-        <DynamicResumesRenderer
-          :resume-data="previewData"
-          ref="dynamicResumesRenderer"
-        />
-      </view>
-    </view>
-
-    <!-- 操作按钮区域 -->
-    <view class="action-buttons">
-      <button class="action-btn delete-btn" @click="handleDelete">
-        <text class="action-icon">🗑️</text>
-        <text class="action-text">删除</text>
-      </button>
-
-      <button class="action-btn copy-btn" @click="handleCopy">
-        <text class="action-icon">📋</text>
-        <text class="action-text">复制</text>
-      </button>
-
-      <button class="action-btn download-btn" @click="handleDownload">
-        <text class="action-icon">⬇️</text>
-        <text class="action-text">下载</text>
-      </button>
-
-      <button
-        class="action-btn status-btn"
-        :class="{ 'published': resumeData.status === 1 }"
-        @click="togglePublishStatus"
-      >
-        <text class="action-icon">{{ resumeData.status === 1 ? "🔒" : "🌐" }}</text>
-        <text class="action-text">
-          {{ resumeData.status === 1 ? "取消发布" : "发布简历" }}
-        </text>
-      </button>
-    </view>
-
-    <!-- 分享模态框 -->
-    <uni-popup ref="sharePopup" type="bottom">
-      <view class="share-modal">
+      <DynamicResumesRenderer
+        :resume-data="previewData"
+        ref="dynamicResumesRenderer"
+      />
+    </scroll-view>
+    <!-- 自定义分享弹窗 -->
+    <view v-if="showShareModal" class="custom-modal-overlay" @click="hideShareOptions">
+      <view class="custom-modal" @click.stop>
         <view class="modal-header">
           <text class="modal-title">分享简历</text>
-          <text class="modal-close" @click="closeSharePopup">✕</text>
+          <button class="modal-close" @click="hideShareOptions">✕</button>
         </view>
+        <view class="modal-content">
+          <view class="share-options">
+            <button class="share-option" @click="shareToWeChat">
+              <view class="option-icon wechat">💬</view>
+              <text class="option-text">微信好友</text>
+            </button>
 
-        <view class="share-options">
-          <button class="share-option" @click="shareToWeChat">
-            <view class="option-icon wechat">💬</view>
-            <text class="option-text">微信好友</text>
-          </button>
+            <button class="share-option" @click="generateQRCode">
+              <view class="option-icon qrcode">📱</view>
+              <text class="option-text">二维码</text>
+            </button>
 
-          <button class="share-option" @click="generateQRCode">
-            <view class="option-icon qrcode">📱</view>
-            <text class="option-text">生成二维码</text>
-          </button>
+            <button class="share-option" @click="copyShareLink">
+              <view class="option-icon link">🔗</view>
+              <text class="option-text">复制链接</text>
+            </button>
 
-          <button class="share-option" @click="copyShareLink">
-            <view class="option-icon link">🔗</view>
-            <text class="option-text">复制链接</text>
-          </button>
+            <button class="share-option" @click="exportAsImage">
+              <view class="option-icon image">🖼️</view>
+              <text class="option-text">导出图片</text>
+            </button>
+          </view>
 
-          <button class="share-option" @click="exportAsImage">
-            <view class="option-icon image">🖼️</view>
-            <text class="option-text">导出为图片</text>
-          </button>
-        </view>
-
-        <view v-if="qrcodeUrl" class="qrcode-section">
-          <text class="qrcode-title">扫描二维码查看简历</text>
-          <image :src="qrcodeUrl" class="qrcode-image" mode="widthFix" />
-          <text class="qrcode-hint">该链接有效期7天</text>
+          <!-- 二维码显示区域 -->
+          <view v-if="qrcodeUrl" class="qrcode-section">
+            <text class="qrcode-title">扫描二维码查看简历</text>
+            <image :src="qrcodeUrl" class="qrcode-image" mode="widthFix" />
+            <text class="qrcode-hint">该链接有效期7天</text>
+          </view>
         </view>
       </view>
-    </uni-popup>
+    </view>
   </view>
 
-  <!-- 编辑模式 -->
+  <!-- 编辑模式保持不变 -->
   <view v-else-if="currentMode === 'edit'" class="page-container">
     <!-- 顶部安全区域占位（仅APP环境需要） -->
     <view v-if="isApp && safeAreaTop > 0" class="safe-area-top" :style="{ height: safeAreaTop + 'px' }"></view>
@@ -1432,14 +1251,6 @@
                 <text class="action-icon">🔄</text>
                 <text class="action-text">刷新</text>
               </button>
-              <button class="preview-action-btn" @click="downloadResumeEdit">
-                <text class="action-icon">⬇️</text>
-                <text class="action-text">下载</text>
-              </button>
-              <button class="preview-action-btn mode-switch-btn" @click="switchToViewMode">
-                <text class="action-icon">👁️</text>
-                <text class="action-text">查看</text>
-              </button>
             </view>
           </view>
 
@@ -1462,11 +1273,6 @@
     <view class="action-buttons-edit">
       <button class="reset-btn" @click="handleReset" :disabled="loading">重置修改</button>
       <button class="save-btn" @click="handleSave" :disabled="loading">保存简历</button>
-      <button class="publish-btn" @click="handlePublish" :disabled="loading">发布简历</button>
-      <button class="mode-switch-btn" @click="switchToViewMode" :disabled="loading">
-        <text class="action-icon">👁️</text>
-        <text class="action-text">查看</text>
-      </button>
     </view>
   </view>
 
@@ -1485,9 +1291,8 @@ import { onLoad, onShow } from "@dcloudio/uni-app";
 import DynamicResumesRenderer from "@/components/DynamicResumesRenderer.vue";
 import ResumesAPI from "@/api/resumes";
 
-// 当前模式：select（选择模式）、view（查看模式）、edit（编辑模式）
-const currentMode = ref('select');
-const selectedMode = ref(''); // 用户选择的模式
+// 当前模式：view（查看模式）、edit（编辑模式）
+const currentMode = ref("view");
 
 // 查看模式数据
 const loading = ref(false);
@@ -1507,10 +1312,9 @@ const resumeData = ref({
 
 const resumeId = ref(null);
 const templateId = ref(null);
-const sharePopup = ref(null);
+const showShareModal = ref(false);
 const qrcodeUrl = ref("");
 const dynamicResumesRenderer = ref(null);
-const inputResumeId = ref(""); // 用户输入的简历ID
 
 // 编辑模式数据
 const hasLoadedData = ref(false);
@@ -1519,14 +1323,14 @@ const editingData = ref({
   templateId: null,
   globalStyle: {},
   globalLayout: {},
-  components: []
+  components: [],
 });
 
 const resumeConfig = ref({
   templateId: null,
   globalStyle: {},
   globalLayout: {},
-  updatedAt: null
+  updatedAt: null,
 });
 
 const dynamicResumesRendererEdit = ref(null);
@@ -1545,17 +1349,17 @@ const safeAreaBottom = ref(0);
 
 // 计算布局类名
 const layoutClass = computed(() => {
-  if (currentMode.value !== 'edit') return '';
+  if (currentMode.value !== "edit") return "";
 
   if (isApp.value) {
-    return 'app-layout'; // APP始终使用下侧布局
+    return "app-layout"; // APP始终使用下侧布局
   }
 
   if (isH5.value) {
-    return isWideScreen.value ? 'h5-wide-layout' : 'h5-narrow-layout';
+    return isWideScreen.value ? "h5-wide-layout" : "h5-narrow-layout";
   }
 
-  return 'default-layout';
+  return "default-layout";
 });
 
 // 计算顶部偏移量
@@ -1564,9 +1368,9 @@ const topOffset = computed(() => {
     return `${safeAreaTop.value}px`;
   } else if (isH5.value && isWideScreen.value) {
     // H5宽屏模式下，给一个默认的顶部间距，避免内容贴着浏览器顶部
-    return '50px';
+    return "50px";
   }
-  return '0px';
+  return "0px";
 });
 
 // 计算顶部偏移的像素值（用于高度计算）
@@ -1581,58 +1385,58 @@ const topOffsetValue = computed(() => {
 
 // 计算表单区域样式
 const formSectionStyle = computed(() => {
-  const bottomButtonHeight = '120rpx';
+  const bottomButtonHeight = "120rpx";
 
   if (isWideScreen.value && isH5.value) {
     // 大屏幕时，表单占据左侧50%，高度减去底部按钮和顶部偏移
     return {
-      width: '50%',
+      width: "50%",
       height: `calc(100vh - ${bottomButtonHeight} - ${topOffsetValue.value}px)`,
-      position: 'fixed',
-      left: '0',
+      position: "fixed",
+      left: "0",
       top: topOffset.value,
-      overflow: 'hidden'
+      overflow: "hidden",
     };
   } else {
     // 小屏幕时，表单占据整个宽度，高度50%减去底部按钮
     return {
-      width: '100%',
+      width: "100%",
       height: `calc(50% - ${bottomButtonHeight})`,
-      position: 'fixed',
-      left: '0',
-      top: '0',
-      overflow: 'hidden'
+      position: "fixed",
+      left: "0",
+      top: "0",
+      overflow: "hidden",
     };
   }
 });
 
 // 计算预览区域样式
 const previewSectionStyle = computed(() => {
-  const bottomButtonHeight = '120rpx';
+  const bottomButtonHeight = "120rpx";
 
   if (isWideScreen.value && isH5.value) {
     // 大屏幕时，预览占据右侧50%，高度减去底部按钮和顶部偏移
     return {
-      width: '50%',
+      width: "50%",
       height: `calc(100vh - ${bottomButtonHeight} - ${topOffsetValue.value}px)`,
-      position: 'fixed',
-      right: '0',
+      position: "fixed",
+      right: "0",
       top: topOffset.value,
-      borderLeft: '1px solid #e5e5e5',
-      boxSizing: 'border-box',
-      overflow: 'hidden'
+      borderLeft: "1px solid #e5e5e5",
+      boxSizing: "border-box",
+      overflow: "hidden",
     };
   } else {
     // 小屏幕时，预览占据整个宽度，高度50%减去底部按钮
     return {
-      width: '100%',
+      width: "100%",
       height: `calc(50% - ${bottomButtonHeight})`,
-      position: 'fixed',
-      left: '0',
+      position: "fixed",
+      left: "0",
       bottom: bottomButtonHeight,
-      borderTop: '1px solid #e5e5e5',
-      boxSizing: 'border-box',
-      overflow: 'hidden'
+      borderTop: "1px solid #e5e5e5",
+      boxSizing: "border-box",
+      overflow: "hidden",
     };
   }
 });
@@ -1640,31 +1444,21 @@ const previewSectionStyle = computed(() => {
 // 计算预览容器样式
 const previewContainerStyle = computed(() => {
   // 预览头部高度
-  const previewHeaderHeight = '60px';
+  const previewHeaderHeight = "60px";
 
   if (isWideScreen.value && isH5.value) {
     // 大屏幕时，预览容器高度减去头部高度
     return {
       height: `calc(100% - ${previewHeaderHeight})`,
-      overflowY: 'auto'
+      overflowY: "auto",
     };
   } else {
     // 小屏幕时，预览容器高度减去头部高度
     return {
       height: `calc(100% - ${previewHeaderHeight})`,
-      overflowY: 'auto'
+      overflowY: "auto",
     };
   }
-});
-
-// 计算页面容器样式
-const pageContainerStyle = computed(() => {
-  if (currentMode.value === 'edit') {
-    return {
-      paddingTop: isApp.value ? `${safeAreaTop.value}px` : '0px'
-    };
-  }
-  return {};
 });
 
 // 共享的映射数据
@@ -1725,15 +1519,6 @@ const previewData = computed(() => {
   };
 });
 
-const statusClass = computed(() => {
-  const status = resumeData.value.status;
-  return {
-    "status-draft": status === 0,
-    "status-published": status === 1,
-    "status-archived": status === 2,
-  };
-});
-
 // 编辑模式计算属性
 const getComponentKey = (component) => {
   return component.key || "";
@@ -1785,7 +1570,7 @@ const previewDataEdit = computed(() => {
       key: component.key,
       defaultConfig: component.defaultConfig || {},
       props: component.props || {},
-      styles: component.styles || {}
+      styles: component.styles || {},
     };
   });
 
@@ -1794,16 +1579,16 @@ const previewDataEdit = computed(() => {
     templateId: editingData.value.templateId,
     globalStyle: editingData.value.globalStyle || {},
     globalLayout: editingData.value.globalLayout || {},
-    components: components
+    components: components,
   };
 });
 
 // 监听编辑数据变化，实时更新预览
 watch(editingData, () => {
   // 编辑模式下数据变化时，可以触发预览更新
-  if (currentMode.value === 'edit' && dynamicResumesRendererEdit.value) {
+  if (currentMode.value === "edit" && dynamicResumesRendererEdit.value) {
     // 可以在这里添加预览更新逻辑
-    console.log('编辑数据已更新，预览将自动刷新');
+    console.log("编辑数据已更新，预览将自动刷新");
   }
 }, { deep: true });
 
@@ -1822,15 +1607,15 @@ const checkScreenWidth = () => {
     isWideScreen.value = screenWidth.value > 768;
 
     // 检测平台
-    const platform = systemInfo.platform?.toLowerCase() || '';
-    const appVersion = systemInfo.appVersion || '';
+    const platform = systemInfo.platform?.toLowerCase() || "";
+    const appVersion = systemInfo.appVersion || "";
 
-    isH5.value = platform.includes('h5') ||
-      (typeof window !== 'undefined' && window.navigator) ||
-      appVersion.includes('HBuilder');
-    isApp.value = ['ios', 'android'].includes(platform);
+    isH5.value = platform.includes("h5") ||
+      (typeof window !== "undefined" && window.navigator) ||
+      appVersion.includes("HBuilder");
+    isApp.value = ["ios", "android"].includes(platform);
 
-    console.log('屏幕信息:', {
+    console.log("屏幕信息:", {
       width: screenWidth.value,
       height: screenHeight.value,
       safeAreaTop: safeAreaTop.value,
@@ -1841,10 +1626,10 @@ const checkScreenWidth = () => {
       isApp: isApp.value,
       isWideScreen: isWideScreen.value,
       windowHeight: systemInfo.windowHeight,
-      screenHeight: systemInfo.screenHeight
+      screenHeight: systemInfo.screenHeight,
     });
   } catch (error) {
-    console.error('获取屏幕信息失败:', error);
+    console.error("获取屏幕信息失败:", error);
     // 默认值
     screenWidth.value = 375;
     screenHeight.value = 667;
@@ -1867,72 +1652,24 @@ const handleFormScroll = (e) => {
 };
 
 // 模式切换方法
-const enterViewMode = () => {
-  selectedMode.value = 'view';
-};
-
-const enterEditMode = () => {
-  selectedMode.value = 'edit';
-};
-
-const switchToModeSelect = () => {
-  currentMode.value = 'select';
-  resumeId.value = null;
-  templateId.value = null;
-  inputResumeId.value = "";
-  selectedMode.value = "";
-};
-
 const switchToViewMode = () => {
   if (resumeId.value) {
-    currentMode.value = 'view';
+    currentMode.value = "view";
     loadResumeData();
   } else {
     uni.showToast({
       title: "请先保存简历",
-      icon: "none"
+      icon: "none",
     });
   }
 };
 
 const switchToEditMode = () => {
   if (resumeData.value.id) {
-    currentMode.value = 'edit';
+    currentMode.value = "edit";
     resumeId.value = resumeData.value.id;
     initializeEditData(resumeData.value);
   }
-};
-
-const loadResumeById = async () => {
-  if (!inputResumeId.value.trim()) {
-    uni.showToast({
-      title: "请输入简历ID",
-      icon: "none"
-    });
-    return;
-  }
-
-  resumeId.value = inputResumeId.value;
-  currentMode.value = 'view';
-  loadResumeData();
-};
-
-const createFromTemplate = () => {
-  uni.navigateTo({
-    url: "/pages/template/select?mode=edit",
-    success: () => {
-      console.log("跳转到模板选择页面");
-    }
-  });
-};
-
-const createFromExisting = () => {
-  uni.navigateTo({
-    url: "/pages/resume/list?mode=copy",
-    success: () => {
-      console.log("跳转到简历列表页面");
-    }
-  });
 };
 
 // 查看模式方法
@@ -1943,7 +1680,7 @@ const loadResumeData = async () => {
       icon: "error",
     });
     setTimeout(() => {
-      switchToModeSelect();
+      uni.navigateBack();
     }, 1500);
     return;
   }
@@ -1951,8 +1688,7 @@ const loadResumeData = async () => {
   loading.value = true;
 
   try {
-    const response = await ResumesAPI.getById(resumeId.value);
-    resumeData.value = response;
+    resumeData.value = await ResumesAPI.getById(resumeId.value);
 
     // 增加浏览数
     await ResumesAPI.incrementViewCount(resumeId.value);
@@ -1965,27 +1701,10 @@ const loadResumeData = async () => {
       icon: "error",
     });
     setTimeout(() => {
-      switchToModeSelect();
+      uni.navigateBack();
     }, 1500);
   } finally {
     loading.value = false;
-  }
-};
-
-const formatDateTime = (dateString) => {
-  if (!dateString) return "未知";
-
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleString("zh-CN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch (error) {
-    return dateString;
   }
 };
 
@@ -2006,37 +1725,15 @@ const getComponentIcon = (key) => {
 };
 
 const handleBack = () => {
-  if (currentMode.value === 'view' || currentMode.value === 'edit') {
-    switchToModeSelect();
-  } else {
-    uni.navigateBack();
-  }
+  uni.navigateBack();
 };
 
-const handleShare = () => {
-  if (resumeData.value.status !== 1) {
-    uni.showModal({
-      title: "简历未发布",
-      content: "请先发布简历后才能分享",
-      showCancel: false,
-      success: (res) => {
-        if (res.confirm) {
-          togglePublishStatus();
-        }
-      },
-    });
-    return;
-  }
-
-  if (sharePopup.value) {
-    sharePopup.value.open();
-  }
+const showShareOptions = () => {
+  showShareModal.value = true;
 };
 
-const closeSharePopup = () => {
-  if (sharePopup.value) {
-    sharePopup.value.close();
-  }
+const hideShareOptions = () => {
+  showShareModal.value = false;
   qrcodeUrl.value = "";
 };
 
@@ -2057,53 +1754,14 @@ const handleDelete = () => {
           });
 
           setTimeout(() => {
-            switchToModeSelect();
+            uni.navigateTo({
+              url: "/pages/resumes/list?refresh=true",
+            });
           }, 1500);
         } catch (error) {
           console.error("删除失败:", error);
           uni.showToast({
             title: "删除失败",
-            icon: "error",
-          });
-        } finally {
-          loading.value = false;
-        }
-      }
-    },
-  });
-};
-
-const handleCopy = () => {
-  uni.showModal({
-    title: "复制简历",
-    content: "确定要复制这份简历吗？",
-    success: async (res) => {
-      if (res.confirm) {
-        loading.value = true;
-        try {
-          const copyData = {
-            templateId: resumeData.value.templateId,
-            globalStyle: { ...resumeData.value.globalStyle },
-            globalLayout: { ...resumeData.value.globalLayout },
-            components: resumeData.value.components.map(comp => ({
-              componentId: comp.componentId,
-              name: comp.name,
-              key: comp.key,
-              defaultConfig: comp.defaultConfig,
-              props: { ...comp.props },
-              styles: { ...comp.styles },
-            })),
-          };
-
-          await ResumesAPI.create(copyData);
-          uni.showToast({
-            title: "复制成功",
-            icon: "success",
-          });
-        } catch (error) {
-          console.error("复制失败:", error);
-          uni.showToast({
-            title: "复制失败",
             icon: "error",
           });
         } finally {
@@ -2160,40 +1818,6 @@ const handleDownload = async () => {
   }
 };
 
-const togglePublishStatus = () => {
-  const newStatus = resumeData.value.status === 1 ? 0 : 1;
-  const action = newStatus === 1 ? "发布" : "取消发布";
-
-  uni.showModal({
-    title: `${action}简历`,
-    content: newStatus === 1
-      ? "确定要发布这份简历吗？发布后其他人可以看到您的简历。"
-      : "确定要取消发布这份简历吗？取消后其他人将无法查看。",
-    success: async (res) => {
-      if (res.confirm) {
-        loading.value = true;
-        try {
-          await ResumesAPI.updateStatus(resumeId.value, newStatus);
-          resumeData.value.status = newStatus;
-
-          uni.showToast({
-            title: `${action}成功`,
-            icon: "success",
-          });
-        } catch (error) {
-          console.error(`${action}失败:`, error);
-          uni.showToast({
-            title: `${action}失败`,
-            icon: "error",
-          });
-        } finally {
-          loading.value = false;
-        }
-      }
-    },
-  });
-};
-
 const shareToWeChat = () => {
   uni.share({
     provider: "weixin",
@@ -2208,6 +1832,7 @@ const shareToWeChat = () => {
         title: "分享成功",
         icon: "success",
       });
+      hideShareOptions();
     },
     fail: function(err) {
       console.log("分享失败:", err);
@@ -2250,6 +1875,7 @@ const copyShareLink = () => {
         title: "链接已复制",
         icon: "success",
       });
+      hideShareOptions();
     },
     fail: () => {
       uni.showToast({
@@ -2277,26 +1903,10 @@ const exportAsImage = () => {
             title: "图片已保存到相册",
             icon: "success",
           });
+          hideShareOptions();
         }, 2000);
       }
     },
-  });
-};
-
-const refreshPreview = () => {
-  if (dynamicResumesRenderer.value) {
-    // 可以添加重新加载逻辑
-    uni.showToast({
-      title: "预览已刷新",
-      icon: "success",
-      duration: 1500,
-    });
-  }
-};
-
-const handleFullscreen = () => {
-  uni.navigateTo({
-    url: `/pages/resume/preview?resumeId=${resumeId.value}`,
   });
 };
 
@@ -2312,7 +1922,7 @@ const initializeEditData = (data) => {
     templateId: data.templateId || null,
     globalStyle: data.globalStyle || {},
     globalLayout: data.globalLayout || {},
-    components: data.components || []
+    components: data.components || [],
   };
 
   // 更新简历配置
@@ -2320,7 +1930,7 @@ const initializeEditData = (data) => {
     templateId: data.templateId || null,
     globalStyle: data.globalStyle || {},
     globalLayout: data.globalLayout || {},
-    updatedAt: data.updatedAt || null
+    updatedAt: data.updatedAt || null,
   };
 
   hasLoadedData.value = true;
@@ -2344,6 +1954,7 @@ const loadEditData = async () => {
       return;
     }
 
+    console.log("简历数据：" + JSON.stringify(response));
     // 初始化数据
     initializeEditData(response);
 
@@ -2364,9 +1975,9 @@ const loadEditData = async () => {
       });
     }
 
-    // 延迟返回选择模式
+    // 延迟返回
     setTimeout(() => {
-      switchToModeSelect();
+      uni.navigateBack();
     }, 2000);
   } finally {
     loading.value = false;
@@ -2437,7 +2048,7 @@ const addArrayItem = (componentId, arrayPath, defaultValue = {}) => {
     // 添加新项
     component.props[arrayPath].push({
       id: Date.now() + Math.random(),
-      ...defaultValue
+      ...defaultValue,
     });
 
     // 触发响应式更新
@@ -2495,8 +2106,8 @@ const getFormData = () => {
       key: component.key,
       defaultConfig: component.defaultConfig,
       props: component.props,
-      styles: component.styles
-    }))
+      styles: component.styles,
+    })),
   };
 };
 
@@ -2505,7 +2116,7 @@ const handleSave = async () => {
   if (!hasLoadedData.value) {
     uni.showToast({
       title: "请先选择模板或简历",
-      icon: "none"
+      icon: "none",
     });
     return;
   }
@@ -2515,17 +2126,13 @@ const handleSave = async () => {
     const formData = getFormData();
     console.log("保存简历数据:", formData);
 
-    let response;
     // 调用API保存
     if (resumeId.value) {
       // 更新已有简历
-      response = await ResumesAPI.update(resumeId.value, formData);
+      await ResumesAPI.edit(formData);
     } else {
       // 创建新简历
-      response = await ResumesAPI.create(formData);
-      // 更新ID
-      editingData.value.id = response.id;
-      resumeId.value = response.id;
+      await ResumesAPI.add(formData);
     }
 
     uni.showToast({
@@ -2533,11 +2140,9 @@ const handleSave = async () => {
       icon: "success",
     });
 
-    // 更新查看模式的数据
-    if (currentMode.value === 'edit') {
-      const updatedData = await ResumesAPI.getById(resumeId.value);
-      resumeData.value = updatedData;
-    }
+    uni.navigateTo({
+      url: "/pages/resumes/list?refresh=true",
+    });
 
   } catch (error) {
     console.error("保存失败:", error);
@@ -2555,7 +2160,7 @@ const handleReset = () => {
   if (!hasLoadedData.value) {
     uni.showToast({
       title: "请先选择模板或简历",
-      icon: "none"
+      icon: "none",
     });
     return;
   }
@@ -2576,61 +2181,12 @@ const handleReset = () => {
   });
 };
 
-const handlePublish = () => {
-  // 检查是否已加载数据
-  if (!hasLoadedData.value) {
-    uni.showToast({
-      title: "请先选择模板或简历",
-      icon: "none"
-    });
-    return;
-  }
-
-  uni.showModal({
-    title: "发布简历",
-    content: "确定要发布这份简历吗？发布后其他人可以看到您的简历。",
-    success: async (res) => {
-      if (res.confirm) {
-        loading.value = true;
-        try {
-          const formData = getFormData();
-          // 首先确保简历已保存
-          if (!resumeId.value) {
-            const saveResponse = await ResumesAPI.create(formData);
-            resumeId.value = saveResponse.id;
-          }
-
-          // 调用API发布简历
-          await ResumesAPI.updateStatus(resumeId.value, 1);
-
-          // 更新本地数据
-          editingData.value.status = 1;
-          resumeData.value.status = 1;
-
-          uni.showToast({
-            title: "发布成功",
-            icon: "success",
-          });
-        } catch (error) {
-          console.error("发布失败:", error);
-          uni.showToast({
-            title: "发布失败",
-            icon: "error",
-          });
-        } finally {
-          loading.value = false;
-        }
-      }
-    },
-  });
-};
-
 const refreshPreviewEdit = () => {
   // 检查是否已加载数据
   if (!hasLoadedData.value) {
     uni.showToast({
       title: "请先选择模板或简历",
-      icon: "none"
+      icon: "none",
     });
     return;
   }
@@ -2647,7 +2203,7 @@ const downloadResumeEdit = () => {
   if (!hasLoadedData.value) {
     uni.showToast({
       title: "请先选择模板或简历",
-      icon: "none"
+      icon: "none",
     });
     return;
   }
@@ -2671,37 +2227,43 @@ onMounted(() => {
   checkScreenWidth();
   // 监听窗口尺寸变化（仅H5环境）
   if (isH5.value) {
-    window.addEventListener('resize', onResize);
+    window.addEventListener("resize", onResize);
   }
 });
 
 onUnmounted(() => {
   if (isH5.value) {
-    window.removeEventListener('resize', onResize);
+    window.removeEventListener("resize", onResize);
   }
 });
 
 onLoad((options) => {
-  console.log("合并页面参数:", options);
+  console.log("页面参数:", options);
   checkScreenWidth(); // 初始化时检查一次
 
   // 根据参数决定进入哪种模式
   if (options.resumeId) {
     resumeId.value = options.resumeId;
-    if (options.mode === 'edit') {
-      currentMode.value = 'edit';
+    if (options.mode === "edit") {
+      currentMode.value = "edit";
       loadEditData();
     } else {
-      currentMode.value = 'view';
+      currentMode.value = "view";
       loadResumeData();
     }
   } else if (options.templateId) {
     templateId.value = options.templateId;
-    currentMode.value = 'edit';
+    currentMode.value = "edit";
     loadEditData();
-  } else if (options.mode) {
-    // 如果指定了模式但没有ID，显示模式选择器
-    selectedMode.value = options.mode;
+  } else {
+    // 如果没有参数，默认返回
+    uni.showToast({
+      title: "参数错误",
+      icon: "error",
+    });
+    setTimeout(() => {
+      uni.navigateBack();
+    }, 1500);
   }
 });
 
@@ -2709,205 +2271,28 @@ onShow(() => {
   checkScreenWidth(); // 每次显示时检查一次
 
   // 页面显示时检查是否需要重新加载
-  if (currentMode.value === 'view' && resumeId.value && !resumeData.value.id) {
+  if (currentMode.value === "view" && resumeId.value && !resumeData.value.id) {
     loadResumeData();
-  } else if (currentMode.value === 'edit' && (resumeId.value || templateId.value) && !hasLoadedData.value) {
+  } else if (currentMode.value === "edit" && (resumeId.value || templateId.value) && !hasLoadedData.value) {
     loadEditData();
   }
 });
 </script>
 
 <style lang="scss" scoped>
-/* ==================== 模式选择器样式 ==================== */
-.mode-selector {
-  min-height: 100vh;
-  background: linear-gradient(135deg, color.adjust($primary-color, $lightness: -10%) 0%, color.adjust($primary-color, $saturation: 20%) 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: $padding-base;
-}
-
-.mode-title {
-  font-size: $font-size-extra-large;
-  font-weight: $font-weight-bold;
-  color: $background-color-white;
-  margin-bottom: $margin-base * 1.5;
-  text-align: center;
-}
-
-.mode-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: $margin-base;
-  width: 100%;
-  max-width: 600rpx;
-}
-
-.mode-btn {
-  background: rgba($background-color-white, 0.95);
-  border: none;
-  border-radius: $border-radius-large;
-  padding: $padding-base * 2 $padding-base * 1.33;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $margin-mini;
-  box-shadow: $box-shadow-dark;
-  transition: all $transition-normal $ease-in-out;
-
-  &:active {
-    transform: translateY(5rpx);
-    box-shadow: $box-shadow;
-  }
-
-  &.view-mode {
-    border-left: 12rpx solid color.adjust($primary-color, $lightness: -10%);
-  }
-
-  &.edit-mode {
-    border-left: 12rpx solid $success-color;
-  }
-}
-
-.mode-icon {
-  font-size: 80rpx;
-  margin-bottom: 10rpx;
-}
-
-.mode-text {
-  font-size: $font-size-large;
-  font-weight: $font-weight-semibold;
-  color: $text-primary;
-}
-
-.mode-desc {
-  font-size: $font-size-base;
-  color: $text-secondary;
-  text-align: center;
-}
-
-/* ==================== 输入简历ID区域 ==================== */
-.resume-input-section {
-  background: rgba($background-color-white, 0.95);
-  border-radius: $border-radius-large;
-  padding: $padding-base;
-  margin-top: $margin-base;
-  width: 100%;
-  max-width: 600rpx;
-  box-shadow: $box-shadow-dark;
-}
-
-.input-title {
-  font-size: $font-size-medium;
-  font-weight: $font-weight-semibold;
-  color: $text-primary;
-  margin-bottom: $margin-base * 0.75;
-  text-align: center;
-}
-
-.resume-id-input {
-  width: 100%;
-  height: $input-height;
-  background: $background-color;
-  border: 2rpx solid $border-color-lighter;
-  border-radius: $border-radius-small;
-  padding: 0 24rpx;
-  font-size: $font-size-base;
-  color: $text-primary;
-  margin-bottom: $margin-base * 0.75;
-  transition: all $transition-fast $ease-in-out;
-
-  &:focus {
-    border-color: $primary-color;
-    box-shadow: $input-focus-shadow;
-  }
-}
-
-.confirm-btn {
-  width: 100%;
-  height: $button-height;
-  background: $primary-color;
-  color: $background-color-white;
-  border: none;
-  border-radius: $border-radius-small;
-  font-size: $font-size-medium;
-  font-weight: $font-weight-semibold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color $transition-fast $ease-in-out;
-
-  &:active {
-    background: color.adjust($primary-color, $lightness: -10%);
-  }
-}
-
-/* ==================== 选择模板区域 ==================== */
-.template-select-section {
-  background: rgba($background-color-white, 0.95);
-  border-radius: $border-radius-large;
-  padding: $padding-base;
-  margin-top: $margin-base;
-  width: 100%;
-  max-width: 600rpx;
-  box-shadow: $box-shadow-dark;
-}
-
-.select-title {
-  font-size: $font-size-medium;
-  font-weight: $font-weight-semibold;
-  color: $text-primary;
-  margin-bottom: $margin-base;
-  text-align: center;
-}
-
-.select-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: $margin-base * 0.75;
-}
-
-.select-option {
-  background: $background-color;
-  border: 2rpx solid $border-color-lighter;
-  border-radius: $border-radius;
-  padding: $padding-base $padding-mini;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $margin-mini;
-  transition: all $transition-normal $ease-in-out;
-
-  &:active {
-    background: $border-color-lighter;
-    transform: translateY(5rpx);
-  }
-}
-
-.option-icon {
-  font-size: 60rpx;
-}
-
-.option-text {
-  font-size: $font-size-base;
-  font-weight: $font-weight-medium;
-  color: $text-primary;
-}
-
 /* ==================== 查看模式样式 ==================== */
-.resume-detail-container {
+.resume-view-container {
   min-height: 100vh;
   background: $background-color;
-  padding-bottom: 120rpx;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 页面头部 */
-.page-header {
+/* 顶部操作栏 */
+.view-header {
   background: $background-color-white;
-  padding: $padding-mini $padding-small;
+  padding: 0 $padding-small;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2917,23 +2302,38 @@ onShow(() => {
   left: 0;
   right: 0;
   z-index: $z-index-modal;
+  flex-shrink: 0;
 
   .header-left {
-    display: flex;
-    align-items: center;
-    gap: 16rpx;
+    flex: 1;
 
-    .icon-back {
-      font-size: $font-size-large;
-      color: $text-secondary;
-      cursor: pointer;
-      padding: 8rpx;
-      border-radius: $border-radius-small;
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8rpx;
+      background: transparent;
+      border: none;
+      padding: 0;
+
+      .back-icon {
+        font-size: $font-size-large;
+        color: $text-secondary;
+      }
+
+      .back-text {
+        font-size: $font-size-base;
+        color: $text-secondary;
+      }
 
       &:active {
-        background: $background-color;
+        opacity: 0.8;
       }
     }
+  }
+
+  .header-center {
+    flex: 2;
+    text-align: center;
 
     .header-title {
       font-size: $font-size-medium;
@@ -2942,273 +2342,81 @@ onShow(() => {
     }
   }
 
-  .header-actions {
+  .header-right {
+    flex: 1;
     display: flex;
+    justify-content: flex-end;
     gap: 16rpx;
 
-    .share-btn,
-    .edit-btn,
-    .mode-switch-btn {
+    .header-action-btn {
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
-      gap: 8rpx;
-      padding: 12rpx 24rpx;
-      border-radius: $border-radius-small;
-      font-size: $font-size-small;
-      font-weight: $font-weight-medium;
-      border: none;
-      transition: opacity $transition-fast $ease-in-out;
+      justify-content: center;
+      background: $background-color;
+      border: 1rpx solid $border-color-lighter;
+      border-radius: $border-radius-round;
 
-      .btn-text {
-        font-size: $font-size-small;
+      .action-icon {
+        font-size: $font-size-medium;
+      }
+
+      &.share-btn {
+        .action-icon {
+          color: $primary-color;
+        }
+      }
+
+      &.edit-btn {
+        .action-icon {
+          color: $success-color;
+        }
       }
 
       &:active {
-        opacity: 0.8;
+        background: $border-color-lighter;
       }
-    }
-
-    .share-btn {
-      background: $background-color;
-      color: $text-secondary;
-    }
-
-    .edit-btn {
-      background: $primary-color;
-      color: $background-color-white;
-    }
-
-    .mode-switch-btn {
-      background: $success-color;
-      color: $background-color-white;
     }
   }
 }
 
-/* 信息卡片样式 */
-.info-card,
-.config-card,
-.components-card {
+/* 简历预览内容区域 */
+.preview-content {
+  flex: 1;
   background: $background-color-white;
-  border-radius: $border-radius;
   padding: $padding-small;
-  margin: $margin-base * 0.75;
-  box-shadow: $box-shadow-light;
-  border: 1rpx solid $border-color-lighter;
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $margin-base * 0.75;
-    padding-bottom: $padding-mini;
-    border-bottom: 1rpx solid $background-color;
-
-    .card-title {
-      font-size: $font-size-base * 1.07;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
-    }
-
-    .status-badge {
-      padding: 6rpx 16rpx;
-      border-radius: 20rpx;
-      font-size: $font-size-extra-small;
-      font-weight: $font-weight-medium;
-
-      &.status-draft {
-        background: $warning-light;
-        color: $warning-color;
-      }
-
-      &.status-published {
-        background: $success-bg;
-        color: $success-color;
-      }
-
-      &.status-archived {
-        background: rgba($info-color, 0.1);
-        color: $info-color;
-      }
-    }
-
-    .components-count {
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
-      background: $background-color;
-      padding: 4rpx 12rpx;
-      border-radius: $border-radius-small;
-    }
-  }
+  box-sizing: border-box;
 }
 
-/* 信息网格 */
-.info-grid,
-.config-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $margin-mini;
-
-  .info-item,
-  .config-item {
-    .info-label,
-    .config-label {
-      display: block;
-      font-size: $font-size-small;
-      color: $text-secondary;
-      margin-bottom: 8rpx;
-    }
-
-    .info-value,
-    .config-value {
-      display: block;
-      font-size: $font-size-base;
-      color: $text-primary;
-      font-weight: $font-weight-medium;
-      word-break: break-all;
-    }
-  }
-}
-
-/* 配置项特殊样式 */
-.config-item {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-
-  .color-preview {
-    width: 24rpx;
-    height: 24rpx;
-    border-radius: 4rpx;
-    border: 1rpx solid $border-color-lighter;
-  }
-}
-
-/* 组件列表 */
-.components-list {
-  display: grid;
-  gap: 16rpx;
-
-  .component-item {
-    display: flex;
-    align-items: center;
-    gap: 16rpx;
-    padding: $padding-mini;
-    background: $background-color;
-    border-radius: $border-radius-small;
-    border: 1rpx solid $border-color-lighter;
-
-    .component-icon {
-      font-size: $font-size-medium;
-      width: 40rpx;
-      text-align: center;
-    }
-
-    .component-name {
-      flex: 1;
-      font-size: $font-size-base;
-      color: $text-primary;
-      font-weight: $font-weight-medium;
-    }
-
-    .component-key {
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
-      background: $background-color;
-      padding: 4rpx 12rpx;
-      border-radius: $border-radius-small;
-    }
-  }
-}
-
-/* 查看模式预览区域 */
-.resume-detail-container .preview-section {
-  background: $background-color-white;
-  margin: $margin-base * 0.75;
-  border-radius: $border-radius;
-  overflow: hidden;
-  box-shadow: $box-shadow-light;
-  border: 1rpx solid $border-color-lighter;
-
-  .preview-header {
-    padding: $padding-mini $padding-small;
-    border-bottom: 1rpx solid $border-color-lighter;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .preview-title {
-      font-size: $font-size-base * 1.07;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
-    }
-
-    .preview-actions {
-      display: flex;
-      gap: 16rpx;
-
-      .preview-action-btn {
-        display: flex;
-        align-items: center;
-        gap: 8rpx;
-        background: $background-color;
-        border: 1rpx solid $border-color;
-        border-radius: $border-radius-small;
-        padding: 12rpx 20rpx;
-        font-size: $font-size-extra-small;
-        color: $text-secondary;
-        transition: background-color $transition-fast $ease-in-out;
-
-        .action-icon {
-          font-size: $font-size-extra-small;
-        }
-
-        &:active {
-          background: $border-color-lighter;
-        }
-      }
-    }
-  }
-
-  .resume-preview {
-    height: 800rpx;
-    overflow-y: auto;
-    padding: $padding-small;
-    background: $background-color;
-  }
-}
-
-/* 查看模式操作按钮区域 */
-.resume-detail-container .action-buttons {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+/* 底部操作按钮栏 */
+.view-footer {
   background: $background-color-white;
   padding: $padding-mini $padding-small;
   display: flex;
   gap: 16rpx;
   border-top: 1rpx solid $border-color-lighter;
+  flex-shrink: 0;
   z-index: $z-index-modal - 1;
 
-  .action-btn {
+  .footer-btn {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8rpx;
+    gap: 4rpx;
     padding: $padding-mini;
     border-radius: $border-radius-small;
     border: none;
     font-size: $font-size-extra-small;
-    transition: background-color $transition-fast $ease-in-out;
+    transition: all $transition-fast $ease-in-out;
 
-    .action-icon {
+    .footer-icon {
       font-size: $font-size-medium;
     }
 
-    .action-text {
+    .footer-text {
       font-size: 22rpx;
     }
 
@@ -3221,15 +2429,6 @@ onShow(() => {
       }
     }
 
-    &.copy-btn {
-      background: rgba(color.adjust($primary-color, $lightness: 20%), 0.1);
-      color: color.adjust($primary-color, $lightness: -20%);
-
-      &:active {
-        background: rgba(color.adjust($primary-color, $lightness: 20%), 0.2);
-      }
-    }
-
     &.download-btn {
       background: $success-bg;
       color: $success-color;
@@ -3238,20 +2437,160 @@ onShow(() => {
         background: color.adjust($success-color, $alpha: -0.9);
       }
     }
+  }
+}
 
-    &.status-btn {
-      background: $warning-light;
-      color: $warning-color;
+/* 自定义分享弹窗 */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-index-modal + 10;
+}
 
-      &.published {
-        background: $success-bg;
-        color: $success-color;
-      }
+.custom-modal {
+  background: $background-color-white;
+  border-radius: $border-radius-large;
+  width: 90%;
+  max-width: 600rpx;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: $box-shadow-dark;
+  animation: slideUp 0.3s ease;
+
+  .modal-header {
+    padding: $padding-base $padding-small;
+    border-bottom: 1rpx solid $border-color-lighter;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .modal-title {
+      font-size: $font-size-medium;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+    }
+
+    .modal-close {
+      font-size: $font-size-medium;
+      color: $text-secondary;
+      background: transparent;
+      border: none;
+      padding: 8rpx;
+      border-radius: $border-radius-small;
 
       &:active {
-        opacity: 0.8;
+        background: $background-color;
       }
     }
+  }
+
+  .modal-content {
+    padding: $padding-base;
+  }
+
+  .share-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $margin-mini;
+    margin-bottom: $margin-base;
+
+    .share-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12rpx;
+      padding: $padding-small;
+      background: $background-color;
+      border: 1rpx solid $border-color-lighter;
+      border-radius: $border-radius;
+      transition: background-color $transition-fast $ease-in-out;
+
+      &:active {
+        background: $border-color-lighter;
+      }
+
+      .option-icon {
+        font-size: 48rpx;
+        width: 80rpx;
+        height: 80rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $border-radius-round;
+        margin-bottom: 12rpx;
+
+        &.wechat {
+          background: $success-color;
+          color: $background-color-white;
+        }
+
+        &.qrcode {
+          background: $primary-color;
+          color: $background-color-white;
+        }
+
+        &.link {
+          background: $warning-color;
+          color: $background-color-white;
+        }
+
+        &.image {
+          background: $info-color;
+          color: $background-color-white;
+        }
+      }
+
+      .option-text {
+        font-size: $font-size-small;
+        color: $text-primary;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+
+  .qrcode-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $margin-mini;
+    padding: $padding-small;
+    background: $background-color;
+    border-radius: $border-radius;
+    border: 1rpx solid $border-color-lighter;
+
+    .qrcode-title {
+      font-size: $font-size-base;
+      color: $text-primary;
+      font-weight: $font-weight-medium;
+    }
+
+    .qrcode-image {
+      width: 200rpx;
+      height: 200rpx;
+    }
+
+    .qrcode-hint {
+      font-size: $font-size-extra-small;
+      color: $text-secondary;
+    }
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
@@ -3786,7 +3125,6 @@ onShow(() => {
 
   .reset-btn,
   .save-btn,
-  .publish-btn,
   .mode-switch-btn {
     flex: 1;
     height: 44px;
@@ -3816,11 +3154,6 @@ onShow(() => {
 
   .save-btn {
     background: $primary-color;
-    color: $background-color-white;
-  }
-
-  .publish-btn {
-    background: $success-color;
     color: $background-color-white;
   }
 
@@ -3886,130 +3219,6 @@ onShow(() => {
   font-weight: $font-weight-medium;
 }
 
-/* 分享模态框 */
-.share-modal {
-  background: $background-color-white;
-  border-radius: $border-radius-large $border-radius-large 0 0;
-  padding: $padding-base $padding-small;
-  max-height: 80vh;
-  overflow-y: auto;
-
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $margin-base;
-    padding-bottom: $padding-mini;
-    border-bottom: 1rpx solid $background-color;
-
-    .modal-title {
-      font-size: $font-size-medium;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
-    }
-
-    .modal-close {
-      font-size: $font-size-medium;
-      color: $text-secondary;
-      cursor: pointer;
-      padding: 8rpx;
-      border-radius: $border-radius-small;
-      transition: background-color $transition-fast $ease-in-out;
-
-      &:active {
-        background: $background-color;
-      }
-    }
-  }
-
-  .share-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: $margin-mini;
-    margin-bottom: $margin-base;
-
-    .share-option {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12rpx;
-      padding: $padding-small;
-      background: $background-color;
-      border: 1rpx solid $border-color-lighter;
-      border-radius: $border-radius;
-      transition: background-color $transition-fast $ease-in-out;
-
-      &:active {
-        background: $border-color-lighter;
-      }
-
-      .option-icon {
-        font-size: 48rpx;
-        width: 80rpx;
-        height: 80rpx;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: $border-radius-round;
-        margin-bottom: 12rpx;
-
-        &.wechat {
-          background: $success-color;
-          color: $background-color-white;
-        }
-
-        &.qrcode {
-          background: $primary-color;
-          color: $background-color-white;
-        }
-
-        &.link {
-          background: $warning-color;
-          color: $background-color-white;
-        }
-
-        &.image {
-          background: $info-color;
-          color: $background-color-white;
-        }
-      }
-
-      .option-text {
-        font-size: $font-size-small;
-        color: $text-primary;
-        font-weight: $font-weight-medium;
-      }
-    }
-  }
-
-  .qrcode-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: $margin-mini;
-    padding: $padding-small;
-    background: $background-color;
-    border-radius: $border-radius;
-    border: 1rpx solid $border-color-lighter;
-
-    .qrcode-title {
-      font-size: $font-size-base;
-      color: $text-primary;
-      font-weight: $font-weight-medium;
-    }
-
-    .qrcode-image {
-      width: 300rpx;
-      height: 300rpx;
-    }
-
-    .qrcode-hint {
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
-    }
-  }
-}
-
 /* 输入框占位符样式 */
 .input-placeholder {
   color: $text-placeholder;
@@ -4028,48 +3237,47 @@ onShow(() => {
 
 /* ==================== 响应式通用调整 ==================== */
 @media (max-width: 768px) {
-  // 模式选择器响应式调整
-  .mode-buttons {
-    gap: $margin-mini;
+  // 查看模式顶部操作栏响应式调整
+  .view-header {
+    height: 50px;
+    padding: 0 $padding-mini;
+
+    .header-left {
+      .back-btn {
+        .back-text {
+          display: none;
+        }
+      }
+    }
+
+    .header-right {
+      .header-action-btn {
+        width: 36px;
+        height: 36px;
+      }
+    }
   }
 
-  .mode-btn {
-    padding: $padding-base $padding-small;
-  }
+  // 查看模式底部操作栏响应式调整
+  .view-footer {
+    padding: $padding-mini $padding-mini;
+    gap: 12rpx;
 
-  .mode-icon {
-    font-size: 60rpx;
-  }
-
-  .mode-text {
-    font-size: $font-size-medium;
-  }
-
-  .mode-desc {
-    font-size: $font-size-extra-small;
-  }
-
-  .select-options {
-    grid-template-columns: 1fr;
-  }
-
-  // 信息卡片响应式调整
-  .info-grid,
-  .config-grid {
-    grid-template-columns: 1fr;
-  }
-
-  // 分享选项响应式调整
-  .share-options {
-    grid-template-columns: 1fr !important;
-  }
-
-  // 查看模式操作按钮响应式调整
-  .action-buttons {
-    .action-btn {
-      .action-text {
+    .footer-btn {
+      .footer-text {
         font-size: 20rpx;
       }
+    }
+  }
+
+  // 自定义分享弹窗响应式调整
+  .custom-modal {
+    width: 95%;
+    max-width: 95%;
+
+    .share-options {
+      grid-template-columns: repeat(2, 1fr);
+      gap: $margin-mini;
     }
   }
 
@@ -4119,6 +3327,20 @@ onShow(() => {
 
 /* 超小屏幕优化 */
 @media (max-width: 320px) {
+  .view-header {
+    .header-title {
+      font-size: $font-size-small;
+    }
+  }
+
+  .view-footer {
+    .footer-btn {
+      .footer-text {
+        font-size: 18rpx;
+      }
+    }
+  }
+
   .preview-section.fixed-preview .preview-header {
     .preview-title {
       font-size: $font-size-small;
@@ -4142,7 +3364,6 @@ onShow(() => {
   .action-buttons-edit {
     .reset-btn,
     .save-btn,
-    .publish-btn,
     .mode-switch-btn {
       font-size: $font-size-extra-small;
       padding: 0 4rpx;

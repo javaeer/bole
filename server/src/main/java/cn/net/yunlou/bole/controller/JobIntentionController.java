@@ -34,7 +34,7 @@ public class JobIntentionController {
 
     @DeleteMapping("del")
     @Operation(summary = "删除求职意向")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(jobIntentionService.removeById(id));
     }
 

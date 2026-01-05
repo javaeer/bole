@@ -34,7 +34,7 @@ public class SelfEvaluationController {
 
     @DeleteMapping("del")
     @Operation(summary = "删除自我评价")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(selfEvaluationService.removeById(id));
     }
 

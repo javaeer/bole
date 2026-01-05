@@ -37,7 +37,7 @@ public class RoleController {
     @DeleteMapping("del")
     @Operation(summary = "删除角色")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(roleService.removeById(id));
     }
 

@@ -96,6 +96,7 @@ public class ResumesServiceImpl
             if (ObjectUtils.isNotEmpty(componentType)) {
                 Map<String, Object> props = component.getProps();
                 if (ObjectUtils.isNotEmpty(props)) {
+
                     Map<String, Object> populated =
                             populatorFactory
                                     .getComponentDataPopulatorStrategy(componentType)
@@ -124,7 +125,7 @@ public class ResumesServiceImpl
     }
 
     @Override
-    @Cacheable(value = "resume:view", key = "#id", unless = "#result == null")
+    //@Cacheable(value = "resume:view", key = "#id", unless = "#result == null")
     public ResumesView getViewById(Serializable id) {
         return super.getViewById(id);
     }
