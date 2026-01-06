@@ -1,646 +1,788 @@
+<!-- components/ProjectExperience.vue -->
 <template>
-  <view
-    :class="['project-section', `theme-${theme}`]"
-    :style="[containerStyle, customStyles]"
+  <BaseComponent
+    :title="componentName"
+    :component-data="componentData"
+    :global-style="globalStyle"
+    :custom-styles="customStyles"
   >
-    <!-- 区块标题 -->
-    <view class="section-header">
-      <text class="section-title" :style="titleStyle">{{ componentName }}</text>
-      <view class="section-divider" :style="dividerStyle"></view>
-    </view>
-
-    <!-- 空状态 -->
-    <view v-if="!hasProjectData" class="empty-state" :style="emptyStateStyle">
-      <text class="empty-icon">📁</text>
-      <text class="empty-text">暂无项目经历信息</text>
-    </view>
-
-    <!-- 项目经历列表 -->
-    <view v-else class="project-list">
-      <block v-for="(project, index) in projects" :key="index">
+    <template #default="{ styles }">
+      <view
+        class="project-experience-container"
+        :style="getContainerStyle(styles)"
+      >
         <view
+          v-for="project in sortedProjects"
+          :key="project.id || project.projectName"
           class="project-item"
-          :style="[itemStyle(project), { marginBottom: itemSpacing }]"
+          :class="{
+            'current-project': project.isCurrent,
+            'has-achievements': project.achievements?.length > 0
+          }"
+          :style="getProjectItemStyle(styles)"
         >
-          <!-- 项目信息 -->
-          <view class="project-header">
-            <view class="project-main">
+          <!-- 项目头部 -->
+          <view class="project-header" :style="getHeaderStyle(styles)">
+            <view class="project-title-section">
               <text
                 class="project-name"
-                :style="{ color: companyColor || titleColor || '#333' }"
+                :style="getProjectNameStyle(styles)"
               >
-                {{ project.name || '未知项目' }}
+                {{ project.projectName || project.name || '未命名项目' }}
               </text>
-              <view class="role-info">
-                <text class="role" :style="{ color: primaryColor || '#d4af37' }">
-                  {{ project.role || '角色未填写' }}
-                </text>
-                <text v-if="project.company" class="company" :style="{ color: textColor || '#666' }">
-                  · {{ project.company }}
+
+              <!-- 项目角色 -->
+              <view v-if="showRole && (project.role || project.position)" class="project-role">
+                <text class="role-text" :style="getRoleStyle(styles)">
+                  {{ project.role || project.position }}
                 </text>
               </view>
             </view>
 
-            <!-- 时间信息 -->
-            <view class="project-time">
-              <text class="duration" :style="{ color: periodColor || '#666' }">
-                {{ formatDate(project.startDate) }} - {{ formatDate(project.endDate) || '至今' }}
-              </text>
-              <text v-if="project.duration" class="duration-label" :style="{ color: textColor || '#999' }">
-                ({{ project.duration }})
+            <!-- 项目时间 -->
+            <view v-if="showTime && (project.startDate || project.endDate)" class="project-time">
+              <text :style="getTimeStyle(styles)">
+                {{ formatDate(project.startDate) }} - {{ project.isCurrent ? '至今' : formatDate(project.endDate) }}
               </text>
             </view>
           </view>
 
           <!-- 项目描述 -->
           <view v-if="project.description" class="project-description">
-            <text class="description-text" :style="{ color: textColor || '#666', fontSize: fontSize }">
+            <text :style="getDescriptionStyle(styles)">
               {{ project.description }}
             </text>
           </view>
 
-          <!-- 技术栈 -->
-          <view v-if="showTechnologies && project.technologies && project.technologies.length > 0"
-                class="technologies-section">
-            <text class="technologies-title" :style="{ color: textColor || '#666' }">技术栈：</text>
-            <view class="technology-tags">
-              <text
-                v-for="(tech, techIndex) in project.technologies"
-                :key="techIndex"
-                class="technology-tag"
-                :style="technologyTagStyle"
-              >
-                {{ tech }}
-              </text>
-            </view>
+          <!-- 项目链接 -->
+          <view
+            v-if="(project.link || project.url) && showLinks"
+            class="project-link"
+            :style="getLinkContainerStyle(styles)"
+          >
+            <text class="link-icon" :style="getLinkIconStyle(styles)">🔗</text>
+            <text class="link-text" :style="getLinkTextStyle(styles)">
+              {{ project.link || project.url }}
+            </text>
           </view>
 
-          <!-- 项目职责 -->
-          <view v-if="showResponsibilities && project.responsibilities && project.responsibilities.length > 0"
-                class="responsibilities">
-            <text class="responsibilities-title" :style="{ color: textColor || '#666' }">我的职责：</text>
+          <!-- 职责描述 -->
+          <view
+            v-if="project.responsibilities && project.responsibilities.length > 0"
+            class="project-responsibilities"
+            :style="getSectionStyle(styles, 'responsibilities')"
+          >
+            <text class="responsibilities-title" :style="getSectionTitleStyle(styles)">
+              主要职责：
+            </text>
             <view class="responsibilities-list">
               <view
-                v-for="(responsibility, rIndex) in project.responsibilities"
-                :key="rIndex"
+                v-for="(responsibility, index) in project.responsibilities"
+                :key="index"
                 class="responsibility-item"
+                :style="getListItemStyle(styles, 'responsibility')"
               >
-                <text class="responsibility-icon" :style="{ color: primaryColor || '#52c41a' }">✅</text>
-                <text class="responsibility-text" :style="{ color: textColor || '#555', fontSize: fontSize }">
+                <text class="responsibility-marker" :style="getMarkerStyle(styles)">•</text>
+                <text class="responsibility-text" :style="getListItemTextStyle(styles)">
                   {{ responsibility }}
                 </text>
               </view>
             </view>
           </view>
 
-          <!-- 项目成果 -->
-          <view v-if="showAchievements && project.achievements && project.achievements.length > 0"
-                class="achievements">
-            <text class="achievements-title" :style="{ color: textColor || '#666' }">项目成果：</text>
+          <!-- 项目成就 -->
+          <view
+            v-if="showAchievements && project.achievements && project.achievements.length > 0"
+            class="project-achievements"
+            :style="getSectionStyle(styles, 'achievements')"
+          >
+            <text class="achievements-title" :style="getSectionTitleStyle(styles)">
+              项目成果：
+            </text>
             <view class="achievements-list">
               <view
-                v-for="(achievement, aIndex) in project.achievements"
-                :key="aIndex"
+                v-for="(achievement, index) in project.achievements"
+                :key="index"
                 class="achievement-item"
+                :style="getListItemStyle(styles, 'achievement')"
               >
-                <text class="achievement-icon" :style="{ color: accentColor || '#faad14' }">🎯</text>
-                <text class="achievement-text" :style="{ color: textColor || '#555', fontSize: fontSize }">
+                <text class="achievement-marker" :style="getAchievementMarkerStyle(styles)">✓</text>
+                <text class="achievement-text" :style="getListItemTextStyle(styles)">
                   {{ achievement }}
                 </text>
               </view>
             </view>
           </view>
 
-          <!-- 项目链接 -->
-          <view v-if="project.link" class="project-link">
-            <text class="link-icon" :style="{ color: highlightColor || '#1890ff' }">🔗</text>
-            <text
-              class="link-text"
-              :style="{ color: highlightColor || '#1890ff' }"
-              @click="openLink(project.link)"
-            >
-              查看项目
+          <!-- 技术栈 -->
+          <view
+            v-if="showTechnologies && project.technologies && project.technologies.length > 0"
+            class="project-technologies"
+            :style="getSectionStyle(styles, 'technologies')"
+          >
+            <text class="tech-title" :style="getSectionTitleStyle(styles)">
+              技术栈：
             </text>
+            <view class="tech-tags">
+              <view
+                v-for="(tech, index) in project.technologies"
+                :key="index"
+                class="tech-tag"
+                :style="getTechTagStyle(styles, tech)"
+              >
+                {{ tech }}
+              </view>
+            </view>
+          </view>
+
+          <!-- 项目数据（如果有） -->
+          <view
+            v-if="showMetrics && project.metrics"
+            class="project-metrics"
+            :style="getMetricsStyle(styles)"
+          >
+            <view
+              v-for="(value, key) in project.metrics"
+              :key="key"
+              class="metric-item"
+            >
+              <text class="metric-value" :style="getMetricValueStyle(styles)">
+                {{ value }}
+              </text>
+              <text class="metric-label" :style="getMetricLabelStyle(styles)">
+                {{ key }}
+              </text>
+            </view>
           </view>
         </view>
 
-        <!-- 分隔线 -->
+        <!-- 空状态 -->
         <view
-          v-if="index < projects.length - 1"
-          class="item-divider"
-          :style="{ background: timelineColor || 'linear-gradient(90deg, transparent, #f0f0f0, transparent)' }"
-        ></view>
-      </block>
-    </view>
-  </view>
+          v-if="projects.length === 0"
+          class="empty-state"
+          :style="getEmptyStateStyle(styles)"
+        >
+          <text class="empty-icon">📁</text>
+          <text class="empty-text">暂无项目经验</text>
+          <text class="empty-hint">添加您的项目经验以展示您的能力</text>
+        </view>
+      </view>
+    </template>
+  </BaseComponent>
 </template>
 
-<script setup>
-import { computed } from 'vue'
+<script setup lang="ts">
+import { computed } from "vue";
+import BaseComponent from "./BaseComponent.vue";
+import type { TemplateGlobalStyle } from "@/types/template";
 
-const props = defineProps({
-  component: {
-    type: Object,
-    default: () => ({})
-  },
-  globalStyle: {
-    type: Object,
-    default: () => ({})
-  },
-  theme: {
-    type: String,
-    default: 'light'
-  },
-  customStyles: {
-    type: Object,
-    default: () => ({})
-  }
-})
+interface Props {
+  componentData: any;
+  globalStyle?: TemplateGlobalStyle;
+  customStyles?: Record<string, any>;
+}
 
-// 🚀 从组件配置中提取样式
-const componentProps = computed(() => props.component?.props || {})
-const componentStyles = computed(() => props.component?.styles || {})
+const props = defineProps<Props>();
 
-// 🚀 组件名称
-const componentName = computed(() => props.component?.name || '项目经历')
+// 组件数据
+const componentData = computed(() => props.componentData || {});
+const componentProps = computed(() => componentData.value.props || {});
+const defaultConfig = computed(() => componentData.value.defaultConfig || {});
 
-// 🚀 项目数据适配
-const projects = computed(() => {
-  const raw = componentProps.value.experiences || []
-  return raw.map(project => ({
-    id: project.id || Date.now(),
-    name: project.name || project.projectName || '未指定项目',
-    role: project.role || project.position || '角色未填写',
-    description: project.description || '',
-    startDate: project.startDate || '',
-    endDate: project.endDate || '',
-    company: project.company || '',
-    technologies: project.technologies || project.skills || [],
-    responsibilities: project.responsibilities || [],
-    achievements: project.achievements || [],
-    link: project.link || '',
-    duration: project.duration || ''
-  }))
-})
+const componentName = computed(() =>
+  componentData.value.name || defaultConfig.value.props?.title || '项目经验'
+);
 
-const hasProjectData = computed(() => projects.value.length > 0)
+// 项目经验数据
+const projects = computed(() =>
+  componentProps.value.experiences || []
+);
 
-// 🚀 样式计算 - 从组件配置和全局样式中提取
-const primaryColor = computed(() =>
-  componentStyles.value.primaryColor ||
-  props.globalStyle?.primaryColor ||
-  '#d4af37'
-)
+// 显示控制 - 从defaultConfig.props中获取配置
+const showTime = computed(() =>
+  componentProps.value.showTime ?? defaultConfig.value.props?.showTime ?? true
+);
 
-const accentColor = computed(() =>
-  componentStyles.value.accentColor ||
-  props.globalStyle?.accentColor ||
-  '#faad14'
-)
+const showRole = computed(() =>
+  componentProps.value.showRole ?? defaultConfig.value.props?.showRole ?? true
+);
 
-const secondaryColor = computed(() =>
-  componentStyles.value.secondaryColor ||
-  props.globalStyle?.secondaryColor ||
-  '#52c41a'
-)
-
-const backgroundColor = computed(() =>
-  componentStyles.value.backgroundColor ||
-  props.globalStyle?.backgroundColor ||
-  '#ffffff'
-)
-
-const textColor = computed(() =>
-  componentStyles.value.textColor ||
-  props.globalStyle?.textColor ||
-  '#333333'
-)
-
-const titleColor = computed(() =>
-  componentStyles.value.titleColor ||
-  componentStyles.value.primaryColor ||
-  primaryColor.value
-)
-
-const companyColor = computed(() =>
-  componentStyles.value.companyColor ||
-  componentStyles.value.highlightColor ||
-  props.globalStyle?.primaryColor ||
-  '#1890ff'
-)
-
-const periodColor = computed(() =>
-  componentStyles.value.periodColor ||
-  componentStyles.value.textColor ||
-  textColor.value
-)
-
-const highlightColor = computed(() =>
-  componentStyles.value.highlightColor ||
-  props.globalStyle?.primaryColor ||
-  '#1890ff'
-)
-
-const timelineColor = computed(() =>
-  componentStyles.value.timelineColor ||
-  '#e8e8e8'
-)
-
-const fontSize = computed(() => {
-  const componentFontSize = componentStyles.value.fontSize
-  const globalBodySize = props.globalStyle?.fontSizes?.body
-
-  if (componentFontSize) {
-    return typeof componentFontSize === 'number' ? `${componentFontSize}px` : componentFontSize
-  }
-
-  if (globalBodySize) {
-    return `${globalBodySize}px`
-  }
-
-  return '14px'
-})
-
-const padding = computed(() =>
-  componentStyles.value.padding ||
-  props.globalStyle?.spacing?.padding ||
-  '20px'
-)
-
-const itemSpacing = computed(() =>
-  componentStyles.value.itemSpacing ||
-  '16px'
-)
-
-// 🚀 是否显示技术栈
 const showTechnologies = computed(() =>
-  componentProps.value.showTechnologies !== false &&
-  componentStyles.value.showTechnologies !== false
-)
+  componentProps.value.showTechnologies ?? defaultConfig.value.props?.showTechnologies ?? true
+);
 
-// 🚀 是否显示职责
-const showResponsibilities = computed(() =>
-  componentProps.value.showResponsibilities !== false &&
-  componentStyles.value.showResponsibilities !== false
-)
-
-// 🚀 是否显示成就
 const showAchievements = computed(() =>
-  componentProps.value.showAchievements !== false &&
-  componentStyles.value.showAchievements !== false
-)
+  componentProps.value.showAchievements ?? defaultConfig.value.props?.showAchievements ?? true
+);
 
-// 🚀 容器样式
-const containerStyle = computed(() => {
-  const style = {
-    // CSS变量 - 用于子元素继承
-    '--primary-color': primaryColor.value,
-    '--accent-color': accentColor.value,
-    '--secondary-color': secondaryColor.value,
-    '--background-color': backgroundColor.value,
-    '--text-color': textColor.value,
-    '--font-family': props.globalStyle?.fontFamily || "'Microsoft YaHei', 'PingFang SC', sans-serif",
-    '--font-size-body': fontSize.value,
-    '--padding': padding.value
+const showLinks = computed(() =>
+  componentProps.value.showLinks ?? true
+);
+
+const showMetrics = computed(() =>
+  componentProps.value.showMetrics ?? false
+);
+
+// 排序方式
+const orderBy = computed(() =>
+  componentProps.value.orderBy || defaultConfig.value.props?.orderBy || 'startDate'
+);
+
+const orderDirection = computed(() =>
+  componentProps.value.orderDirection || defaultConfig.value.props?.orderDirection || 'desc'
+);
+
+// 按指定方式排序
+const sortedProjects = computed(() => {
+  const items = [...projects.value];
+
+  if (orderBy.value === 'startDate') {
+    items.sort((a, b) => {
+      const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+      const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+      return orderDirection.value === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  } else if (orderBy.value === 'importance') {
+    // 按重要性排序（如果有importance字段）
+    items.sort((a, b) => {
+      const importanceA = a.importance || 0;
+      const importanceB = b.importance || 0;
+      return orderDirection.value === 'desc' ? importanceB - importanceA : importanceA - importanceB;
+    });
   }
 
-  // 基础样式
+  return items;
+});
+
+// 格式化日期
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return '';
+  try {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+  } catch (e) {
+    return dateStr;
+  }
+};
+
+// ========== 样式计算方法 ==========
+
+const getContainerStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: styles.itemSpacing || '24px',
+    fontFamily: styles.fontFamily,
+    fontSize: styles.bodySize,
+    lineHeight: styles.lineHeight,
+  };
+};
+
+const getProjectItemStyle = (styles: any) => {
+  if (!styles) return {};
+
+  const defaultStyle = {
+    background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+    border: styles.border || '1px solid #e9ecef',
+    borderRadius: styles.borderRadius || '10px',
+    padding: styles.padding || '20px',
+    boxShadow: styles.boxShadow || '0 2px 8px rgba(0,0,0,0.05)',
+    transition: 'all 0.3s ease',
+    position: 'relative',
+    overflow: 'hidden',
+  };
+
+  return defaultStyle;
+};
+
+const getHeaderStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: '12px',
+    flexWrap: 'wrap',
+  };
+};
+
+const getProjectNameStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '17px',
+    fontWeight: 'bold',
+    color: styles.companyColor || styles.primaryColor || '#1890ff',
+    lineHeight: '1.3',
+    marginBottom: '6px',
+    display: 'block',
+  };
+};
+
+const getRoleStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '13px',
+    color: '#fff',
+    background: `linear-gradient(135deg, ${styles.accentColor || '#5ac8fa'}, ${styles.primaryColor || '#1890ff'})`,
+    padding: '3px 10px',
+    borderRadius: '12px',
+    fontWeight: '500',
+  };
+};
+
+const getTimeStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '13px',
+    color: styles.periodColor || '#666',
+    background: styles.periodBackground || '#f8f9fa',
+    padding: '3px 10px',
+    borderRadius: '12px',
+    whiteSpace: 'nowrap',
+  };
+};
+
+const getDescriptionStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    color: styles.textColor || '#555',
+    fontSize: styles.bodySize || '14px',
+    lineHeight: styles.lineHeight || '1.6',
+    marginBottom: '16px',
+    paddingBottom: '12px',
+    borderBottom: '1px dashed #eee',
+  };
+};
+
+const getLinkContainerStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    marginBottom: '12px',
+    padding: '8px 12px',
+    background: styles.linkBackground || '#f0f7ff',
+    borderRadius: '6px',
+    borderLeft: `3px solid ${styles.accentColor || '#5ac8fa'}`,
+  };
+};
+
+const getLinkIconStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '14px',
+  };
+};
+
+const getLinkTextStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '13px',
+    color: styles.linkColor || styles.primaryColor || '#1890ff',
+    flex: 1,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  };
+};
+
+const getSectionStyle = (styles: any, sectionType: string) => {
+  if (!styles) return {};
+
   const baseStyle = {
-    backgroundColor: backgroundColor.value,
-    padding: padding.value,
-    borderRadius: componentStyles.value.borderRadius || '8px',
-    fontSize: fontSize.value,
-    fontFamily: props.globalStyle?.fontFamily || "'Microsoft YaHei', 'PingFang SC', sans-serif",
-    color: textColor.value
+    marginBottom: '16px',
+  };
+
+  if (sectionType === 'achievements') {
+    baseStyle.marginTop = '16px';
+    baseStyle.paddingTop = '16px';
+    baseStyle.borderTop = '1px dashed #eee';
   }
 
-  return { ...style, ...baseStyle }
-})
+  return baseStyle;
+};
 
-// 🚀 标题样式
-const titleStyle = computed(() => ({
-  color: titleColor.value,
-  fontSize: props.globalStyle?.fontSizes?.h1 ? `${props.globalStyle.fontSizes.h1}px` : '24px',
-  fontWeight: 'bold',
-  marginBottom: '8px'
-}))
+const getSectionTitleStyle = (styles: any) => {
+  if (!styles) return {};
 
-// 🚀 分隔线样式
-const dividerStyle = computed(() => ({
-  height: componentStyles.value.dividerHeight || '2px',
-  background: componentStyles.value.dividerColor || primaryColor.value,
-  marginBottom: componentStyles.value.dividerMargin || '20px',
-  width: componentStyles.value.dividerWidth || '60px'
-}))
+  return {
+    fontSize: '14px',
+    color: styles.titleColor || '#333',
+    fontWeight: '500',
+    display: 'block',
+    marginBottom: '8px',
+  };
+};
 
-// 🚀 项目项样式
-const itemStyle = computed(() => (project) => {
-  const baseStyle = {
-    backgroundColor: componentStyles.value.cardBackground || '#ffffff',
-    borderRadius: componentStyles.value.cardBorderRadius || '8px',
-    padding: componentStyles.value.cardPadding || '20px',
-    boxShadow: componentStyles.value.cardShadow || '0 2px 8px rgba(0,0,0,0.1)',
-    border: componentStyles.value.cardBorder || '1px solid #f0f0f0'
+const getListItemStyle = (styles: any, type: string) => {
+  if (!styles) return {};
+
+  const baseStyle: any = {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '8px',
+  };
+
+  if (type === 'achievement') {
+    baseStyle.padding = '6px 10px';
+    baseStyle.background = `linear-gradient(135deg, ${styles.achievementBackground || '#f0fff4'}, ${styles.achievementHighlight || '#e6fff7'})`;
+    baseStyle.borderRadius = '6px';
+    baseStyle.borderLeft = `3px solid ${styles.successColor || '#52c41a'}`;
+    baseStyle.marginBottom = '6px';
   }
 
-  // 可以针对不同的项目添加特殊样式
-  const projectSpecificStyle = {}
+  return baseStyle;
+};
 
-  return { ...baseStyle, ...projectSpecificStyle }
-})
+const getListItemTextStyle = (styles: any) => {
+  if (!styles) return {};
 
-// 🚀 技术栈标签样式
-const technologyTagStyle = computed(() => ({
-  backgroundColor: componentStyles.value.tagBackground || '#e8f4ff',
-  color: componentStyles.value.tagColor || '#409eff',
-  border: componentStyles.value.tagBorder || '1px solid #b3d8ff',
-  borderRadius: componentStyles.value.tagBorderRadius || '4px',
-  padding: componentStyles.value.tagPadding || '4px 8px',
-  fontSize: componentStyles.value.tagFontSize || '12px'
-}))
+  return {
+    fontSize: '13px',
+    color: styles.textColor || '#666',
+    lineHeight: '1.5',
+    flex: 1,
+  };
+};
 
-// 🚀 空状态样式
-const emptyStateStyle = computed(() => ({
-  backgroundColor: componentStyles.value.emptyBackground || '#fafafa',
-  border: componentStyles.value.emptyBorder || '1px dashed #e0e0e0',
-  borderRadius: componentStyles.value.emptyBorderRadius || '8px',
-  padding: componentStyles.value.emptyPadding || '40px 20px'
-}))
+const getMarkerStyle = (styles: any) => {
+  if (!styles) return {};
 
-// 🚀 格式化日期
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  return dateStr.replace(/-/g, '.')
-}
+  return {
+    color: styles.markerColor || styles.accentColor || '#5ac8fa',
+    fontSize: '14px',
+    marginTop: '2px',
+    flexShrink: 0,
+  };
+};
 
-// 🚀 打开链接
-const openLink = (url) => {
-  if (url) {
-    uni.navigateTo({
-      url: `/pages/webview/webview?url=${encodeURIComponent(url)}`
-    })
-  }
-}
+const getAchievementMarkerStyle = (styles: any) => {
+  if (!styles) return {};
 
-// 🚀 组件加载日志
-console.log('项目经历组件加载完成', {
-  组件名称: componentName.value,
-  项目经历数量: projects.value.length,
-  组件样式: componentStyles.value,
-  全局样式: props.globalStyle,
-  主题: props.theme,
-  自定义样式: props.customStyles
-})
+  return {
+    color: styles.successColor || '#52c41a',
+    fontSize: '14px',
+    marginTop: '1px',
+    flexShrink: 0,
+  };
+};
+
+const getTechTagStyle = (styles: any, tech: string) => {
+  if (!styles) return {};
+
+  // 为不同的技术类型设置不同的颜色
+  const techColors: Record<string, { background: string, color: string }> = {
+    // 前端技术
+    'Vue': { background: '#e6f7ff', color: '#5ac8fa' },
+    'React': { background: '#f0f7ff', color: '#61dafb' },
+    'TypeScript': { background: '#f0f7ff', color: '#3178c6' },
+    'JavaScript': { background: '#fff7e6', color: '#f0db4f' },
+    // 后端技术
+    'Java': { background: '#fff1f0', color: '#e34c26' },
+    'Spring': { background: '#f6ffed', color: '#6db33f' },
+    'Node.js': { background: '#f6ffed', color: '#68a063' },
+    // 数据库
+    'MySQL': { background: '#f0f7ff', color: '#00758f' },
+    'MongoDB': { background: '#f6ffed', color: '#47a248' },
+    // 默认
+    'default': {
+      background: styles.tagBackground || '#e6f7ff',
+      color: styles.tagColor || styles.accentColor || '#5ac8fa'
+    }
+  };
+
+  const techKey = Object.keys(techColors).find(key =>
+    tech.toLowerCase().includes(key.toLowerCase())
+  ) || 'default';
+
+  const { background, color } = techColors[techKey];
+
+  return {
+    fontSize: '12px',
+    color: color,
+    background: background,
+    padding: '4px 10px',
+    borderRadius: '15px',
+    border: `1px solid ${color}30`, // 30表示透明度0.3
+    transition: 'all 0.2s ease',
+  };
+};
+
+const getMetricsStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    display: 'flex',
+    justifyContent: 'space-around',
+    marginTop: '16px',
+    paddingTop: '16px',
+    borderTop: '1px solid #eee',
+    textAlign: 'center',
+  };
+};
+
+const getMetricValueStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '20px',
+    color: styles.primaryColor || '#1890ff',
+    fontWeight: 'bold',
+    display: 'block',
+    marginBottom: '4px',
+  };
+};
+
+const getMetricLabelStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '12px',
+    color: '#666',
+    display: 'block',
+  };
+};
+
+const getEmptyStateStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    textAlign: 'center',
+    padding: '60px 20px',
+    color: '#999',
+    background: 'repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f0f0f0 10px, #f0f0f0 20px)',
+    borderRadius: '8px',
+    border: '2px dashed #ddd',
+  };
+};
 </script>
 
-<style lang="scss" scoped>
-.project-section {
-  margin-bottom: 40rpx;
-  transition: all 0.3s ease;
+<style scoped lang="scss">
+.project-experience-container {
+  position: relative;
+}
 
-  // 使用CSS变量
-  background-color: var(--background-color);
-  font-family: var(--font-family);
-  color: var(--text-color);
-  font-size: var(--font-size-body);
-  padding: var(--padding);
-
-  // 主题样式
-  &.theme-light {
-    --primary-color: #d4af37;
-    --accent-color: #f7ef8a;
-    --background-color: #ffffff;
-    --text-color: #333333;
-  }
-
-  &.theme-dark {
-    --primary-color: #177ddc;
-    --accent-color: #49aa19;
-    --background-color: #141414;
-    --text-color: #ffffff;
-  }
-
-  &.theme-classic {
-    --primary-color: #2c3e50;
-    --accent-color: #2c3e50;
-    --background-color: #f8f9fa;
-    --text-color: #333333;
-  }
-
-  // 空状态样式
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60rpx 30rpx;
-
-    .empty-icon {
-      font-size: 60rpx;
-      margin-bottom: 20rpx;
-      opacity: 0.5;
-    }
-
-    .empty-text {
-      color: #999;
-      font-size: 28rpx;
-    }
-  }
-
-  // 项目头部信息
-  .project-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20rpx;
-
-    .project-main {
-      flex: 1;
-
-      .project-name {
-        font-size: 32rpx;
-        font-weight: 600;
-        display: block;
-        margin-bottom: 8rpx;
-      }
-
-      .role-info {
-        .role {
-          font-size: 26rpx;
-          font-weight: 500;
-        }
-
-        .company {
-          font-size: 26rpx;
-        }
-      }
-    }
-
-    .project-time {
-      text-align: right;
-      min-width: 200rpx;
-
-      .duration {
-        font-size: 24rpx;
-        display: block;
-        margin-bottom: 4rpx;
-      }
-
-      .duration-label {
-        font-size: 22rpx;
-      }
-    }
-  }
-
-  // 项目描述
-  .project-description {
-    margin-bottom: 20rpx;
-    padding-top: 20rpx;
-    border-top: 1rpx solid #f0f0f0;
-
-    .description-text {
-      font-size: 26rpx;
-      line-height: 1.6;
-    }
-  }
-
-  // 技术栈标签
-  .technologies-section {
-    margin-bottom: 20rpx;
-
-    .technologies-title {
-      font-size: 26rpx;
-      font-weight: 500;
-      display: block;
-      margin-bottom: 12rpx;
-    }
-
-    .technology-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12rpx;
-
-      .technology-tag {
-        font-size: 22rpx;
-      }
-    }
-  }
-
-  // 职责列表
-  .responsibilities {
-    margin-bottom: 20rpx;
-
-    .responsibilities-title {
-      font-size: 26rpx;
-      font-weight: 500;
-      display: block;
-      margin-bottom: 12rpx;
-    }
-
-    .responsibilities-list {
-      .responsibility-item {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 12rpx;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-
-        .responsibility-icon {
-          margin-right: 12rpx;
-          font-size: 24rpx;
-          flex-shrink: 0;
-          margin-top: 4rpx;
-        }
-
-        .responsibility-text {
-          font-size: 24rpx;
-          line-height: 1.4;
-          flex: 1;
-        }
-      }
-    }
-  }
-
-  // 成就列表
-  .achievements {
-    margin-bottom: 20rpx;
-
-    .achievements-title {
-      font-size: 26rpx;
-      font-weight: 500;
-      display: block;
-      margin-bottom: 12rpx;
-    }
-
-    .achievements-list {
-      .achievement-item {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 12rpx;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-
-        .achievement-icon {
-          margin-right: 12rpx;
-          font-size: 24rpx;
-          flex-shrink: 0;
-          margin-top: 4rpx;
-        }
-
-        .achievement-text {
-          font-size: 24rpx;
-          line-height: 1.4;
-          flex: 1;
-        }
-      }
-    }
-  }
-
-  // 项目链接
-  .project-link {
-    display: flex;
-    align-items: center;
-    padding-top: 20rpx;
-    border-top: 1rpx solid #f0f0f0;
-
-    .link-icon {
-      margin-right: 8rpx;
-      font-size: 24rpx;
-    }
-
-    .link-text {
-      font-size: 24rpx;
-      text-decoration: underline;
-
-      &:active {
-        opacity: 0.7;
-      }
-    }
-  }
-
-  // 项目分隔线
-  .item-divider {
-    height: 1rpx;
-    margin: 30rpx 0;
+.project-item {
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
   }
 }
 
-// 响应式调整
-@media (max-width: 768px) {
-  .project-section {
-    .project-header {
-      flex-direction: column;
+.current-project {
+  position: relative;
 
-      .project-time {
-        text-align: left;
-        margin-top: 10rpx;
-        min-width: auto;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, #52c41a, #73d13d);
+    border-radius: 2px 0 0 2px;
+  }
+}
+
+.project-header {
+  position: relative;
+}
+
+.project-title-section {
+  flex: 1;
+  min-width: 0; // 防止flex item溢出
+}
+
+.project-role {
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.role-text {
+  white-space: nowrap;
+}
+
+.project-time {
+  flex-shrink: 0;
+}
+
+.project-link {
+  &:hover {
+    .link-text {
+      text-decoration: underline;
+    }
+  }
+}
+
+.project-description {
+  text-align: justify;
+}
+
+.project-responsibilities,
+.project-achievements,
+.project-technologies {
+  .section-title {
+    display: flex;
+    align-items: center;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 16px;
+      background: currentColor;
+      margin-right: 8px;
+      border-radius: 2px;
+    }
+  }
+}
+
+.responsibilities-list,
+.achievements-list {
+  .list-item {
+    &:hover {
+      background: rgba(90, 200, 250, 0.05);
+      border-radius: 4px;
+      padding-left: 8px;
+    }
+  }
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tech-tag {
+  cursor: default;
+  user-select: none;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.project-metrics {
+  .metric-item {
+    &:hover {
+      .metric-value {
+        transform: scale(1.1);
+        transition: transform 0.3s ease;
       }
     }
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  .empty-icon {
+    font-size: 48px;
+    opacity: 0.5;
+  }
+
+  .empty-text {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .empty-hint {
+    font-size: 12px;
+    color: #ccc;
+  }
+}
+
+/* 时间线布局 */
+.timeline-layout {
+  .project-item {
+    position: relative;
+    padding-left: 32px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 24px;
+      bottom: -24px;
+      width: 2px;
+      background: #e8e8e8;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 24px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1890ff;
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px #1890ff;
+    }
+
+    &:last-child::before {
+      display: none;
+    }
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .project-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .project-time {
+    align-self: flex-start;
+  }
+
+  .tech-tags {
+    gap: 6px;
+  }
+
+  .tech-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .project-metrics {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+/* 打印优化 */
+@media print {
+  .project-item {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    background: white !important;
+  }
+
+  .tech-tag {
+    border: 1px solid #333 !important;
+    background: white !important;
+    color: #333 !important;
   }
 }
 </style>

@@ -1,529 +1,597 @@
 <template>
-  <view
-    :class="['job-intention', `layout-${layout}`, `theme-${theme}`]"
-    :style="containerStyle"
+  <BaseComponent
+    :title="componentName"
+    :component-data="componentData"
+    :global-style="globalStyle"
+    :custom-styles="customStyles"
   >
-    <view class="section-header" :style="headerStyle">
-      <text class="section-title" :style="titleStyle">{{ title }}</text>
-      <view class="section-divider" :style="dividerStyle"></view>
-    </view>
+    <template #default="{ styles }">
+      <view
+        class="job-intention-container"
+        :style="getContainerStyle(styles)"
+      >
+        <!-- 占位符：当没有意向数据时 -->
+        <view
+          v-if="intentions.length === 0"
+          class="empty-placeholder"
+          :style="getPlaceholderStyle(styles)"
+        >
+          <view class="placeholder-icon">🎯</view>
+          <text class="placeholder-text">暂无求职意向信息</text>
+          <text class="placeholder-hint">请添加您的求职意向</text>
+        </view>
 
-    <!-- 空状态 -->
-    <view v-if="!hasIntentionData" class="empty-state" :style="emptyStateStyle">
-      <text class="empty-icon">💼</text>
-      <text class="empty-text">暂无求职意向</text>
-      <text class="empty-hint">请添加您的求职期望</text>
-    </view>
+        <!-- 正常显示：有数据时 -->
+        <template v-else>
+          <view
+            v-for="(intention, index) in sortedIntentions"
+            :key="intention.id"
+            class="intention-item"
+            :style="getItemStyle(styles, index)"
+            @click="handleItemClick(intention)"
+          >
+            <!-- 职位意向主信息 -->
+            <view class="intention-main">
+              <view class="position-row">
+                <text class="position-icon">👔</text>
+                <text class="position-value" :style="getHighlightStyle(styles)">
+                  {{ intention.position }}
+                </text>
+                <view v-if="intention.isPrimary" class="primary-badge" :style="getBadgeStyle(styles)">
+                  主意向
+                </view>
+              </view>
 
-    <!-- 多求职意向列表 -->
-    <view v-else class="intentions-list">
-      <block v-for="(intention, index) in displayIntentions" :key="intention.id || index">
-        <view class="intention-item" :style="itemStyle">
-          <!-- 主要求职信息 -->
-          <view class="primary-info">
-            <text class="position" :style="positionStyle">{{ intention.position }}</text>
-            <view class="meta-info" :style="metaInfoStyle">
-              <text v-if="intention.city && showLocation" class="meta-item" :style="metaItemStyle">
-                <text class="icon">📍</text>
-                {{ intention.city }}
+              <!-- 标签区域 -->
+              <view class="intention-tags">
+                <view
+                  v-if="showJobType && intention.jobType"
+                  class="tag-item"
+                  :style="getTagStyle(styles, 'type')"
+                >
+                  <text class="tag-icon">📝</text>
+                  <text class="tag-text">{{ intention.jobType }}</text>
+                </view>
+
+                <view
+                  v-if="showWorkLocation && intention.city"
+                  class="tag-item"
+                  :style="getTagStyle(styles, 'location')"
+                >
+                  <text class="tag-icon">📍</text>
+                  <text class="tag-text">{{ intention.city }}</text>
+                </view>
+
+                <view
+                  v-if="showExpectedSalary && intention.salary"
+                  class="tag-item"
+                  :style="getTagStyle(styles, 'salary')"
+                >
+                  <text class="tag-icon">💰</text>
+                  <text class="tag-text">{{ formatSalary(intention.salary) }}</text>
+                </view>
+
+                <view
+                  v-if="showOnboardingTime && intention.onboardingTime"
+                  class="tag-item"
+                  :style="getTagStyle(styles, 'time')"
+                >
+                  <text class="tag-icon">📅</text>
+                  <text class="tag-text">{{ intention.onboardingTime }}</text>
+                </view>
+              </view>
+            </view>
+
+            <!-- 详细字段（可展开） -->
+            <view
+              v-if="showDetailFields && isExpandedIndex === index"
+              class="intention-details"
+              :style="getDetailStyle(styles)"
+            >
+              <view class="detail-grid">
+                <view
+                  v-if="showExpectedIndustry && intention.industry"
+                  class="detail-item"
+                >
+                  <text class="detail-label">期望行业：</text>
+                  <text class="detail-value">{{ intention.industry }}</text>
+                </view>
+
+                <view
+                  v-if="showCurrentStatus && intention.currentStatus"
+                  class="detail-item"
+                >
+                  <text class="detail-label">当前状态：</text>
+                  <text class="detail-value">{{ intention.currentStatus }}</text>
+                </view>
+
+                <view
+                  v-if="intention.workType"
+                  class="detail-item"
+                >
+                  <text class="detail-label">工作性质：</text>
+                  <text class="detail-value">{{ intention.workType }}</text>
+                </view>
+
+                <view
+                  v-if="intention.description"
+                  class="detail-item full-width"
+                >
+                  <text class="detail-label">补充说明：</text>
+                  <text class="detail-value">{{ intention.description }}</text>
+                </view>
+              </view>
+            </view>
+
+            <!-- 展开/收起按钮 -->
+            <view
+              v-if="showDetailFields && hasDetailContent(intention)"
+              class="expand-toggle"
+              @click.stop="toggleExpand(index)"
+            >
+              <text class="toggle-text">
+                {{ isExpandedIndex === index ? '收起详情' : '查看详情' }}
               </text>
-              <text v-if="showSalary && intention.salary" class="meta-item" :style="metaItemStyle">
-                <text class="icon">💰</text>
-                {{ formatSalary(intention.salary) }}
-              </text>
-              <text v-if="showJobType" class="meta-item" :style="metaItemStyle">
-                <text class="icon">🕐</text>
-                {{ formatJobType(intention.jobType) }}
+              <text class="toggle-icon">
+                {{ isExpandedIndex === index ? '▲' : '▼' }}
               </text>
             </view>
           </view>
-
-          <!-- 工作类型标签 -->
-          <view v-if="intention.jobType && showJobTypeTag" class="job-type-tag" :style="tagStyle">
-            <text class="tag-text">{{ formatJobType(intention.jobType) }}</text>
-          </view>
-        </view>
-
-        <!-- 分隔线 -->
-        <view v-if="index < displayIntentions.length - 1" class="item-divider" :style="dividerLineStyle"></view>
-      </block>
-
-      <!-- 显示更多/收起按钮 -->
-      <view v-if="intentions.length > maxDisplayItems" class="show-more-btn" @click="toggleShowAll" :style="buttonStyle">
-        <text class="btn-text">
-          {{ showAll ? '收起' : `查看更多（${intentions.length - maxDisplayItems}项）` }}
-        </text>
-        <text class="btn-icon">{{ showAll ? '↑' : '↓' }}</text>
+        </template>
       </view>
-    </view>
-  </view>
+    </template>
+  </BaseComponent>
 </template>
 
-<script setup>
-import { computed, ref } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from "vue";
+import BaseComponent from "./BaseComponent.vue";
+import type { TemplateGlobalStyle } from "@/types/template";
+import type { JobIntentionResult } from "@/types/job-intention";
 
-const props = defineProps({
-  component: {
-    type: Object,
-    default: () => ({})
-  },
-  globalStyle: {
-    type: Object,
-    default: () => ({})
-  },
-  theme: {
-    type: String,
-    default: 'light'
-  }
-})
+interface Props {
+  componentData: any;
+  globalStyle?: TemplateGlobalStyle;
+  customStyles?: Record<string, any>;
+}
 
-const showAll = ref(false)
-const maxDisplayItems = ref(3)
+const props = defineProps<Props>();
 
-// 🚀 修复点1：正确提取组件配置
-const componentConfig = computed(() => {
-  return props.component || {}
-})
+// 展开状态的索引
+const isExpandedIndex = ref<number | null>(null);
 
-// 提取配置
-const componentProps = computed(() => componentConfig.value.props || {})
-const componentStyles = computed(() => componentConfig.value.styles || {})
-const defaultConfig = computed(() => componentConfig.value.defaultConfig || {})
+const componentName = computed(() =>
+  props.componentData?.name || '求职意向'
+);
 
-// 🚀 修复点2：合并样式配置
-const mergedStyles = computed(() => {
-  const defaultStyles = defaultConfig.value.styles || {}
-  const customStyles = componentStyles.value
+// 组件数据和配置
+const componentProps = computed(() =>
+  props.componentData?.props || {}
+);
 
-  // 优先级：自定义样式 > 默认样式 > 全局样式
+const defaultConfig = computed(() =>
+  props.componentData?.defaultConfig || {}
+);
+
+// 求职意向数据
+const intentions = computed<JobIntentionResult[]>(() =>
+  componentProps.value.intentions || []
+);
+
+// 排序后的意向（主意向优先）
+const sortedIntentions = computed(() => {
+  return [...intentions.value].sort((a, b) => {
+    if (a.isPrimary && !b.isPrimary) return -1;
+    if (!a.isPrimary && b.isPrimary) return 1;
+    return 0;
+  });
+});
+
+// 显示控制 - 从默认配置中获取
+const showExpectedSalary = computed(() =>
+  defaultConfig.value.props?.showExpectedSalary ??
+  componentProps.value.showSalary ??
+  false
+);
+
+const showWorkLocation = computed(() =>
+  defaultConfig.value.props?.showWorkLocation ??
+  componentProps.value.showLocation ??
+  true
+);
+
+const showJobType = computed(() =>
+  defaultConfig.value.props?.showJobType ?? true
+);
+
+const showCurrentStatus = computed(() =>
+  defaultConfig.value.props?.showCurrentStatus ?? false
+);
+
+const showExpectedIndustry = computed(() =>
+  defaultConfig.value.props?.showExpectedIndustry ?? false
+);
+
+const showOnboardingTime = computed(() =>
+  defaultConfig.value.props?.showOnboardingTime ?? false
+);
+
+const showDetailFields = computed(() =>
+  defaultConfig.value.props?.showDetailFields ?? true
+);
+
+const salaryUnit = computed(() =>
+  defaultConfig.value.props?.salaryUnit || 'K'
+);
+
+// 样式计算函数
+const getContainerStyle = (styles: any) => {
+  if (!styles) return {};
+
   return {
-    ...defaultStyles,
-    ...customStyles
-  }
-})
+    padding: styles.padding,
+    backgroundColor: styles.backgroundColor,
+    borderRadius: styles.borderRadius,
+    boxShadow: styles.boxShadow,
+    fontFamily: styles.fontFamily,
+    fontSize: styles.bodySize,
+    lineHeight: styles.lineHeight,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px'
+  };
+};
 
-// 🚀 修复点3：从全局样式中获取CSS变量
-const cssVariables = computed(() => {
+const getItemStyle = (styles: any, index: number) => {
+  if (!styles) return {};
+
   return {
-    '--primary-color': props.globalStyle.primaryColor || '#2c3e50',
-    '--secondary-color': props.globalStyle.secondaryColor || '#2c3e50',
-    '--accent-color': props.globalStyle.accentColor || '#2c3e50',
-    '--background-color': props.globalStyle.backgroundColor || '#f8f9fa',
-    '--text-color': props.globalStyle.textColor || '#333333',
-    '--font-family': props.globalStyle.fontFamily || "'Times New Roman', serif",
-    '--font-size-body': props.globalStyle.fontSizes?.body ? `${props.globalStyle.fontSizes.body}px` : '16px',
-    '--font-size-h1': props.globalStyle.fontSizes?.h1 ? `${props.globalStyle.fontSizes.h1}px` : '36px',
-  }
-})
+    padding: '16px',
+    backgroundColor: '#ffffff',
+    borderRadius: '8px',
+    border: `1px solid ${styles.secondaryColor || '#e8e8e8'}`,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+    marginBottom: index < sortedIntentions.value.length - 1 ? '12px' : '0',
+    transition: 'all 0.3s ease',
+    cursor: 'pointer'
+  };
+};
 
-// 🚀 修复点4：容器样式 - 应用CSS变量和组件样式
-const containerStyle = computed(() => {
+const getHighlightStyle = (styles: any) => {
+  if (!styles) return {};
+
   return {
-    ...cssVariables.value,
-    marginBottom: props.globalStyle.spacing?.sectionMargin || '24px',
-    padding: mergedStyles.value.padding || '20px',
-    borderRadius: mergedStyles.value.borderRadius || '8px',
-    backgroundColor: mergedStyles.value.backgroundColor || mergedStyles.value.cardBackground || '#ffffff',
-    boxShadow: mergedStyles.value.boxShadow || '0 2px 8px rgba(0,0,0,0.1)',
-    // 其他组件特定样式
-    ...componentStyles.value
-  }
-})
+    color: styles.highlightColor || styles.primaryColor || '#1890ff',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    marginLeft: '8px'
+  };
+};
 
-// 标题相关计算
-const title = computed(() => componentProps.value.title || defaultConfig.value.props?.title || '求职意向')
+const getBadgeStyle = (styles: any) => {
+  if (!styles) return {};
 
-const titleStyle = computed(() => ({
-  color: mergedStyles.value.titleColor || cssVariables.value['--primary-color'],
-  fontSize: mergedStyles.value.titleFontSize || cssVariables.value['--font-size-h1'],
-  fontWeight: 'bold'
-}))
+  return {
+    backgroundColor: styles.primaryColor || '#1890ff',
+    color: '#ffffff',
+    fontSize: '12px',
+    padding: '2px 8px',
+    borderRadius: '12px',
+    marginLeft: '12px'
+  };
+};
 
-const headerStyle = computed(() => ({
-  marginBottom: '20px'
-}))
+const getTagStyle = (styles: any, type: string) => {
+  if (!styles) return {};
 
-const dividerStyle = computed(() => ({
-  background: mergedStyles.value.highlightColor || cssVariables.value['--accent-color'],
-  height: '2px',
-  width: '60px',
-  marginTop: '8px'
-}))
+  const baseStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '6px 12px',
+    borderRadius: '16px',
+    fontSize: '12px',
+    fontWeight: 500
+  };
 
-// 求职意向数据适配
-const intentions = computed(() => {
-  // 优先从 intentions 字段获取
-  const rawIntentions = componentProps.value.intentions || []
-
-  console.log('求职意向数据:', {
-    原始数据: componentProps.value,
-    intentions字段: rawIntentions,
-    组件props: componentProps.value
-  })
-
-  // 如果没有数组数据，尝试从单个字段构造（兼容旧数据格式）
-  if (rawIntentions.length === 0) {
-    const position = componentProps.value.position
-    if (position) {
-      return [{
-        id: Date.now(),
-        position: position,
-        salary: componentProps.value.salary,
-        jobType: componentProps.value.jobType || '全职',
-        city: componentProps.value.city || componentProps.value.location || ''
-      }]
+  const typeColors: Record<string, any> = {
+    salary: {
+      backgroundColor: 'rgba(255, 107, 107, 0.1)',
+      color: '#ff6b6b',
+      border: '1px solid rgba(255, 107, 107, 0.2)'
+    },
+    location: {
+      backgroundColor: 'rgba(90, 200, 250, 0.1)',
+      color: '#5ac8fa',
+      border: '1px solid rgba(90, 200, 250, 0.2)'
+    },
+    type: {
+      backgroundColor: 'rgba(82, 196, 26, 0.1)',
+      color: '#52c41a',
+      border: '1px solid rgba(82, 196, 26, 0.2)'
+    },
+    time: {
+      backgroundColor: 'rgba(255, 193, 7, 0.1)',
+      color: '#ffc107',
+      border: '1px solid rgba(255, 193, 7, 0.2)'
     }
-  }
+  };
 
-  // 处理接口返回的数据结构
-  return rawIntentions.map(item => ({
-    id: item.id || Date.now(),
-    position: item.position || '',
-    salary: item.salary || '',
-    jobType: item.jobType || '全职',
-    city: item.city || ''
-  })).sort((a, b) => {
-    // 按ID降序排列，显示最新的意向
-    return (b.id || 0) - (a.id || 0)
-  })
-})
-
-const hasIntentionData = computed(() => intentions.value.length > 0)
-
-// 显示的意向列表
-const displayIntentions = computed(() => {
-  if (showAll.value) {
-    return intentions.value
-  }
-  return intentions.value.slice(0, maxDisplayItems.value)
-})
-
-// 项目样式
-const itemStyle = computed(() => ({
-  background: mergedStyles.value.cardBackground || mergedStyles.value.backgroundColor || '#ffffff',
-  padding: mergedStyles.value.itemPadding || mergedStyles.value.padding || '20px',
-  borderRadius: mergedStyles.value.itemRadius || '8px',
-  marginBottom: mergedStyles.value.itemMargin || '16px',
-  border: mergedStyles.value.border || '1px solid #f0f0f0',
-  boxShadow: mergedStyles.value.itemShadow || '0 1px 3px rgba(0,0,0,0.1)',
-  position: 'relative'
-}))
-
-const positionStyle = computed(() => ({
-  color: mergedStyles.value.positionColor || cssVariables.value['--text-color'],
-  fontSize: mergedStyles.value.positionFontSize || cssVariables.value['--font-size-h1'],
-  fontWeight: '600',
-  marginBottom: '12px'
-}))
-
-const metaInfoStyle = computed(() => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '16px'
-}))
-
-const metaItemStyle = computed(() => ({
-  color: mergedStyles.value.metaColor || '#666',
-  fontSize: mergedStyles.value.metaFontSize || cssVariables.value['--font-size-body']
-}))
-
-const tagStyle = computed(() => ({
-  backgroundColor: mergedStyles.value.tagBackground || `rgba(${hexToRgb(cssVariables.value['--primary-color'])}, 0.1)`,
-  color: mergedStyles.value.tagColor || cssVariables.value['--primary-color'],
-  fontSize: mergedStyles.value.tagFontSize || '12px',
-  padding: '4px 12px',
-  borderRadius: '12px',
-  border: `1px solid ${mergedStyles.value.tagBorder || `rgba(${hexToRgb(cssVariables.value['--primary-color'])}, 0.2)`}`
-}))
-
-const dividerLineStyle = computed(() => ({
-  height: '1px',
-  background: mergedStyles.value.dividerColor || '#f0f0f0',
-  margin: '16px 0'
-}))
-
-const emptyStateStyle = computed(() => ({
-  padding: '40px 20px',
-  background: mergedStyles.value.emptyBackground || '#fafafa',
-  borderRadius: '8px',
-  border: `1px dashed ${mergedStyles.value.emptyBorder || '#e0e0e0'}`
-}))
-
-const buttonStyle = computed(() => ({
-  background: mergedStyles.value.buttonBackground || '#f5f7fa',
-  color: mergedStyles.value.buttonColor || cssVariables.value['--primary-color'],
-  padding: '12px 16px',
-  borderRadius: '6px',
-  border: `1px solid ${mergedStyles.value.buttonBorder || '#e4e7ed'}`
-}))
-
-// 布局类型
-const layout = computed(() => {
-  return componentStyles.value.layout ||
-    componentProps.value.layout ||
-    defaultConfig.value.props?.layout ||
-    'card'
-})
-
-// 显示选项 - 修复：正确处理配置
-const showSalary = computed(() => {
-  const propValue = componentProps.value.showSalary
-  const configValue = defaultConfig.value.props?.showSalary
-  return propValue !== undefined ? propValue : (configValue !== undefined ? configValue : true)
-})
-
-const showLocation = computed(() => {
-  const propValue = componentProps.value.showLocation
-  const configValue = defaultConfig.value.props?.showWorkLocation
-  return propValue !== undefined ? propValue : (configValue !== undefined ? configValue : true)
-})
-
-const showJobType = computed(() => {
-  const propValue = componentProps.value.showJobType
-  const configValue = defaultConfig.value.props?.showJobType
-  return propValue !== undefined ? propValue : (configValue !== undefined ? configValue : true)
-})
-
-const showJobTypeTag = computed(() => {
-  const propValue = componentProps.value.showJobTypeTag
-  return propValue !== undefined ? propValue : true
-})
-
-// 辅助函数：16进制颜色转RGB
-const hexToRgb = (hex) => {
-  if (!hex) return '44, 62, 80' // 默认颜色
-
-  hex = hex.replace('#', '')
-
-  if (hex.length === 3) {
-    hex = hex.split('').map(char => char + char).join('')
-  }
-
-  const r = parseInt(hex.substring(0, 2), 16)
-  const g = parseInt(hex.substring(2, 4), 16)
-  const b = parseInt(hex.substring(4, 6), 16)
-
-  return `${r}, ${g}, ${b}`
-}
-
-// 格式化薪资
-const formatSalary = (salary) => {
-  if (!salary || salary === '面议') return '面议'
-
-  // 如果薪资是数字字符串，格式化为K为单位
-  if (/^\d+$/.test(salary)) {
-    const num = parseInt(salary)
-    if (num >= 10000) {
-      return `${(num / 10000).toFixed(1)}万/月`
-    } else if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}K/月`
+  return {
+    ...baseStyle,
+    ...typeColors[type] || {
+      backgroundColor: 'rgba(0, 0, 0, 0.05)',
+      color: '#666',
+      border: '1px solid rgba(0, 0, 0, 0.1)'
     }
-    return `${salary}元/月`
+  };
+};
+
+const getDetailStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    marginTop: '16px',
+    paddingTop: '16px',
+    borderTop: `1px dashed ${styles.secondaryColor || '#eee'}`,
+    animation: 'slideDown 0.3s ease-out'
+  };
+};
+
+const getPlaceholderStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    textAlign: 'center',
+    padding: '40px 20px',
+    color: '#999',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '12px'
+  };
+};
+
+// 辅助函数
+const formatSalary = (salary: string | number) => {
+  if (!salary) return '面议';
+
+  const num = typeof salary === 'string' ? parseFloat(salary) : salary;
+  if (isNaN(num)) return '面议';
+
+  if (salaryUnit.value === 'K') {
+    // 如果数字很大，可能是以分为单位，转换为元再转K
+    const yuan = num >= 10000 ? num / 100 : num;
+    return `${(yuan / 1000).toFixed(1)}K`;
+  } else {
+    // 直接显示元
+    const yuan = num >= 10000 ? num / 100 : num;
+    return `${yuan.toLocaleString()}元`;
   }
+};
 
-  // 尝试处理带单位的数据
-  if (typeof salary === 'string') {
-    const unit = componentProps.value.salaryUnit || defaultConfig.value.props?.salaryUnit || 'K'
-    return `${salary}${unit}/月`
-  }
+const hasDetailContent = (intention: JobIntentionResult) => {
+  return !!(
+    intention.industry ||
+    intention.currentStatus ||
+    intention.workType ||
+    intention.description
+  );
+};
 
-  return String(salary)
-}
+const toggleExpand = (index: number) => {
+  isExpandedIndex.value = isExpandedIndex.value === index ? null : index;
+};
 
-// 格式化工作类型
-const formatJobType = (jobType) => {
-  if (!jobType) return '全职'
-
-  const typeMap = {
-    '全': '全职',
-    '兼': '兼职',
-    '实': '实习',
-    'remote': '远程',
-    'freelance': '自由职业',
-    'fulltime': '全职',
-    'parttime': '兼职',
-    'internship': '实习',
-    'contract': '合同制',
-    'temporary': '临时'
-  }
-
-  return typeMap[jobType] || jobType
-}
-
-// 切换显示全部
-const toggleShowAll = () => {
-  showAll.value = !showAll.value
-}
-
-// 组件加载日志
-console.log('求职意向组件加载完成', {
-  组件配置: componentConfig.value,
-  组件属性: componentProps.value,
-  组件样式: componentStyles.value,
-  默认配置: defaultConfig.value,
-  合并后样式: mergedStyles.value,
-  求职意向数据: intentions.value,
-  求职意向数量: intentions.value.length,
-  显示选项: {
-    showSalary: showSalary.value,
-    showLocation: showLocation.value,
-    showJobType: showJobType.value
-  }
-})
+const handleItemClick = (intention: JobIntentionResult) => {
+  // 可以在这里触发编辑或查看详情
+  console.log('点击求职意向:', intention);
+};
 </script>
 
-<style lang="scss" scoped>
-.job-intention {
-  margin-bottom: 40rpx;
-  font-family: var(--font-family);
-  color: var(--text-color);
+<style scoped>
+.job-intention-container {
+  font-family: inherit;
+}
 
-  // 通用样式
-  .section-header {
-    margin-bottom: 20px;
+.intention-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-color: rgba(90, 200, 250, 0.5);
+}
 
-    .section-title {
-      font-size: var(--font-size-h1);
-      font-weight: 600;
-      color: var(--primary-color);
-    }
+.position-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
 
-    .section-divider {
-      height: 2px;
-      background: var(--accent-color);
-      width: 60px;
-      margin-top: 8px;
-    }
+.position-icon {
+  font-size: 20px;
+}
+
+.position-value {
+  flex: 1;
+}
+
+.intention-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+  transform: scale(1.05);
+}
+
+.tag-icon {
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.detail-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-label {
+  color: #666;
+  font-size: 13px;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  color: #333;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.expand-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 8px;
+  color: #5ac8fa;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  border-top: 1px solid #f0f0f0;
+}
+
+.expand-toggle:hover {
+  background: rgba(90, 200, 250, 0.05);
+  border-radius: 4px;
+}
+
+.toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.toggle-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.empty-placeholder {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.placeholder-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.placeholder-hint {
+  font-size: 12px;
+  color: #999;
+}
+
+/* 动画 */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
   }
-
-  // 空状态
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60rpx 30rpx;
-    text-align: center;
-    background: #fafafa;
-    border-radius: 16rpx;
-    border: 1rpx dashed #e0e0e0;
-
-    .empty-icon {
-      font-size: 60rpx;
-      margin-bottom: 20rpx;
-      opacity: 0.5;
-    }
-
-    .empty-text {
-      color: #666;
-      font-size: 30rpx;
-      font-weight: 500;
-      margin-bottom: 12rpx;
-    }
-
-    .empty-hint {
-      color: #999;
-      font-size: 24rpx;
-    }
-  }
-
-  // 意向项
-  .intention-item {
-    .primary-info {
-      .position {
-        font-size: var(--font-size-h1);
-        font-weight: 600;
-        margin-bottom: 20rpx;
-        display: block;
-      }
-
-      .meta-info {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 24rpx;
-        margin-bottom: 16rpx;
-
-        .meta-item {
-          display: flex;
-          align-items: center;
-          color: #666;
-          font-size: 26rpx;
-
-          .icon {
-            margin-right: 8rpx;
-            font-size: 24rpx;
-          }
-        }
-      }
-    }
-
-    .job-type-tag {
-      position: absolute;
-      top: 30rpx;
-      right: 30rpx;
-      padding: 4rpx 12rpx;
-      border-radius: 20rpx;
-      font-size: 22rpx;
-      border: 1rpx solid;
-
-      .tag-text {
-        font-weight: 500;
-      }
-    }
-  }
-
-  // 分隔线
-  .item-divider {
-    height: 1rpx;
-    background: #f0f0f0;
-    margin: 20rpx 0;
-  }
-
-  // 显示更多按钮
-  .show-more-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f5f7fa;
-    color: var(--primary-color);
-    font-size: 24rpx;
-    padding: 16rpx;
-    border-radius: 12rpx;
-    border: 1rpx solid #e4e7ed;
-    margin-top: 16rpx;
-    cursor: pointer;
-
-    .btn-text {
-      margin-right: 8rpx;
-    }
-
-    .btn-icon {
-      font-size: 20rpx;
-    }
-
-    &:active {
-      background: #e8eaf1;
-    }
+  to {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
   }
 }
 
-// 响应式调整
-@media (max-width: 375px) {
-  .job-intention {
-    .intention-item {
-      .meta-info {
-        flex-direction: column;
-        gap: 12rpx;
-      }
+.intention-details {
+  animation: slideDown 0.3s ease-out;
+  overflow: hidden;
+}
 
-      .job-type-tag {
-        position: relative;
-        top: 0;
-        right: 0;
-        margin-top: 16rpx;
-        display: inline-block;
-      }
-    }
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intention-tags {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tag-item {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .intention-item {
+    padding: 12px;
+  }
+}
+
+/* 暗色主题适配 */
+@media (prefers-color-scheme: dark) {
+  .intention-item {
+    background-color: #1e1e1e;
+    border-color: #333;
+  }
+
+  .detail-label {
+    color: #aaa;
+  }
+
+  .detail-value {
+    color: #ddd;
+  }
+
+  .expand-toggle {
+    border-top-color: #333;
+  }
+}
+
+/* 打印优化 */
+@media print {
+  .intention-item {
+    break-inside: avoid;
+    border: 1px solid #ddd;
+    box-shadow: none;
+  }
+
+  .expand-toggle {
+    display: none;
+  }
+
+  .intention-details {
+    display: block !important;
+    max-height: none !important;
   }
 }
 </style>

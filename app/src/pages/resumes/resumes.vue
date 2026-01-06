@@ -5,9 +5,9 @@
     <!-- 简历预览内容 -->
     <scroll-view class="preview-content" scroll-y="true">
       <!-- 动态模板引擎渲染 -->
-      <DynamicResumesRenderer
+      <DynamicRenderer
         :resume-data="previewData"
-        ref="dynamicResumesRenderer"
+        ref="dynamicRenderer"
       />
     </scroll-view>
 
@@ -472,9 +472,9 @@
             scroll-y="true"
             :style="previewContainerStyle"
           >
-            <DynamicResumesRenderer
+            <DynamicRenderer
               :resume-data="previewDataEdit"
-              ref="dynamicResumesRendererEdit"
+              ref="dynamicRendererEdit"
             />
           </scroll-view>
         </view>
@@ -500,7 +500,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { onLoad, onShow } from "@dcloudio/uni-app";
-import DynamicResumesRenderer from "@/components/DynamicResumesRenderer.vue";
+import DynamicRenderer from "@/components/resumes/DynamicRenderer.vue";
 import ResumesAPI from "@/api/resumes";
 
 // 当前模式：view（查看模式）、edit（编辑模式）
@@ -510,7 +510,7 @@ const resumeId = ref(null);
 const templateId = ref(null);
 const showShareModal = ref(false);
 const qrcodeUrl = ref("");
-const dynamicResumesRenderer = ref(null);
+const dynamicRenderer = ref(null);
 
 // 查看模式数据
 const resumeData = ref({
@@ -537,7 +537,7 @@ const editingData = ref({
   components: [],
 });
 
-const dynamicResumesRendererEdit = ref(null);
+const dynamicRendererEdit = ref(null);
 
 // 响应式布局相关变量
 const screenWidth = ref(0);

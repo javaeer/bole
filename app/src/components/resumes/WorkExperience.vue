@@ -1,873 +1,752 @@
+<!-- components/resumes/WorkExperience.vue -->
 <template>
-  <view
-    :class="['work-experience', `layout-${layout}`, `theme-${theme}`]"
-    :style="rootStyle"
+  <BaseComponent
+    :title="componentName"
+    :component-data="componentData"
+    :global-style="globalStyle"
+    :custom-styles="customStyles"
   >
-    <view class="section-header" :style="headerStyle">
-      <text class="section-title" :style="titleStyle">{{ title }}</text>
-      <view class="section-divider" :style="dividerStyle"></view>
-    </view>
+    <template #default="{ styles }">
+      <view
+        class="work-experience-container"
+        :style="getContainerStyle(styles)"
+      >
+        <!-- 时间线样式 -->
+        <view class="timeline-line" :style="getTimelineStyle(styles)"></view>
 
-    <!-- 空状态 -->
-    <view v-if="!hasExperienceData" class="empty-state">
-      <text class="empty-icon">💼</text>
-      <text class="empty-text">暂无工作经历</text>
-    </view>
+        <view
+          v-for="(experience, index) in sortedExperiences"
+          :key="experience.id || index"
+          class="experience-item"
+          :style="getItemStyle(styles, index, experience.isCurrent)"
+        >
+          <!-- 时间轴节点 -->
+          <view
+            class="timeline-node"
+            :style="getNodeStyle(styles, experience.isCurrent)"
+          ></view>
 
-    <!-- 工作经历列表 -->
-    <view v-else class="experiences-list">
-      <block v-for="(exp, index) in sortedExperiences" :key="exp.id || index">
-        <view class="experience-item" :style="getItemStyle(exp, index)">
-          <!-- 时间线布局 -->
-          <view v-if="layout === 'timeline'" class="timeline-layout">
-            <view class="timeline-dot" :style="dotStyle"></view>
+          <!-- 公司信息区域 -->
+          <view class="experience-content">
+            <!-- 公司名称和logo -->
+            <view class="company-header">
+              <view class="company-info">
+                <text
+                  class="company-name"
+                  :style="getCompanyNameStyle(styles)"
+                >
+                  {{ experience.company }}
+                </text>
+                <text
+                  class="position"
+                  :style="getPositionStyle(styles)"
+                >
+                  {{ experience.position }}
+                </text>
+              </view>
+
+              <!-- 当前工作标识 -->
+              <view
+                v-if="experience.isCurrent"
+                class="current-badge"
+                :style="getCurrentBadgeStyle(styles)"
+              >
+                <text class="badge-text">在职</text>
+              </view>
+            </view>
+
+            <!-- 工作时间和地点 -->
+            <view v-if="showWorkPeriod" class="meta-info">
+              <view v-if="showDuration" class="time-period">
+                <text class="time-icon">📅</text>
+                <text class="time-text" :style="getPeriodStyle(styles)">
+                  {{ formatDate(experience.startDate) }} -
+                  {{ experience.isCurrent ? "至今" : formatDate(experience.endDate) }}
+                  <text v-if="calculateDuration(experience)" class="duration">
+                    ({{ calculateDuration(experience) }})
+                  </text>
+                </text>
+              </view>
+
+              <view v-if="showLocation && experience.location" class="work-location">
+                <text class="location-icon">📍</text>
+                <text class="location-text">{{ experience.location }}</text>
+              </view>
+
+              <view v-if="showDepartment && experience.department" class="department">
+                <text class="department-icon">🏢</text>
+                <text class="department-text">{{ experience.department }}</text>
+              </view>
+            </view>
+
+            <!-- 工作描述 -->
             <view
-              v-if="index < sortedExperiences.length - 1"
-              class="timeline-line"
-              :style="lineStyle"
-            ></view>
+              v-if="experience.description"
+              class="description"
+              :style="getDescriptionStyle(styles)"
+            >
+              {{ experience.description }}
+            </view>
 
-            <view class="experience-content" :style="contentStyle">
-              <view class="company-header">
-                <view class="company-info">
-                  <text class="company-name" :style="companyNameStyle">{{ exp.company }}</text>
-                  <text class="duration" :style="durationStyle">
-                    {{ formatDate(exp.startDate) }} - {{ exp.endDate ? formatDate(exp.endDate) : '至今' }}
-                    <text v-if="exp.duration"> ({{ exp.duration }})</text>
-                  </text>
-                </view>
-                <text class="position" :style="positionStyle">{{ exp.position }}</text>
-              </view>
-
-              <view v-if="exp.department && showDepartment" class="department" :style="departmentStyle">
-                <text class="department-label">部门：</text>
-                <text class="department-value">{{ exp.department }}</text>
-              </view>
-
-              <view v-if="exp.description && showWorkContent" class="experience-desc">
-                <text class="desc-text" :style="descStyle">{{ exp.description }}</text>
-              </view>
-
-              <!-- 工作成就 -->
-              <view v-if="showAchievements && exp.achievements && exp.achievements.length > 0" class="achievements">
-                <text class="achievements-title" :style="achievementsTitleStyle">主要成就：</text>
-                <view class="achievements-list">
-                  <view
-                    v-for="(achievement, aIndex) in exp.achievements"
-                    :key="aIndex"
-                    class="achievement-item"
-                    :style="achievementItemStyle"
-                  >
-                    <text class="achievement-bullet" :style="bulletStyle">•</text>
-                    <text class="achievement-text" :style="achievementTextStyle">{{ achievement }}</text>
-                  </view>
-                </view>
-              </view>
-
-              <!-- 所用技能 -->
-              <view v-if="showSkills && exp.skills && exp.skills.length > 0" class="skills-tags">
-                <text class="skills-title" :style="skillsTitleStyle">使用技能：</text>
-                <view class="skills-container">
-                  <text
-                    v-for="(skill, sIndex) in exp.skills"
-                    :key="sIndex"
-                    class="skill-tag"
-                    :style="tagStyle"
-                  >
-                    {{ skill }}
-                  </text>
+            <!-- 工作职责 -->
+            <view
+              v-if="experience.responsibilities && experience.responsibilities.length > 0"
+              class="responsibilities"
+            >
+              <text class="section-title" :style="getSectionTitleStyle(styles)">
+                工作职责：
+              </text>
+              <view class="responsibilities-list">
+                <view
+                  v-for="(responsibility, rIndex) in experience.responsibilities"
+                  :key="rIndex"
+                  class="responsibility-item"
+                  :style="getListItemStyle(styles)"
+                >
+                  <text class="bullet">•</text>
+                  <text class="item-text">{{ responsibility }}</text>
                 </view>
               </view>
             </view>
-          </view>
 
-          <!-- 卡片布局 -->
-          <view v-else class="card-layout">
-            <view class="experience-card" :style="cardStyle">
-              <view class="card-header">
-                <text class="company-name" :style="companyNameStyle">{{ exp.company }}</text>
-                <text class="position" :style="positionStyle">{{ exp.position }}</text>
+            <!-- 工作成就 -->
+            <view
+              v-if="experience.achievements && experience.achievements.length > 0"
+              class="achievements"
+            >
+              <text class="section-title" :style="getSectionTitleStyle(styles)">
+                主要成就：
+              </text>
+              <view class="achievements-list">
+                <view
+                  v-for="(achievement, aIndex) in experience.achievements"
+                  :key="aIndex"
+                  class="achievement-item"
+                  :style="getListItemStyle(styles)"
+                >
+                  <text class="bullet">🏆</text>
+                  <text class="item-text">{{ achievement }}</text>
+                </view>
               </view>
+            </view>
 
-              <view class="card-meta" :style="metaStyle">
-                <text class="duration" :style="durationStyle">
-                  {{ formatDate(exp.startDate) }} - {{ exp.endDate ? formatDate(exp.endDate) : '至今' }}
-                </text>
-                <text v-if="exp.department && showDepartment" class="department" :style="departmentTagStyle">
-                  {{ exp.department }}
-                </text>
+            <!-- 使用技能 -->
+            <view
+              v-if="showSkills && experience.skills && experience.skills.length > 0"
+              class="skills-used"
+            >
+              <text class="section-title" :style="getSectionTitleStyle(styles)">
+                使用技能：
+              </text>
+              <view class="skills-tags">
+                <view
+                  v-for="(skill, sIndex) in experience.skills"
+                  :key="sIndex"
+                  class="skill-tag"
+                  :style="getSkillTagStyle(styles)"
+                >
+                  {{ skill }}
+                </view>
               </view>
+            </view>
 
-              <view v-if="exp.description && showWorkContent" class="card-desc">
-                <text class="desc-text" :style="descStyle">{{ exp.description }}</text>
-              </view>
-
-              <!-- 卡片布局下的成就 -->
-              <view v-if="showAchievements && exp.achievements && exp.achievements.length > 0" class="card-achievements" :style="achievementsStyle">
-                <text class="achievements-title" :style="achievementsTitleStyle">主要成就：</text>
-                <view class="achievements-list">
-                  <view
-                    v-for="(achievement, aIndex) in exp.achievements"
-                    :key="aIndex"
-                    class="achievement-item"
-                    :style="achievementItemStyle"
-                  >
-                    <text class="achievement-bullet" :style="bulletStyle">•</text>
-                    <text class="achievement-text" :style="achievementTextStyle">{{ achievement }}</text>
+            <!-- 项目成果 -->
+            <view
+              v-if="experience.projects && experience.projects.length > 0"
+              class="projects"
+            >
+              <text class="section-title" :style="getSectionTitleStyle(styles)">
+                参与项目：
+              </text>
+              <view class="projects-list">
+                <view
+                  v-for="(project, pIndex) in experience.projects"
+                  :key="pIndex"
+                  class="project-item"
+                >
+                  <view class="project-header">
+                    <text class="project-name">{{ project.name }}</text>
+                    <text v-if="project.role" class="project-role">{{ project.role }}</text>
+                  </view>
+                  <view v-if="project.description" class="project-description">
+                    {{ project.description }}
                   </view>
                 </view>
               </view>
+            </view>
 
-              <!-- 卡片布局下的技能 -->
-              <view v-if="showSkills && exp.skills && exp.skills.length > 0" class="card-skills" :style="skillsStyle">
-                <text class="skills-title" :style="skillsTitleStyle">使用技能：</text>
-                <view class="skills-container">
-                  <text
-                    v-for="(skill, sIndex) in exp.skills"
-                    :key="sIndex"
-                    class="skill-tag"
-                    :style="tagStyle"
-                  >
-                    {{ skill }}
-                  </text>
-                </view>
-              </view>
+            <!-- 推荐人/证明人 -->
+            <view
+              v-if="showReference && experience.reference"
+              class="reference"
+            >
+              <text class="reference-label">证明人：</text>
+              <text class="reference-name">{{ experience.reference.name }}</text>
+              <text v-if="experience.reference.position" class="reference-position">
+                ({{ experience.reference.position }})
+              </text>
+              <text v-if="experience.reference.contact" class="reference-contact">
+                {{ experience.reference.contact }}
+              </text>
             </view>
           </view>
         </view>
-      </block>
-    </view>
-  </view>
+
+        <!-- 没有工作经历时的占位 -->
+        <view
+          v-if="experiences.length === 0"
+          class="empty-placeholder"
+          :style="getPlaceholderStyle(styles)"
+        >
+          <text class="placeholder-icon">💼</text>
+          <text class="placeholder-text">暂无工作经历</text>
+          <text class="placeholder-hint">点击添加工作经历</text>
+        </view>
+      </view>
+    </template>
+  </BaseComponent>
 </template>
 
-<script setup>
-import { computed } from 'vue'
+<script setup lang="ts">
+import { computed } from "vue";
+import BaseComponent from "./BaseComponent.vue";
+import type { TemplateGlobalStyle } from "@/types/template";
 
-const props = defineProps({
-  component: {
-    type: Object,
-    default: () => ({})
-  },
-  globalStyle: {
-    type: Object,
-    default: () => ({})
-  },
-  theme: {
-    type: String,
-    default: 'light'
-  },
-  style: {
-    type: Object,
-    default: () => ({})
-  }
-})
-
-// 🚀 提取配置 - 正确接收样式
-const componentProps = computed(() => props.component?.props || {})
-const componentStyles = computed(() => {
-  // 合并传入的样式：组件自定义样式 + 全局传入样式
-  const compStyles = props.component?.styles || {}
-  const globalStyles = props.globalStyle || {}
-  const styleProp = props.style || {}
-
-  return {
-    // CSS变量继承
-    ...globalStyles,
-    // 组件自定义样式（如果有）
-    ...compStyles,
-    // 内联样式（来自动态渲染器）
-    ...styleProp
-  }
-})
-const defaultConfig = computed(() => props.component?.defaultConfig || {})
-
-// 🚀 根元素样式
-const rootStyle = computed(() => {
-  const style = componentStyles.value
-
-  // 基础容器样式
-  const baseStyle = {
-    marginBottom: style.marginBottom || style.spacing?.sectionMargin || '40rpx',
-    padding: style.padding || '0rpx',
-    background: style.backgroundColor || 'transparent'
-  }
-
-  // CSS变量
-  const cssVariables = {
-    '--primary-color': style.primaryColor || '#2c3e50',
-    '--secondary-color': style.secondaryColor || '#2c3e50',
-    '--accent-color': style.accentColor || '#2c3e50',
-    '--text-color': style.textColor || '#333333',
-    '--font-family': style.fontFamily || "'Times New Roman', serif",
-    '--font-size-body': style.fontSizes?.body ? `${style.fontSizes.body}px` : '16px',
-    '--font-size-h1': style.fontSizes?.h1 ? `${style.fontSizes.h1}px` : '36px',
-    '--line-height': style.spacing?.lineHeight || '1.8'
-  }
-
-  return {
-    ...cssVariables,
-    ...baseStyle,
-    // 允许覆盖
-    ...style
-  }
-})
-
-// 🚀 标题相关样式
-const headerStyle = computed(() => ({
-  marginBottom: componentStyles.value.itemSpacing || '30rpx'
-}))
-
-const titleStyle = computed(() => ({
-  color: componentStyles.value.titleColor || 'var(--primary-color, #2c3e50)',
-  fontSize: componentStyles.value.titleFontSize || 'var(--font-size-h1, 36rpx)',
-  fontWeight: componentStyles.value.titleFontWeight || '600'
-}))
-
-const dividerStyle = computed(() => ({
-  background: componentStyles.value.timelineColor || 'var(--primary-color, #2c3e50)',
-  width: componentStyles.value.dividerWidth || '80rpx'
-}))
-
-// 工作经历数据
-const experiences = computed(() => {
-  const raw = componentProps.value.experiences || []
-  return raw.map(exp => ({
-    id: exp.id || Date.now(),
-    company: exp.company || exp.companyName || '未指定公司',
-    position: exp.position || exp.jobTitle || '职位未填写',
-    description: exp.description || exp.workContent || '',
-    startDate: exp.startDate || exp.startTime || '',
-    endDate: exp.endDate || exp.endTime || '',
-    isCurrent: exp.isCurrent || false,
-    department: exp.department || exp.dept || '',
-    skills: exp.skills || exp.technologies || [],
-    achievements: exp.achievements || exp.accomplishments || [],
-    duration: exp.duration || ''
-  }))
-})
-
-const hasExperienceData = computed(() => experiences.value.length > 0)
-
-// 标题
-const title = computed(() => componentProps.value.title || defaultConfig.value.props?.title || '工作经历')
-
-// 显示选项
-const showDepartment = computed(() => componentProps.value.showDepartment ?? defaultConfig.value.props?.showDepartment ?? true)
-const showWorkContent = computed(() => componentProps.value.showWorkContent ?? defaultConfig.value.props?.showWorkContent ?? true)
-const showAchievements = computed(() => componentProps.value.showAchievements ?? defaultConfig.value.props?.showAchievements ?? true)
-const showSkills = computed(() => componentProps.value.showSkills ?? defaultConfig.value.props?.showSkills ?? true)
-
-// 布局
-const layout = computed(() => {
-  return componentStyles.value.layout ||
-    componentProps.value.layout ||
-    defaultConfig.value.props?.layout ||
-    'card'
-})
-
-// 排序选项
-const orderBy = computed(() => componentProps.value.orderBy || defaultConfig.value.props?.orderBy || 'startDate')
-const orderDirection = computed(() => componentProps.value.orderDirection || defaultConfig.value.props?.orderDirection || 'desc')
-
-// 排序后的工作经历
-const sortedExperiences = computed(() => {
-  const exps = [...experiences.value]
-
-  if (!orderBy.value || exps.length === 0) return exps
-
-  return exps.sort((a, b) => {
-    let aValue = a[orderBy.value]
-    let bValue = b[orderBy.value]
-
-    // 处理日期比较
-    if (orderBy.value.includes('Date') && aValue && bValue) {
-      aValue = new Date(aValue).getTime()
-      bValue = new Date(bValue).getTime()
-    }
-
-    // 处理空值情况
-    if (aValue === undefined || aValue === null) aValue = 0
-    if (bValue === undefined || bValue === null) bValue = 0
-
-    if (orderDirection.value === 'asc') {
-      return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-    } else {
-      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
-    }
-  })
-})
-
-// 🚀 项目项样式
-const getItemStyle = (exp, index) => {
-  const style = componentStyles.value
-
-  return {
-    marginBottom: style.itemSpacing || '24rpx',
-    transition: 'all 0.3s ease'
-  }
+interface Props {
+  componentData: any;
+  globalStyle?: TemplateGlobalStyle;
+  customStyles?: Record<string, any>;
 }
 
-// 🚀 内容区域样式
-const contentStyle = computed(() => {
-  const style = componentStyles.value
+const props = defineProps<Props>();
 
-  return {
-    background: style.backgroundColor || '#ffffff',
-    borderRadius: style.borderRadius || '16rpx',
-    padding: style.padding || '30rpx',
-    border: style.border || '1rpx solid #f0f0f0'
-  }
-})
+// 获取组件数据
+const componentName = computed(() =>
+  props.componentData?.name || "工作经历"
+);
 
-// 🚀 卡片样式
-const cardStyle = computed(() => {
-  const style = componentStyles.value
+const componentProps = computed(() =>
+  props.componentData?.props || {}
+);
 
-  return {
-    background: style.cardBackground || style.backgroundColor || '#ffffff',
-    borderRadius: style.borderRadius || '16rpx',
-    padding: style.padding || '30rpx',
-    border: style.border || '1rpx solid #f0f0f0'
-  }
-})
+const defaultConfig = computed(() =>
+  props.componentData?.defaultConfig || {}
+);
 
-// 🚀 文字样式
-const companyNameStyle = computed(() => ({
-  color: componentStyles.value.companyColor || '#333333',
-  fontSize: componentStyles.value.companyFontSize || '32rpx',
-  fontWeight: '600'
-}))
+const componentStyles = computed(() =>
+  props.componentData?.styles || {}
+);
 
-const positionStyle = computed(() => ({
-  color: componentStyles.value.positionColor || 'var(--primary-color, #2c3e50)',
-  fontSize: componentStyles.value.positionFontSize || '28rpx',
-  fontWeight: '500'
-}))
+// 工作经验数据
+const experiences = computed(() =>
+  componentProps.value.experiences || []
+);
 
-const durationStyle = computed(() => ({
-  color: componentStyles.value.periodColor || '#999999',
-  fontSize: componentStyles.value.periodFontSize || '24rpx'
-}))
+// 配置选项（从默认配置中获取）
+const showDuration = computed(() =>
+  componentProps.value.showDuration ?? defaultConfig.value.props?.showWorkPeriod ?? true
+);
 
-const descStyle = computed(() => ({
-  color: componentStyles.value.descColor || '#666666',
-  fontSize: componentStyles.value.descFontSize || '26rpx',
-  lineHeight: componentStyles.value.descLineHeight || '1.6'
-}))
+const showCompanyLogo = computed(() =>
+  defaultConfig.value.props?.showCompanyLogo ?? false
+);
 
-const departmentStyle = computed(() => ({
-  color: componentStyles.value.departmentColor || '#666666',
-  fontSize: componentStyles.value.departmentFontSize || '24rpx'
-}))
+const showCompanyName = computed(() =>
+  defaultConfig.value.props?.showCompanyName ?? true
+);
 
-const departmentTagStyle = computed(() => ({
-  color: componentStyles.value.departmentColor || '#666666',
-  fontSize: componentStyles.value.departmentFontSize || '24rpx',
-  background: componentStyles.value.departmentBgColor || '#f5f7fa',
-  padding: '4rpx 12rpx',
-  borderRadius: '4rpx'
-}))
+const showJobTitle = computed(() =>
+  defaultConfig.value.props?.showJobTitle ?? true
+);
 
-const metaStyle = computed(() => ({
-  borderBottom: '1rpx solid #f0f0f0',
-  paddingBottom: '16rpx',
-  marginBottom: '16rpx'
-}))
+const showDepartment = computed(() =>
+  defaultConfig.value.props?.showDepartment ?? false
+);
 
-// 🚀 时间线样式
-const dotStyle = computed(() => ({
-  backgroundColor: componentStyles.value.timelineDotColor || 'var(--primary-color, #2c3e50)',
-  borderColor: componentStyles.value.timelineDotBorderColor || '#ffffff'
-}))
+const showWorkPeriod = computed(() =>
+  defaultConfig.value.props?.showWorkPeriod ?? true
+);
 
-const lineStyle = computed(() => ({
-  backgroundColor: componentStyles.value.timelineColor || '#e8e8e8'
-}))
+const showWorkContent = computed(() =>
+  defaultConfig.value.props?.showWorkContent ?? true
+);
 
-// 🚀 成就和技能样式
-const achievementsStyle = computed(() => ({
-  borderTop: '1rpx solid #f0f0f0',
-  paddingTop: '20rpx',
-  marginTop: '20rpx'
-}))
+const showAchievements = computed(() =>
+  defaultConfig.value.props?.showAchievements ?? true
+);
 
-const skillsStyle = computed(() => ({
-  borderTop: '1rpx solid #f0f0f0',
-  paddingTop: '20rpx',
-  marginTop: '20rpx'
-}))
+const showSkills = computed(() =>
+  defaultConfig.value.props?.showSkills ?? false
+);
 
-const achievementsTitleStyle = computed(() => ({
-  color: componentStyles.value.achievementsTitleColor || '#666666',
-  fontSize: componentStyles.value.achievementsTitleFontSize || '26rpx',
-  fontWeight: '500'
-}))
+const showLocation = computed(() =>
+  componentProps.value.showLocation ?? false
+);
 
-const skillsTitleStyle = computed(() => ({
-  color: componentStyles.value.skillsTitleColor || '#666666',
-  fontSize: componentStyles.value.skillsTitleFontSize || '26rpx',
-  fontWeight: '500'
-}))
+const showReference = computed(() =>
+  componentProps.value.showReference ?? false
+);
 
-const achievementItemStyle = computed(() => ({
-  marginBottom: componentStyles.value.achievementSpacing || '8rpx'
-}))
+// 按开始日期倒序排序
+const sortedExperiences = computed(() => {
+  const orderBy = defaultConfig.value.props?.orderBy || "startDate";
+  const orderDirection = defaultConfig.value.props?.orderDirection || "desc";
 
-const achievementTextStyle = computed(() => ({
-  color: componentStyles.value.achievementTextColor || '#555555',
-  fontSize: componentStyles.value.achievementTextFontSize || '24rpx',
-  lineHeight: componentStyles.value.achievementTextLineHeight || '1.5'
-}))
+  return [...experiences.value].sort((a, b) => {
+    const aValue = a[orderBy] || "";
+    const bValue = b[orderBy] || "";
 
-const bulletStyle = computed(() => ({
-  color: componentStyles.value.bulletColor || 'var(--primary-color, #2c3e50)'
-}))
-
-const tagStyle = computed(() => ({
-  background: componentStyles.value.tagBackground || '#f5f7fa',
-  color: componentStyles.value.tagColor || '#555555',
-  fontSize: componentStyles.value.tagFontSize || '22rpx',
-  border: componentStyles.value.tagBorder || '1rpx solid #e4e7ed',
-  borderRadius: componentStyles.value.tagBorderRadius || '6rpx'
-}))
+    if (orderDirection === "desc") {
+      return new Date(bValue).getTime() - new Date(aValue).getTime();
+    } else {
+      return new Date(aValue).getTime() - new Date(bValue).getTime();
+    }
+  }).slice(0, defaultConfig.value.props?.maxItems || 10); // 限制显示数量
+});
 
 // 格式化日期
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-
-  const match = dateStr.match(/^(\d{4})-(\d{2})/)
-  if (match) {
-    return `${match[1]}.${match[2]}`
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, "0")}`;
+  } catch (e) {
+    return dateStr;
   }
-  return dateStr
-}
+};
 
-// 🚀 调试日志
-console.log('工作经历组件加载完成', {
-  工作经历数量: experiences.value.length,
-  排序方式: orderBy.value,
-  排序方向: orderDirection.value,
-  布局: layout.value,
-  组件样式: componentStyles.value,
-  全局样式: props.globalStyle
-})
+// 计算工作持续时间
+const calculateDuration = (experience: any) => {
+  if (!experience.startDate) return "";
+
+  const start = new Date(experience.startDate);
+  const end = experience.isCurrent ? new Date() : new Date(experience.endDate);
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return "";
+
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  const years = Math.floor(diffDays / 365);
+  const months = Math.floor((diffDays % 365) / 30);
+
+  let result = "";
+  if (years > 0) result += `${years}年`;
+  if (months > 0) result += `${months}个月`;
+
+  return result;
+};
+
+// 样式计算方法
+const getContainerStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    position: 'relative',
+    padding: styles.padding,
+    backgroundColor: styles.backgroundColor,
+    borderRadius: styles.borderRadius,
+    fontFamily: styles.fontFamily,
+    fontSize: styles.bodySize,
+    lineHeight: styles.lineHeight,
+    gap: styles.itemSpacing || '20px',
+    display: 'flex',
+    flexDirection: 'column'
+  };
+};
+
+const getTimelineStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    position: 'absolute',
+    left: '16px',
+    top: '0',
+    bottom: '0',
+    width: '2px',
+    backgroundColor: styles.timelineColor || '#e8e8e8',
+    zIndex: '1'
+  };
+};
+
+const getItemStyle = (styles: any, index: number, isCurrent: boolean) => {
+  if (!styles) return {};
+
+  const baseStyle: any = {
+    position: 'relative',
+    paddingLeft: '40px',
+    paddingBottom: index < sortedExperiences.value.length - 1 ?
+      (styles.itemSpacing || '20px') : '0',
+    marginBottom: index < sortedExperiences.value.length - 1 ?
+      (styles.itemSpacing || '20px') : '0',
+    borderBottom: index < sortedExperiences.value.length - 1 ?
+      `1px dashed ${styles.secondaryColor || '#e8e8e8'}` : 'none'
+  };
+
+  if (isCurrent) {
+    baseStyle.borderLeft = `3px solid ${styles.accentColor || '#52c41a'}`;
+    baseStyle.paddingLeft = '37px'; // 调整左边距
+    baseStyle.backgroundColor = 'rgba(82, 196, 26, 0.05)';
+    baseStyle.borderRadius = '4px';
+    baseStyle.padding = '12px';
+    baseStyle.marginLeft = '-12px';
+  }
+
+  return baseStyle;
+};
+
+const getNodeStyle = (styles: any, isCurrent: boolean) => {
+  if (!styles) return {};
+
+  const baseStyle: any = {
+    position: 'absolute',
+    left: '12px',
+    top: '10px',
+    width: '12px',
+    height: '12px',
+    borderRadius: '50%',
+    backgroundColor: isCurrent ?
+      (styles.accentColor || '#52c41a') :
+      (styles.primaryColor || '#1890ff'),
+    border: `2px solid ${styles.backgroundColor || '#fff'}`,
+    zIndex: '2',
+    boxShadow: `0 0 0 2px ${isCurrent ?
+      (styles.accentColor + '30' || 'rgba(82, 196, 26, 0.2)') :
+      (styles.primaryColor + '30' || 'rgba(24, 144, 255, 0.2)')}`
+  };
+
+  return baseStyle;
+};
+
+const getCompanyNameStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: styles.companyColor || styles.primaryColor || '#1890ff',
+    marginBottom: '4px',
+    display: 'block'
+  };
+};
+
+const getPositionStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '14px',
+    fontWeight: '500',
+    color: styles.textColor || '#333',
+    marginBottom: '8px',
+    display: 'block'
+  };
+};
+
+const getCurrentBadgeStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '12px',
+    color: '#fff',
+    backgroundColor: styles.accentColor || '#52c41a',
+    padding: '2px 8px',
+    borderRadius: '10px',
+    fontWeight: 'bold'
+  };
+};
+
+const getPeriodStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '12px',
+    color: styles.periodColor || '#999999',
+    backgroundColor: '#f5f5f5',
+    padding: '2px 8px',
+    borderRadius: '10px',
+    display: 'inline-block'
+  };
+};
+
+const getDescriptionStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    color: styles.textColor || '#555',
+    fontSize: '14px',
+    lineHeight: '1.6',
+    margin: '8px 0',
+    textAlign: 'justify'
+  };
+};
+
+const getSectionTitleStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '14px',
+    fontWeight: 'bold',
+    color: styles.titleColor || '#333',
+    marginBottom: '8px',
+    display: 'block'
+  };
+};
+
+const getListItemStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    color: styles.textColor || '#666',
+    fontSize: '14px',
+    lineHeight: '1.5',
+    marginBottom: '4px',
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '8px'
+  };
+};
+
+const getSkillTagStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    fontSize: '12px',
+    color: styles.primaryColor || '#1890ff',
+    backgroundColor: 'rgba(24, 144, 255, 0.1)',
+    padding: '2px 8px',
+    borderRadius: '12px',
+    border: `1px solid rgba(24, 144, 255, 0.2)`
+  };
+};
+
+const getPlaceholderStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    textAlign: 'center',
+    color: '#999',
+    padding: '40px 20px',
+    background: 'repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f0f0f0 10px, #f0f0f0 20px)',
+    borderRadius: '4px',
+    fontSize: styles.bodySize,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '8px'
+  };
+};
 </script>
 
-<style lang="scss" scoped>
-.work-experience {
-  margin-bottom: 40rpx;
-  font-family: var(--font-family, "'Times New Roman', serif");
-  font-size: var(--font-size-body, 16px);
-  line-height: var(--line-height, 1.8);
-  color: var(--text-color, #333333);
+<style scoped>
+.work-experience-container {
+  position: relative;
+}
 
-  // 布局样式
-  &.layout-card, &.layout-default {
-    .experience-card {
-      background: var(--card-background, #ffffff);
-      border-radius: var(--border-radius, 16rpx);
-      padding: var(--card-padding, 30rpx);
-      margin-bottom: var(--item-spacing, 24rpx);
-      box-shadow: var(--card-shadow, 0 2rpx 12rpx rgba(0, 0, 0, 0.05));
-      border: var(--card-border, 1rpx solid #f0f0f0);
+.timeline-line {
+  position: absolute;
+  z-index: 1;
+}
 
-      .card-achievements,
-      .card-skills {
-        margin-top: 20rpx;
-        padding-top: 20rpx;
-        border-top: 1rpx solid var(--border-color, #f0f0f0);
+.experience-item {
+  position: relative;
+  z-index: 2;
+}
 
-        .achievements-title,
-        .skills-title {
-          color: var(--subtitle-color, #666);
-          font-size: 26rpx;
-          font-weight: 500;
-          display: block;
-          margin-bottom: 12rpx;
-        }
-      }
-    }
+.experience-content {
+  flex: 1;
+}
+
+.company-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.company-info {
+  flex: 1;
+}
+
+.current-badge {
+  flex-shrink: 0;
+  margin-left: 12px;
+  font-size: 12px;
+}
+
+.meta-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.time-period,
+.work-location,
+.department {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.time-icon,
+.location-icon,
+.department-icon {
+  font-size: 12px;
+}
+
+.duration {
+  margin-left: 4px;
+  color: #999;
+}
+
+.description {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.responsibilities,
+.achievements,
+.skills-used,
+.projects {
+  margin-top: 12px;
+}
+
+.responsibilities-list,
+.achievements-list {
+  padding-left: 16px;
+}
+
+.bullet {
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.item-text {
+  flex: 1;
+}
+
+.skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.project-item {
+  margin-bottom: 12px;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.project-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.project-role {
+  font-size: 12px;
+  color: #666;
+  background: #e9ecef;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.project-description {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.reference {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #eee;
+  font-size: 12px;
+  color: #888;
+}
+
+.reference-label {
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.reference-position,
+.reference-contact {
+  margin-left: 8px;
+}
+
+.empty-placeholder {
+  min-height: 100px;
+}
+
+.placeholder-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.placeholder-text {
+  font-size: 14px;
+  color: #999;
+}
+
+.placeholder-hint {
+  font-size: 12px;
+  color: #ccc;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .experience-item {
+    padding-left: 30px;
   }
 
-  &.layout-timeline {
-    .timeline-layout {
-      position: relative;
-      padding-left: 40rpx;
-      margin-bottom: 40rpx;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      .timeline-dot {
-        position: absolute;
-        left: 0;
-        top: 10rpx;
-        width: 16rpx;
-        height: 16rpx;
-        background-color: var(--primary-color, #2c3e50);
-        border-radius: 50%;
-        border: 3rpx solid white;
-        box-shadow: 0 0 0 2rpx var(--primary-color, #2c3e50);
-        z-index: 2;
-      }
-
-      .timeline-line {
-        position: absolute;
-        left: 7rpx;
-        top: 26rpx;
-        bottom: -30rpx;
-        width: 2rpx;
-        background-color: var(--timeline-color, #e8e8e8);
-        z-index: 1;
-      }
-
-      .experience-content {
-        background: var(--card-background, #ffffff);
-        border-radius: var(--border-radius, 12rpx);
-        padding: var(--card-padding, 24rpx);
-        box-shadow: var(--card-shadow, 0 2rpx 8rpx rgba(0, 0, 0, 0.05));
-        border: var(--card-border, 1rpx solid #f0f0f0);
-      }
-    }
+  .timeline-node {
+    left: 8px;
+    width: 10px;
+    height: 10px;
   }
 
-  // 主题样式
-  &.theme-modern {
-    .section-title {
-      color: var(--primary-color, #2c3e50);
-      font-size: var(--font-size-h1, 36rpx);
-      font-weight: 600;
-      margin-bottom: 16rpx;
-      display: block;
-    }
-
-    .section-divider {
-      height: 2rpx;
-      background: linear-gradient(90deg, var(--primary-color, #2c3e50), var(--accent-color, #2c3e50));
-      margin-bottom: 30rpx;
-      width: 80rpx;
-    }
-
-    .company-name {
-      color: var(--company-color, #333);
-      font-size: 32rpx;
-      font-weight: 600;
-    }
-
-    .position {
-      color: var(--primary-color, #2c3e50);
-      font-size: 28rpx;
-      font-weight: 500;
-    }
-  }
-
-  &.theme-classic {
-    .section-title {
-      color: var(--primary-color, #1890ff);
-      font-size: var(--font-size-h1, 36rpx);
-      font-weight: 600;
-      margin-bottom: 16rpx;
-      display: block;
-    }
-
-    .section-divider {
-      height: 2rpx;
-      background: linear-gradient(90deg, var(--primary-color, #1890ff), var(--secondary-color, #52c41a));
-      margin-bottom: 30rpx;
-      width: 80rpx;
-    }
-
-    .position {
-      color: var(--primary-color, #1890ff);
-      font-size: 28rpx;
-      font-weight: 500;
-    }
-  }
-
-  &.theme-light {
-    .section-title {
-      color: var(--primary-color, #1890ff);
-    }
-  }
-
-  &.theme-dark {
-    .section-title {
-      color: var(--primary-color, #177ddc);
-    }
-    .experience-content,
-    .experience-card {
-      background: #1f1f1f;
-      border-color: #333;
-      color: #fff;
-
-      .duration {
-        color: #aaa;
-      }
-      .desc-text {
-        color: #ccc;
-      }
-    }
-  }
-
-  // 空状态
-  .empty-state {
-    display: flex;
+  .company-header {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60rpx 30rpx;
-    background: #fafafa;
-    border-radius: 16rpx;
-    border: 1rpx dashed #e0e0e0;
-
-    .empty-icon {
-      font-size: 60rpx;
-      margin-bottom: 20rpx;
-    }
-
-    .empty-text {
-      color: #999;
-      font-size: 28rpx;
-    }
+    align-items: flex-start;
+    gap: 8px;
   }
 
-  // 时间线布局
-  .timeline-layout {
-    .company-header {
-      margin-bottom: 16rpx;
-
-      .company-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 8rpx;
-
-        .company-name {
-          font-size: 30rpx;
-          font-weight: 600;
-          color: var(--company-color, #333);
-        }
-
-        .duration {
-          color: var(--period-color, #999);
-          font-size: 24rpx;
-          text-align: right;
-          min-width: 200rpx;
-        }
-      }
-    }
-
-    .department {
-      margin-bottom: 16rpx;
-      padding: 8rpx 0;
-
-      .department-label {
-        color: var(--label-color, #666);
-        font-size: 24rpx;
-        font-weight: 500;
-      }
-
-      .department-value {
-        color: var(--department-color, #666);
-        font-size: 24rpx;
-      }
-    }
-
-    .experience-desc {
-      margin-bottom: 16rpx;
-
-      .desc-text {
-        color: var(--desc-color, #666);
-        font-size: 26rpx;
-        line-height: 1.6;
-      }
-    }
-
-    .achievements {
-      margin-bottom: 16rpx;
-
-      .achievements-title {
-        color: var(--subtitle-color, #666);
-        font-size: 26rpx;
-        font-weight: 500;
-        display: block;
-        margin-bottom: 12rpx;
-      }
-
-      .achievements-list {
-        .achievement-item {
-          display: flex;
-          align-items: flex-start;
-          margin-bottom: 8rpx;
-
-          &:last-child {
-            margin-bottom: 0;
-          }
-
-          .achievement-bullet {
-            color: var(--primary-color, #2c3e50);
-            margin-right: 12rpx;
-            flex-shrink: 0;
-            font-weight: bold;
-            margin-top: 4rpx;
-          }
-
-          .achievement-text {
-            color: var(--text-color-secondary, #555);
-            font-size: 24rpx;
-            line-height: 1.5;
-            flex: 1;
-          }
-        }
-      }
-    }
-
-    .skills-tags {
-      .skills-title {
-        color: var(--subtitle-color, #666);
-        font-size: 26rpx;
-        font-weight: 500;
-        display: block;
-        margin-bottom: 12rpx;
-      }
-
-      .skills-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12rpx;
-
-        .skill-tag {
-          background: var(--tag-background, #f5f7fa);
-          color: var(--tag-color, #555);
-          font-size: 22rpx;
-          padding: 6rpx 12rpx;
-          border-radius: 6rpx;
-          border: 1rpx solid var(--tag-border-color, #e4e7ed);
-        }
-      }
-    }
+  .current-badge {
+    margin-left: 0;
   }
 
-  // 卡片布局
-  .card-layout {
-    .experience-card {
-      .card-header {
-        margin-bottom: 16rpx;
-
-        .company-name {
-          font-size: 32rpx;
-          font-weight: 600;
-          color: var(--company-color, #333);
-          display: block;
-          margin-bottom: 8rpx;
-        }
-      }
-
-      .card-meta {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 16rpx;
-        padding-bottom: 16rpx;
-        border-bottom: 1rpx solid var(--border-color, #f0f0f0);
-
-        .duration {
-          color: var(--period-color, #666);
-          font-size: 24rpx;
-        }
-
-        .department {
-          color: var(--department-color, #666);
-          font-size: 24rpx;
-          background: var(--department-bg-color, #f5f7fa);
-          padding: 4rpx 12rpx;
-          border-radius: 4rpx;
-        }
-      }
-
-      .card-desc {
-        margin-bottom: 16rpx;
-
-        .desc-text {
-          color: var(--desc-color, #666);
-          font-size: 26rpx;
-          line-height: 1.6;
-        }
-      }
-
-      .card-achievements {
-        .achievements-list {
-          .achievement-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 8rpx;
-
-            &:last-child {
-              margin-bottom: 0;
-            }
-
-            .achievement-bullet {
-              color: var(--primary-color, #2c3e50);
-              margin-right: 12rpx;
-              flex-shrink: 0;
-              font-weight: bold;
-              margin-top: 4rpx;
-            }
-
-            .achievement-text {
-              color: var(--text-color-secondary, #555);
-              font-size: 24rpx;
-              line-height: 1.5;
-              flex: 1;
-            }
-          }
-        }
-      }
-
-      .card-skills {
-        .skills-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 12rpx;
-
-          .skill-tag {
-            background: var(--tag-background, #f5f7fa);
-            color: var(--tag-color, #555);
-            font-size: 22rpx;
-            padding: 6rpx 12rpx;
-            border-radius: 6rpx;
-            border: 1rpx solid var(--tag-border-color, #e4e7ed);
-          }
-        }
-      }
-    }
+  .meta-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
 
-// 响应式调整
-@media (max-width: 375px) {
-  .work-experience {
-    .timeline-layout {
-      .company-header {
-        .company-info {
-          flex-direction: column;
+/* 打印样式 */
+@media print {
+  .work-experience-container {
+    break-inside: avoid;
+  }
 
-          .duration {
-            text-align: left;
-            margin-top: 8rpx;
-          }
-        }
-      }
-    }
+  .current-badge {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
 
-    .card-layout {
-      .experience-card {
-        .card-meta {
-          flex-direction: column;
-          gap: 8rpx;
-        }
-      }
-    }
+  .timeline-line,
+  .timeline-node {
+    display: none;
   }
 }
 </style>

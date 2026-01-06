@@ -1,5 +1,6 @@
 // 用户信息 - 确保包含所有必要的属性
-export interface UserInfo {
+
+export interface UserResult {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -16,6 +17,9 @@ export interface UserInfo {
   github: string | null;
   wechat: string | null;
   bio: string | null;
+}
+
+export interface UserInfo extends UserResult {
   followers: number;
   fans: number;
   likes: number;
@@ -25,10 +29,6 @@ export interface UserInfo {
   userRoles: any | null;
   authorities: Authority[];
   company: any | null;
-}
-
-export interface UserBasicInfo {
-
 }
 
 export interface Authority {

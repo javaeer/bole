@@ -1,5 +1,5 @@
 //查询参数定义
-import { TemplateComponentForm, TemplateComponentItem } from "@/types/template-component";
+import { TemplateComponentForm, TemplateComponentResult } from "@/types/template-component";
 
 export interface TemplateQuery extends BodyQuery {
   name?: string;
@@ -18,7 +18,7 @@ export interface TemplateResult {
   version?: string;
   globalStyle?: TemplateGlobalStyle;
   globalLayout?: TemplateGlobalLayout;
-  components?: TemplateComponentItem[];
+  components?: TemplateComponentResult[];
 
   //通用字段
   createdAt?: string;

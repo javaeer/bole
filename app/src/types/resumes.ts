@@ -1,5 +1,5 @@
 // 简历查询条件
-import { TemplateComponentItem } from "@/types/template-component";
+import { TemplateComponentResult } from "@/types/template-component";
 import { TemplateGlobalLayout, TemplateGlobalStyle } from "@/types/template";
 
 export interface ResumesQuery extends BodyQuery {
@@ -23,7 +23,7 @@ export interface ResumesResult {
   downloadCount: number;
   globalStyle: TemplateGlobalStyle;
   globalLayout: TemplateGlobalLayout;
-  components: TemplateComponentItem[];
+  components: TemplateComponentResult[];
 }
 
 export interface ResumesStatusCountResult {

@@ -186,7 +186,7 @@ import { computed, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import TemplatePreview from "@/components/template/TemplatePreview.vue";
 import { TemplateResult } from "@/types/template";
-import { TemplateComponentItem } from "@/types/template-component";
+import { TemplateComponentResult } from "@/types/template-component";
 import { COMPONENT_LIBRARY } from "@/constants/component";
 import { DEVICE_OPTIONS, LAYOUT_TYPES } from "@/constants/template";
 import { useTemplateStore } from "@/stores/template";
@@ -377,7 +377,7 @@ const getLayoutTypeLabel = (type?: string) => {
   return layout?.label || "单栏";
 };
 
-const getComponentName = (component: TemplateComponentItem) => {
+const getComponentName = (component: TemplateComponentResult) => {
   if (!component.componentId) return "未命名组件";
   const libComponent = COMPONENT_LIBRARY.find(
     (c) => c.id === component.componentId,
@@ -385,7 +385,7 @@ const getComponentName = (component: TemplateComponentItem) => {
   return libComponent?.name || "未知组件";
 };
 
-const getComponentDescription = (component: TemplateComponentItem) => {
+const getComponentDescription = (component: TemplateComponentResult) => {
   if (!component.componentId) return "";
   const libComponent = COMPONENT_LIBRARY.find(
     (c) => c.id === component.componentId,

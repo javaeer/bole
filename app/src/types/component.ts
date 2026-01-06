@@ -2,46 +2,14 @@
 import { SkillResult } from "@/types/skill";
 import { EducationExperienceResult } from "@/types/education-experience";
 import { WorkExperienceResult } from "@/types/work-experience";
-import { UserBasicInfo } from "@/types/user";
-
-
-export interface ComponentMetadata {
-  key: string;
-  name: string;
-  description?: string;
-  category: string;
-  icon: string;
-  defaultProps: Record<string, any>;
-  defaultStyles: Record<string, any>;
-  version?: string;
-}
-
-export interface ComponentConfig {
-  id: number;
-  name: string;
-  key: string;
-  icon: string;
-  description: string;
-  category: string;
-  props: Record<string, any>;
-  styles: Record<string, any>;
-  defaultConfig?: {
-    props?: Record<string, any>;
-    styles?: Record<string, any>;
-  };
-  metadata?: Record<string, any>;
-}
-
-export interface BaseComponentConfig {
-  title?: string;
-
-  [key: string]: any;
-}
+import { UserResult } from "@/types/user";
+import { ProjectExperienceResult } from "@/types/project-experience";
+import { JobIntentionResult } from "@/types/job-intention";
+import { SelfEvaluationResult } from "@/types/self-evaluation";
 
 
 // 用户基本信息组件配置
-export interface UserBasicInfoConfig extends BaseComponentConfig {
-  info?: UserBasicInfo;
+export interface UserBasicInfoConfig extends UserResult {
   showName?: boolean;
   showEmail?: boolean;
   showPhone?: boolean;
@@ -55,7 +23,7 @@ export interface UserBasicInfoConfig extends BaseComponentConfig {
 }
 
 // 工作经历组件配置
-export interface WorkExperienceConfig extends BaseComponentConfig {
+export interface WorkExperienceConfig {
   experiences?: WorkExperienceResult[];
   orderBy?: "startDate" | "endDate" | "position";
   orderDirection?: "asc" | "desc";
@@ -71,7 +39,7 @@ export interface WorkExperienceConfig extends BaseComponentConfig {
 }
 
 // 教育经历组件配置
-export interface EducationExperienceConfig extends BaseComponentConfig {
+export interface EducationExperienceConfig {
   experiences?: EducationExperienceResult[];
   orderBy?: "startDate" | "endDate" | "degree";
   orderDirection?: "asc" | "desc";
@@ -88,7 +56,7 @@ export interface EducationExperienceConfig extends BaseComponentConfig {
 }
 
 // 技能专长组件配置
-export interface SkillsConfig extends BaseComponentConfig {
+export interface SkillsConfig {
   skills?: SkillResult[];
   skillCategories?: string[];
   groupByCategory?: boolean;
@@ -100,16 +68,19 @@ export interface SkillsConfig extends BaseComponentConfig {
 }
 
 //项目经历组件配置
-export interface ProjectExperienceConfig extends BaseComponentConfig {
-
+export interface ProjectExperienceConfig {
+  experiences?: ProjectExperienceResult[];
+  showTags?: boolean;
 }
 
 //求职意向组件配置
-export interface JobIntentionConfig extends BaseComponentConfig {
-
+export interface JobIntentionConfig {
+  intentions?: JobIntentionResult[];
+  showTags?: boolean;
 }
 
 //求职意向组件配置
-export interface SelfEvaluationConfig extends BaseComponentConfig {
-
+export interface SelfEvaluationConfig {
+  evaluations?: SelfEvaluationResult[];
+  showTags?: boolean;
 }
