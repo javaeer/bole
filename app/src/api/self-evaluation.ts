@@ -9,7 +9,7 @@ const SelfEvaluationAPI = {
     return request.get<SelfEvaluationResult>(`${SELF_EVALUATION_BASE_URL}/${id}`);
   },
   delete(id: number) {
-    return request.delete<boolean>(`${SELF_EVALUATION_BASE_URL}/${id}`);
+    return request.delete<boolean>(`${SELF_EVALUATION_BASE_URL}/del`,{id});
   },
 
   add(form: SelfEvaluationForm) {

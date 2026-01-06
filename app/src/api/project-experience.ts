@@ -14,7 +14,7 @@ const ProjectExperienceAPI = {
 	},
 
 	delete(id : number) {
-		return request.delete<boolean>(`${PROJECT_EXPERIENCE_BASE_URL}/${id}`);
+		return request.delete<boolean>(`${PROJECT_EXPERIENCE_BASE_URL}/del`,{id});
 	},
 
 	update(form : ProjectExperienceForm) {

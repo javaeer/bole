@@ -13,7 +13,7 @@ const EducationExperienceAPI = {
     return request.get<EducationExperienceResult>(`${EDUCATION_EXPERIENCE_BASE_URL}/${id}`);
   },
   delete(id: number) {
-    return request.delete<boolean>(`${EDUCATION_EXPERIENCE_BASE_URL}/${id}`);
+    return request.delete<boolean>(`${EDUCATION_EXPERIENCE_BASE_URL}/del`,{id});
   },
 
   add(form: EducationExperienceForm) {

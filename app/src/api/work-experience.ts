@@ -9,7 +9,7 @@ const WorkExperienceAPI = {
     return request.get<WorkExperienceResult>(`${WORK_EXPERIENCE_BASE_URL}/${id}`);
   },
   delete(id: number) {
-    return request.delete<boolean>(`${WORK_EXPERIENCE_BASE_URL}/${id}`);
+    return request.delete<boolean>(`${WORK_EXPERIENCE_BASE_URL}/del`,{id});
   },
 
   add(form: WorkExperienceForm) {

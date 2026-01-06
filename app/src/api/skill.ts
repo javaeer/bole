@@ -14,7 +14,7 @@ const SkillAPI = {
 	},
 
 	delete(id : number) {
-		return request.delete<boolean>(`${SKILL_BASE_URL}/${id}`);
+		return request.delete<boolean>(`${SKILL_BASE_URL}/del`,{id});
 	},
 
 	update(form : SkillForm) {

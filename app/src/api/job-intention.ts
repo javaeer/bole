@@ -9,7 +9,7 @@ const JobIntentionAPI = {
     return request.get<JobIntentionResult>(`${JOB_INTENTION_BASE_URL}/${id}`);
   },
   delete(id: number) {
-    return request.delete<boolean>(`${JOB_INTENTION_BASE_URL}/${id}`);
+    return request.delete<boolean>(`${JOB_INTENTION_BASE_URL}/del`,{id});
   },
 
   add(form: JobIntentionForm) {
