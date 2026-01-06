@@ -1154,14 +1154,14 @@ const handleQuickLogin = () => {
 // 用户协议
 const handleUserAgreement = () => {
   uni.navigateTo({
-    url: "/pages/agreement/user",
+    url: "/subpackages/pages/agreement/user",
   });
 };
 
 // 隐私政策
 const handlePrivacyPolicy = () => {
   uni.navigateTo({
-    url: "/pages/agreement/privacy",
+    url: "/subpackages/pages/agreement/privacy",
   });
 };
 

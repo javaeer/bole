@@ -146,7 +146,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { onPullDownRefresh, onReachBottom } from "@dcloudio/uni-app";
-import CompanyAPI from "@/api/company";
+import CompanyAPI from "@/subpackages/api/company";
 import { CompanyQuery, CompanyResult } from "@/types/company";
 
 // 响应式数据
@@ -260,7 +260,7 @@ const handleRefresh = () => {
 // 跳转到详情页
 const navigateToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/company/company?id=${id}`,
+    url: `/subpackages/pages/company/company?id=${id}`,
   });
 };
 

@@ -310,10 +310,10 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
-import CompanyAPI from "@/api/company";
+import CompanyAPI from "@/subpackages/api/company";
 import type { CompanyResult } from "@/types/company";
-import { CompanyCommentQuery, CompanyCommentResult } from "@/types/company-comment-result";
-import CompanyCommentAPI from "@/api/company-comment";
+import { CompanyCommentQuery, CompanyCommentResult } from "@/types/company-comment";
+import CompanyCommentAPI from "@/subpackages/api/company-comment";
 
 // 页面参数
 const pageParams = ref<{ id: number }>();

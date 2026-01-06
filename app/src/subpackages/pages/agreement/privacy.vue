@@ -83,8 +83,7 @@
             <text class="section-title">六、联系我们</text>
             <view class="contact-info">
               <text class="contact-item">如果您对本隐私政策有任何疑问、意见或建议，请通过以下方式与我们联系：</text>
-              <text class="contact-item">邮箱：privacy@resumes-master.com</text>
-              <text class="contact-item">电话：400-xxx-xxxx</text>
+              <text class="contact-item">邮箱：admin@yunlou.net.cn</text>
               <text class="contact-item">工作时间：周一至周五 9:00-18:00</text>
             </view>
           </view>

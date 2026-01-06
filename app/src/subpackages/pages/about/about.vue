@@ -114,19 +114,19 @@ const features = [
 
 const handleUserAgreement = () => {
   uni.navigateTo({
-    url: '/pages/agreement/user'
+    url: '/subpackages/pages/agreement/user'
   })
 }
 
 const handlePrivacyPolicy = () => {
   uni.navigateTo({
-    url: '/pages/agreement/privacy'
+    url: '/subpackages/pages/agreement/privacy'
   })
 }
 
 const handleContactUs = () => {
   uni.makePhoneCall({
-    phoneNumber: '1861088XXXX'
+    phoneNumber: '18610880038'
   })
 }
 

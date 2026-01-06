@@ -120,18 +120,18 @@ const requireLoginFunctionIds = [1, 3]; // 创建简历(id=1)和简历分析(id=
 const bannerList = ref([
   {
     id: 1,
-    image: "/static/banner/banner1.jpg",
+    image: "https://bi.yunlou.net.cn/uploads/2026/01/06/7c0bab8499a24221bfacbfe02d026036.jpg",
     link: "/pages/template/list",
   },
   {
     id: 2,
-    image: "/static/banner/banner2.jpg",
-    link: "/pages/guide/detail",
+    image: "https://bi.yunlou.net.cn/uploads/2026/01/06/62e043ffe85e4e24b0f37b996e03f5cf.jpg",
+    link: "/pages/template/detail",
   },
   {
     id: 3,
-    image: "/static/banner/banner3.jpg",
-    link: "/pages/activity/detail",
+    image: "https://bi.yunlou.net.cn/uploads/2026/01/06/40335b6a12524e27908edda3cc1bb005.jpg",
+    link: "/pages/template/detail",
   },
 ]);
 
@@ -139,8 +139,8 @@ const bannerList = ref([
 const functionList = ref([
   { id: 1, name: "创建简历", icon: "📝", path: "/pages/template/select" },
   { id: 2, name: "模板市场", icon: "🎨", path: "/pages/template/list" },
-  { id: 3, name: "简历分析", icon: "📊", path: "/pages/analysis/analysis" },
-  { id: 4, name: "求职指南", icon: "📚", path: "/pages/guide/guide" },
+  { id: 3, name: "简历分析", icon: "📊", path: "/subpackages/pages/analysis/analysis" },
+  { id: 4, name: "求职指南", icon: "📚", path: "/subpackages/pages/guide/guide" },
 ]);
 
 // 指南列表
@@ -201,7 +201,7 @@ const handleFunctionClick = (item: any) => {
 // 其他事件处理函数
 const handleSearch = () => {
   uni.navigateTo({
-    url: "/pages/search/search",
+    url: "/subpackages/pages/search/search",
   });
 };
 

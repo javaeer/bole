@@ -144,7 +144,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
 import { useUserStore } from "@/stores/user";
-import FeedbackAPI from "@/api/feedback";
+import FeedbackAPI from "@/subpackages/api/feedback";
 import type { FeedbackForm } from "@/types/feedback";
 import { UploadOptions } from "@/types/request";
 import { FileResult } from "@/types/file";

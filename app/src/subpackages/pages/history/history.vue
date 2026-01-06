@@ -245,11 +245,11 @@ const handleDeleteItem = (id: string) => {
 const handleViewDetail = (item: HistoryItem) => {
   if (item.type === 'resumes') {
     uni.navigateTo({
-      url: `/pages/resumes/detail?id=${item.id}`
+      url: `/pages/resumes/resumes?id=${item.id}`
     })
   } else {
     uni.navigateTo({
-      url: `/pages/company/company?id=${item.id}`
+      url: `/subpackages/pages/company/company?id=${item.id}`
     })
   }
 }

@@ -10,7 +10,7 @@
     {
       "path": "pages/follow/follow",
       "style": {
-        "navigationBarTitleText": "关注",
+        "navigationBarTitleText": "收藏",
         "enablePullDownRefresh": true
       }
     },
@@ -35,27 +35,21 @@
       }
     },
     {
+      "path": "pages/profile/bind",
+      "style": {
+        "navigationBarTitleText": ""
+      }
+    },
+    {
       "path": "pages/auth/auth",
       "style": {
         "navigationBarTitleText": ""
       }
     },
     {
-      "path": "pages/agreement/user",
+      "path": "pages/auth/forgot",
       "style": {
         "navigationBarTitleText": ""
-      }
-    },
-    {
-      "path": "pages/agreement/privacy",
-      "style": {
-        "navigationBarTitleText": ""
-      }
-    },
-    {
-      "path": "pages/search/search",
-      "style": {
-        "navigationBarTitleText": "搜索"
       }
     },
     {
@@ -77,69 +71,9 @@
       }
     },
     {
-      "path": "pages/company/list",
+      "path": "pages/template/select",
       "style": {
-        "navigationBarTitleText": "公司列表"
-      }
-    },
-    {
-      "path": "pages/company/company",
-      "style": {
-        "navigationBarTitleText": "公司详情"
-      }
-    },
-    {
-      "path": "pages/about/about",
-      "style": {
-        "navigationBarTitleText": "关于我们"
-      }
-    },
-    {
-      "path": "pages/feedback/feedback",
-      "style": {
-        "navigationBarTitleText": "意见反馈"
-      }
-    },
-    {
-      "path": "pages/history/history",
-      "style": {
-        "navigationBarTitleText": "浏览历史"
-      }
-    },
-    {
-      "path": "pages/application/application",
-      "style": {
-        "navigationBarTitleText": "申请审核"
-      }
-    },
-    {
-      "path": "pages/application/list",
-      "style": {
-        "navigationBarTitleText": "申请列表"
-      }
-    },
-    {
-      "path": "pages/analysis/analysis",
-      "style": {
-        "navigationBarTitleText": "简历分析"
-      }
-    },
-    {
-      "path": "pages/guide/guide",
-      "style": {
-        "navigationBarTitleText": "求职指南"
-      }
-    },
-    {
-      "path": "pages/chat/chat",
-      "style": {
-        "navigationBarTitleText": "聊天"
-      }
-    },
-    {
-      "path": "pages/notify/notify",
-      "style": {
-        "navigationBarTitleText": "系统通知"
+        "navigationBarTitleText": "选择模板"
       }
     },
     {
@@ -161,27 +95,9 @@
       }
     },
     {
-      "path": "pages/resumes/edit",
-      "style": {
-        "navigationBarTitleText": "生成简历"
-      }
-    },
-    {
       "path": "pages/resumes/list",
       "style": {
         "navigationBarTitleText": "简历列表"
-      }
-    },
-    {
-      "path": "pages/template/select",
-      "style": {
-        "navigationBarTitleText": "选择模板"
-      }
-    },
-    {
-      "path": "pages/resumes/detail",
-      "style": {
-        "navigationBarTitleText": "简历详情"
       }
     },
     {
@@ -243,62 +159,8 @@
       "style": {
         "navigationBarTitleText": "评价详情"
       }
-    },
-    {
-      "path": "pages/test/resumes",
-      "style": {
-        "navigationBarTitleText": ""
-      }
-    },
-    {
-      "path": "pages/test/dict",
-      "style": {
-        "navigationBarTitleText": "字典测试"
-      }
-	},
-	{
-		"path": "pages/auth/forgot",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
-		"path": "pages/profile/bind",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
-		"path": "pages/university/university",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
-		"path": "pages/university/list",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
-		"path": "pages/test/region",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	},
-	{
-		"path": "pages/template/template",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-	}
+    }
   ],
-  "globalStyle": {
-    "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "Bole",
-    "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#F8F8F8"
-  },
   "tabBar": {
     "color": "#474747",
     "selectedColor": "#3B8DFF",
@@ -329,5 +191,141 @@
         "text": "我的"
       }
     ]
+  },
+  "subPackages": [
+    {
+      "root": "subpackages",
+      "pages": [
+        {
+          "path": "pages/about/about",
+          "style": {
+            "navigationBarTitleText": "关于我们"
+          }
+        },
+        {
+          "path": "pages/test/resumes",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/test/dict",
+          "style": {
+            "navigationBarTitleText": "字典测试"
+          }
+        },
+        {
+          "path": "pages/test/region",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/company/list",
+          "style": {
+            "navigationBarTitleText": "公司列表"
+          }
+        },
+        {
+          "path": "pages/company/company",
+          "style": {
+            "navigationBarTitleText": "公司详情"
+          }
+        },
+        {
+          "path": "pages/university/university",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/university/list",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/feedback/feedback",
+          "style": {
+            "navigationBarTitleText": "意见反馈"
+          }
+        },
+        {
+          "path": "pages/history/history",
+          "style": {
+            "navigationBarTitleText": "浏览历史"
+          }
+        },
+        {
+          "path": "pages/application/application",
+          "style": {
+            "navigationBarTitleText": "申请审核"
+          }
+        },
+        {
+          "path": "pages/application/list",
+          "style": {
+            "navigationBarTitleText": "申请列表"
+          }
+        },
+        {
+          "path": "pages/analysis/analysis",
+          "style": {
+            "navigationBarTitleText": "简历分析"
+          }
+        },
+        {
+          "path": "pages/agreement/user",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/agreement/privacy",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/search/search",
+          "style": {
+            "navigationBarTitleText": "搜索"
+          }
+        },
+        {
+          "path": "pages/guide/guide",
+          "style": {
+            "navigationBarTitleText": "求职指南"
+          }
+        },
+        {
+          "path": "pages/chat/chat",
+          "style": {
+            "navigationBarTitleText": "聊天"
+          }
+        },
+        {
+          "path": "pages/notify/notify",
+          "style": {
+            "navigationBarTitleText": "系统通知"
+          }
+        }
+      ]
+    }
+  ],
+  "preloadRule": {
+    // 分包预下载规则（可选但推荐）
+    "pages/index/index": {
+      "network": "all",
+      "packages": [
+        "subpackages"
+      ]
+    }
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Bole",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
   }
 }

@@ -242,7 +242,7 @@ const handleWorkExperiences = () => {
 
 const handleCompanyExperiences = () => {
   uni.navigateTo({
-    url: "/pages/company/list",
+    url: "/subpackages/pages/company/list",
   });
 };
 
@@ -266,13 +266,13 @@ const handleSelfEvaluations = () => {
 
 const handleFeedback = () => {
   uni.navigateTo({
-    url: "/pages/feedback/feedback",
+    url: "/subpackages/pages/feedback/feedback",
   });
 };
 
 const handleAbout = () => {
   uni.navigateTo({
-    url: "/pages/about/about",
+    url: "/subpackages/pages/about/about",
   });
 };
 

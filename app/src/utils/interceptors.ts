@@ -70,7 +70,6 @@ class Interceptors {
 			uni.hideLoading();
 		}
 
-		console.log("原始数据：" + JSON.stringify(response));
 		//判断response 状态码
 		switch (response.statusCode) {
 			case ResponseCode.SUCCESS:
@@ -90,12 +89,9 @@ class Interceptors {
 				// 继续原有逻辑...
 				const result = parsedData as ResponseResult<T>;
 
-				console.log("返回数据编码：" + result.code);
-				console.log("解析后数据：" + JSON.stringify(result))
 				// 业务状态码处理
 				switch (result.code) {
 					case BusinessCode.SUCCESS:
-						console.log("业务数据：" + JSON.stringify(result.data))
 						return result.data;
 					default:
 						throw errorHandles.handleBusinessError(result, config);

@@ -288,7 +288,7 @@ const loadMore = () => {
 // 跳转到详情页
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/application/application?id=${id}`
+    url: `/subpackages/pages/application/application?id=${id}`
   })
 }
 

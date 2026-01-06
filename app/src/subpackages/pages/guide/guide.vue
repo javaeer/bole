@@ -296,31 +296,31 @@ const handleSearch = () => {
 
 const viewArticleDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/guide/article?id=${id}`
+    url: `/subpackages/pages/guide/article?id=${id}`
   })
 }
 
 const viewContentDetail = (id: number, type: string) => {
   if (type === 'video') {
     uni.navigateTo({
-      url: `/pages/guide/video?id=${id}`
+      url: `/subpackages/pages/guide/video?id=${id}`
     })
   } else {
     uni.navigateTo({
-      url: `/pages/guide/article?id=${id}`
+      url: `/subpackages/pages/guide/article?id=${id}`
     })
   }
 }
 
 const viewCategoryDetail = (categoryId: number) => {
   uni.navigateTo({
-    url: `/pages/guide/category?id=${categoryId}`
+    url: `/subpackages/pages/guide/category?id=${categoryId}`
   })
 }
 
 const viewAllHot = () => {
   uni.navigateTo({
-    url: '/pages/guide/hot'
+    url: '/subpackages/pages/guide/hot'
   })
 }
 

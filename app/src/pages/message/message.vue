@@ -163,14 +163,14 @@ const markMessagesAsRead = (tab: string) => {
 const handleBadgeClick = () => {
   // 跳转到通知详情页
   uni.navigateTo({
-    url: `/pages/notify/notify`
+    url: `/subpackages/pages/notify/notify`
   })
 }
 
 // 回复评论
 const handleReply = (messageId: number) => {
   uni.navigateTo({
-    url: `/pages/chat/chat?messageId=${messageId}`
+    url: `/subpackages/pages/chat/chat?messageId=${messageId}`
   })
 }
 

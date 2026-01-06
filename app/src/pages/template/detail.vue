@@ -306,7 +306,7 @@ const handleUseTemplate = () => {
   if (!template.value) return;
 
   uni.navigateTo({
-    url: `/pages/resumes/edit?templateId=${template.value.id}`,
+    url: `/pages/resumes/resumes?templateId=${template.value.id}`,
   });
 };
 

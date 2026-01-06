@@ -17,5 +17,4 @@ public interface ResumesService
     ResumesView preview(Resumes entity);
 
     Boolean viewById(Long id);
-
 }
