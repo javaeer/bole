@@ -253,7 +253,9 @@ const getItemStyle = (styles: any, index: number) => {
     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
     marginBottom: index < sortedIntentions.value.length - 1 ? '12px' : '0',
     transition: 'all 0.3s ease',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    width: '100%',
+    boxSizing: 'border-box'
   };
 };
 
@@ -392,6 +394,8 @@ const handleItemClick = (intention: JobIntentionResult) => {
 <style scoped>
 .job-intention-container {
   font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .intention-item:hover {
@@ -403,15 +407,22 @@ const handleItemClick = (intention: JobIntentionResult) => {
 .position-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 12px;
+  gap: 8px;
 }
 
 .position-icon {
   font-size: 20px;
+  flex-shrink: 0;
 }
 
 .position-value {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .intention-tags {
@@ -422,9 +433,11 @@ const handleItemClick = (intention: JobIntentionResult) => {
 }
 
 .tag-item {
+  width: 80%;
   display: flex;
   align-items: center;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .tag-item:hover {
@@ -434,6 +447,11 @@ const handleItemClick = (intention: JobIntentionResult) => {
 .tag-icon {
   margin-right: 4px;
   font-size: 12px;
+  flex-shrink: 0;
+}
+
+.tag-text {
+  white-space: nowrap;
 }
 
 .detail-grid {
@@ -463,6 +481,7 @@ const handleItemClick = (intention: JobIntentionResult) => {
   font-size: 14px;
   line-height: 1.5;
   word-break: break-word;
+  flex: 1;
 }
 
 .expand-toggle {
@@ -488,16 +507,13 @@ const handleItemClick = (intention: JobIntentionResult) => {
   transition: transform 0.3s ease;
 }
 
-.toggle-icon.rotated {
-  transform: rotate(180deg);
-}
-
 .empty-placeholder {
   min-height: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 .placeholder-icon {
@@ -510,11 +526,13 @@ const handleItemClick = (intention: JobIntentionResult) => {
   font-size: 14px;
   color: #666;
   margin-bottom: 4px;
+  text-align: center;
 }
 
 .placeholder-hint {
   font-size: 12px;
   color: #999;
+  text-align: center;
 }
 
 /* 动画 */
@@ -538,22 +556,136 @@ const handleItemClick = (intention: JobIntentionResult) => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .detail-grid {
-    grid-template-columns: 1fr;
+  .job-intention-container {
+    padding: 16px !important;
+  }
+
+  .intention-item {
+    padding: 12px !important;
+    margin-bottom: 12px !important;
+    width: 100%;
+  }
+
+  .position-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .position-value {
+    font-size: 16px !important;
+    margin-left: 0 !important;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .primary-badge {
+    margin-left: 0 !important;
+    align-self: flex-start;
   }
 
   .intention-tags {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
   .tag-item {
     width: 100%;
     justify-content: flex-start;
+    padding: 8px 12px !important;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .detail-label {
+    min-width: 70px;
+    font-size: 12px;
+  }
+
+  .detail-value {
+    font-size: 13px;
+  }
+
+  .expand-toggle {
+    margin-top: 12px;
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .empty-placeholder {
+    padding: 20px !important;
+  }
+
+  .placeholder-icon {
+    font-size: 24px;
+  }
+
+  .placeholder-text {
+    font-size: 13px;
+  }
+
+  .placeholder-hint {
+    font-size: 11px;
+  }
+
+  /* 移动端移除悬停效果 */
+  .intention-item:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .tag-item:hover {
+    transform: none;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .job-intention-container {
+    padding: 12px !important;
+    gap: 12px !important;
   }
 
   .intention-item {
-    padding: 12px;
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .position-value {
+    font-size: 15px !important;
+  }
+
+  .tag-item {
+    padding: 6px 10px !important;
+  }
+
+  .detail-label {
+    min-width: 60px;
+    font-size: 11px;
+  }
+
+  .detail-value {
+    font-size: 12px;
+  }
+
+  .expand-toggle {
+    font-size: 11px;
+    padding: 6px;
+  }
+}
+
+/* 平板设备 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .detail-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .position-value {
+    font-size: 17px !important;
   }
 }
 
@@ -579,19 +711,31 @@ const handleItemClick = (intention: JobIntentionResult) => {
 
 /* 打印优化 */
 @media print {
+  .job-intention-container {
+    box-shadow: none !important;
+  }
+
   .intention-item {
     break-inside: avoid;
-    border: 1px solid #ddd;
-    box-shadow: none;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    background-color: white !important;
+    color: black !important;
   }
 
   .expand-toggle {
-    display: none;
+    display: none !important;
   }
 
   .intention-details {
     display: block !important;
     max-height: none !important;
+  }
+
+  /* 打印时强制显示所有详情 */
+  .intention-details {
+    display: block !important;
+    animation: none !important;
   }
 }
 </style>

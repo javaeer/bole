@@ -1,4 +1,3 @@
-<!-- components/ProjectExperience.vue -->
 <template>
   <BaseComponent
     :title="componentName"
@@ -277,6 +276,8 @@ const getContainerStyle = (styles: any) => {
     fontFamily: styles.fontFamily,
     fontSize: styles.bodySize,
     lineHeight: styles.lineHeight,
+    width: '100%', // 添加宽度控制
+    boxSizing: 'border-box', // 确保内边距不增加宽度
   };
 };
 
@@ -292,6 +293,7 @@ const getProjectItemStyle = (styles: any) => {
     transition: 'all 0.3s ease',
     position: 'relative',
     overflow: 'hidden',
+    width: '100%', // 确保项目项填满容器
   };
 
   return defaultStyle;
@@ -306,6 +308,7 @@ const getHeaderStyle = (styles: any) => {
     alignItems: 'flex-start',
     marginBottom: '12px',
     flexWrap: 'wrap',
+    gap: '8px', // 添加间距
   };
 };
 
@@ -319,6 +322,7 @@ const getProjectNameStyle = (styles: any) => {
     lineHeight: '1.3',
     marginBottom: '6px',
     display: 'block',
+    width: '100%', // 确保名称不溢出
   };
 };
 
@@ -332,6 +336,7 @@ const getRoleStyle = (styles: any) => {
     padding: '3px 10px',
     borderRadius: '12px',
     fontWeight: '500',
+    display: 'inline-block',
   };
 };
 
@@ -345,6 +350,7 @@ const getTimeStyle = (styles: any) => {
     padding: '3px 10px',
     borderRadius: '12px',
     whiteSpace: 'nowrap',
+    flexShrink: 0, // 防止时间被压缩
   };
 };
 
@@ -358,6 +364,7 @@ const getDescriptionStyle = (styles: any) => {
     marginBottom: '16px',
     paddingBottom: '12px',
     borderBottom: '1px dashed #eee',
+    width: '100%',
   };
 };
 
@@ -373,6 +380,8 @@ const getLinkContainerStyle = (styles: any) => {
     background: styles.linkBackground || '#f0f7ff',
     borderRadius: '6px',
     borderLeft: `3px solid ${styles.accentColor || '#5ac8fa'}`,
+    width: '100%',
+    boxSizing: 'border-box',
   };
 };
 
@@ -381,6 +390,7 @@ const getLinkIconStyle = (styles: any) => {
 
   return {
     fontSize: '14px',
+    flexShrink: 0, // 防止图标被压缩
   };
 };
 
@@ -402,6 +412,7 @@ const getSectionStyle = (styles: any, sectionType: string) => {
 
   const baseStyle = {
     marginBottom: '16px',
+    width: '100%',
   };
 
   if (sectionType === 'achievements') {
@@ -422,6 +433,7 @@ const getSectionTitleStyle = (styles: any) => {
     fontWeight: '500',
     display: 'block',
     marginBottom: '8px',
+    width: '100%',
   };
 };
 
@@ -432,6 +444,7 @@ const getListItemStyle = (styles: any, type: string) => {
     display: 'flex',
     alignItems: 'flex-start',
     gap: '8px',
+    width: '100%',
   };
 
   if (type === 'achievement') {
@@ -516,6 +529,7 @@ const getTechTagStyle = (styles: any, tech: string) => {
     borderRadius: '15px',
     border: `1px solid ${color}30`, // 30表示透明度0.3
     transition: 'all 0.2s ease',
+    display: 'inline-block',
   };
 };
 
@@ -529,6 +543,9 @@ const getMetricsStyle = (styles: any) => {
     paddingTop: '16px',
     borderTop: '1px solid #eee',
     textAlign: 'center',
+    width: '100%',
+    flexWrap: 'wrap', // 允许换行
+    gap: '12px', // 添加间距
   };
 };
 
@@ -564,6 +581,8 @@ const getEmptyStateStyle = (styles: any) => {
     background: 'repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f0f0f0 10px, #f0f0f0 20px)',
     borderRadius: '8px',
     border: '2px dashed #ddd',
+    width: '100%',
+    boxSizing: 'border-box',
   };
 };
 </script>
@@ -571,6 +590,8 @@ const getEmptyStateStyle = (styles: any) => {
 <style scoped lang="scss">
 .project-experience-container {
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .project-item {
@@ -597,6 +618,8 @@ const getEmptyStateStyle = (styles: any) => {
 
 .project-header {
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .project-title-section {
@@ -627,6 +650,7 @@ const getEmptyStateStyle = (styles: any) => {
 
 .project-description {
   text-align: justify;
+  width: 100%;
 }
 
 .project-responsibilities,
@@ -663,6 +687,7 @@ const getEmptyStateStyle = (styles: any) => {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  width: 100%;
 }
 
 .tech-tag {
@@ -677,6 +702,9 @@ const getEmptyStateStyle = (styles: any) => {
 
 .project-metrics {
   .metric-item {
+    flex: 1;
+    min-width: 60px;
+
     &:hover {
       .metric-value {
         transform: scale(1.1);
@@ -692,6 +720,8 @@ const getEmptyStateStyle = (styles: any) => {
   align-items: center;
   justify-content: center;
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 
   .empty-icon {
     font-size: 48px;
@@ -709,50 +739,30 @@ const getEmptyStateStyle = (styles: any) => {
   }
 }
 
-/* 时间线布局 */
-.timeline-layout {
-  .project-item {
-    position: relative;
-    padding-left: 32px;
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: 16px;
-      top: 24px;
-      bottom: -24px;
-      width: 2px;
-      background: #e8e8e8;
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      left: 12px;
-      top: 24px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #1890ff;
-      border: 2px solid white;
-      box-shadow: 0 0 0 2px #1890ff;
-    }
-
-    &:last-child::before {
-      display: none;
-    }
-  }
-}
-
 /* 响应式调整 */
 @media (max-width: 768px) {
+  .project-experience-container {
+    padding: 0;
+  }
+
   .project-header {
     flex-direction: column;
+    align-items: flex-start;
     gap: 8px;
   }
 
   .project-time {
     align-self: flex-start;
+    margin-top: 4px;
+  }
+
+  .project-item {
+    padding: 16px !important;
+    border-radius: 8px !important;
+  }
+
+  .project-name {
+    font-size: 16px !important;
   }
 
   .tech-tags {
@@ -768,21 +778,79 @@ const getEmptyStateStyle = (styles: any) => {
     flex-direction: column;
     gap: 16px;
   }
+
+  .metric-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .responsibility-item,
+  .achievement-item {
+    padding: 4px 0;
+  }
+}
+
+/* 平板设备 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .project-item {
+    padding: 18px !important;
+  }
+
+  .tech-tags {
+    gap: 8px;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .project-item {
+    padding: 14px !important;
+  }
+
+  .project-name {
+    font-size: 15px !important;
+  }
+
+  .tech-tags {
+    gap: 4px;
+  }
+
+  .tech-tag {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+  }
+
+  .role-text,
+  .project-time {
+    font-size: 12px !important;
+  }
 }
 
 /* 打印优化 */
 @media print {
+  .project-experience-container {
+    break-inside: avoid;
+  }
+
   .project-item {
     break-inside: avoid;
     box-shadow: none !important;
     border: 1px solid #ddd !important;
     background: white !important;
+    padding: 12px !important;
   }
 
   .tech-tag {
     border: 1px solid #333 !important;
     background: white !important;
     color: #333 !important;
+  }
+
+  .project-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
   }
 }
 </style>

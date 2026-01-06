@@ -365,7 +365,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import BaseComponent from "./BaseComponent.vue";
 import type { TemplateGlobalStyle } from "@/types/template";
 import type { TemplateComponentResult } from "@/types/template-component";
@@ -393,7 +393,7 @@ const showSkillLevel = computed(() => {
 
 const showTags = computed(() => {
   const propValue = props.componentData.props?.showTags;
-  const defaultValue = defaultConfig.value.props?.showSkillLevel; // 注意：这里可能需要调整字段名
+  const defaultValue = defaultConfig.value.props?.showSkillLevel;
   return propValue !== undefined ? propValue : (defaultValue !== false);
 });
 
@@ -406,7 +406,7 @@ const groupByCategory = computed(() => {
 const showCategory = computed(() => true);
 const showExperienceYears = computed(() => defaultConfig.value.props?.showExperienceYears || true);
 const showCertification = computed(() => true);
-const showCategoryDescription = computed(() => false); // 默认不显示分类描述
+const showCategoryDescription = computed(() => false);
 
 // 技能分类映射
 const categoryConfig = ref({
@@ -481,6 +481,8 @@ const getContainerStyle = (styles: any) => {
   if (!styles) return {};
 
   return {
+    width: "100%",
+    maxWidth: "100%",
     fontFamily: styles.fontFamily,
     fontSize: styles.bodySize,
     lineHeight: styles.lineHeight,
@@ -490,7 +492,8 @@ const getContainerStyle = (styles: any) => {
     backgroundColor: styles.backgroundColor,
     borderRadius: styles.borderRadius,
     border: styles.border,
-    boxShadow: styles.boxShadow
+    boxShadow: styles.boxShadow,
+    boxSizing: "border-box"
   };
 };
 
@@ -504,6 +507,7 @@ const getCategoryStyle = (styles: any, category: string) => {
     borderLeft: `4px solid ${borderColor}`,
     paddingLeft: "16px",
     marginBottom: "24px",
+    width: "100%",
     '--category-color': borderColor
   };
 };
@@ -515,7 +519,8 @@ const getCategoryTitleStyle = (styles: any) => {
     fontSize: "18px",
     fontWeight: 600,
     color: 'var(--category-color)',
-    marginRight: "8px"
+    marginRight: "8px",
+    display: "inline-block"
   };
 };
 
@@ -525,7 +530,8 @@ const getCategoryCountStyle = (styles: any) => {
   return {
     fontSize: "14px",
     color: "#666",
-    opacity: 0.8
+    opacity: 0.8,
+    display: "inline-block"
   };
 };
 
@@ -538,7 +544,8 @@ const getCategoryDescriptionStyle = (styles: any) => {
     lineHeight: "1.5",
     paddingLeft: "4px",
     borderLeft: "2px solid rgba(0, 0, 0, 0.1)",
-    marginLeft: "4px"
+    marginLeft: "4px",
+    width: "100%"
   };
 };
 
@@ -546,12 +553,15 @@ const getSkillItemStyle = (styles: any, skill: any) => {
   if (!styles) return {};
 
   const baseStyle = {
+    width: "100%",
+    maxWidth: "100%",
     padding: "16px",
     background: "#ffffff",
     borderRadius: "8px",
     border: "1px solid #f0f0f0",
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-    transition: "all 0.3s ease"
+    transition: "all 0.3s ease",
+    boxSizing: "border-box"
   };
 
   // 根据熟练度设置边框色
@@ -577,7 +587,8 @@ const getSkillNameStyle = (styles: any) => {
     fontSize: "16px",
     fontWeight: 600,
     color: "#333",
-    flex: 1
+    flex: 1,
+    wordBreak: "break-word"
   };
 };
 
@@ -591,7 +602,8 @@ const getLevelTagStyle = (styles: any) => {
     background: "#f6f6f6",
     borderRadius: "16px",
     padding: "4px 12px",
-    border: "1px solid #e8e8e8"
+    border: "1px solid #e8e8e8",
+    flexShrink: 0
   };
 };
 
@@ -611,7 +623,9 @@ const getCategoryBadgeStyle = (styles: any) => {
   return {
     background: "rgba(24, 144, 255, 0.1)",
     color: styles.primaryColor,
-    border: "1px solid rgba(24, 144, 255, 0.2)"
+    border: "1px solid rgba(24, 144, 255, 0.2)",
+    display: "inline-block",
+    whiteSpace: "nowrap"
   };
 };
 
@@ -621,7 +635,9 @@ const getPublicBadgeStyle = (styles: any) => {
   return {
     background: "rgba(82, 196, 26, 0.1)",
     color: styles.accentColor,
-    border: "1px solid rgba(82, 196, 26, 0.2)"
+    border: "1px solid rgba(82, 196, 26, 0.2)",
+    display: "inline-block",
+    whiteSpace: "nowrap"
   };
 };
 
@@ -631,7 +647,9 @@ const getPrivateBadgeStyle = (styles: any) => {
   return {
     background: "rgba(255, 77, 79, 0.1)",
     color: "#ff4d4f",
-    border: "1px solid rgba(255, 77, 79, 0.2)"
+    border: "1px solid rgba(255, 77, 79, 0.2)",
+    display: "inline-block",
+    whiteSpace: "nowrap"
   };
 };
 
@@ -646,7 +664,9 @@ const getDescriptionStyle = (styles: any) => {
     padding: "8px",
     background: "#fafafa",
     borderRadius: "6px",
-    borderLeft: "3px solid #e8e8e8"
+    borderLeft: "3px solid #e8e8e8",
+    width: "100%",
+    wordBreak: "break-word"
   };
 };
 
@@ -658,7 +678,8 @@ const getTagStyle = (styles: any, tag: string) => {
 
   return {
     backgroundColor: colors[index],
-    border: `1px solid rgba(${index * 40}, ${index * 60}, ${index * 80}, 0.2)`
+    border: `1px solid rgba(${index * 40}, ${index * 60}, ${index * 80}, 0.2)`,
+    display: "inline-block"
   };
 };
 
@@ -668,7 +689,8 @@ const getTagTextStyle = (styles: any) => {
   return {
     fontSize: "11px",
     fontWeight: 500,
-    color: "#333"
+    color: "#333",
+    wordBreak: "break-word"
   };
 };
 
@@ -685,12 +707,13 @@ const getLabelTextStyle = (styles: any) => {
 const getExperienceFillStyle = (styles: any, years: number) => {
   if (!styles) return {};
 
-  const maxYears = 10; // 假设最大10年
+  const maxYears = 10;
   const width = Math.min((years / maxYears) * 100, 100);
 
   return {
     width: `${width}%`,
-    background: `linear-gradient(90deg, ${styles.primaryColor}, ${styles.accentColor})`
+    background: `linear-gradient(90deg, ${styles.primaryColor}, ${styles.accentColor})`,
+    minWidth: "20px"
   };
 };
 
@@ -702,7 +725,8 @@ const getYearsTextStyle = (styles: any) => {
     color: "#333",
     fontWeight: 500,
     minWidth: "50px",
-    textAlign: "right"
+    textAlign: "right",
+    flexShrink: 0
   };
 };
 
@@ -711,7 +735,8 @@ const getProgressFillStyle = (styles: any, percent: number) => {
 
   return {
     width: `${percent}%`,
-    background: getProgressColor(percent)
+    background: getProgressColor(percent),
+    minWidth: "5px"
   };
 };
 
@@ -723,7 +748,8 @@ const getProgressTextStyle = (styles: any) => {
     color: "#333",
     fontWeight: 600,
     minWidth: "35px",
-    textAlign: "right"
+    textAlign: "right",
+    flexShrink: 0
   };
 };
 
@@ -733,7 +759,8 @@ const getCertNameStyle = (styles: any) => {
   return {
     fontSize: "14px",
     color: "#333",
-    fontWeight: 500
+    fontWeight: 500,
+    wordBreak: "break-word"
   };
 };
 
@@ -763,10 +790,10 @@ const sortedSkills = computed(() => {
 
 // 获取进度条颜色
 const getProgressColor = (percent: number) => {
-  if (percent >= 90) return "#52c41a"; // 高级 - 绿色
-  if (percent >= 75) return "#1890ff"; // 中级 - 蓝色
-  if (percent >= 50) return "#faad14"; // 初级 - 橙色
-  return "#ff4d4f"; // 入门 - 红色
+  if (percent >= 90) return "#52c41a";
+  if (percent >= 75) return "#1890ff";
+  if (percent >= 50) return "#faad14";
+  return "#ff4d4f";
 };
 
 // 格式化日期
@@ -785,25 +812,36 @@ const formatDate = (dateStr: string) => {
 .skills-component {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .category-header {
   margin-bottom: 16px;
+  width: 100%;
 }
 
 .category-title-line {
   display: flex;
   align-items: baseline;
   margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .skills-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
 
 .skill-item {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -821,10 +859,12 @@ const formatDate = (dateStr: string) => {
 
 .skill-main-info {
   margin-bottom: 12px;
+  width: 100%;
 }
 
 .skill-header {
   margin-bottom: 12px;
+  width: 100%;
 }
 
 .skill-name-row {
@@ -832,6 +872,9 @@ const formatDate = (dateStr: string) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
 }
 
 .level-percent {
@@ -844,6 +887,7 @@ const formatDate = (dateStr: string) => {
   display: flex;
   gap: 8px;
   margin-top: 4px;
+  flex-wrap: wrap;
 }
 
 .meta-item {
@@ -851,6 +895,7 @@ const formatDate = (dateStr: string) => {
   padding: 2px 8px;
   border-radius: 10px;
   font-weight: 500;
+  display: inline-block;
 }
 
 .skill-tags-container {
@@ -858,6 +903,7 @@ const formatDate = (dateStr: string) => {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 8px;
+  width: 100%;
 }
 
 .tag-item {
@@ -865,6 +911,7 @@ const formatDate = (dateStr: string) => {
   padding: 2px 10px;
   border-radius: 12px;
   transition: all 0.2s ease;
+  display: inline-block;
 
   &:hover {
     transform: translateY(-1px);
@@ -878,12 +925,14 @@ const formatDate = (dateStr: string) => {
   gap: 12px;
   padding-top: 12px;
   border-top: 1px dashed #e8e8e8;
+  width: 100%;
 }
 
 .detail-item {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
 }
 
 .detail-label {
@@ -891,6 +940,7 @@ const formatDate = (dateStr: string) => {
   align-items: center;
   gap: 6px;
   min-width: 60px;
+  flex-shrink: 0;
 }
 
 .detail-icon {
@@ -902,6 +952,7 @@ const formatDate = (dateStr: string) => {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0; /* 防止flex元素溢出 */
 }
 
 // 经验条样式
@@ -912,6 +963,7 @@ const formatDate = (dateStr: string) => {
   border-radius: 3px;
   overflow: hidden;
   position: relative;
+  min-width: 60px;
 }
 
 .experience-fill {
@@ -928,6 +980,7 @@ const formatDate = (dateStr: string) => {
   border-radius: 4px;
   overflow: hidden;
   position: relative;
+  min-width: 60px;
 }
 
 .progress-fill {
@@ -958,20 +1011,29 @@ const formatDate = (dateStr: string) => {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
-// 响应式调整
+// 响应式调整 - 修复移动端居中问题
 @media (max-width: 768px) {
   .skills-component {
     gap: 16px;
+    padding: 12px !important;
+    margin: 0 auto;
+    max-width: 100%;
   }
 
   .category-group {
     padding-left: 12px;
+    margin-bottom: 20px;
+    width: 100%;
   }
 
   .skill-item {
     padding: 12px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .skill-name-row {
@@ -996,6 +1058,104 @@ const formatDate = (dateStr: string) => {
 
   .detail-value {
     width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .experience-bar,
+  .progress-bar {
+    width: 100%;
+  }
+
+  .years-text,
+  .progress-text {
+    text-align: left;
+  }
+
+  // 标签容器优化
+  .skill-tags-container {
+    gap: 4px;
+  }
+
+  .tag-item {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+
+  // 元信息优化
+  .skill-meta {
+    gap: 4px;
+  }
+
+  .meta-item {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+}
+
+// 小屏幕手机
+@media (max-width: 480px) {
+  .skills-component {
+    padding: 8px !important;
+  }
+
+  .category-group {
+    padding-left: 8px;
+  }
+
+  .skill-item {
+    padding: 10px;
+  }
+
+  .category-title {
+    font-size: 16px !important;
+  }
+
+  .category-count {
+    font-size: 12px !important;
+  }
+
+  .skill-name {
+    font-size: 15px !important;
+  }
+
+  .skill-description {
+    font-size: 13px !important;
+    padding: 6px !important;
+  }
+}
+
+// 平板设备
+@media (min-width: 769px) and (max-width: 1024px) {
+  .skills-component {
+    padding: 16px !important;
+  }
+
+  .skill-item {
+    padding: 14px;
+  }
+}
+
+// 打印样式
+@media print {
+  .skills-component {
+    border: none !important;
+    box-shadow: none !important;
+    background: white !important;
+    padding: 0 !important;
+  }
+
+  .skill-item {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .progress-fill,
+  .experience-fill {
+    transition: none !important;
   }
 }
 </style>

@@ -105,7 +105,10 @@ const getContainerStyle = (styles: any) => {
     fontFamily: styles.fontFamily,
     fontSize: styles.bodySize,
     lineHeight: styles.lineHeight,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    // 新增：确保容器宽度适应父容器
+    width: '100%',
+    boxSizing: 'border-box'
   };
 };
 
@@ -130,7 +133,10 @@ const getContentStyle = (styles: any) => {
     textAlign: 'justify',
     whiteSpace: 'pre-wrap',
     wordBreak: 'break-word',
-    marginBottom: '16px'
+    marginBottom: '16px',
+    // 新增：确保内容不溢出
+    maxWidth: '100%',
+    overflowWrap: 'break-word'
   };
 };
 
@@ -155,7 +161,12 @@ const getHighlightTagStyle = (styles: any) => {
     backgroundColor: styles.highlightBackground || '#fff7e6',
     padding: '4px 12px',
     borderRadius: '16px',
-    border: `1px solid ${styles.accentColor ? `${styles.accentColor}30` : 'rgba(255, 122, 69, 0.3)'}`
+    border: `1px solid ${styles.accentColor ? `${styles.accentColor}30` : 'rgba(255, 122, 69, 0.3)'}`,
+    // 新增：确保标签不超出容器
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
   };
 };
 
@@ -168,7 +179,10 @@ const getPlaceholderStyle = (styles: any) => {
     padding: '40px 20px',
     background: 'repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f0f0f0 10px, #f0f0f0 20px)',
     borderRadius: '4px',
-    fontSize: styles.bodySize
+    fontSize: styles.bodySize,
+    // 新增：确保占位符宽度适应
+    width: '100%',
+    boxSizing: 'border-box'
   };
 };
 </script>
@@ -176,11 +190,16 @@ const getPlaceholderStyle = (styles: any) => {
 <style scoped>
 .self-evaluation-container {
   font-family: inherit;
+  /* 新增：确保基础样式 */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .evaluation-content {
   white-space: pre-wrap;
   word-break: break-word;
+  /* 新增：响应式文本 */
+  hyphens: auto;
 }
 
 .highlights-section {
@@ -212,6 +231,9 @@ const getPlaceholderStyle = (styles: any) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  /* 新增：确保占位符响应式 */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .placeholder-text {
@@ -226,6 +248,27 @@ const getPlaceholderStyle = (styles: any) => {
 
 /* 响应式样式 */
 @media (max-width: 768px) {
+  .self-evaluation-container {
+    padding: 16px !important; /* 移动端减小内边距 */
+    margin: 0 0 16px 0 !important; /* 移动端减小外边距 */
+  }
+
+  .evaluation-item {
+    margin-bottom: 16px !important;
+    padding-bottom: 16px !important;
+  }
+
+  .evaluation-content {
+    font-size: 14px !important; /* 移动端字体稍微调整 */
+    line-height: 1.6 !important;
+    text-align: left; /* 移动端左对齐，更易读 */
+    hyphens: auto;
+  }
+
+  .highlights-section {
+    margin-top: 12px;
+  }
+
   .highlights-tags {
     gap: 6px;
   }
@@ -233,6 +276,70 @@ const getPlaceholderStyle = (styles: any) => {
   .highlight-tag {
     font-size: 11px;
     padding: 3px 8px;
+    /* 移动端禁用长文本省略，直接换行 */
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .highlights-title,
+  .section-title {
+    font-size: 14px !important;
+  }
+
+  .empty-placeholder {
+    padding: 30px 16px !important;
+  }
+
+  .placeholder-text {
+    font-size: 13px;
+  }
+
+  .placeholder-hint {
+    font-size: 11px;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .self-evaluation-container {
+    padding: 12px !important;
+    border-radius: 6px !important;
+  }
+
+  .evaluation-item {
+    margin-bottom: 12px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .evaluation-content {
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 12px;
+  }
+
+  .highlights-tags {
+    gap: 4px;
+  }
+
+  .highlight-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 12px;
+  }
+
+  .empty-placeholder {
+    padding: 24px 12px !important;
+  }
+}
+
+/* 平板设备 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .self-evaluation-container {
+    padding: 20px !important;
+  }
+
+  .evaluation-content {
+    font-size: 14px !important;
   }
 }
 
@@ -258,12 +365,23 @@ const getPlaceholderStyle = (styles: any) => {
     border: none !important;
     box-shadow: none !important;
     background: white !important;
+    padding: 12px !important;
+    margin: 0 0 12px 0 !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .highlight-tag {
     border: 1px solid #333 !important;
     background: white !important;
     color: #333 !important;
+    font-size: 10px !important;
+    padding: 2px 8px !important;
+  }
+
+  .evaluation-content {
+    font-size: 12px !important;
+    line-height: 1.6 !important;
   }
 }
 </style>

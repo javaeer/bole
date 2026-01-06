@@ -1,7 +1,6 @@
 <template>
   <!-- 查看模式 -->
   <view v-if="currentMode === 'view'" class="resume-view-container">
-
     <!-- 简历预览内容 -->
     <scroll-view class="preview-content" scroll-y="true">
       <!-- 动态模板引擎渲染 -->
@@ -557,7 +556,7 @@ const layoutClass = computed(() => {
 
 // 计算表单区域样式
 const formSectionStyle = computed(() => {
-  const bottomButtonHeight = "120rpx";
+  const bottomButtonHeight = "60px"; // 修改为固定像素值
 
   if (isWideScreen.value && isH5.value) {
     return {
@@ -571,7 +570,7 @@ const formSectionStyle = computed(() => {
   } else {
     return {
       width: "100%",
-      height: `calc(50% - ${bottomButtonHeight})`,
+      height: `calc(50vh - ${bottomButtonHeight})`,
       position: "fixed",
       left: "0",
       top: "0",
@@ -582,7 +581,7 @@ const formSectionStyle = computed(() => {
 
 // 计算预览区域样式
 const previewSectionStyle = computed(() => {
-  const bottomButtonHeight = "120rpx";
+  const bottomButtonHeight = "60px"; // 修改为固定像素值
 
   if (isWideScreen.value && isH5.value) {
     return {
@@ -598,7 +597,7 @@ const previewSectionStyle = computed(() => {
   } else {
     return {
       width: "100%",
-      height: `calc(50% - ${bottomButtonHeight})`,
+      height: `calc(50vh - ${bottomButtonHeight})`,
       position: "fixed",
       left: "0",
       bottom: bottomButtonHeight,
@@ -611,7 +610,7 @@ const previewSectionStyle = computed(() => {
 
 // 计算预览容器样式
 const previewContainerStyle = computed(() => {
-  const previewHeaderHeight = "60px";
+  const previewHeaderHeight = "48px";
   return {
     height: `calc(100% - ${previewHeaderHeight})`,
     overflowY: "auto",
@@ -739,10 +738,6 @@ const loadResumeData = async () => {
   } finally {
     loading.value = false;
   }
-};
-
-const handleBack = () => {
-  uni.navigateBack();
 };
 
 const showShareOptions = () => {
@@ -1119,98 +1114,25 @@ onShow(() => {
   flex-direction: column;
 }
 
-.view-header {
-  background: $background-color-white;
-  padding: 0 $padding-small;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: $box-shadow-light;
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: $z-index-modal;
-  flex-shrink: 0;
-
-  .header-back-btn {
-    display: flex;
-    align-items: center;
-    gap: 8rpx;
-    background: transparent;
-    border: none;
-    padding: 0;
-
-    .back-icon {
-      font-size: $font-size-large;
-      color: $text-secondary;
-    }
-
-    .back-text {
-      font-size: $font-size-base;
-      color: $text-secondary;
-    }
-
-    &:active {
-      opacity: 0.8;
-    }
-  }
-
-  .header-title {
-    font-size: $font-size-medium;
-    font-weight: $font-weight-semibold;
-    color: $text-primary;
-    flex: 1;
-    text-align: center;
-  }
-
-  .header-right {
-    display: flex;
-    justify-content: flex-end;
-
-    .action-btn {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: $background-color;
-      border: 1rpx solid $border-color-lighter;
-      border-radius: $border-radius-round;
-
-      .action-icon {
-        font-size: $font-size-medium;
-      }
-
-      &.edit-btn {
-        .action-icon {
-          color: $primary-color;
-        }
-      }
-
-      &:active {
-        background: $border-color-lighter;
-      }
-    }
-  }
-}
-
 .preview-content {
   flex: 1;
   background: $background-color-white;
-  padding: $padding-small;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .view-footer {
   background: $background-color-white;
   padding: $padding-mini $padding-small;
   display: flex;
-  gap: 16rpx;
-  border-top: 1rpx solid $border-color-lighter;
+  gap: $margin-mini;
+  border-top: 1rpx solid $border-color-light;
   flex-shrink: 0;
-  z-index: $z-index-modal - 1;
+  z-index: $z-index-dropdown;
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 
   .footer-btn {
     flex: 1;
@@ -1219,35 +1141,37 @@ onShow(() => {
     align-items: center;
     justify-content: center;
     gap: 4rpx;
-    padding: $padding-mini;
+    padding: $padding-mini 8rpx;
     border-radius: $border-radius-small;
     border: none;
-    font-size: $font-size-extra-small;
+    font-size: $font-size-small;
     transition: all $transition-fast $ease-in-out;
+    min-height: 60rpx;
 
     .footer-icon {
-      font-size: $font-size-medium;
+      font-size: $font-size-large;
+      margin-bottom: 4rpx;
     }
 
     .footer-text {
-      font-size: 22rpx;
+      font-size: $font-size-small;
     }
 
     &.delete-btn {
-      background: $danger-bg;
+      background: rgba($danger-color, 0.1);
       color: $danger-color;
 
       &:active {
-        background: color.adjust($danger-color, $alpha: -0.9);
+        background: rgba($danger-color, 0.2);
       }
     }
 
     &.download-btn {
-      background: $success-bg;
+      background: rgba($success-color, 0.1);
       color: $success-color;
 
       &:active {
-        background: color.adjust($success-color, $alpha: -0.9);
+        background: rgba($success-color, 0.2);
       }
     }
 
@@ -1268,11 +1192,11 @@ onShow(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: $uni-bg-color-mask;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: $z-index-modal + 10;
+  z-index: $z-index-modal;
 }
 
 .custom-modal {
@@ -1283,23 +1207,23 @@ onShow(() => {
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: $box-shadow-dark;
-  animation: slideUp 0.3s ease;
+  animation: slideUp $transition-normal $ease-in-out;
 
   .modal-header {
-    padding: $padding-base $padding-small;
+    padding: $padding-small;
     border-bottom: 1rpx solid $border-color-lighter;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     .modal-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-semibold;
       color: $text-primary;
     }
 
     .modal-close {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       color: $text-secondary;
       background: transparent;
       border: none;
@@ -1313,20 +1237,20 @@ onShow(() => {
   }
 
   .modal-content {
-    padding: $padding-base;
+    padding: $padding-small;
   }
 
   .share-options {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: $margin-mini;
-    margin-bottom: $margin-base;
+    margin-bottom: $margin-small;
 
     .share-option {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12rpx;
+      gap: 8rpx;
       padding: $padding-small;
       background: $background-color;
       border: 1rpx solid $border-color-lighter;
@@ -1334,18 +1258,18 @@ onShow(() => {
       transition: background-color $transition-fast $ease-in-out;
 
       &:active {
-        background: $border-color-lighter;
+        background: $uni-bg-color-hover;
       }
 
       .option-icon {
-        font-size: 48rpx;
+        font-size: $font-size-base;
         width: 80rpx;
         height: 80rpx;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: $border-radius-round;
-        margin-bottom: 12rpx;
+        margin-bottom: 8rpx;
 
         &.wechat {
           background: $success-color;
@@ -1364,7 +1288,7 @@ onShow(() => {
       }
 
       .option-text {
-        font-size: $font-size-small;
+        font-size: $font-size-base;
         color: $text-primary;
         font-weight: $font-weight-medium;
       }
@@ -1393,7 +1317,7 @@ onShow(() => {
     }
 
     .qrcode-hint {
-      font-size: $font-size-extra-small;
+      font-size: $font-size-small;
       color: $text-secondary;
     }
   }
@@ -1425,7 +1349,7 @@ onShow(() => {
   flex: 1;
   position: relative;
   width: 100%;
-  height: calc(100vh - 120rpx);
+  height: calc(100vh - 60px);
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -1434,24 +1358,24 @@ onShow(() => {
 .default-layout {
   .form-section {
     width: 100%;
-    height: 50%;
+    height: calc(50vh - 30px);
     position: fixed;
     left: 0;
     top: 0;
-    z-index: 10;
+    z-index: $z-index-base;
     background: $background-color-white;
-    border-bottom: 1px solid $border-color-lighter;
+    border-bottom: 1rpx solid $border-color-light;
   }
 
   .preview-section.fixed-preview {
     width: 100%;
-    height: 50%;
+    height: calc(50vh - 30px);
     position: fixed;
     left: 0;
-    bottom: 0;
-    z-index: 10;
+    bottom: 60px;
+    z-index: $z-index-base;
     background: $background-color-white;
-    border-top: 1px solid $border-color-lighter;
+    border-top: 1rpx solid $border-color-light;
   }
 }
 
@@ -1459,24 +1383,24 @@ onShow(() => {
 .h5-narrow-layout {
   .form-section {
     width: 100%;
-    height: 50%;
+    height: calc(50vh - 30px);
     position: fixed;
     left: 0;
     top: 0;
-    z-index: 10;
+    z-index: $z-index-base;
     background: $background-color-white;
-    border-bottom: 1px solid $border-color-lighter;
+    border-bottom: 1rpx solid $border-color-light;
   }
 
   .preview-section.fixed-preview {
     width: 100%;
-    height: 50%;
+    height: calc(50vh - 30px);
     position: fixed;
     left: 0;
-    bottom: 0;
-    z-index: 10;
+    bottom: 60px;
+    z-index: $z-index-base;
     background: $background-color-white;
-    border-top: 1px solid $border-color-lighter;
+    border-top: 1rpx solid $border-color-light;
   }
 }
 
@@ -1484,26 +1408,26 @@ onShow(() => {
 .h5-wide-layout {
   .form-section {
     width: 50%;
-    height: calc(100vh - 120rpx);
+    height: calc(100vh - 60px);
     position: fixed;
     left: 0;
     top: 0;
-    z-index: 10;
+    z-index: $z-index-base;
     background: $background-color-white;
-    border-right: 1px solid $border-color-lighter;
+    border-right: 1rpx solid $border-color-light;
     overflow-y: auto;
     box-sizing: border-box;
   }
 
   .preview-section.fixed-preview {
     width: 50%;
-    height: calc(100vh - 120rpx);
+    height: calc(100vh - 60px);
     position: fixed;
     right: 0;
     top: 0;
-    z-index: 10;
+    z-index: $z-index-base;
     background: $background-color-white;
-    border-left: 1px solid $border-color-lighter;
+    border-left: 1rpx solid $border-color-light;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1516,7 +1440,7 @@ onShow(() => {
 
   .form-container {
     padding: $padding-small;
-    padding-bottom: 180rpx;
+    padding-bottom: 90rpx;
   }
 }
 
@@ -1524,19 +1448,19 @@ onShow(() => {
   background: $background-color-white;
   border-radius: $border-radius;
   padding: $padding-small;
-  margin-bottom: $margin-base * 0.75;
+  margin-bottom: $margin-mini;
   box-shadow: $box-shadow-light;
   border: 1rpx solid $border-color-lighter;
 
   .form-section-header {
-    margin-bottom: $margin-base * 0.75;
+    margin-bottom: $margin-mini;
 
     .section-title {
       display: block;
-      font-size: $font-size-base * 1.07;
+      font-size: $font-size-medium;
       font-weight: $font-weight-semibold;
       color: $text-primary;
-      margin-bottom: 16rpx;
+      margin-bottom: 8rpx;
     }
 
     .section-divider {
@@ -1550,7 +1474,7 @@ onShow(() => {
 .dynamic-form-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24rpx;
+  gap: $margin-mini;
 
   .h5-wide-layout & {
     @media (min-width: 769px) {
@@ -1566,15 +1490,15 @@ onShow(() => {
 
   .item-label {
     display: block;
-    font-size: $font-size-small;
-    color: $text-regular;
-    margin-bottom: 12rpx;
+    font-size: $font-size-base;
+    color: $text-secondary;
+    margin-bottom: 6rpx;
     font-weight: $font-weight-medium;
   }
 
   .form-input {
     width: 100%;
-    height: $input-height;
+    height: 80rpx;
     background: $background-color;
     border: 1rpx solid $border-color-lighter;
     border-radius: $border-radius-small;
@@ -1590,7 +1514,7 @@ onShow(() => {
   }
 
   .picker-content {
-    height: $input-height;
+    height: 80rpx;
     background: $background-color;
     border: 1rpx solid $border-color-lighter;
     border-radius: $border-radius-small;
@@ -1603,7 +1527,7 @@ onShow(() => {
     transition: background-color $transition-fast $ease-in-out;
 
     &:active {
-      background: $border-color-lighter;
+      background: $uni-bg-color-hover;
     }
   }
 
@@ -1649,16 +1573,16 @@ onShow(() => {
   .skill-item {
     background: $background-color;
     border-radius: $border-radius-small;
-    padding: 24rpx;
-    margin-bottom: 24rpx;
+    padding: $padding-mini;
+    margin-bottom: $margin-mini;
     border: 1rpx solid $border-color-lighter;
 
     .item-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: $margin-mini;
-      padding-bottom: 12rpx;
+      margin-bottom: 6rpx;
+      padding-bottom: 6rpx;
       border-bottom: 1rpx solid $border-color-lighter;
 
       .item-title {
@@ -1669,11 +1593,11 @@ onShow(() => {
 
       .remove-btn {
         color: $danger-color;
-        font-size: $font-size-extra-small;
+        font-size: $font-size-small;
         cursor: pointer;
-        padding: 8rpx 16rpx;
+        padding: 4rpx 8rpx;
         border-radius: $border-radius-small;
-        background: rgba($danger-color, 0.1);
+        background: $danger-bg;
         transition: background-color $transition-fast $ease-in-out;
 
         &:active {
@@ -1685,9 +1609,9 @@ onShow(() => {
 
   .add-section-btn {
     width: 100%;
-    height: $input-height;
+    height: 80rpx;
     background: transparent;
-    border: 1rpx dashed $border-color;
+    border: 1rpx dashed $border-color-lighter;
     border-radius: $border-radius-small;
     color: $text-secondary;
     font-size: $font-size-base;
@@ -1695,11 +1619,11 @@ onShow(() => {
     align-items: center;
     justify-content: center;
     gap: 8rpx;
-    margin-top: 16rpx;
+    margin-top: 8rpx;
     transition: background-color $transition-fast $ease-in-out;
 
     .icon-add {
-      font-size: $font-size-medium;
+      font-size: $font-size-large;
     }
 
     &:active {
@@ -1722,15 +1646,15 @@ onShow(() => {
   }
 
   .preview-header {
-    padding: 8rpx 16rpx;
-    border-bottom: 1rpx solid $border-color-lighter;
+    padding: 8rpx $padding-small;
+    border-bottom: 1rpx solid $border-color-light;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: $background-color-white;
     flex-shrink: 0;
-    min-height: 48px;
-    height: 48px;
+    min-height: 96rpx;
+    height: 96rpx;
     box-sizing: border-box;
 
     .preview-title {
@@ -1743,29 +1667,29 @@ onShow(() => {
     .preview-action-btn {
       display: flex;
       align-items: center;
-      gap: 4rpx;
+      gap: 8rpx;
       background: $background-color;
-      border: 1rpx solid $border-color;
+      border: 1rpx solid $border-color-lighter;
       border-radius: $border-radius-small;
-      padding: 8rpx 12rpx;
-      font-size: $font-size-extra-small;
+      padding: 12rpx 24rpx;
+      font-size: $font-size-small;
       color: $text-secondary;
       white-space: nowrap;
       transition: background-color $transition-fast $ease-in-out;
-      height: 32px;
-      min-height: 32px;
+      height: 64rpx;
+      min-height: 64rpx;
       box-sizing: border-box;
 
       .action-icon {
-        font-size: $font-size-small;
+        font-size: $font-size-base;
       }
 
       .action-text {
-        font-size: $font-size-extra-small;
+        font-size: $font-size-small;
       }
 
       &:active {
-        background: $border-color-lighter;
+        background: $uni-bg-color-hover;
       }
     }
   }
@@ -1774,46 +1698,39 @@ onShow(() => {
     flex: 1;
     overflow-y: auto;
     width: 100%;
-    height: calc(100% - 48px);
-
-    .resume-preview {
-      padding: $padding-small;
-      background: $background-color;
-      min-height: 100%;
-      box-sizing: border-box;
-    }
+    height: calc(100% - 96rpx);
   }
 }
 
 .action-buttons-edit {
   background: $background-color-white;
-  padding: $padding-mini $padding-small;
+  padding: 8rpx $padding-small;
   display: flex;
   gap: $margin-mini;
-  border-top: 1rpx solid $border-color-lighter;
+  border-top: 1rpx solid $border-color-light;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
-  height: 60px;
-  min-height: 60px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: $z-index-dropdown;
+  height: 120rpx;
+  min-height: 120rpx;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 
   @media (max-width: 768px) {
     flex-wrap: wrap;
     height: auto;
     min-height: auto;
-    padding: 8rpx;
+    padding: 4rpx;
   }
 
   .save-btn,
   .back-btn {
     flex: 1;
-    height: 44px;
-    min-height: 44px;
-    border-radius: $border-radius-small;
-    font-size: $font-size-small;
+    height: 88rpx;
+    min-height: 88rpx;
+    border-radius: $border-radius;
+    font-size: $font-size-base;
     font-weight: $font-weight-medium;
     border: none;
     display: flex;
@@ -1821,7 +1738,7 @@ onShow(() => {
     justify-content: center;
     transition: opacity $transition-fast $ease-in-out;
     white-space: nowrap;
-    padding: 0 8rpx;
+    padding: 0 $padding-small;
 
     &:disabled {
       opacity: $uni-opacity-disabled;
@@ -1853,18 +1770,18 @@ onShow(() => {
   justify-content: center;
   z-index: $z-index-toast;
   flex-direction: column;
-  gap: $margin-base * 0.75;
+  gap: $margin-small;
 }
 
 .loading-content {
   background: $background-color-white;
   border-radius: $border-radius;
-  padding: $padding-base * 2;
+  padding: 64rpx;
   box-shadow: $box-shadow-dark;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $margin-base * 0.75;
+  gap: $margin-small;
   max-width: 600rpx;
   width: 80%;
 }
@@ -1872,10 +1789,10 @@ onShow(() => {
 .loading-spinner {
   width: 80rpx;
   height: 80rpx;
-  border: 6rpx solid $border-color-lighter;
+  border: 3rpx solid $border-color-extra-light;
   border-top-color: $primary-color;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  border-radius: $border-radius-round;
+  animation: spin $transition-slow linear infinite;
 }
 
 @keyframes spin {
@@ -1891,40 +1808,32 @@ onShow(() => {
 }
 
 /* ==================== 响应式调整 ==================== */
-@media (max-width: 768px) {
-  .view-header {
-    height: 50px;
-    padding: 0 $padding-mini;
-
-    .header-back-btn {
-      .back-text {
-        display: none;
-      }
-    }
-  }
-
+@media (max-width: $screen-md) {
   .view-footer {
-    padding: $padding-mini $padding-mini;
-    gap: 12rpx;
+    padding: 8rpx 12rpx;
+    gap: 8rpx;
 
     .footer-btn {
+      min-height: 100rpx;
+      padding: 8rpx 4rpx;
+
       .footer-text {
-        font-size: 20rpx;
+        font-size: $font-size-small;
       }
     }
   }
 
   .preview-section.fixed-preview .preview-header {
-    padding: 6rpx 12rpx;
-    min-height: 44px;
-    height: 44px;
+    padding: 12rpx $padding-mini;
+    min-height: 88rpx;
+    height: 88rpx;
 
     .preview-title {
       font-size: $font-size-small;
     }
 
     .preview-action-btn {
-      padding: 6rpx 10rpx;
+      padding: 8rpx 16rpx;
 
       .action-text {
         display: none;
@@ -1935,13 +1844,34 @@ onShow(() => {
 
 @media (min-width: 769px) {
   .preview-section.fixed-preview .preview-header {
-    .preview-actions {
-      .preview-action-btn {
-        .action-text {
-          display: inline;
-        }
+    .preview-action-btn {
+      .action-text {
+        display: inline;
       }
     }
+  }
+}
+
+/* 手机端特殊调整 */
+@media (max-width: 480px) {
+  .view-footer {
+    padding: 12rpx 16rpx;
+
+    .footer-btn {
+      padding: 12rpx 4rpx;
+
+      .footer-icon {
+        font-size: $font-size-medium;
+      }
+
+      .footer-text {
+        font-size: $font-size-small;
+      }
+    }
+  }
+
+  .form-section-card {
+    padding: $padding-mini;
   }
 }
 </style>

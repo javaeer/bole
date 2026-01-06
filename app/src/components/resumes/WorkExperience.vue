@@ -27,7 +27,7 @@
           ></view>
 
           <!-- 公司信息区域 -->
-          <view class="experience-content">
+          <view class="experience-content" :style="getExperienceContentStyle(styles)">
             <!-- 公司名称和logo -->
             <view class="company-header">
               <view class="company-info">
@@ -343,15 +343,14 @@ const getContainerStyle = (styles: any) => {
 
   return {
     position: 'relative',
-    padding: styles.padding,
-    backgroundColor: styles.backgroundColor,
-    borderRadius: styles.borderRadius,
+    padding: styles.padding || '16px',
+    backgroundColor: styles.backgroundColor || '#ffffff',
+    borderRadius: styles.borderRadius || '8px',
     fontFamily: styles.fontFamily,
-    fontSize: styles.bodySize,
-    lineHeight: styles.lineHeight,
-    gap: styles.itemSpacing || '20px',
-    display: 'flex',
-    flexDirection: 'column'
+    fontSize: styles.bodySize || '14px',
+    lineHeight: styles.lineHeight || '1.6',
+    width: '100%',
+    boxSizing: 'border-box'
   };
 };
 
@@ -380,7 +379,9 @@ const getItemStyle = (styles: any, index: number, isCurrent: boolean) => {
     marginBottom: index < sortedExperiences.value.length - 1 ?
       (styles.itemSpacing || '20px') : '0',
     borderBottom: index < sortedExperiences.value.length - 1 ?
-      `1px dashed ${styles.secondaryColor || '#e8e8e8'}` : 'none'
+      `1px dashed ${styles.secondaryColor || '#e8e8e8'}` : 'none',
+    width: '100%',
+    boxSizing: 'border-box'
   };
 
   if (isCurrent) {
@@ -418,6 +419,15 @@ const getNodeStyle = (styles: any, isCurrent: boolean) => {
   return baseStyle;
 };
 
+const getExperienceContentStyle = (styles: any) => {
+  if (!styles) return {};
+
+  return {
+    width: '100%',
+    boxSizing: 'border-box'
+  };
+};
+
 const getCompanyNameStyle = (styles: any) => {
   if (!styles) return {};
 
@@ -426,7 +436,8 @@ const getCompanyNameStyle = (styles: any) => {
     fontWeight: 'bold',
     color: styles.companyColor || styles.primaryColor || '#1890ff',
     marginBottom: '4px',
-    display: 'block'
+    display: 'block',
+    width: '100%'
   };
 };
 
@@ -438,7 +449,8 @@ const getPositionStyle = (styles: any) => {
     fontWeight: '500',
     color: styles.textColor || '#333',
     marginBottom: '8px',
-    display: 'block'
+    display: 'block',
+    width: '100%'
   };
 };
 
@@ -476,7 +488,8 @@ const getDescriptionStyle = (styles: any) => {
     fontSize: '14px',
     lineHeight: '1.6',
     margin: '8px 0',
-    textAlign: 'justify'
+    textAlign: 'justify',
+    width: '100%'
   };
 };
 
@@ -488,7 +501,8 @@ const getSectionTitleStyle = (styles: any) => {
     fontWeight: 'bold',
     color: styles.titleColor || '#333',
     marginBottom: '8px',
-    display: 'block'
+    display: 'block',
+    width: '100%'
   };
 };
 
@@ -502,7 +516,8 @@ const getListItemStyle = (styles: any) => {
     marginBottom: '4px',
     display: 'flex',
     alignItems: 'flex-start',
-    gap: '8px'
+    gap: '8px',
+    width: '100%'
   };
 };
 
@@ -528,11 +543,12 @@ const getPlaceholderStyle = (styles: any) => {
     padding: '40px 20px',
     background: 'repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f0f0f0 10px, #f0f0f0 20px)',
     borderRadius: '4px',
-    fontSize: styles.bodySize,
+    fontSize: styles.bodySize || '14px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: '8px'
+    gap: '8px',
+    width: '100%'
   };
 };
 </script>
@@ -540,6 +556,8 @@ const getPlaceholderStyle = (styles: any) => {
 <style scoped>
 .work-experience-container {
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .timeline-line {
@@ -550,10 +568,14 @@ const getPlaceholderStyle = (styles: any) => {
 .experience-item {
   position: relative;
   z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .experience-content {
   flex: 1;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .company-header {
@@ -561,10 +583,13 @@ const getPlaceholderStyle = (styles: any) => {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 8px;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .company-info {
   flex: 1;
+  min-width: 0; /* 防止内容溢出 */
 }
 
 .current-badge {
@@ -579,6 +604,7 @@ const getPlaceholderStyle = (styles: any) => {
   gap: 12px;
   margin-bottom: 12px;
   align-items: center;
+  width: 100%;
 }
 
 .time-period,
@@ -603,6 +629,7 @@ const getPlaceholderStyle = (styles: any) => {
 .description {
   white-space: pre-wrap;
   word-break: break-word;
+  width: 100%;
 }
 
 .responsibilities,
@@ -610,11 +637,13 @@ const getPlaceholderStyle = (styles: any) => {
 .skills-used,
 .projects {
   margin-top: 12px;
+  width: 100%;
 }
 
 .responsibilities-list,
 .achievements-list {
   padding-left: 16px;
+  width: 100%;
 }
 
 .bullet {
@@ -624,6 +653,7 @@ const getPlaceholderStyle = (styles: any) => {
 
 .item-text {
   flex: 1;
+  min-width: 0; /* 防止文字溢出 */
 }
 
 .skills-tags {
@@ -631,6 +661,7 @@ const getPlaceholderStyle = (styles: any) => {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 8px;
+  width: 100%;
 }
 
 .project-item {
@@ -638,6 +669,8 @@ const getPlaceholderStyle = (styles: any) => {
   padding: 8px;
   background: #f8f9fa;
   border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .project-header {
@@ -645,6 +678,8 @@ const getPlaceholderStyle = (styles: any) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 4px;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .project-name {
@@ -664,6 +699,7 @@ const getPlaceholderStyle = (styles: any) => {
   font-size: 12px;
   color: #666;
   line-height: 1.4;
+  width: 100%;
 }
 
 .reference {
@@ -672,6 +708,7 @@ const getPlaceholderStyle = (styles: any) => {
   border-top: 1px dashed #eee;
   font-size: 12px;
   color: #888;
+  width: 100%;
 }
 
 .reference-label {
@@ -686,6 +723,8 @@ const getPlaceholderStyle = (styles: any) => {
 
 .empty-placeholder {
   min-height: 100px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .placeholder-icon {
@@ -705,14 +744,24 @@ const getPlaceholderStyle = (styles: any) => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .work-experience-container {
+    padding: 12px !important;
+  }
+
   .experience-item {
-    padding-left: 30px;
+    padding-left: 20px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .timeline-line {
+    left: 8px !important;
+    display: none; /* 移动端隐藏时间线 */
   }
 
   .timeline-node {
-    left: 8px;
-    width: 10px;
-    height: 10px;
+    left: 8px !important;
+    width: 10px !important;
+    height: 10px !important;
   }
 
   .company-header {
@@ -723,6 +772,7 @@ const getPlaceholderStyle = (styles: any) => {
 
   .current-badge {
     margin-left: 0;
+    align-self: flex-start;
   }
 
   .meta-info {
@@ -730,12 +780,78 @@ const getPlaceholderStyle = (styles: any) => {
     align-items: flex-start;
     gap: 8px;
   }
+
+  .company-name {
+    font-size: 15px !important;
+  }
+
+  .position {
+    font-size: 13px !important;
+  }
+
+  .description {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .work-experience-container {
+    padding: 10px !important;
+  }
+
+  .experience-item {
+    padding-left: 16px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .company-name {
+    font-size: 14px !important;
+  }
+
+  .position {
+    font-size: 12px !important;
+  }
+
+  .description {
+    font-size: 12px !important;
+  }
+
+  .skills-tags {
+    gap: 4px;
+  }
+
+  .skill-tag {
+    font-size: 10px !important;
+    padding: 1px 6px !important;
+  }
+}
+
+/* 平板设备 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .work-experience-container {
+    padding: 20px !important;
+  }
+
+  .experience-item {
+    padding-left: 30px !important;
+  }
+
+  .timeline-line {
+    left: 12px !important;
+  }
+
+  .timeline-node {
+    left: 10px !important;
+  }
 }
 
 /* 打印样式 */
 @media print {
   .work-experience-container {
     break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .current-badge {
@@ -747,6 +863,11 @@ const getPlaceholderStyle = (styles: any) => {
   .timeline-line,
   .timeline-node {
     display: none;
+  }
+
+  .experience-item {
+    padding-left: 0 !important;
+    border-bottom: 1px solid #eee !important;
   }
 }
 </style>
