@@ -2,8 +2,7 @@
   <view class="page-container">
     <!-- 头部 -->
     <view class="detail-header card-container">
-      <view class="header-left" @click="goBack">
-        <text class="header-title">{{ isEditMode ? (detailData.id ? "编辑项目" : "添加项目") : "项目详情" }}</text>
+      <view class="header-left">
       </view>
 
       <view v-if="!isEditMode && detailData.id" class="header-actions">
@@ -16,8 +15,8 @@
         <button class="btn btn-secondary" @click="cancelEdit">
           取消
         </button>
-        <button class="btn btn-primary" :disabled="saving" @click="saveData">
-          {{ saving ? "保存中..." : "保存" }}
+        <button class="btn btn-primary" :disabled="savingRef" @click="handleSave">
+          {{ savingRef ? "保存中..." : "保存" }}
         </button>
       </view>
     </view>
@@ -219,8 +218,8 @@
 
     <!-- 底部操作栏（编辑模式下） -->
     <view v-if="isEditMode && detailData.id" class="detail-footer">
-      <button class="btn btn-danger btn-block" @click="showDeleteConfirm" :disabled="saving">
-        删除
+      <button class="btn btn-danger btn-block" @click="handleDelete" :disabled="deletingRef">
+        {{ deletingRef ? "删除中..." : "删除" }}
       </button>
     </view>
   </view>
@@ -231,6 +230,8 @@ import { reactive, ref, watch } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import type { ProjectExperienceForm, ProjectExperienceResult } from "@/types/project-experience";
 import ProjectExperienceAPI from "@/api/project-experience";
+import { useSaveAndBack } from "@/composables/useSaveAndBack";
+import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 
 interface FormErrors {
   name?: string;
@@ -271,7 +272,10 @@ const formData = reactive<ProjectExperienceForm>({
 
 const errors = reactive<FormErrors>({});
 const isEditMode = ref(false);
-const saving = ref(false);
+
+// 使用 composable - 重命名变量避免冲突
+const { saving: savingRef, saveAndBack } = useSaveAndBack()
+const { deleting: deletingRef, deleteAndBack } = useDeleteAndBack()
 
 // 状态选项
 const statusOptions = ["未开始", "进行中", "已完成", "已暂停"];
@@ -384,6 +388,7 @@ const loadDetailData = async (id?: number) => {
         }
 
         Object.assign(formData, {
+          id: result.id,
           name: result.name || "",
           status: result.status || 0,
           startDate: result.startDate || "",
@@ -418,7 +423,7 @@ const loadDetailData = async (id?: number) => {
     console.error("加载数据失败:", error);
     uni.showToast({
       title: "加载失败",
-      icon: "error",
+      icon: "none",
     });
   }
 };
@@ -491,7 +496,7 @@ const onEndDateChange = (e: any) => {
 };
 
 // 保存数据
-const saveData = async () => {
+const handleSave = async () => {
   if (!validateForm()) {
     uni.showToast({
       title: "请填写完整信息",
@@ -500,88 +505,46 @@ const saveData = async () => {
     return;
   }
 
-  saving.value = true;
+  // 准备提交数据：过滤空白的成就项
+  const submitData = {
+    ...formData,
+    id: detailData.value.id || null,
+    achievements: formData.achievements.filter(item => item.trim() !== ""),
+  };
+
+  const saveFunction = detailData.value.id
+    ? () => ProjectExperienceAPI.update(submitData)
+    : () => ProjectExperienceAPI.add(submitData);
 
   try {
-    // 准备提交数据：过滤空白的成就项
-    const submitData = {
-      ...formData,
-      id: detailData.value.id,
-      achievements: formData.achievements.filter(item => item.trim() !== ""),
-    };
-
-    if (detailData.value.id) {
-      // 更新现有记录
-      await ProjectExperienceAPI.update(submitData);
-    } else {
-      // 新增记录
-      const result = await ProjectExperienceAPI.add(submitData);
-      if (result?.id) {
-        detailData.value.id = result.id;
+    await saveAndBack({
+      saveFn: saveFunction,
+      successMessage: "保存成功",
+      successCallback: (result: any) => {
+        // 更新本地数据
+        if (result?.id && !detailData.value.id) {
+          detailData.value.id = result.id;
+        }
+        isEditMode.value = false;
       }
-    }
-
-    uni.showToast({
-      title: "保存成功",
-      icon: "success",
     });
-
-    isEditMode.value = false;
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/project/list?refresh=true",
-      });
-    }, 1000);
-
   } catch (error) {
+    // 错误已经在 saveAndBack 中处理了
     console.error("保存失败:", error);
-    uni.showToast({
-      title: "保存失败",
-      icon: "error",
-    });
-  } finally {
-    saving.value = false;
   }
 };
 
 // 删除项目
-const showDeleteConfirm = () => {
-  uni.showModal({
-    title: "确认删除",
-    content: "确定要删除这个项目吗？删除后不可恢复！",
-    confirmColor: "#e64340",
-    success: (res) => {
-      if (res.confirm) {
-        deleteItem();
-      }
-    },
-  });
-};
-
-const deleteItem = async () => {
+const handleDelete = async () => {
   try {
-    await ProjectExperienceAPI.delete(detailData.value.id);
-
-    uni.showToast({
-      title: "删除成功",
-      icon: "success",
+    await deleteAndBack({
+      deleteFn: () => ProjectExperienceAPI.delete(detailData.value.id),
+      confirmMessage: "确定要删除这个项目吗？删除后不可恢复！",
+      successMessage: "删除成功",
     });
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/project/list?refresh=true",
-      });
-    }, 1000);
-
   } catch (error) {
+    // 错误已经在 deleteAndBack 中处理了
     console.error("删除失败:", error);
-    uni.showToast({
-      title: "删除失败",
-      icon: "error",
-    });
   }
 };
 
@@ -612,11 +575,6 @@ const cancelEdit = () => {
     // 如果是新增，返回列表页
     uni.navigateBack();
   }
-};
-
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack();
 };
 
 // 生命周期

@@ -208,10 +208,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref, onMounted } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import type { ProjectExperienceQuery, ProjectExperienceResult } from "@/types/project-experience";
 import ProjectExperienceAPI from "@/api/project-experience";
+import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
 const searchKeywords = ref("");
@@ -231,6 +232,19 @@ const currentProjectName = ref("");
 // 筛选选项
 const statusOptions = ["全部状态", "未开始", "进行中", "已完成", "已暂停"];
 const sortOptions = ["时间倒序", "时间正序", "创建时间", "更新时间"];
+
+// 使用页面刷新 composable
+const { refreshKey } = usePageRefresh({
+  immediate: true,
+  onRefresh: async () => {
+    await loadListData(true);
+    uni.showToast({
+      title: "列表已更新",
+      icon: "success",
+      duration: 1500,
+    });
+  },
+});
 
 // 格式化日期
 const formatDate = (dateStr: string) => {
@@ -326,30 +340,30 @@ const closeAchievementsModal = () => {
 // 搜索处理
 const handleSearch = () => {
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 const clearSearch = () => {
   searchKeywords.value = "";
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 // 筛选处理
 const onStatusChange = (e: any) => {
   statusIndex.value = e.detail.value;
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 const onSortChange = (e: any) => {
   sortIndex.value = e.detail.value;
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 // 加载数据
-const loadData = async (reset = false) => {
+const loadListData = async (reset = false) => {
   if (loading.value) return;
 
   loading.value = true;
@@ -452,7 +466,7 @@ const loadData = async (reset = false) => {
 // 加载更多
 const loadMore = () => {
   if (!hasMore.value || loading.value) return;
-  loadData();
+  loadListData();
 };
 
 // 页面跳转
@@ -476,14 +490,12 @@ const addNewProject = () => {
 
 // 生命周期
 onMounted(() => {
-  loadData(true);
+  loadListData(true);
 });
 
 onLoad((options) => {
-  const refresh = options?.refresh === "true";
-  if (refresh) {
-    loadData(true);
-  }
+  // 兼容旧代码，如果通过参数传递refresh，则刷新
+    loadListData(true);
 });
 
 onReachBottom(() => {

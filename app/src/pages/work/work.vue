@@ -1,9 +1,11 @@
+<!-- pages/work/work.vue -->
 <template>
   <view class="page-container">
     <!-- 头部 -->
     <view class="detail-header card-container">
       <view class="header-left">
         <text class="header-title">
+          {{ isEditMode ? (detailData.id ? "编辑工作经历" : "添加工作经历") : "工作经历详情" }}
         </text>
       </view>
       <view v-if="!isEditMode && detailData.id" class="header-actions">
@@ -16,7 +18,7 @@
         <button class="btn btn-secondary" @click="cancelEdit">
           取消
         </button>
-        <button class="btn btn-primary" :disabled="saving" @click="saveData">
+        <button class="btn btn-primary" :disabled="saving" @click="handleSave">
           {{ saving ? "保存中..." : "保存" }}
         </button>
       </view>
@@ -37,19 +39,18 @@
           </view>
 
           <view class="form-container">
-            <!-- 公司ID -->
+            <!-- 公司名称 -->
             <view class="form-group">
-              <text class="form-label required">公司ID</text>
+              <text class="form-label required">公司名称</text>
               <input
-                v-model.number="formData.companyId"
-                type="number"
+                v-model.number="formData.company"
                 class="form-input"
-                :class="{ 'error': errors.companyId }"
+                :class="{ 'error': errors.company }"
                 :disabled="!isEditMode"
-                placeholder="请输入公司ID"
-                @blur="validateField('companyId')"
+                placeholder="请输入公司名称"
+                @blur="validateField('company')"
               />
-              <text v-if="errors.companyId" class="error-text">{{ errors.companyId }}</text>
+              <text v-if="errors.company" class="error-text">{{ errors.company }}</text>
             </view>
 
             <!-- 职位 -->
@@ -231,8 +232,8 @@
 
     <!-- 底部操作栏（编辑模式下） -->
     <view v-if="isEditMode && detailData.id" class="detail-footer">
-      <button class="btn btn-danger btn-block" @click="showDeleteConfirm" :disabled="saving">
-        删除
+      <button class="btn btn-danger btn-block" @click="handleDelete" :disabled="deleting">
+        {{ deleting ? "删除中..." : "删除" }}
       </button>
     </view>
   </view>
@@ -243,10 +244,11 @@ import { reactive, ref, watch } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import type { WorkExperienceForm, WorkExperienceResult } from "@/types/work-experience";
 import WorkExperienceAPI from "@/api/work-experience";
-
+import { useSaveAndBack } from "@/composables/useSaveAndBack";
+import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 
 interface FormErrors {
-  companyId?: string;
+  company?: string;
   position?: string;
   startDate?: string;
   endDate?: string;
@@ -262,7 +264,7 @@ const detailData = ref<WorkExperienceResult & { achievements?: string[] }>({
   updatedAt: "",
   deleted: 0,
   userId: 1,
-  companyId: 0,
+  company: "",
   position: "",
   startDate: "",
   endDate: "",
@@ -274,7 +276,7 @@ const detailData = ref<WorkExperienceResult & { achievements?: string[] }>({
 
 const formData = reactive<WorkExperienceForm>({
   id: null,
-  companyId: 0,
+  company: "",
   position: "",
   startDate: "",
   endDate: "",
@@ -285,7 +287,10 @@ const formData = reactive<WorkExperienceForm>({
 
 const errors = reactive<FormErrors>({});
 const isEditMode = ref(false);
-const saving = ref(false);
+
+// 使用 composable
+const { saving, saveAndBack } = useSaveAndBack()
+const { deleting, deleteAndBack } = useDeleteAndBack()
 
 // 监听当前状态变化
 watch(() => formData.isCurrent, (newVal) => {
@@ -372,7 +377,7 @@ const loadDetailData = async (id?: number) => {
 
         // 填充表单数据
         formData.id = result.id;
-        formData.companyId = result.companyId || 0;
+        formData.company = result.company || 0;
         formData.position = result.position || "";
         formData.startDate = result.startDate || "";
         formData.endDate = result.endDate || "";
@@ -393,7 +398,7 @@ const loadDetailData = async (id?: number) => {
         updatedAt: "",
         deleted: 0,
         userId: 1,
-        companyId: 0,
+        company: "",
         position: "",
         startDate: "",
         endDate: "",
@@ -412,7 +417,7 @@ const loadDetailData = async (id?: number) => {
     console.error("加载数据失败:", error);
     uni.showToast({
       title: "加载失败",
-      icon: "error",
+      icon: "none",
     });
   }
 };
@@ -422,12 +427,11 @@ const validateField = (field: keyof FormErrors) => {
   const value = formData[field as keyof WorkExperienceForm];
 
   switch (field) {
-    case "companyId":
-      const companyId = Number(value);
-      if (isNaN(companyId) || companyId <= 0) {
-        errors.companyId = "请输入有效的公司ID";
+    case "company":
+      if (!value?.toString().trim()) {
+        errors.company = "请输入有效的公司名称";
       } else {
-        delete errors.companyId;
+        delete errors.company;
       }
       break;
 
@@ -462,7 +466,7 @@ const validateField = (field: keyof FormErrors) => {
 };
 
 const validateForm = (): boolean => {
-  validateField("companyId");
+  validateField("company");
   validateField("position");
   validateField("startDate");
   if (!formData.isCurrent) {
@@ -498,94 +502,41 @@ const onCurrentChange = (e: any) => {
 };
 
 // 保存数据
-const saveData = async () => {
+const handleSave = async () => {
   if (!validateForm()) {
     uni.showToast({
       title: "请填写完整信息",
-      icon: "error",
+      icon: "none",
     });
     return;
   }
 
-  saving.value = true;
+  // 准备提交数据：过滤空白的成就项
+  const submitData = {
+    ...formData,
+    achievements: formData.achievements.filter(item => item.trim() !== ""),
+  };
 
-  try {
-    // 准备提交数据：过滤空白的成就项
-    const submitData = {
-      ...formData,
-      achievements: formData.achievements.filter(item => item.trim() !== ""),
-    };
+  const saveFunction = detailData.value.id
+    ? () => WorkExperienceAPI.update(submitData)
+    : () => WorkExperienceAPI.add(submitData);
 
-    if (detailData.value.id) {
-      // 更新现有记录
-      await WorkExperienceAPI.update(submitData);
-    } else {
-      // 新增记录
-      await WorkExperienceAPI.add(submitData);
+  await saveAndBack({
+    saveFn: saveFunction,
+    successMessage: "保存成功",
+    successCallback: () => {
+      isEditMode.value = false;
     }
-
-    uni.showToast({
-      title: "保存成功",
-      icon: "success",
-    });
-
-    isEditMode.value = false;
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/work/list?refresh=true",
-      });
-    }, 1000);
-
-  } catch (error) {
-    console.error("保存失败:", error);
-    uni.showToast({
-      title: "保存失败",
-      icon: "error",
-    });
-  } finally {
-    saving.value = false;
-  }
-};
-
-// 删除项目
-const showDeleteConfirm = () => {
-  uni.showModal({
-    title: "确认删除",
-    content: "确定要删除这份工作经历吗？删除后不可恢复！",
-    confirmColor: "#e64340",
-    success: (res) => {
-      if (res.confirm) {
-        deleteItem(detailData.value.id);
-      }
-    },
   });
 };
 
-const deleteItem = async (id: number) => {
-  try {
-    await WorkExperienceAPI.delete(id);
-
-    uni.showToast({
-      title: "删除成功",
-      icon: "success",
-    });
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/work/list?refresh=true",
-      });
-    }, 1000);
-
-  } catch (error) {
-    console.error("删除失败:", error);
-    uni.showToast({
-      title: "删除失败",
-      icon: "error",
-    });
-  }
+// 删除项目
+const handleDelete = async () => {
+  await deleteAndBack({
+    deleteFn: () => WorkExperienceAPI.delete(detailData.value.id!),
+    confirmMessage: "确定要删除这份工作经历吗？删除后不可恢复！",
+    successMessage: "删除成功",
+  });
 };
 
 // 切换编辑模式
@@ -601,7 +552,7 @@ const toggleEditMode = () => {
 const cancelEdit = () => {
   if (detailData.value.id) {
     // 恢复原始数据
-    formData.companyId = detailData.value.companyId || 0;
+    formData.company = detailData.value.company || 0;
     formData.position = detailData.value.position || "";
     formData.startDate = detailData.value.startDate || "";
     formData.endDate = detailData.value.endDate || "";
@@ -661,16 +612,6 @@ onLoad((options: any) => {
     display: flex;
     align-items: center;
     gap: 20rpx;
-
-    .back-icon {
-      font-size: 40rpx;
-      color: $text-primary;
-      width: 40rpx;
-      height: 40rpx;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
 
     .header-title {
       font-size: $font-size-medium;

@@ -1,3 +1,4 @@
+<!-- subpackages/pages/company/list.vue -->
 <template>
   <view class="page-container">
     <!-- 搜索栏 -->
@@ -71,8 +72,15 @@
             </view>
           </view>
           <view class="card-actions">
-            <view class="follow-btn" @click.stop="toggleFollow(company)">
-              <text class="icon" :style="{ color: company.isFollowed ? '$danger-color' : '$text-secondary' }">
+            <view
+              class="follow-btn"
+              @click.stop="handleToggleFollow(company)"
+              :disabled="followingMap[company.id]"
+            >
+              <text
+                class="icon"
+                :style="{ color: company.isFollowed ? '$danger-color' : '$text-secondary' }"
+              >
                 {{ company.isFollowed ? '❤️' : '♡' }}
               </text>
             </view>
@@ -149,6 +157,10 @@ import { onPullDownRefresh, onReachBottom } from "@dcloudio/uni-app";
 import CompanyAPI from "@/subpackages/api/company";
 import { CompanyQuery, CompanyResult } from "@/types/company";
 
+// 导入Composable
+import { usePageRefresh } from "@/composables/usePageRefresh";
+import { useFollowAction } from "@/composables/useFollowAction";
+
 // 响应式数据
 const loading = ref(false);
 const refreshing = ref(false);
@@ -157,19 +169,22 @@ const searchKeywords = ref("");
 const showSearch = ref(false);
 
 // 列表参数
-const listParams = reactive<PageParam>({});
+const listParams = reactive<PageParam>({
+  page: 1,
+  size: 10
+});
 
-const bodyParams = ref<CompanyQuery>(
-  {
-    keyField:"" as string,
-    keyWords: "" as string,
-    sortBy: "createdAt" as SortBy,
-    sortOrder: "asc" as SortOrder,
-  },
-);
+const bodyParams = ref<CompanyQuery>({
+  keyField: "name",
+  keyWords: "",
+  sortBy: "createdAt",
+  sortOrder: "desc",
+});
 
 // 公司列表数据
 const companyList = ref<CompanyResult[]>([]);
+// 关注状态映射
+const followingMap = ref<Record<number, boolean>>({});
 
 // 排序选项
 const sortOptions = [
@@ -179,10 +194,24 @@ const sortOptions = [
   { label: "点赞数", value: "likes" },
 ];
 
+// 使用Composable
+const { following: followingRef, toggleFollow } = useFollowAction();
+const { refreshKey } = usePageRefresh({
+  immediate: false,
+  onRefresh: async () => {
+    await loadCompanyList(true);
+    uni.showToast({
+      title: '列表已更新',
+      icon: 'success',
+      duration: 1500
+    });
+  }
+});
+
 // 搜索公司名称
 const handleSearch = () => {
-  bodyParams.keyField = "name"
-  bodyParams.keyWords = searchKeywords.value.trim();
+  bodyParams.value.keyField = "name";
+  bodyParams.value.keyWords = searchKeywords.value.trim();
   listParams.page = 1;
   companyList.value = [];
   loadCompanyList();
@@ -191,19 +220,19 @@ const handleSearch = () => {
 // 重置搜索
 const resetSearch = () => {
   searchKeywords.value = "";
-  bodyParams.kayword = "";
+  bodyParams.value.keyWords = "";
   listParams.page = 1;
   companyList.value = [];
   loadCompanyList();
 };
 
 // 切换排序方式
-const toggleSort = (field: SortBy) => {
-  if (bodyParams.sortBy === field) {
-    bodyParams.sortOrder = bodyParams.sortOrder === "asc" ? "desc" : "asc";
+const toggleSort = (field: any) => {
+  if (bodyParams.value.sortBy === field) {
+    bodyParams.value.sortOrder = bodyParams.value.sortOrder === "asc" ? "desc" : "asc";
   } else {
-    bodyParams.sortBy = field;
-    bodyParams.sortOrder = "desc";
+    bodyParams.value.sortBy = field;
+    bodyParams.value.sortOrder = "desc";
   }
   listParams.page = 1;
   companyList.value = [];
@@ -216,7 +245,7 @@ const loadCompanyList = async (isRefresh = false) => {
 
   loading.value = true;
   try {
-    const { records, total } = await CompanyAPI.page(listParams, bodyParams);
+    const { records, total } = await CompanyAPI.page(listParams, bodyParams.value);
 
     if (isRefresh) {
       companyList.value = records;
@@ -255,6 +284,33 @@ const handleRefresh = () => {
   refreshing.value = true;
   listParams.page = 1;
   loadCompanyList(true);
+};
+
+// 关注/取消关注
+const handleToggleFollow = async (company: CompanyResult) => {
+  // 防止重复点击
+  if (followingMap.value[company.id]) return;
+
+  followingMap.value[company.id] = true;
+
+  try {
+    await toggleFollow(company.isFollowed, {
+      followFn: async () => {
+        await CompanyAPI.follow(company.id);
+        company.isFollowed = true;
+        company.followers = (company.followers || 0) + 1;
+      },
+      unfollowFn: async () => {
+        await CompanyAPI.unfollow(company.id);
+        company.isFollowed = false;
+        company.followers = Math.max(0, (company.followers || 1) - 1);
+      }
+    });
+  } catch (error) {
+    // 错误已在toggleFollow中处理
+  } finally {
+    followingMap.value[company.id] = false;
+  }
 };
 
 // 跳转到详情页
@@ -338,7 +394,7 @@ onPullDownRefresh(() => {
     .search-actions {
       display: flex;
       align-items: center;
-      
+
       .icon {
         font-size: 18rpx;
         color: $text-placeholder;
@@ -443,7 +499,12 @@ onPullDownRefresh(() => {
           @extend .flex-center;
           border-radius: $border-radius-round;
           background: $background-color;
-          
+
+          &[disabled] {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+
           .icon {
             font-size: 20rpx;
           }

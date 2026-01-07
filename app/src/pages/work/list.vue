@@ -98,7 +98,7 @@
             </view>
 
             <view class="work-company">
-              <text class="company-text">公司ID: {{ item.companyId }}</text>
+              <text class="company-text">{{ item.company }}</text>
             </view>
           </view>
 
@@ -214,10 +214,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref, onMounted } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import type { WorkExperienceQuery, WorkExperienceResult } from "@/types/work-experience";
 import WorkExperienceAPI from "@/api/work-experience";
+import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
 const searchKeywords = ref("");
@@ -236,6 +237,19 @@ const currentAchievements = ref<string[]>([]);
 // 筛选选项
 const statusOptions = ["全部状态", "在职", "离职"];
 const sortOptions = ["时间倒序", "时间正序", "创建时间", "更新时间"];
+
+// 使用页面刷新 composable
+const { refreshKey } = usePageRefresh({
+  immediate: true,
+  onRefresh: async () => {
+    await loadData(true)
+    uni.showToast({
+      title: '列表已更新',
+      icon: 'success',
+      duration: 1500
+    })
+  }
+})
 
 // 格式化日期
 const formatDate = (dateStr: string) => {
@@ -450,6 +464,7 @@ onMounted(() => {
 });
 
 onLoad((options) => {
+  // 兼容旧代码，如果通过参数传递refresh，则刷新
   const refresh = options?.refresh === "true";
   if (refresh) {
     loadData(true);

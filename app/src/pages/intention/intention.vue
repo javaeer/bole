@@ -3,10 +3,7 @@
   <view class="page-container">
     <!-- 头部 -->
     <view class="detail-header card-container">
-      <view class="header-left" @click="goBack">
-        <text class="header-title">{{ isEditMode ? (detailData.id ? "编辑求职意向" : "添加求职意向") : "求职意向详情"
-          }}
-        </text>
+      <view class="header-left">
       </view>
 
       <view v-if="!isEditMode && detailData.id" class="header-actions">
@@ -15,7 +12,7 @@
 
       <view v-else-if="isEditMode" class="header-actions">
         <button class="btn btn-secondary" @click="cancelEdit">取消</button>
-        <button class="btn btn-primary" :disabled="saving" @click="saveData">{{ saving ? "保存中..." : "保存" }}
+        <button class="btn btn-primary" :disabled="savingRef" @click="handleSave">{{ savingRef ? "保存中..." : "保存" }}
         </button>
       </view>
     </view>
@@ -57,20 +54,20 @@
                 <RegionPicker
                   v-model="selectedRegion"
                   :show-district="false"
-                :disabled="false"
-                :show-selected-text="false"
-                :show-clear="true"
-                :province-placeholder="'请选择省份'"
-                :city-placeholder="'请选择城市'"
-                :auto-load-provinces="true"
-                :preload-top-provinces="5"
-                :force-refresh="forceRefresh"
-                class="custom-region-picker"
-                @change="onCityChange"
-                @province-change="onProvinceChange"
-                @city-change="onCitySelected"
-                @error="onRegionError"
-                @loading="onRegionLoading"
+                  :disabled="false"
+                  :show-selected-text="false"
+                  :show-clear="true"
+                  :province-placeholder="'请选择省份'"
+                  :city-placeholder="'请选择城市'"
+                  :auto-load-provinces="true"
+                  :preload-top-provinces="5"
+                  :force-refresh="forceRefresh"
+                  class="custom-region-picker"
+                  @change="onCityChange"
+                  @province-change="onProvinceChange"
+                  @city-change="onCitySelected"
+                  @error="onRegionError"
+                  @loading="onRegionLoading"
                 />
               </view>
               <text v-if="errors.city" class="error-text">{{ errors.city }}</text>
@@ -190,19 +187,23 @@
 
     <!-- 底部操作栏（编辑模式下） -->
     <view v-if="isEditMode && detailData.id" class="detail-footer">
-      <button class="btn btn-danger btn-block" @click="showDeleteConfirm" :disabled="saving">删除</button>
+      <button class="btn btn-danger btn-block" @click="handleDelete" :disabled="deletingRef">
+        {{ deletingRef ? "删除中..." : "删除" }}
+      </button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, onMounted } from "vue";
+import { computed, reactive, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import type { JobIntentionForm, JobIntentionResult } from "@/types/job-intention";
 import type { SelectedRegion, Province, City } from "@/types/region";
 import JobIntentionAPI from "@/api/job-intention";
 import RegionPicker from "@/components/region-picker/RegionPicker.vue";
 import { useRegionStore } from "@/stores/region";
+import { useSaveAndBack } from "@/composables/useSaveAndBack";
+import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 
 interface FormErrors {
   position?: string;
@@ -243,7 +244,10 @@ const forceRefresh = ref(false);
 
 const errors = reactive<FormErrors>({});
 const isEditMode = ref(false);
-const saving = ref(false);
+
+// 使用 composables
+const { saving: savingRef, saveAndBack } = useSaveAndBack()
+const { deleting: deletingRef, deleteAndBack } = useDeleteAndBack()
 
 // 工作类型选项
 const jobTypeOptions = ["全职", "兼职", "实习", "远程"];
@@ -610,7 +614,7 @@ const onSalaryInput = (e: any) => {
 };
 
 // 保存数据
-const saveData = async () => {
+const handleSave = async () => {
   if (!validateForm()) {
     uni.showToast({
       title: "请填写完整信息",
@@ -628,98 +632,47 @@ const saveData = async () => {
     return;
   }
 
-  saving.value = true;
+  // 准备提交数据
+  const submitData: JobIntentionForm = {
+    id: formData.id,
+    position: formData.position?.trim(),
+    city: formData.city,
+    salary: formData.salary,
+    jobType: formData.jobType,
+  };
 
-  try {
-    // 准备提交数据
-    const submitData: JobIntentionForm = {
-      id: formData.id,
-      position: formData.position?.trim(),
-      city: formData.city,
-      salary: formData.salary,
-      jobType: formData.jobType,
+  // 清理空字符串字段
+  Object.keys(submitData).forEach(key => {
+    const typedKey = key as keyof JobIntentionForm;
+    if (submitData[typedKey] === "" || submitData[typedKey] === null || submitData[typedKey] === undefined) {
+      // @ts-ignore
+      delete submitData[typedKey];
+    }
+  });
+
+  const saveFunction = formData.id
+    ? () => JobIntentionAPI.update(submitData)
+    : () => {
+      return JobIntentionAPI.add(submitData);
     };
 
-    // 清理空字符串字段
-    Object.keys(submitData).forEach(key => {
-      const typedKey = key as keyof JobIntentionForm;
-      if (submitData[typedKey] === "" || submitData[typedKey] === null || submitData[typedKey] === undefined) {
-        // @ts-ignore
-        delete submitData[typedKey];
-      }
-    });
-
-    if (formData.id) {
-      // 更新现有记录
-      await JobIntentionAPI.update(submitData);
-    } else {
-      // 新增记录 - 移除 id 字段
-      const { id, ...addData } = submitData;
-      await JobIntentionAPI.add(addData);
-    }
-
-    uni.showToast({
-      title: "保存成功",
-      icon: "success",
-    });
-
-    isEditMode.value = false;
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/intention/list?refresh=true",
-      });
-    }, 1000);
-
-  } catch (error: any) {
-    console.error("保存失败:", error);
-    uni.showToast({
-      title: error.message || "保存失败",
-      icon: "error",
-    });
-  } finally {
-    saving.value = false;
-  }
-};
-
-// 删除项目
-const showDeleteConfirm = () => {
-  uni.showModal({
-    title: "确认删除",
-    content: "确定要删除这份求职意向吗？删除后不可恢复！",
-    confirmColor: "#e64340",
-    success: (res) => {
-      if (res.confirm) {
-        deleteItem();
-      }
+  await saveAndBack({
+    saveFn: saveFunction,
+    successMessage: "保存成功",
+    successCallback: () => {
+      isEditMode.value = false;
     },
+    loadingText: "保存中..."
   });
 };
 
-const deleteItem = async () => {
-  try {
-    await JobIntentionAPI.delete(detailData.value.id);
-
-    uni.showToast({
-      title: "删除成功",
-      icon: "success",
-    });
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/intention/list?refresh=true",
-      });
-    }, 1000);
-
-  } catch (error) {
-    console.error("删除失败:", error);
-    uni.showToast({
-      title: "删除失败",
-      icon: "error",
-    });
-  }
+// 删除项目
+const handleDelete = async () => {
+  await deleteAndBack({
+    deleteFn: () => JobIntentionAPI.delete(detailData.value.id),
+    confirmMessage: "确定要删除这份求职意向吗？删除后不可恢复！",
+    successMessage: "删除成功",
+  });
 };
 
 // 切换编辑模式
@@ -752,11 +705,6 @@ const cancelEdit = () => {
   }
 };
 
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack();
-};
-
 // 生命周期
 onLoad((options: any) => {
   routeParams.value = options;
@@ -771,7 +719,6 @@ onLoad((options: any) => {
   }
 });
 </script>
-
 <style lang="scss">
 .page-container {
   min-height: 100vh;

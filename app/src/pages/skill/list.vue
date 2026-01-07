@@ -1,3 +1,4 @@
+<!-- pages/skill/list.vue -->
 <template>
   <view class="page-container">
     <!-- 搜索和筛选栏 -->
@@ -215,10 +216,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import type { SkillResult } from "@/types/skill";
 import SkillAPI from "@/api/skill";
+import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
 const searchKeywords = ref("");
@@ -237,6 +239,19 @@ const categoryOptions = ["全部", "编程语言", "前端框架", "后端框架
 const levelOptions = ["全部", "初级", "中级", "高级", "专家"];
 const sortOptions = ["熟练度↓", "熟练度↑", "经验年数↓", "经验年数↑", "创建时间↓", "创建时间↑"];
 
+// 使用页面刷新 composable
+const { refreshKey } = usePageRefresh({
+  immediate: true, // 页面显示时立即刷新
+  onRefresh: async () => {
+    await loadListData(true);
+    uni.showToast({
+      title: "列表已更新",
+      icon: "success",
+      duration: 1500,
+    });
+  },
+});
+
 // 索引计算
 const categoryIndex = computed(() =>
   selectedCategory.value ? categoryOptions.indexOf(selectedCategory.value) : 0,
@@ -251,7 +266,7 @@ const formatDate = (dateStr: string) => {
   if (!dateStr) return "";
   try {
     const date = new Date(dateStr);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   } catch {
     return dateStr;
   }
@@ -290,13 +305,13 @@ const getTagsArray = (tagsStr: string | null): string[] => {
 // 搜索处理
 const handleSearch = () => {
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 const clearSearch = () => {
   searchKeywords.value = "";
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 // 筛选处理
@@ -304,20 +319,20 @@ const onCategoryChange = (e: any) => {
   const index = e.detail.value;
   selectedCategory.value = index === 0 ? "" : categoryOptions[index];
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 const onLevelChange = (e: any) => {
   const index = e.detail.value;
   selectedLevel.value = index === 0 ? "" : levelOptions[index];
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 const onSortChange = (e: any) => {
   sortIndex.value = e.detail.value;
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 // 标签筛选处理
@@ -325,7 +340,7 @@ const addTagFilter = (tag: string) => {
   if (!filterTags.value.includes(tag)) {
     filterTags.value.push(tag);
     currentPage.value = 1;
-    loadData(true);
+    loadListData(true);
   }
 };
 
@@ -334,18 +349,18 @@ const removeTag = (tag: string) => {
   if (index > -1) {
     filterTags.value.splice(index, 1);
     currentPage.value = 1;
-    loadData(true);
+    loadListData(true);
   }
 };
 
 const clearTags = () => {
   filterTags.value = [];
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 // 加载数据
-const loadData = async (reset = false) => {
+const loadListData = async (reset = false) => {
   if (loading.value) return;
 
   loading.value = true;
@@ -389,28 +404,28 @@ const loadData = async (reset = false) => {
     if (sortIndex.value !== undefined) {
       switch (sortIndex.value) {
         case 0: // 熟练度↓
-          query.orderBy = 'proficiencyPercent';
-          query.orderDirection = 'DESC';
+          query.orderBy = "proficiencyPercent";
+          query.orderDirection = "DESC";
           break;
         case 1: // 熟练度↑
-          query.orderBy = 'proficiencyPercent';
-          query.orderDirection = 'ASC';
+          query.orderBy = "proficiencyPercent";
+          query.orderDirection = "ASC";
           break;
         case 2: // 经验年数↓
-          query.orderBy = 'experienceYears';
-          query.orderDirection = 'DESC';
+          query.orderBy = "experienceYears";
+          query.orderDirection = "DESC";
           break;
         case 3: // 经验年数↑
-          query.orderBy = 'experienceYears';
-          query.orderDirection = 'ASC';
+          query.orderBy = "experienceYears";
+          query.orderDirection = "ASC";
           break;
         case 4: // 创建时间↓
-          query.orderBy = 'createdAt';
-          query.orderDirection = 'DESC';
+          query.orderBy = "createdAt";
+          query.orderDirection = "DESC";
           break;
         case 5: // 创建时间↑
-          query.orderBy = 'createdAt';
-          query.orderDirection = 'ASC';
+          query.orderBy = "createdAt";
+          query.orderDirection = "ASC";
           break;
       }
     }
@@ -426,8 +441,8 @@ const loadData = async (reset = false) => {
         ...record,
         // 确保tags是字符串格式
         tags: Array.isArray(record.tags)
-          ? record.tags.join(',')
-          : record.tags || ''
+          ? record.tags.join(",")
+          : record.tags || "",
       }));
 
       if (reset) {
@@ -458,7 +473,7 @@ const loadData = async (reset = false) => {
 // 加载更多
 const loadMore = () => {
   if (!hasMore.value || loading.value) return;
-  loadData();
+  loadListData();
 };
 
 // 页面跳转
@@ -482,14 +497,12 @@ const addNewSkill = () => {
 
 // 生命周期
 onMounted(() => {
-  loadData(true);
+  // 保留第一次加载，usePageRefresh的immediate=true也会加载，但这里确保第一次加载
+  loadListData(true);
 });
 
 onLoad((options) => {
-  const refresh = options?.refresh === "true";
-  if (refresh) {
-    loadData(true);
-  }
+  loadListData(true);
 });
 
 onReachBottom(() => {
@@ -959,7 +972,9 @@ onReachBottom(() => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: $screen-md) {

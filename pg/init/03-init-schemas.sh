@@ -365,6 +365,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         
         -- 状态字段
         status INTEGER DEFAULT 0,
+        sort INTEGER DEFAULT 0,
         
         -- 统计字段
         like_count INTEGER DEFAULT 0,
@@ -415,6 +416,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_company_comment.user_avatar IS '评论人头像(冗余字段)';
     COMMENT ON COLUMN bole_app.t_company_comment.score IS '评分(1-5分)';
     COMMENT ON COLUMN bole_app.t_company_comment.status IS '评论状态(0-待审核,1-已发布,2-已删除)';
+    COMMENT ON COLUMN bole_app.t_company_comment.sort IS '排序字段';
     COMMENT ON COLUMN bole_app.t_company_comment.like_count IS '点赞数';
     COMMENT ON COLUMN bole_app.t_company_comment.reply_count IS '回复数';
     COMMENT ON COLUMN bole_app.t_company_comment.anonymous IS '是否匿名(false-否,true-是)';
@@ -500,7 +502,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
         -- CONSTRAINT fk_job_intention_user FOREIGN KEY (user_id) REFERENCES bole_app.t_user(id)
         
         -- 唯一约束（每个用户最多一条意向记录，根据业务需求可选）
-        CONSTRAINT uk_user_job_intention UNIQUE (user_id)
+        -- CONSTRAINT uk_user_job_intention UNIQUE (user_id)
     );
 
     -- 创建索引

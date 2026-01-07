@@ -1,3 +1,4 @@
+<!-- pages/company/company.vue -->
 <template>
   <view class="page-container">
     <!-- 头部信息 -->
@@ -215,10 +216,10 @@
               </view>
               <view
                 class="action-btn submit"
-                :class="{ disabled: !newComment.trim() }"
-                @click="submitComment"
+                :class="{ disabled: !newComment.trim() || commentingRef }"
+                @click="handleSubmitComment"
               >
-                发布
+                {{ commentingRef ? "发布中..." : "发布" }}
               </view>
             </view>
           </view>
@@ -244,7 +245,7 @@
               <view
                 v-if="comment.canDelete"
                 class="comment-delete"
-                @click="deleteComment(comment.id)"
+                @click="handleDeleteComment(comment.id)"
               >
                 <uni-icons type="trash" size="18" color="$text-secondary" />
               </view>
@@ -282,14 +283,15 @@
       <view
         class="follow-btn"
         :class="{ followed: companyDetail?.followed }"
-        @click="toggleFollow"
+        @click="handleToggleFollow"
+        :disabled="followingRef"
       >
         <uni-icons
           :type="companyDetail?.followed ? 'heart-filled' : 'heart'"
           size="20"
           :color="companyDetail?.followed ? 'white' : '$primary-color'"
         />
-        <text>{{ companyDetail?.followed ? "已关注" : "关注" }}</text>
+        <text>{{ followingRef ? "处理中..." : (companyDetail?.followed ? "已关注" : "关注") }}</text>
       </view>
       <view class="action-divider"></view>
       <view class="like-btn">
@@ -300,8 +302,12 @@
 
     <!-- 编辑模式保存按钮 -->
     <view v-else class="edit-actions">
-      <view class="save-btn" @click="saveEdit">
-        保存修改
+      <view
+        class="save-btn"
+        @click="handleSaveEdit"
+        :disabled="savingRef"
+      >
+        {{ savingRef ? "保存中..." : "保存修改" }}
       </view>
     </view>
   </view>
@@ -314,6 +320,11 @@ import CompanyAPI from "@/subpackages/api/company";
 import type { CompanyResult } from "@/types/company";
 import { CompanyCommentQuery, CompanyCommentResult } from "@/types/company-comment";
 import CompanyCommentAPI from "@/subpackages/api/company-comment";
+
+// 导入Composable
+import { useSaveAndBack } from "@/composables/useSaveAndBack";
+import { useFollowAction } from "@/subpackages/composables/useFollowAction";
+import { useCommentAction } from "@/subpackages/composables/useCommentAction";
 
 // 页面参数
 const pageParams = ref<{ id: number }>();
@@ -334,6 +345,11 @@ const commentSize = ref(10);
 const commentTotal = ref(0);
 const commentLoading = ref(false);
 const commentFinished = ref(false);
+
+// 使用Composable
+const { saving: savingRef, saveAndBack } = useSaveAndBack();
+const { following: followingRef, toggleFollow } = useFollowAction();
+const { commenting: commentingRef, deleting: deletingRef, submitComment, deleteComment } = useCommentAction();
 
 // 加载详情
 const loadCompanyDetail = async (id: number) => {
@@ -415,28 +431,18 @@ const enterEditMode = () => {
 };
 
 // 保存编辑
-const saveEdit = async () => {
+const handleSaveEdit = async () => {
   if (!companyDetail.value) return;
 
-  try {
-    const updated = await CompanyAPI.update(
-      companyDetail.value.id,
-      editForm,
-    );
-
-    companyDetail.value = updated;
-    isEditMode.value = false;
-
-    uni.showToast({
-      title: "保存成功",
-      icon: "success",
-    });
-  } catch (error) {
-    uni.showToast({
-      title: "保存失败",
-      icon: "error",
-    });
-  }
+  await saveAndBack({
+    saveFn: async () => {
+      return await CompanyAPI.update(companyDetail.value!.id, editForm);
+    },
+    successMessage: "保存成功",
+    successCallback: (result) => {
+      companyDetail.value = result;
+    }
+  });
 };
 
 // 取消编辑
@@ -447,105 +453,59 @@ const cancelEdit = () => {
   }
 };
 
-// 关注/取消关注 - 使用 followed 字段
-const toggleFollow = async () => {
+// 关注/取消关注
+const handleToggleFollow = async () => {
   if (!companyDetail.value) return;
 
-  try {
-    if (companyDetail.value.followed) {
-      await CompanyAPI.unfollow(companyDetail.value.id);
-      companyDetail.value.followed = false;
-      companyDetail.value.followers = Math.max(0, (companyDetail.value.followers || 1) - 1);
-      uni.showToast({
-        title: "已取消关注",
-        icon: "success",
-      });
-    } else {
-      await CompanyAPI.follow(companyDetail.value.id);
-      companyDetail.value.followed = true;
-      companyDetail.value.followers = (companyDetail.value.followers || 0) + 1;
-      uni.showToast({
-        title: "关注成功",
-        icon: "success",
-      });
+  await toggleFollow(companyDetail.value.followed, {
+    followFn: async () => {
+      await CompanyAPI.follow(companyDetail.value!.id);
+      companyDetail.value!.followed = true;
+      companyDetail.value!.followers = (companyDetail.value!.followers || 0) + 1;
+    },
+    unfollowFn: async () => {
+      await CompanyAPI.unfollow(companyDetail.value!.id);
+      companyDetail.value!.followed = false;
+      companyDetail.value!.followers = Math.max(0, (companyDetail.value!.followers || 1) - 1);
     }
-  } catch (error) {
-    uni.showToast({
-      title: "操作失败",
-      icon: "error",
-    });
-  }
+  });
 };
 
 // 提交评论
-const submitComment = async () => {
+const handleSubmitComment = async () => {
   if (!newComment.value.trim() || !companyDetail.value) return;
 
-  try {
-    // 显示加载提示
-    uni.showLoading({
-      title: "发布中...",
-      mask: true,
-    });
-
-    // 假设有一个添加评论的API
-    // 这里需要根据实际的API进行调整
-    const comment = await CompanyCommentAPI.add({
-      companyId: companyDetail.value.id,
-      content: newComment.value.trim(),
-    });
-
-    if (comment) {
+  await submitComment({
+    addFn: async () => {
+      return await CompanyCommentAPI.add({
+        companyId: companyDetail.value!.id,
+        content: newComment.value.trim(),
+      });
+    },
+    onSuccess: (comment) => {
       // 清空输入框并关闭输入区域
       newComment.value = "";
       showCommentInput.value = false;
 
-      // 直接刷新评论列表（从第一页重新加载）
-      await loadComments(companyDetail.value.id, true);
-
-      uni.hideLoading();
-      uni.showToast({
-        title: "评论成功",
-        icon: "success",
-      });
+      // 重新加载评论列表（从第一页重新加载）
+      loadComments(companyDetail.value!.id, true);
     }
-  } catch (error) {
-    uni.hideLoading();
-    uni.showToast({
-      title: "评论失败",
-      icon: "error",
-    });
-  }
+  });
 };
 
 // 删除评论
-const deleteComment = async (commentId: number) => {
-  try {
-    uni.showLoading({
-      title: "删除中...",
-      mask: true,
-    });
-
-    // 假设有一个删除评论的API
-    await CompanyCommentAPI.delete(commentId);
-
-    // 重新加载评论列表
-    if (companyDetail.value?.id) {
-      await loadComments(companyDetail.value.id, true);
+const handleDeleteComment = async (commentId: number) => {
+  await deleteComment({
+    deleteFn: async () => {
+      await CompanyCommentAPI.delete(commentId);
+    },
+    onSuccess: () => {
+      // 重新加载评论列表
+      if (companyDetail.value?.id) {
+        loadComments(companyDetail.value.id, true);
+      }
     }
-
-    uni.hideLoading();
-    uni.showToast({
-      title: "删除成功",
-      icon: "success",
-    });
-  } catch (error) {
-    uni.hideLoading();
-    uni.showToast({
-      title: "删除失败",
-      icon: "error",
-    });
-  }
+  });
 };
 
 // 格式化时间
@@ -554,7 +514,7 @@ const formatDateTime = (dateStr: string) => {
   return dateStr.replace(" ", " · ");
 };
 
-// 打开链接（使用 Webview）
+// 打开链接
 const openLink = (url: string) => {
   if (!url) {
     uni.showToast({
@@ -564,13 +524,11 @@ const openLink = (url: string) => {
     return;
   }
 
-  // 确保 URL 有协议头
   let targetUrl = url;
   if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
     targetUrl = "https://" + targetUrl;
   }
 
-  // 导航到 Webview 页面
   uni.navigateTo({
     url: `/pages/webview/webview?url=${encodeURIComponent(targetUrl)}`,
   });
@@ -600,11 +558,6 @@ onLoad((options) => {
   padding: 0 $padding-base;
   border-bottom: 1rpx solid $border-color-lighter;
   z-index: $z-index-base;
-
-  .header-back {
-    width: 60rpx;
-    @extend .flex-center;
-  }
 
   .header-title {
     flex: 1;
@@ -1020,6 +973,11 @@ onLoad((options) => {
     padding: 20rpx 0;
     cursor: pointer;
 
+    &[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     &.followed {
       background: $danger-color;
       border-radius: $border-radius;
@@ -1079,6 +1037,11 @@ onLoad((options) => {
     font-size: $font-size-medium;
     font-weight: $font-weight-semibold;
     cursor: pointer;
+
+    &[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   }
 }
 

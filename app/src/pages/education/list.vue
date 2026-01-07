@@ -1,3 +1,4 @@
+<!-- pages/education/list.vue -->
 <template>
   <view class="page-container">
     <!-- 搜索栏 -->
@@ -43,14 +44,17 @@
       :show-scrollbar="false"
     >
       <!-- 空状态 -->
-      <view v-if="loading && listData.length === 0" class="empty-state">
+      <view v-if="isLoading && listData.length === 0" class="empty-state">
         <uni-load-more status="loading"></uni-load-more>
       </view>
 
       <!-- 列表为空 -->
-      <view v-else-if="!loading && listData.length === 0" class="empty-state">
+      <view v-else-if="!isLoading && listData.length === 0" class="empty-state">
         <uni-icons type="info" size="60" color="#c0c4cc" />
-        <text class="empty-text">暂无数据</text>
+        <text class="empty-text">暂无教育经历</text>
+        <button class="btn btn-primary" @click="addNewItem">
+          添加教育经历
+        </button>
       </view>
 
       <!-- 列表内容 -->
@@ -110,12 +114,13 @@
         <!-- 加载更多 -->
         <view v-if="hasMore" class="load-more">
           <uni-load-more
-            :status="loading ? 'loading' : 'more'"
+            :status="isLoading ? 'loading' : 'more'"
             :content-text="{
               contentdown: '上拉加载更多',
               contentrefresh: '正在加载...',
               contentnomore: '没有更多了'
             }"
+            @click="loadMore"
           />
         </view>
       </view>
@@ -129,10 +134,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import EducationExperienceAPI from "@/api/education-experience";
 import type { EducationExperienceResult } from "@/types/education-experience";
+import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
 const searchKeywords = ref("");
@@ -140,7 +146,7 @@ const sortBy = ref<"createdAt" | "updatedAt" | "startDate" | "endDate">("created
 const sortOrder = ref<"asc" | "desc">("desc");
 const currentPage = ref(1);
 const pageSize = ref(10);
-const loading = ref(false);
+const isLoading = ref(false);
 const hasMore = ref(true);
 const listData = ref<EducationExperienceResult[]>([]);
 
@@ -155,6 +161,20 @@ const sortOptions = [
 // 颜色变量
 const successColor = "#67c23a";
 const dangerColor = "#f56c6c";
+
+// 使用 usePageRefresh - 修复：添加事件前缀参数
+const { refreshKey, refreshing } = usePageRefresh({
+  immediate: false,
+  onRefresh: async () => {
+    await loadListData(true);
+  },
+  // 关键修复：确保事件前缀一致
+  eventPrefix: "refresh",
+  // 添加刷新成功的回调
+  onRefreshSuccess: () => {
+    console.log("列表刷新成功");
+  },
+});
 
 // 获取状态文本和样式
 const getStatusText = (item: EducationExperienceResult) => {
@@ -186,58 +206,63 @@ const getStatusClass = (item: EducationExperienceResult) => {
 // 格式化日期
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "";
-  const date = new Date(dateStr);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  try {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  } catch {
+    return dateStr;
+  }
 };
 
 // 格式化日期时间
 const formatDateTime = (dateStr: string) => {
   if (!dateStr) return "";
-  const date = new Date(dateStr);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  try {
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  } catch {
+    return dateStr;
+  }
 };
 
 // 搜索处理
 const handleSearch = () => {
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 const clearSearch = () => {
   searchKeywords.value = "";
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 // 排序处理
 const changeSort = (field: any) => {
   if (sortBy.value === field) {
-    // 切换排序顺序
     sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
   } else {
-    // 切换到新字段，默认降序
     sortBy.value = field;
     sortOrder.value = "desc";
   }
 
   currentPage.value = 1;
-  loadData(true);
+  loadListData(true);
 };
 
 // 加载数据
-const loadData = async (reset = false) => {
-  if (loading.value) return;
+const loadListData = async (reset = false) => {
+  if (isLoading.value) return;
 
-  loading.value = true;
-
-  if (reset) {
-    currentPage.value = 1;
-    hasMore.value = true;
-    listData.value = [];
-  }
+  isLoading.value = true;
 
   try {
-    // 构建查询参数
+    if (reset) {
+      currentPage.value = 1;
+      hasMore.value = true;
+      listData.value = [];
+    }
+
     const pageParam = {
       page: currentPage.value,
       size: pageSize.value,
@@ -245,19 +270,15 @@ const loadData = async (reset = false) => {
 
     const query: any = {};
 
-    // 添加搜索条件
     if (searchKeywords.value) {
       query.university = searchKeywords.value;
-      // 如果还需要搜索专业，可以添加：query.major = searchKeywords.value;
     }
 
-    // 添加排序条件
     if (sortBy.value && sortOrder.value) {
       query.orderBy = sortBy.value;
-      query.orderDirection = sortOrder.value === 'asc' ? 'ASC' : 'DESC';
+      query.orderDirection = sortOrder.value === "asc" ? "ASC" : "DESC";
     }
 
-    // 调用API
     const response = await EducationExperienceAPI.page(pageParam, query);
 
     if (response) {
@@ -266,13 +287,13 @@ const loadData = async (reset = false) => {
       if (reset) {
         listData.value = records;
       } else {
-        listData.value = [...listData.value, ...records];
+        const existingIds = new Set(listData.value.map(item => item.id));
+        const newRecords = records.filter((record: any) => !existingIds.has(record.id));
+        listData.value = [...listData.value, ...newRecords];
       }
 
-      // 更新是否有更多数据
       hasMore.value = listData.value.length < total;
 
-      // 如果当前页有数据，且数据条数等于pageSize，说明可能还有下一页
       if (records.length === pageSize.value) {
         currentPage.value++;
       }
@@ -284,14 +305,14 @@ const loadData = async (reset = false) => {
       icon: "error",
     });
   } finally {
-    loading.value = false;
+    isLoading.value = false;
   }
 };
 
 // 加载更多
 const loadMore = () => {
-  if (!hasMore.value || loading.value) return;
-  loadData();
+  if (!hasMore.value || isLoading.value) return;
+  loadListData();
 };
 
 // 页面跳转
@@ -315,15 +336,11 @@ const addNewItem = () => {
 
 // 生命周期
 onMounted(() => {
-  loadData(true);
+  loadListData(true);
 });
 
 onLoad((options) => {
-  // 从详情页返回时刷新数据
-  const refresh = options?.refresh === "true";
-  if (refresh) {
-    loadData(true);
-  }
+  loadListData(true);
 });
 
 onReachBottom(() => {
@@ -496,7 +513,12 @@ onReachBottom(() => {
   .empty-text {
     font-size: $font-size-base;
     color: $empty-text-color;
+    margin: $margin-base 0;
+  }
+
+  .btn {
     margin-top: $margin-base;
+    width: 200rpx;
   }
 }
 
@@ -566,10 +588,33 @@ onReachBottom(() => {
   overflow: hidden;
 }
 
+// 响应式优化
+@media (min-width: 768px) {
+  .list-scroll {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .list-item {
+    border-radius: $border-radius * 1.5;
+    box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      transform: translateY(-4rpx);
+      box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.12);
+    }
+  }
+}
+
 @media (max-width: $screen-md) {
   .list-item {
     .item-actions {
       flex-direction: column;
+    }
+
+    .item-footer {
+      flex-direction: column;
+      gap: 8rpx;
     }
   }
 }

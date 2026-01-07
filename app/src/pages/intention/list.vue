@@ -161,6 +161,7 @@ import { ref, onMounted } from 'vue'
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
 import type { JobIntentionResult } from "@/types/job-intention";
 import JobIntentionAPI from "@/api/job-intention";
+import { usePageRefresh } from '@/composables/usePageRefresh'
 
 // 响应式数据
 const searchKeywords = ref('')
@@ -231,26 +232,26 @@ const getSalaryAnalysis = (salary: string): string => {
 // 搜索处理
 const handleSearch = () => {
   currentPage.value = 1
-  loadData(true)
+  loadListData(true)
 }
 
 const clearSearch = () => {
   searchKeywords.value = ''
   currentPage.value = 1
-  loadData(true)
+  loadListData(true)
 }
 
 // 筛选处理
 const onJobTypeChange = (e: any) => {
   jobTypeIndex.value = e.detail.value
   currentPage.value = 1
-  loadData(true)
+  loadListData(true)
 }
 
 const onSortChange = (e: any) => {
   sortIndex.value = e.detail.value
   currentPage.value = 1
-  loadData(true)
+  loadListData(true)
 }
 
 // 构建查询参数
@@ -287,7 +288,7 @@ const buildQueryParams = () => {
 }
 
 // 加载数据
-const loadData = async (reset = false) => {
+const loadListData = async (reset = false) => {
   if (loading.value) return;
 
   loading.value = true;
@@ -341,7 +342,7 @@ const loadData = async (reset = false) => {
 // 加载更多
 const loadMore = () => {
   if (!hasMore.value || loading.value) return;
-  loadData();
+  loadListData();
 };
 
 // 页面跳转
@@ -365,14 +366,11 @@ const addNewIntention = () => {
 
 // 生命周期
 onMounted(() => {
-  loadData(true)
+  loadListData(true)
 })
 
 onLoad((options) => {
-  const refresh = options?.refresh === 'true'
-  if (refresh) {
-    loadData(true)
-  }
+    loadListData(true)
 })
 
 onReachBottom(() => {

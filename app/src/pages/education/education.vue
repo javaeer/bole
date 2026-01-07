@@ -1,21 +1,23 @@
+<!-- pages/education/education.vue -->
 <template>
   <view class="page-container">
     <!-- 头部 -->
     <view class="detail-header card-container">
-      <view class="header-left">
+      <view class="header-left" >
       </view>
-      <view v-if="!isEditMode" class="header-actions">
+
+      <view v-if="!isEditMode && detailData.id" class="header-actions">
         <button class="btn btn-secondary" @click="toggleEditMode">
           编辑
         </button>
       </view>
 
-      <view v-else class="header-actions">
+      <view v-else-if="isEditMode" class="header-actions">
         <button class="btn btn-secondary" @click="cancelEdit">
           取消
         </button>
-        <button class="btn btn-primary" :disabled="saving" @click="saveData">
-          {{ saving ? "保存中..." : "保存" }}
+        <button class="btn btn-primary" :disabled="isSaving" @click="handleSave">
+          {{ isSaving ? "保存中..." : "保存" }}
         </button>
       </view>
     </view>
@@ -223,9 +225,9 @@
     </scroll-view>
 
     <!-- 底部操作栏（编辑模式下） -->
-    <view v-if="isEditMode" class="detail-footer">
-      <button class="btn btn-danger btn-block" @click="showDeleteConfirm" :disabled="saving">
-        删除
+    <view v-if="isEditMode && detailData.id" class="detail-footer">
+      <button class="btn btn-danger btn-block" @click="handleDelete" :disabled="isSaving">
+        {{ deleting ? "删除中..." : "删除" }}
       </button>
     </view>
   </view>
@@ -236,6 +238,12 @@ import { computed, reactive, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import type { EducationExperienceForm, EducationExperienceResult } from "@/types/education-experience";
 import EducationExperienceAPI from "@/api/education-experience";
+import { useSaveAndBack } from "@/composables/useSaveAndBack";
+import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
+
+// 使用 composable - 修复事件前缀
+const { saving: isSaving, saveAndBack } = useSaveAndBack();
+const { deleting, deleteAndBack } = useDeleteAndBack();
 
 interface FormErrors {
   university?: string;
@@ -249,7 +257,6 @@ interface FormErrors {
 const routeParams = ref<any>({});
 
 // 响应式数据
-// 修改detailData的类型，将achievements改为string[]
 const detailData = ref<EducationExperienceResult & { achievements?: string[] }>({
   id: null,
   createdAt: "",
@@ -263,11 +270,10 @@ const detailData = ref<EducationExperienceResult & { achievements?: string[] }>(
   endDate: "",
   isHighest: 0,
   description: "",
-  achievements: [], // 初始化为空数组
+  achievements: [],
   sort: 0,
 });
 
-// 修改formData，将achievements初始化为空数组
 const formData = reactive<EducationExperienceForm>({
   id: null,
   university: "",
@@ -277,12 +283,11 @@ const formData = reactive<EducationExperienceForm>({
   endDate: "",
   isHighest: 0,
   description: "",
-  achievements: [], // 初始化为空数组
+  achievements: [],
 });
 
 const errors = reactive<FormErrors>({});
 const isEditMode = ref(false);
-const saving = ref(false);
 
 // 学位选项
 const degreeOptions = ["本科", "硕士", "博士", "专科", "其他"];
@@ -349,32 +354,26 @@ const removeAchievement = (index: number) => {
 const loadDetailData = async (id?: number) => {
   try {
     if (id) {
-      // API请求
       const result = await EducationExperienceAPI.getById(id);
 
       if (result) {
-        // 处理achievements数据：如果是字符串，转换为数组
         let achievementsArray: string[] = [];
         if (result.achievements) {
           if (typeof result.achievements === "string") {
-            // 按换行符分割并过滤空行
             achievementsArray = result.achievements
               .split("\n")
               .filter(item => item.trim() !== "")
               .map(item => item.trim());
           } else if (Array.isArray(result.achievements)) {
-            // 已经是数组
             achievementsArray = result.achievements;
           }
         }
 
-        // 更新detailData
         detailData.value = {
           ...result,
           achievements: achievementsArray,
         };
 
-        // 填充表单数据
         formData.id = result.id || null;
         formData.university = result.university || "";
         formData.major = result.major || "";
@@ -385,13 +384,11 @@ const loadDetailData = async (id?: number) => {
         formData.description = result.description || "";
         formData.achievements = achievementsArray;
 
-        // 确保至少有一个成就输入框
         if (formData.achievements.length === 0 && isEditMode.value) {
           formData.achievements.push("");
         }
       }
     } else {
-      // 新增模式
       detailData.value = {
         id: null,
         createdAt: "",
@@ -410,8 +407,6 @@ const loadDetailData = async (id?: number) => {
       };
 
       isEditMode.value = true;
-
-      // 新增模式下，默认给一个空的成就输入框
       formData.achievements.push("");
     }
   } catch (error) {
@@ -492,7 +487,6 @@ const onDegreeChange = (e: any) => {
 const onStartDateChange = (e: any) => {
   formData.startDate = e.detail.value;
   validateField("startDate");
-  // 重新验证结束时间
   if (formData.endDate) {
     validateField("endDate");
   }
@@ -507,8 +501,8 @@ const onHighestChange = (e: any) => {
   formData.isHighest = e.detail.value ? 1 : 0;
 };
 
-// 保存数据
-const saveData = async () => {
+// 保存数据 - 修复：添加事件前缀
+const handleSave = async () => {
   if (!validateForm()) {
     uni.showToast({
       title: "请填写完整信息",
@@ -517,93 +511,40 @@ const saveData = async () => {
     return;
   }
 
-  saving.value = true;
-
   try {
-    // 准备提交数据：过滤空白的成就项
     const submitData = {
       ...formData,
       achievements: formData.achievements.filter(item => item.trim() !== ""),
     };
 
-    if (detailData.value.id) {
-      // 更新现有记录
-      await EducationExperienceAPI.update(submitData);
-    } else {
-      // 新增记录
-      await EducationExperienceAPI.add(submitData);
-    }
+    const saveFunction = detailData.value.id
+      ? () => EducationExperienceAPI.update(submitData)
+      : () => EducationExperienceAPI.add(submitData);
 
-
-    uni.showToast({
-      title: "保存成功",
-      icon: "success",
+    await saveAndBack({
+      saveFn: saveFunction,
+      successMessage: detailData.value.id ? "教育经历编辑成功" : "教育经历新增成功",
+      showLoading: true,
+      loadingText: detailData.value.id ? "正在更新..." : "正在保存...",
     });
-
-    isEditMode.value = false;
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/education/list?refresh=true",
-      });
-    }, 1000);
-
   } catch (error) {
     console.error("保存失败:", error);
-    uni.showToast({
-      title: "保存失败",
-      icon: "error",
-    });
-  } finally {
-    saving.value = false;
+    // saveAndBack 已经处理了错误提示，这里不需要再处理
   }
 };
 
-// 删除项目
-const showDeleteConfirm = () => {
-  uni.showModal({
-    title: "确认删除",
-    content: "确定要删除这条记录吗？删除后不可恢复！",
-    confirmColor: "#e64340",
-    success: (res) => {
-      if (res.confirm) {
-        deleteItem(detailData.value.id);
-      }
-    },
+// 删除项目 - 修复：添加事件前缀
+const handleDelete = async () => {
+  await deleteAndBack({
+    deleteFn: () => EducationExperienceAPI.delete(detailData.value.id),
+    confirmMessage: "确定要删除这条教育经历吗？删除后不可恢复！",
+    successMessage: "删除成功",
   });
-};
-
-const deleteItem = async (id: number) => {
-  try {
-    await EducationExperienceAPI.delete(id);
-
-    uni.showToast({
-      title: "删除成功",
-      icon: "success",
-    });
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/education/list?refresh=true",
-      });
-    }, 1000);
-
-  } catch (error) {
-    console.error("删除失败:", error);
-    uni.showToast({
-      title: "删除失败",
-      icon: "error",
-    });
-  }
 };
 
 // 切换编辑模式
 const toggleEditMode = () => {
   isEditMode.value = true;
-
-  // 确保在编辑模式下有至少一个成就输入框
   if (formData.achievements.length === 0) {
     formData.achievements.push("");
   }
@@ -611,7 +552,6 @@ const toggleEditMode = () => {
 
 const cancelEdit = () => {
   if (detailData.value.id) {
-    // 恢复原始数据
     formData.university = detailData.value.university || "";
     formData.major = detailData.value.major || "";
     formData.degree = detailData.value.degree || "";
@@ -622,19 +562,12 @@ const cancelEdit = () => {
     formData.achievements = detailData.value.achievements ? [...detailData.value.achievements] : [];
 
     isEditMode.value = false;
-    // 清除错误信息
     Object.keys(errors).forEach(key => {
       delete errors[key as keyof FormErrors];
     });
   } else {
-    // 如果是新增，返回列表页
     uni.navigateBack();
   }
-};
-
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack();
 };
 
 // 生命周期
@@ -684,6 +617,7 @@ onLoad((options: any) => {
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
     }
 
     .header-title {
@@ -758,7 +692,7 @@ onLoad((options: any) => {
     }
 
     .form-input {
-      width: 100%;
+      width: 90%;
       padding: 20rpx 24rpx;
       border: 2rpx solid $border-color-lighter;
       border-radius: $border-radius;
@@ -837,14 +771,14 @@ onLoad((options: any) => {
   .achievement-item-edit {
     display: flex;
     align-items: center;
-    margin-bottom: $achievement-item-gap;
+    margin-bottom: 12rpx;
 
     .achievement-input {
       flex: 1;
-      height: $achievement-input-height;
+      height: 80rpx;
       padding: 20rpx 24rpx;
-      border: $achievement-input-border;
-      border-radius: $achievement-input-radius;
+      border: 1rpx solid $border-color-light;
+      border-radius: $border-radius;
       font-size: $font-size-base;
       color: $text-primary;
       background: $background-color-white;
@@ -856,14 +790,14 @@ onLoad((options: any) => {
     }
 
     .btn-remove-achievement {
-      width: $achievement-remove-btn-size;
-      height: $achievement-remove-btn-size;
+      width: 60rpx;
+      height: 60rpx;
       margin-left: 12rpx;
-      background: $achievement-remove-bg;
-      color: $achievement-remove-color;
+      background: $danger-bg;
+      color: $danger-color;
       border: none;
-      border-radius: $achievement-remove-btn-radius;
-      font-size: $font-size-base;
+      border-radius: 50%;
+      font-size: 28rpx;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -877,12 +811,12 @@ onLoad((options: any) => {
   .btn-add-achievement {
     width: 100%;
     padding: 20rpx;
-    background: $achievement-add-bg;
-    color: $achievement-add-color;
-    border: 2rpx $achievement-add-border-style $achievement-add-border;
+    background: $background-color;
+    color: $primary-color;
+    border: 2rpx dashed $primary-color;
     border-radius: $border-radius;
     font-size: $font-size-base;
-    margin-top: 8rpx;
+    margin-top: 12rpx;
 
     &:active {
       background: $primary-color-light;
@@ -892,7 +826,7 @@ onLoad((options: any) => {
   .achievements-count {
     text-align: right;
     font-size: $font-size-extra-small;
-    color: $achievement-count-color;
+    color: $text-secondary;
     margin-top: 8rpx;
   }
 }
@@ -909,14 +843,14 @@ onLoad((options: any) => {
     }
 
     .achievement-index {
-      width: $achievement-index-width;
-      color: $achievement-index-color;
+      width: 60rpx;
+      color: $text-secondary;
       font-weight: $font-weight-medium;
     }
 
     .achievement-content {
       flex: 1;
-      color: $achievement-content-color;
+      color: $text-primary;
       line-height: 1.5;
     }
   }
@@ -924,8 +858,8 @@ onLoad((options: any) => {
   .no-achievements {
     padding: 40rpx 0;
     text-align: center;
-    color: $achievement-empty-color;
-    font-size: $achievement-empty-font-size;
+    color: $text-placeholder;
+    font-size: $font-size-small;
   }
 }
 
@@ -983,6 +917,19 @@ onLoad((options: any) => {
 .status-info {
   background-color: $info-bg;
   color: $info-color;
+}
+
+// 响应式优化
+@media (min-width: 768px) {
+  .detail-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .info-card {
+    border-radius: $border-radius * 1.5;
+    box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.08);
+  }
 }
 
 @media (max-width: $screen-md) {

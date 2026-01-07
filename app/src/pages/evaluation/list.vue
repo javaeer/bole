@@ -1,3 +1,4 @@
+<!-- pages/evaluation/list.vue -->
 <template>
   <view class="page-container">
     <!-- 搜索栏 -->
@@ -30,7 +31,7 @@
             class="sort-icon"
             :style="{ color: sortOrder === 'asc' ? successColor : dangerColor }"
           >
-            {{ sortOrder === 'asc' ? '↑' : '↓' }}
+            {{ sortOrder === "asc" ? "↑" : "↓" }}
           </view>
         </view>
       </view>
@@ -179,41 +180,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import type { SelfEvaluationResult } from "@/types/self-evaluation";
 import SelfEvaluationAPI from "@/api/self-evaluation";
+import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
-const searchKeywords = ref('')
-const sortBy = ref<'createdAt' | 'updatedAt'>('createdAt')
-const sortOrder = ref<'asc' | 'desc'>('desc')
-const currentPage = ref(1)
-const pageSize = ref(10)
-const loading = ref(false)
-const hasMore = ref(true)
-const listData = ref<SelfEvaluationResult[]>([])
+const searchKeywords = ref("");
+const sortBy = ref<"createdAt" | "updatedAt">("createdAt");
+const sortOrder = ref<"asc" | "desc">("desc");
+const currentPage = ref(1);
+const pageSize = ref(10);
+const loading = ref(false);
+const hasMore = ref(true);
+const listData = ref<SelfEvaluationResult[]>([]);
 
 // 关键词弹窗相关
-const showHighlightsModal = ref(false)
-const currentHighlights = ref<string[]>([])
+const showHighlightsModal = ref(false);
+const currentHighlights = ref<string[]>([]);
 
 // 排序选项
 const sortOptions = [
-  { label: '创建时间', value: 'createdAt' },
-  { label: '更新时间', value: 'updatedAt' }
-]
+  { label: "创建时间", value: "createdAt" },
+  { label: "更新时间", value: "updatedAt" },
+];
 
 // 颜色变量
-const successColor = '#67c23a'
-const dangerColor = '#f56c6c'
+const successColor = "#67c23a";
+const dangerColor = "#f56c6c";
 
 // 格式化日期
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "";
   try {
     const date = new Date(dateStr);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   } catch {
     return dateStr;
   }
@@ -233,43 +235,41 @@ const closeHighlightsModal = () => {
 
 // 搜索处理
 const handleSearch = () => {
-  currentPage.value = 1
-  loadData(true)
-}
+  currentPage.value = 1;
+  loadListData(true);
+};
 
 const clearSearch = () => {
-  searchKeywords.value = ''
-  currentPage.value = 1
-  loadData(true)
-}
+  searchKeywords.value = "";
+  currentPage.value = 1;
+  loadListData(true);
+};
 
 // 按关键词搜索
 const searchByHighlight = (highlight: string) => {
-  searchKeywords.value = highlight
-  currentPage.value = 1
-  loadData(true)
-
-  // 关闭弹窗（如果打开）
+  searchKeywords.value = highlight;
+  currentPage.value = 1;
+  loadListData(true);
   closeHighlightsModal();
-}
+};
 
 // 排序处理
 const changeSort = (field: any) => {
   if (sortBy.value === field) {
     // 切换排序顺序
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
   } else {
     // 切换到新字段，默认降序
-    sortBy.value = field
-    sortOrder.value = 'desc'
+    sortBy.value = field;
+    sortOrder.value = "desc";
   }
 
-  currentPage.value = 1
-  loadData(true)
-}
+  currentPage.value = 1;
+  loadListData(true);
+};
 
 // 加载数据
-const loadData = async (reset = false) => {
+const loadListData = async (reset = false) => {
   if (loading.value) return;
 
   loading.value = true;
@@ -297,7 +297,7 @@ const loadData = async (reset = false) => {
     // 添加排序条件
     if (sortBy.value && sortOrder.value) {
       query.orderBy = sortBy.value;
-      query.orderDirection = sortOrder.value === 'asc' ? 'ASC' : 'DESC';
+      query.orderDirection = sortOrder.value === "asc" ? "ASC" : "DESC";
     }
 
     // 调用API
@@ -311,9 +311,9 @@ const loadData = async (reset = false) => {
         ...record,
         highlights: Array.isArray(record.highlights)
           ? record.highlights
-          : typeof record.highlights === 'string'
-            ? record.highlights.split(',').map(k => k.trim()).filter(k => k)
-            : []
+          : typeof record.highlights === "string"
+            ? record.highlights.split(",").map(k => k.trim()).filter(k => k)
+            : [],
       }));
 
       if (reset) {
@@ -344,46 +344,43 @@ const loadData = async (reset = false) => {
 // 加载更多
 const loadMore = () => {
   if (!hasMore.value || loading.value) return;
-  loadData();
+  loadListData();
 };
 
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/evaluation/evaluation?id=${id}`
-  })
-}
+    url: `/pages/evaluation/evaluation?id=${id}`,
+  });
+};
 
 const editEvaluation = (id: number) => {
   uni.navigateTo({
-    url: `/pages/evaluation/evaluation?id=${id}&edit=true`
-  })
-}
+    url: `/pages/evaluation/evaluation?id=${id}&edit=true`,
+  });
+};
 
 const addNewEvaluation = () => {
   uni.navigateTo({
-    url: '/pages/evaluation/evaluation'
-  })
-}
+    url: "/pages/evaluation/evaluation",
+  });
+};
 
 // 生命周期
 onMounted(() => {
-  loadData(true)
-})
+  loadListData(true);
+});
 
 onLoad((options) => {
-  // 从详情页返回时刷新数据
-  const refresh = options?.refresh === 'true'
-  if (refresh) {
-    loadData(true)
-  }
-})
+  loadListData(true);
+});
 
 onReachBottom(() => {
-  loadMore()
-})
+  loadMore();
+});
 </script>
 
+<!-- 样式部分 -->
 <style lang="scss">
 .page-container {
   min-height: 100vh;
@@ -807,7 +804,9 @@ onReachBottom(() => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: $screen-md) {

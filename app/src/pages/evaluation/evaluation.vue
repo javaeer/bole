@@ -1,12 +1,9 @@
+<!-- pages/evaluation/evaluation.vue -->
 <template>
   <view class="page-container">
     <!-- 头部 -->
     <view class="detail-header card-container">
-      <view class="header-left" @click="goBack">
-        <view class="back-icon">←</view>
-        <text class="header-title">{{ isEditMode ? (detailData.id ? "编辑自我评价" : "添加自我评价") : "自我评价详情"
-          }}
-        </text>
+      <view class="header-left" >
       </view>
 
       <view v-if="!isEditMode && detailData.id" class="header-actions">
@@ -14,19 +11,18 @@
           编辑
         </button>
       </view>
-
       <view v-else-if="isEditMode" class="header-actions">
         <button class="btn btn-secondary" @click="cancelEdit">
           取消
         </button>
-        <button class="btn btn-primary" :disabled="saving" @click="saveData">
-          {{ saving ? "保存中..." : "保存" }}
+        <button class="btn btn-primary" :disabled="savingRef" @click="handleSave">
+          {{ savingRef ? "保存中..." : "保存" }}
         </button>
       </view>
     </view>
 
     <!-- 内容区域 -->
-    <scroll-view class="detail-scroll" scroll-y>
+    <scroll-view class="detail-scroll" scroll-y @scroll="handleScroll" :scroll-top="scrollTop">
       <view class="detail-content">
         <!-- 主要内容卡片 -->
         <view class="info-card card-container">
@@ -65,15 +61,15 @@
             <!-- 关键词输入 -->
             <view v-if="isEditMode" class="highlights-input-group">
               <input
-                v-model="highlightInput"
+                v-model="highlightInputRef"
                 class="highlights-input"
                 placeholder="输入关键词后按回车或逗号添加"
                 @keyup.enter="addHighlight"
                 @keyup.space="addHighlight"
-                @blur="addHighlight"
+                @blur="handleBlurAddHighlight"
               />
               <button
-                v-if="highlightInput"
+                v-if="highlightInputRef"
                 class="add-highlight-btn"
                 @click="addHighlight"
               >
@@ -165,12 +161,12 @@
               </view>
               <view class="analysis-info">
                 <text class="analysis-label">内容质量</text>
-                <text class="analysis-value">{{ getContentQuality() }}</text>
+                <text class="analysis-value">{{ contentQuality }}</text>
               </view>
               <view class="analysis-progress">
                 <view
                   class="progress-bar"
-                  :style="{ width: `${getQualityPercentage()}%` }"
+                  :style="{ width: `${qualityPercentage}%` }"
                 ></view>
               </view>
             </view>
@@ -186,12 +182,12 @@
           <view class="system-info">
             <view class="info-row">
               <text class="info-label">创建时间</text>
-              <text class="info-value">{{ formatDateTime(detailData.createdAt) }}</text>
+              <text class="info-value">{{ formattedCreatedAt }}</text>
             </view>
 
             <view class="info-row">
               <text class="info-label">更新时间</text>
-              <text class="info-value">{{ formatDateTime(detailData.updatedAt) }}</text>
+              <text class="info-value">{{ formattedUpdatedAt }}</text>
             </view>
           </view>
         </view>
@@ -200,27 +196,25 @@
 
     <!-- 底部操作栏（编辑模式下） -->
     <view v-if="isEditMode && detailData.id" class="detail-footer">
-      <button class="btn btn-danger btn-block" @click="showDeleteConfirm" :disabled="saving">
-        删除
+      <button class="btn btn-danger btn-block" @click="handleDelete" :disabled="deletingRef">
+        {{ deletingRef ? "删除中..." : "删除" }}
       </button>
+    </view>
+
+    <!-- 回到顶部按钮 -->
+    <view v-if="showBackToTop" class="back-to-top" @click="scrollToTop">
+      <view class="back-to-top-icon">↑</view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
-import { onLoad } from "@dcloudio/uni-app";
+import { computed, onUnmounted, reactive, ref } from "vue";
+import { onLoad, onShow } from "@dcloudio/uni-app";
 import type { SelfEvaluationForm, SelfEvaluationResult } from "@/types/self-evaluation";
 import SelfEvaluationAPI from "@/api/self-evaluation";
-
-interface FormData {
-  content: string;
-  highlights: string[]; // 改为数组类型
-}
-
-interface FormErrors {
-  content?: string;
-}
+import { useSaveAndBack } from "@/composables/useSaveAndBack";
+import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 
 // 路由参数
 const routeParams = ref<any>({});
@@ -233,23 +227,67 @@ const detailData = ref<SelfEvaluationResult>({
   deleted: 0,
   userId: 1,
   content: "",
-  highlights: [], // 初始化为空数组
+  highlights: [],
 });
 
 const formData = reactive<SelfEvaluationForm>({
   id: null,
   content: "",
-  highlights: [], // 初始化为空数组
+  highlights: [],
 });
 
-const highlightInput = ref("");
+// 重命名冲突变量
+const highlightInputRef = ref("");
 const errors = reactive<FormErrors>({});
 const isEditMode = ref(false);
-const saving = ref(false);
+
+// 滚动相关
+const scrollTop = ref(0);
+const showBackToTop = ref(false);
+let scrollTimer: ReturnType<typeof setTimeout> | null = null;
+
+// 使用 composable
+const { saving: savingRef, saveAndBack } = useSaveAndBack();
+const { deleting: deletingRef, deleteAndBack } = useDeleteAndBack();
 
 // 计算属性
 const contentLength = computed(() => {
   return formData.content ? formData.content.length : 0;
+});
+
+const headerTitle = computed(() => {
+  if (isEditMode.value) {
+    return detailData.value.id ? "编辑自我评价" : "添加自我评价";
+  }
+  return "自我评价详情";
+});
+
+const contentQuality = computed(() => {
+  const length = contentLength.value;
+
+  if (length === 0) return "待完善";
+  if (length < 50) return "简短";
+  if (length < 200) return "一般";
+  if (length < 500) return "良好";
+  return "优秀";
+});
+
+const qualityPercentage = computed(() => {
+  const length = contentLength.value;
+
+  if (length === 0) return 0;
+  if (length < 50) return 25;
+  if (length < 200) return 50;
+  if (length < 500) return 75;
+  return 100;
+});
+
+const formattedCreatedAt = computed(() => {
+  return formatDateTime(detailData.value.createdAt);
+});
+
+const formattedUpdatedAt = computed(() => {
+  return formatDateTime(detailData.value.updatedAt);
 });
 
 // 格式化日期时间
@@ -263,30 +301,25 @@ const formatDateTime = (dateStr: string) => {
   }
 };
 
-// 获取内容质量评估
-const getContentQuality = () => {
-  const length = contentLength.value;
-
-  if (length === 0) return "待完善";
-  if (length < 50) return "简短";
-  if (length < 200) return "一般";
-  if (length < 500) return "良好";
-  return "优秀";
-};
-
-const getQualityPercentage = () => {
-  const length = contentLength.value;
-
-  if (length === 0) return 0;
-  if (length < 50) return 25;
-  if (length < 200) return 50;
-  if (length < 500) return 75;
-  return 100;
-};
-
-// 内容输入处理
+// 内容输入处理（添加防抖）
+let contentInputTimer: ReturnType<typeof setTimeout> | null = null;
 const onContentInput = () => {
-  validateField("content");
+  if (contentInputTimer) {
+    clearTimeout(contentInputTimer);
+  }
+  contentInputTimer = setTimeout(() => {
+    validateField("content");
+  }, 300);
+};
+
+// 滚动处理
+const handleScroll = (e: any) => {
+  const scrollTopValue = e.detail.scrollTop;
+  showBackToTop.value = scrollTopValue > 300;
+};
+
+const scrollToTop = () => {
+  scrollTop.value = scrollTop.value ? 0 : 1;
 };
 
 // 加载数据
@@ -343,11 +376,11 @@ const validateField = (field: keyof FormErrors) => {
 
   switch (field) {
     case "content":
-      if (!value?.trim()) {
+      if (!value?.toString().trim()) {
         errors.content = "请输入自我评价内容";
-      } else if (value.trim().length < 10) {
+      } else if (value.toString().trim().length < 10) {
         errors.content = "内容太短，建议至少10个字";
-      } else if (value.trim().length > 1000) {
+      } else if (value.toString().trim().length > 1000) {
         errors.content = "内容不能超过1000字";
       } else {
         delete errors.content;
@@ -362,10 +395,17 @@ const validateForm = (): boolean => {
 };
 
 // 关键词处理
-const addHighlight = () => {
-  if (!highlightInput.value.trim()) return;
+const handleBlurAddHighlight = () => {
+  // 延迟处理，避免与其他事件冲突
+  setTimeout(() => {
+    addHighlight();
+  }, 100);
+};
 
-  const highlights = highlightInput.value.split(/[,\s]+/).map(k => k.trim()).filter(k => k);
+const addHighlight = () => {
+  if (!highlightInputRef.value.trim()) return;
+
+  const highlights = highlightInputRef.value.split(/[,\s]+/).map(k => k.trim()).filter(k => k);
 
   highlights.forEach(highlight => {
     if (highlight && !formData.highlights.includes(highlight) && formData.highlights.length < 10) {
@@ -373,7 +413,7 @@ const addHighlight = () => {
     }
   });
 
-  highlightInput.value = "";
+  highlightInputRef.value = "";
 };
 
 const removeHighlight = (index: number) => {
@@ -382,11 +422,11 @@ const removeHighlight = (index: number) => {
 
 const clearAllHighlights = () => {
   formData.highlights = [];
-  highlightInput.value = "";
+  highlightInputRef.value = "";
 };
 
 // 保存数据
-const saveData = async () => {
+const handleSave = async () => {
   if (!validateForm()) {
     uni.showToast({
       title: "请检查输入内容",
@@ -395,86 +435,33 @@ const saveData = async () => {
     return;
   }
 
-  saving.value = true;
+  // 过滤掉空的关键词
+  const submitData = {
+    id: formData.id,
+    content: formData.content.trim(),
+    highlights: formData.highlights.filter(highlight => highlight.trim() !== ""),
+  };
 
-  try {
-    // 过滤掉空的关键词
-    const submitData = {
-      id: formData.id,
-      content: formData.content.trim(),
-      highlights: formData.highlights.filter(highlight => highlight.trim() !== ""),
-    };
+  const saveFunction = detailData.value.id
+    ? () => SelfEvaluationAPI.update(submitData)
+    : () => SelfEvaluationAPI.add(submitData);
 
-    if (detailData.value.id) {
-      // 更新现有记录
-      await SelfEvaluationAPI.update(submitData);
-    } else {
-      // 新增记录
-      await SelfEvaluationAPI.add(submitData);
-    }
-
-    uni.showToast({
-      title: "保存成功",
-      icon: "success",
-    });
-
-    isEditMode.value = false;
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/evaluation/list?refresh=true",
-      });
-    }, 1000);
-
-  } catch (error) {
-    console.error("保存失败:", error);
-    uni.showToast({
-      title: "保存失败",
-      icon: "error",
-    });
-  } finally {
-    saving.value = false;
-  }
-};
-
-// 删除项目
-const showDeleteConfirm = () => {
-  uni.showModal({
-    title: "确认删除",
-    content: "确定要删除这条自我评价吗？删除后不可恢复！",
-    confirmColor: "#e64340",
-    success: (res) => {
-      if (res.confirm) {
-        deleteItem();
-      }
+  await saveAndBack({
+    saveFn: saveFunction,
+    successMessage: "保存成功",
+    successCallback: () => {
+      isEditMode.value = false;
     },
   });
 };
 
-const deleteItem = async () => {
-  try {
-    await SelfEvaluationAPI.delete(detailData.value.id);
-
-    uni.showToast({
-      title: "删除成功",
-      icon: "success",
-    });
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/evaluation/list?refresh=true",
-      });
-    }, 1000);
-
-  } catch (error) {
-    console.error("删除失败:", error);
-    uni.showToast({
-      title: "删除失败",
-      icon: "error",
-    });
-  }
+// 删除项目
+const handleDelete = async () => {
+  await deleteAndBack({
+    deleteFn: () => SelfEvaluationAPI.delete(detailData.value.id),
+    confirmMessage: "确定要删除这条自我评价吗？删除后不可恢复！",
+    successMessage: "删除成功",
+  });
 };
 
 // 切换编辑模式
@@ -498,7 +485,7 @@ const cancelEdit = () => {
     }
     formData.highlights = highlightsArray;
 
-    highlightInput.value = "";
+    highlightInputRef.value = "";
     isEditMode.value = false;
 
     // 清空错误信息
@@ -509,9 +496,16 @@ const cancelEdit = () => {
   }
 };
 
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack();
+// 清理定时器
+const cleanupTimers = () => {
+  if (contentInputTimer) {
+    clearTimeout(contentInputTimer);
+    contentInputTimer = null;
+  }
+  if (scrollTimer) {
+    clearTimeout(scrollTimer);
+    scrollTimer = null;
+  }
 };
 
 // 生命周期
@@ -526,6 +520,14 @@ onLoad((options: any) => {
   } else {
     loadDetailData();
   }
+});
+
+onShow(() => {
+  // 页面显示时的逻辑
+});
+
+onUnmounted(() => {
+  cleanupTimers();
 });
 </script>
 
@@ -877,6 +879,34 @@ onLoad((options: any) => {
   }
 }
 
+// 回到顶部按钮
+.back-to-top {
+  position: fixed;
+  right: 30rpx;
+  bottom: calc(env(safe-area-inset-bottom) + 120rpx);
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: $primary-color;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $box-shadow-dark;
+  z-index: $z-index-dropdown;
+  opacity: 0.9;
+  transition: all $transition-fast $ease-in-out;
+
+  &:active {
+    transform: scale(0.95);
+    opacity: 1;
+  }
+
+  .back-to-top-icon {
+    font-size: 24rpx;
+  }
+}
+
 @media (max-width: $screen-md) {
   .detail-header {
     padding: 16rpx $padding-small;
@@ -899,6 +929,13 @@ onLoad((options: any) => {
 
   .detail-footer {
     padding: 16rpx $padding-small;
+  }
+
+  .back-to-top {
+    right: 20rpx;
+    bottom: calc(env(safe-area-inset-bottom) + 100rpx);
+    width: 50rpx;
+    height: 50rpx;
   }
 }
 </style>

@@ -579,7 +579,7 @@ $device-btn-padding: 8rpx 16rpx;
   }
 
   .form-input {
-    width: 100%;
+    width: 90%;
     padding: 20rpx;
     border: 2rpx solid $border-color-lighter;
     border-radius: $border-radius;
@@ -650,3 +650,78 @@ $device-btn-padding: 8rpx 16rpx;
     padding: 16rpx 24rpx;
   }
 }
+
+/* ==================== 响应式布局扩展 ==================== */
+
+/* 容器最大宽度（基于设计规范） */
+$container-xs: 100%;
+$container-sm: 540px;
+$container-md: 720px;
+$container-lg: 960px;
+$container-xl: 1140px;
+$container-xxl: 1320px;
+
+/* 断点像素值（用于媒体查询） */
+$breakpoint-xs: 320px;    // 对应 640rpx
+$breakpoint-sm: 375px;    // 对应 750rpx
+$breakpoint-md: 414px;    // 对应 828rpx
+$breakpoint-lg: 768px;    // 对应 1536rpx
+$breakpoint-xl: 1024px;   // 对应 2048rpx
+
+/* 安全区域（适配全面屏） */
+$safe-area-inset-top: env(safe-area-inset-top);
+$safe-area-inset-bottom: env(safe-area-inset-bottom);
+$safe-area-inset-left: env(safe-area-inset-left);
+$safe-area-inset-right: env(safe-area-inset-right);
+
+/* 间距扩展（系统化） */
+$spacing-0: 0;
+$spacing-1: 8rpx;
+$spacing-2: 16rpx;
+$spacing-3: 24rpx;
+$spacing-4: 32rpx;
+$spacing-5: 40rpx;
+$spacing-6: 48rpx;
+$spacing-7: 56rpx;
+$spacing-8: 64rpx;
+$spacing-9: 72rpx;
+$spacing-10: 80rpx;
+
+/* 字体大小扩展（系统化） */
+$font-size-2xs: 20rpx;
+$font-size-xs: 24rpx;
+$font-size-sm: 28rpx;
+$font-size-base: 32rpx;
+$font-size-lg: 36rpx;
+$font-size-xl: 40rpx;
+$font-size-2xl: 44rpx;
+$font-size-3xl: 48rpx;
+$font-size-4xl: 52rpx;
+
+/* 圆角扩展（系统化） */
+$rounded-none: 0;
+$rounded-sm: 4rpx;
+$rounded: 8rpx;
+$rounded-md: 12rpx;
+$rounded-lg: 16rpx;
+$rounded-xl: 20rpx;
+$rounded-2xl: 24rpx;
+$rounded-3xl: 32rpx;
+$rounded-full: 9999rpx;
+
+/* 阴影扩展（系统化） */
+$shadow-xs: 0 1rpx 2rpx 0 rgba(0, 0, 0, 0.05);
+$shadow-sm: 0 1rpx 3rpx 0 rgba(0, 0, 0, 0.1), 0 1rpx 2rpx 0 rgba(0, 0, 0, 0.06);
+$shadow: 0 4rpx 6rpx -1rpx rgba(0, 0, 0, 0.1), 0 2rpx 4rpx -1rpx rgba(0, 0, 0, 0.06);
+$shadow-md: 0 10rpx 15rpx -3rpx rgba(0, 0, 0, 0.1), 0 4rpx 6rpx -2rpx rgba(0, 0, 0, 0.05);
+$shadow-lg: 0 20rpx 25rpx -5rpx rgba(0, 0, 0, 0.1), 0 10rpx 10rpx -5rpx rgba(0, 0, 0, 0.04);
+$shadow-xl: 0 25rpx 50rpx -12rpx rgba(0, 0, 0, 0.25);
+
+/* z-index 系统化 */
+$z-index-0: 0;
+$z-index-10: 10;
+$z-index-20: 20;
+$z-index-30: 30;
+$z-index-40: 40;
+$z-index-50: 50;
+$z-index-auto: auto;

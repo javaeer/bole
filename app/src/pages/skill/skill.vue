@@ -2,8 +2,7 @@
   <view class="page-container">
     <!-- 头部 -->
     <view class="detail-header card-container">
-      <view class="header-left" @click="goBack">
-        <text class="header-title">{{ isEditMode ? (detailData.id ? "编辑技能" : "添加技能") : "技能详情" }}</text>
+      <view class="header-left">
       </view>
 
       <view v-if="!isEditMode && detailData.id" class="header-actions">
@@ -16,8 +15,8 @@
         <button class="btn btn-secondary" @click="cancelEdit">
           取消
         </button>
-        <button class="btn btn-primary" :disabled="saving" @click="saveData">
-          {{ saving ? "保存中..." : "保存" }}
+        <button class="btn btn-primary" :disabled="savingRef" @click="handleSave">
+          {{ savingRef ? "保存中..." : "保存" }}
         </button>
       </view>
     </view>
@@ -155,7 +154,7 @@
             <text class="form-label">标签</text>
             <view class="tag-input-container">
               <input
-                v-model="tagInput"
+                v-model="tagInputRef"
                 class="form-input"
                 :disabled="!isEditMode"
                 placeholder="输入标签后按回车添加"
@@ -163,7 +162,7 @@
                 @blur="onTagInputBlur"
               />
               <button
-                v-if="tagInput"
+                v-if="tagInputRef"
                 class="tag-add-btn"
                 @click="addTag"
                 :disabled="!isEditMode"
@@ -285,8 +284,8 @@
 
     <!-- 底部操作栏（编辑模式下） -->
     <view v-if="isEditMode && detailData.id" class="detail-footer">
-      <button class="btn btn-danger btn-block" @click="showDeleteConfirm" :disabled="saving">
-        删除
+      <button class="btn btn-danger btn-block" @click="handleDelete" :disabled="deletingRef">
+        {{ deletingRef ? "删除中..." : "删除" }}
       </button>
     </view>
   </view>
@@ -297,7 +296,8 @@ import { computed, reactive, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import type { SkillForm, SkillResult } from "@/types/skill";
 import SkillAPI from "@/api/skill";
-
+import { useSaveAndBack } from "@/composables/useSaveAndBack";
+import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 
 interface FormErrors {
   name?: string;
@@ -325,7 +325,7 @@ const detailData = ref<SkillResult & { tags?: string[] }>({
   isCertified: false,
   certificateName: null,
   certificateDate: null,
-  tags: [], // 初始化为空数组
+  tags: [],
   isPublic: true,
   sort: 0,
 });
@@ -341,14 +341,18 @@ const formData = reactive<SkillForm>({
   isCertified: false,
   certificateName: null,
   certificateDate: null,
-  tags: [], // 初始化为空数组
+  tags: [],
   isPublic: true,
 });
 
-const tagInput = ref("");
+// 重命名变量避免冲突
+const tagInputRef = ref("");
 const errors = reactive<FormErrors>({});
 const isEditMode = ref(false);
-const saving = ref(false);
+
+// 使用 composable
+const { saving: savingRef, saveAndBack } = useSaveAndBack()
+const { deleting: deletingRef, deleteAndBack } = useDeleteAndBack()
 
 // 选项
 const categoryOptions = ["编程语言", "前端框架", "后端框架", "数据库", "数据分析", "人工智能", "运维部署", "工具软件", "其他"];
@@ -409,7 +413,7 @@ const loadDetailData = async (id?: number) => {
         formData.isCertified = result.isCertified || false;
         formData.certificateName = result.certificateName || null;
         formData.certificateDate = result.certificateDate || null;
-        formData.tags = tagsArray; // 使用数组
+        formData.tags = tagsArray;
         formData.isPublic = result.isPublic || true;
       }
     } else {
@@ -548,7 +552,7 @@ const onPublicChange = (e: any) => {
 
 // 标签处理（数组操作）
 const addTag = () => {
-  const tag = tagInput.value.trim();
+  const tag = tagInputRef.value.trim();
   if (!tag) return;
 
   // 检查是否已存在
@@ -556,12 +560,12 @@ const addTag = () => {
     formData.tags.push(tag);
   }
 
-  tagInput.value = "";
+  tagInputRef.value = "";
 };
 
 const onTagInputBlur = () => {
   // 失去焦点时也尝试添加标签
-  if (tagInput.value.trim()) {
+  if (tagInputRef.value.trim()) {
     addTag();
   }
 };
@@ -571,7 +575,7 @@ const removeTag = (index: number) => {
 };
 
 // 保存数据
-const saveData = async () => {
+const handleSave = async () => {
   if (!validateForm()) {
     uni.showToast({
       title: "请填写完整信息",
@@ -580,88 +584,34 @@ const saveData = async () => {
     return;
   }
 
-  saving.value = true;
+  // 准备提交数据
+  const submitData = {
+    ...formData,
+    id: formData.id,
+    certificateName: formData.isCertified ? formData.certificateName : null,
+    certificateDate: formData.isCertified ? formData.certificateDate : null,
+  };
 
-  try {
-    // 准备提交数据
-    const submitData = {
-      ...formData,
-      id: formData.id,
-      // 确保tags是数组（已经确保）
-      certificateName: formData.isCertified ? formData.certificateName : null,
-      certificateDate: formData.isCertified ? formData.certificateDate : null,
-    };
+  const saveFunction = detailData.value.id
+    ? () => SkillAPI.update(submitData)
+    : () => SkillAPI.add(submitData);
 
-    if (detailData.value.id) {
-      // 更新现有记录
-      await SkillAPI.update(submitData);
-    } else {
-      // 新增记录
-      await SkillAPI.add(submitData);
-
+  await saveAndBack({
+    saveFn: saveFunction,
+    successMessage: "保存成功",
+    successCallback: () => {
+      isEditMode.value = false;
     }
-    uni.showToast({
-      title: "保存成功",
-      icon: "success",
-    });
-
-    isEditMode.value = false;
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/skill/list?refresh=true",
-      });
-    }, 1000);
-
-  } catch (error) {
-    console.error("保存失败:", error);
-    uni.showToast({
-      title: "保存失败",
-      icon: "error",
-    });
-  } finally {
-    saving.value = false;
-  }
-};
-
-// 删除项目
-const showDeleteConfirm = () => {
-  uni.showModal({
-    title: "确认删除",
-    content: "确定要删除这个技能吗？删除后不可恢复！",
-    confirmColor: "#e64340",
-    success: (res) => {
-      if (res.confirm) {
-        deleteItem(detailData.value.id);
-      }
-    },
   });
 };
 
-const deleteItem = async (id: number) => {
-  try {
-    await SkillAPI.delete(id);
-
-    uni.showToast({
-      title: "删除成功",
-      icon: "success",
-    });
-
-    // 返回列表页并刷新
-    setTimeout(() => {
-      uni.navigateTo({
-        url: "/pages/skill/list?refresh=true",
-      });
-    }, 1000);
-
-  } catch (error) {
-    console.error("删除失败:", error);
-    uni.showToast({
-      title: "删除失败",
-      icon: "error",
-    });
-  }
+// 删除项目
+const handleDelete = async () => {
+  await deleteAndBack({
+    deleteFn: () => SkillAPI.delete(detailData.value.id),
+    confirmMessage: "确定要删除这个技能吗？删除后不可恢复！",
+    successMessage: "删除成功",
+  });
 };
 
 // 切换编辑模式
@@ -696,7 +646,7 @@ const cancelEdit = () => {
       formData.tags = [];
     }
 
-    tagInput.value = "";
+    tagInputRef.value = "";
     isEditMode.value = false;
 
     // 清空错误信息
@@ -707,11 +657,6 @@ const cancelEdit = () => {
     // 如果是新增，返回列表页
     uni.navigateBack();
   }
-};
-
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack();
 };
 
 // 生命周期
