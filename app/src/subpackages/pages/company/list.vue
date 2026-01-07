@@ -159,7 +159,7 @@ import { CompanyQuery, CompanyResult } from "@/types/company";
 
 // 导入Composable
 import { usePageRefresh } from "@/composables/usePageRefresh";
-import { useFollowAction } from "@/composables/useFollowAction";
+import { useFollowAction } from "@/subpackages/composables/useFollowAction";
 
 // 响应式数据
 const loading = ref(false);

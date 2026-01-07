@@ -157,8 +157,6 @@
 
           <view class="template-item-actions flex-between">
             <view class="price-info">
-              <text class="price-label">价格:</text>
-              <text class="price-value">¥{{ template.price || 0 }}</text>
             </view>
             <view class="action-buttons">
               <button class="btn-action btn btn-primary" @click.stop="handleSelected(template)">

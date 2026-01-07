@@ -30,22 +30,6 @@
 
     <!-- 筛选操作栏 -->
     <view class="filter-bar">
-<!--      <view class="filter-tabs">-->
-<!--        <scroll-view class="tab-scroll" scroll-x>-->
-<!--          <view class="tab-container">-->
-<!--            <text-->
-<!--              v-for="tab in filterTabs"-->
-<!--              :key="tab.value"-->
-<!--              :class="['tab-item', { active: activeFilter === tab.value }]"-->
-<!--              @click="onFilterChange(tab.value)"-->
-<!--            >-->
-<!--              {{ tab.label }}-->
-<!--              <text v-if="tab.badge" class="tab-badge">{{ tab.badge }}</text>-->
-<!--            </text>-->
-<!--          </view>-->
-<!--        </scroll-view>-->
-<!--      </view>-->
-
       <view class="sort-dropdown" @click="showSortPanel = !showSortPanel">
         <text>{{ currentSort.label }}</text>
         <text class="icon">{{ showSortPanel ? "▲" : "▼" }}</text>
@@ -109,18 +93,11 @@
                 </text>
               </view>
             </view>
-
-<!--            <view class="resume-status">-->
-<!--              <view :class="['status-badge', getStatusClass(resume.status)]">-->
-<!--                {{ getStatusText(resume.status) }}-->
-<!--              </view>-->
-<!--            </view>-->
           </view>
 
           <view class="resume-content">
-
             <text class="template-name">
-              模板名称：{{resume.template.name}}
+              模板名称：{{resume.template?.name || '未知模板'}}
             </text>
 
             <text class="section-count">
@@ -194,10 +171,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import { ResumesQuery, ResumesResult } from "@/types/resumes";
 import ResumesAPI from "@/api/resumes";
+import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
 const searchText = ref("");
@@ -214,14 +192,6 @@ const total = ref(0);
 const resumeList = ref<ResumesResult[]>([]);
 const searchTimer = ref<number | null>(null);
 
-// 筛选标签
-const filterTabs = ref([
-  { label: "全部", value: "all" },
-  { label: "草稿", value: "draft", badge: null as string | null },
-  { label: "已发布", value: "published", badge: null as string | null },
-  { label: "已归档", value: "archived", badge: null as string | null },
-]);
-
 // 排序选项
 const sortOptions = [
   { label: "最近更新", value: "updatedAt" },
@@ -231,6 +201,19 @@ const sortOptions = [
   { label: "查看最多", value: "viewCount" },
   { label: "下载最多", value: "downloadCount" },
 ];
+
+// 使用页面刷新 composable
+const { refreshKey, refreshing: composableRefreshing } = usePageRefresh({
+  immediate: true,
+  onRefresh: async () => {
+    await fetchResumes(1, true);
+    uni.showToast({
+      title: '简历列表已更新',
+      icon: 'success',
+      duration: 1500
+    });
+  }
+});
 
 // 当前排序方式
 const currentSort = computed(() => {
@@ -410,9 +393,6 @@ const fetchResumes = async (page = 1, isRefresh = false) => {
       total.value = resumes.length;
     }
 
-    // 更新筛选标签的徽章数量
-    // updateFilterBadges();
-
   } catch (error) {
     console.error("获取简历列表失败:", error);
     uni.showToast({
@@ -473,32 +453,6 @@ const formatDate = (dateString: string) => {
   }
 };
 
-const getStatusClass = (status: string) => {
-  switch (status) {
-    case "draft":
-      return "status-draft";
-    case "published":
-      return "status-published";
-    case "archived":
-      return "status-archived";
-    default:
-      return "";
-  }
-};
-
-const getStatusText = (status: string) => {
-  switch (status) {
-    case "draft":
-      return "草稿";
-    case "published":
-      return "已发布";
-    case "archived":
-      return "已归档";
-    default:
-      return status;
-  }
-};
-
 const getTopComponents = (components: any[], count: number) => {
   return components?.slice(0, count) || [];
 };
@@ -521,31 +475,30 @@ const createNewResume = () => {
   });
 };
 
-// 更新筛选标签的徽章数量
-const updateFilterBadges = async () => {
-  try {
-    // 获取各状态的简历数量
-    const statusCounts = await ResumesAPI.getStatusCounts();
-
-    // 更新徽章
-    filterTabs.value.forEach(tab => {
-      if (tab.value === "draft") {
-        tab.badge = statusCounts.draft?.toString() || null;
-      } else if (tab.value === "published") {
-        tab.badge = statusCounts.published?.toString() || null;
-      } else if (tab.value === "archived") {
-        tab.badge = statusCounts.archived?.toString() || null;
-      }
-    });
-  } catch (error) {
-    console.error("获取状态数量失败:", error);
-    // 可以设置默认值或留空
-  }
+// 监听页面返回事件
+const onResumeListRefresh = () => {
+  fetchResumes(1, true);
 };
 
+// 手动监听事件（作为备选方案）
+onMounted(() => {
+  // 监听从详情页返回的刷新事件
+  uni.$on('refresh:resume:list', onResumeListRefresh);
+});
+
+onUnmounted(() => {
+  // 清理事件监听
+  uni.$off('refresh:resume:list', onResumeListRefresh);
+});
+
 // 生命周期
-onLoad(() => {
-  fetchResumes();
+onLoad((options: any) => {
+  // 兼容旧的刷新方式
+  if (options?.refresh === 'true') {
+    fetchResumes(1, true);
+  } else {
+    fetchResumes();
+  }
 });
 
 onReachBottom(() => {
@@ -554,6 +507,7 @@ onReachBottom(() => {
 </script>
 
 <style lang="scss">
+/* 样式部分保持不变 */
 
 // 通用类
 .flex-between {

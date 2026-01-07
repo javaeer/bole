@@ -121,17 +121,17 @@ const bannerList = ref([
   {
     id: 1,
     image: "https://bi.yunlou.net.cn/uploads/2026/01/06/7c0bab8499a24221bfacbfe02d026036.jpg",
-    link: "/pages/template/list",
+    link: "/pages/resumes/list",
   },
   {
     id: 2,
     image: "https://bi.yunlou.net.cn/uploads/2026/01/06/62e043ffe85e4e24b0f37b996e03f5cf.jpg",
-    link: "/pages/template/detail",
+    link: "/pages/template/detail?id=1",
   },
   {
     id: 3,
     image: "https://bi.yunlou.net.cn/uploads/2026/01/06/40335b6a12524e27908edda3cc1bb005.jpg",
-    link: "/pages/template/detail",
+    link: "/pages/auth/auth",
   },
 ]);
 

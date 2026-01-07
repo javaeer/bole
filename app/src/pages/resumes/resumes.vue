@@ -482,13 +482,13 @@
 
     <!-- 编辑模式操作按钮 -->
     <view class="action-buttons-edit">
-      <button class="save-btn" @click="handleSave" :disabled="loading">保存简历</button>
-      <button class="back-btn" @click="switchToViewMode" :disabled="loading">返回查看</button>
+      <button class="save-btn" @click="handleSave" :disabled="savingRef">保存简历</button>
+      <button class="back-btn" @click="switchToViewMode" :disabled="savingRef">返回查看</button>
     </view>
   </view>
 
   <!-- 加载状态 -->
-  <view v-if="loading" class="loading-overlay">
+  <view v-if="loadingRef" class="loading-overlay">
     <view class="loading-content">
       <view class="loading-spinner"></view>
       <text class="loading-text">加载中...</text>
@@ -501,10 +501,12 @@ import { computed, onMounted, ref, watch } from "vue";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import DynamicRenderer from "@/components/resumes/DynamicRenderer.vue";
 import ResumesAPI from "@/api/resumes";
+import { useSaveAndBack } from "@/composables/useSaveAndBack";
+import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 
 // 当前模式：view（查看模式）、edit（编辑模式）
 const currentMode = ref("view");
-const loading = ref(false);
+const loadingRef = ref(false);
 const resumeId = ref(null);
 const templateId = ref(null);
 const showShareModal = ref(false);
@@ -537,6 +539,10 @@ const editingData = ref({
 });
 
 const dynamicRendererEdit = ref(null);
+
+// 使用 composables
+const { saving: savingRef, saveAndBack } = useSaveAndBack();
+const { deleting: deletingRef, deleteAndBack } = useDeleteAndBack();
 
 // 响应式布局相关变量
 const screenWidth = ref(0);
@@ -721,7 +727,7 @@ const loadResumeData = async () => {
     return;
   }
 
-  loading.value = true;
+  loadingRef.value = true;
 
   try {
     resumeData.value = await ResumesAPI.getById(resumeId.value);
@@ -736,7 +742,7 @@ const loadResumeData = async () => {
       uni.navigateBack();
     }, 1500);
   } finally {
-    loading.value = false;
+    loadingRef.value = false;
   }
 };
 
@@ -749,43 +755,22 @@ const hideShareOptions = () => {
   qrcodeUrl.value = "";
 };
 
-const handleDelete = () => {
-  uni.showModal({
-    title: "确认删除",
-    content: "确定要删除这份简历吗？删除后无法恢复。",
-    confirmText: "删除",
-    confirmColor: "#ef4444",
-    success: async (res) => {
-      if (res.confirm) {
-        loading.value = true;
-        try {
-          await ResumesAPI.delete(resumeId.value);
-          uni.showToast({
-            title: "删除成功",
-            icon: "success",
-          });
+const handleDelete = async () => {
+  if (!resumeId.value) return;
 
-          setTimeout(() => {
-            uni.navigateTo({
-              url: "/pages/resumes/list?refresh=true",
-            });
-          }, 1500);
-        } catch (error) {
-          console.error("删除失败:", error);
-          uni.showToast({
-            title: "删除失败",
-            icon: "error",
-          });
-        } finally {
-          loading.value = false;
-        }
-      }
-    },
+  await deleteAndBack({
+    deleteFn: () => ResumesAPI.delete(resumeId.value),
+    confirmMessage: "确定要删除这份简历吗？删除后无法恢复。",
+    successMessage: "删除成功",
+    successCallback: () => {
+      // 触发列表页刷新事件
+      uni.$emit('refresh:resume:list', true);
+    }
   });
 };
 
 const handleDownload = async () => {
-  loading.value = true;
+  loadingRef.value = true;
   try {
     // 增加下载数
     await ResumesAPI.incrementDownloadCount(resumeId.value);
@@ -826,7 +811,7 @@ const handleDownload = async () => {
       icon: "error",
     });
   } finally {
-    loading.value = false;
+    loadingRef.value = false;
   }
 };
 
@@ -903,7 +888,7 @@ const initializeEditData = (data) => {
 };
 
 const loadEditData = async () => {
-  loading.value = true;
+  loadingRef.value = true;
 
   try {
     let response;
@@ -930,7 +915,7 @@ const loadEditData = async () => {
       uni.navigateBack();
     }, 2000);
   } finally {
-    loading.value = false;
+    loadingRef.value = false;
   }
 };
 
@@ -1014,34 +999,33 @@ const handleSave = async () => {
     return;
   }
 
-  loading.value = true;
+  const formData = getFormData();
+  console.log("保存简历数据:", formData);
+
   try {
-    const formData = getFormData();
-    console.log("保存简历数据:", formData);
+    const saveFunction = resumeId.value
+      ? () => ResumesAPI.edit(formData)
+      : () => ResumesAPI.add(formData);
 
-    if (resumeId.value) {
-      await ResumesAPI.edit(formData);
-    } else {
-      await ResumesAPI.add(formData);
-    }
-
-    uni.showToast({
-      title: "保存成功",
-      icon: "success",
+    const result = await saveAndBack({
+      saveFn: saveFunction,
+      successMessage: "保存成功",
+      successCallback: (result) => {
+        if (result.id) {
+          resumeId.value = result.id;
+          // 切换到查看模式并加载数据
+          currentMode.value = "view";
+          loadResumeData();
+          // 触发列表页刷新事件
+          uni.$emit('refresh:resume:list', true);
+        }
+      }
     });
 
-    uni.navigateTo({
-      url: "/pages/resumes/list?refresh=true",
-    });
-
+    return result;
   } catch (error) {
     console.error("保存失败:", error);
-    uni.showToast({
-      title: "保存失败",
-      icon: "error",
-    });
-  } finally {
-    loading.value = false;
+    throw error;
   }
 };
 

@@ -182,7 +182,7 @@
         "pagePath": "pages/follow/follow",
         "iconPath": "static/tabbar/follow.png",
         "selectedIconPath": "static/tabbar/follow-active.png",
-        "text": "关注"
+        "text": "收藏"
       },
       {
         "pagePath": "pages/profile/profile",
