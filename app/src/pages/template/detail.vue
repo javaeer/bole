@@ -612,7 +612,7 @@ onLoad((options) => {
         background: $primary-color;
         color: $uni-bg-color;
         border-color: $primary-color;
-      }
+}
 
       .device-icon {
         font-size: $uni-font-size-base;
@@ -921,6 +921,34 @@ onLoad((options) => {
     .action-btn {
       width: 100%;
     }
+  }
+}
+
+.template-actions {
+  @extend .flex-center;
+}
+
+.preview-actions {
+  @extend .flex-center;
+}
+
+.status-tag {
+  @extend .status-tag;
+}
+
+.preview-actions {
+  @extend .flex-center;
+
+  &.btn-secondary {
+    @extend .btn-secondary;
+  }
+
+  &.btn-danger {
+    @extend .btn-danger;
+  }
+
+  &.btn-primary {
+    @extend .btn-primary;
   }
 }
 </style>

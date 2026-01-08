@@ -248,7 +248,7 @@ const handleCompanyExperiences = () => {
 
 const handleProjectExperiences = () => {
   uni.navigateTo({
-    url: "/pages/project/list",
+url: "/pages/project/list",
   });
 };
 
@@ -363,24 +363,12 @@ defineExpose({
     border-radius: 50%;
     transform: translate(30%, -30%);
     z-index: 0;
-
-    &::before {
-      content: '';
-      position: absolute;
-      bottom: 60rpx;
-      left: -80rpx;
-      width: 150rpx;
-      height: 150rpx;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 50%;
-    }
   }
 }
 
 .user-avatar-section {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 0;
   position: relative;
   z-index: 1;
 }
@@ -397,36 +385,10 @@ defineExpose({
     border: 4rpx solid rgba(255, 255, 255, 0.8);
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+    transition: transform 0.2s ease;
 
     &:active {
       transform: scale(0.95);
-      box-shadow: 0 5rpx 15rpx rgba(0, 0, 0, 0.3);
-    }
-  }
-
-  .avatar-edit-badge {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 48rpx;
-    height: 48rpx;
-    background: $primary-color;
-    border-radius: 50%;
-    border: 3rpx solid white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:active {
-      transform: scale(0.9);
-      background: color.adjust($primary-color, $lightness: -10%)
-    }
-
-    .icon-camera {
-      font-size: 24rpx;
     }
   }
 }
@@ -447,7 +409,6 @@ defineExpose({
   font-size: 44rpx;
   font-weight: 700;
   margin-bottom: 8rpx;
-  letter-spacing: -0.5rpx;
   text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
 }
 
@@ -465,22 +426,18 @@ defineExpose({
     align-items: center;
     gap: 12rpx;
     background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     padding: 16rpx 28rpx;
     border-radius: 50rpx;
     border: 1rpx solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
 
     &:active {
       background: rgba(255, 255, 255, 0.25);
       transform: scale(0.96);
-      box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
     }
 
     .btn-icon {
       font-size: 28rpx;
-      animation: pulse 2s infinite;
     }
 
     .btn-text {
@@ -488,18 +445,6 @@ defineExpose({
       font-weight: 500;
       color: white;
     }
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
   }
 }
 
@@ -545,14 +490,12 @@ defineExpose({
     padding: 30rpx 0;
     background: $background-color;
     border-radius: 16rpx;
-    transition: all 0.3s ease;
-    position: relative;
+    transition: all 0.2s ease;
     border: 1rpx solid rgba(0, 0, 0, 0.05);
 
     &:active {
       background: color.adjust($background-color, $lightness: -5%);
-      transform: translateY(-4rpx);
-      box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.1);
+      transform: translateY(-2rpx);
     }
   }
 
@@ -568,22 +511,6 @@ defineExpose({
     font-weight: 500;
     text-align: center;
     line-height: 1.3;
-  }
-
-  .stat-badge {
-    position: absolute;
-    top: -8rpx;
-    right: -8rpx;
-    background: $primary-color;
-    color: white;
-    width: 36rpx;
-    height: 36rpx;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20rpx;
-    font-weight: 600;
   }
 }
 
@@ -621,7 +548,7 @@ defineExpose({
   padding: 30rpx;
   background: $background-color-white;
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 
   &:active {
     background: rgba(0, 0, 0, 0.02);

@@ -522,13 +522,6 @@ onReachBottom(() => {
   white-space: nowrap;
 }
 
-.card-container {
-  background: $background-color-white;
-  border-radius: $border-radius;
-  padding: $padding-base;
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.06);
-}
-
 .btn {
   border: none;
   border-radius: $border-radius-small;
@@ -695,7 +688,7 @@ onReachBottom(() => {
 
           &.active {
             color: $primary-color;
-            font-weight: $font-weight-medium;
+font-weight: $font-weight-medium;
 
             &::after {
               content: '';
@@ -958,6 +951,8 @@ onReachBottom(() => {
         line-height: 50rpx;
         padding: 0 16rpx;
         font-size: $font-size-small;
+        @extend .btn;
+        @extend .btn-small;
       }
     }
   }

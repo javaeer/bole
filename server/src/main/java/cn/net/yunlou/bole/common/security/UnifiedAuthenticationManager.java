@@ -150,8 +150,7 @@ public class UnifiedAuthenticationManager {
                             .build();
 
             if (!userService.save(user)) {
-                throw new BusinessException(
-                        BusinessStatus.INTERNAL_SERVER_CREATE_ERROR, "微信用户注册失败");
+                throw new BusinessException(BusinessStatus.CREATE_ERROR, "微信用户注册失败");
             }
             unifiedUserDetails = unifiedUserDetailsService.loadUserById(user.getId());
         }

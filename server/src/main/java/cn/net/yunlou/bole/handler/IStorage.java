@@ -21,10 +21,29 @@ public interface IStorage {
     /**
      * 存储文件
      *
-     * @param file 上传的文件
+     * @param multipartFile 上传的文件
      * @return 存储后的文件信息
      */
-    File store(MultipartFile file);
+    File store(MultipartFile multipartFile);
+
+    /**
+     * 存储文件 分片上传
+     *
+     * @param multipartFile 当前块文件
+     * @param fileName 完整文件 文件名
+     * @param fileCrc32 完整文件crc32值
+     * @param fileExt 文件后缀名
+     * @param chunks 分块总数
+     * @param chunk 当前块
+     * @return 存储后的文件信息
+     */
+    File chunkStore(
+            MultipartFile multipartFile,
+            String fileName,
+            Long fileCrc32,
+            String fileExt,
+            Integer chunk,
+            Integer chunks);
 
     /**
      * 删除文件

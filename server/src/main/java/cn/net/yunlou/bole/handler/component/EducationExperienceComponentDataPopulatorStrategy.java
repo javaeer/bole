@@ -1,10 +1,11 @@
-package cn.net.yunlou.bole.handler;
+package cn.net.yunlou.bole.handler.component;
 
 import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
-import cn.net.yunlou.bole.model.entity.WorkExperience;
-import cn.net.yunlou.bole.model.view.WorkExperienceView;
-import cn.net.yunlou.bole.service.WorkExperienceService;
+import cn.net.yunlou.bole.handler.IComponentDataPopulatorStrategy;
+import cn.net.yunlou.bole.model.entity.EducationExperience;
+import cn.net.yunlou.bole.model.view.EducationExperienceView;
+import cn.net.yunlou.bole.service.EducationExperienceService;
 import com.google.common.collect.Lists;
 import java.util.HashMap;
 import java.util.List;
@@ -13,27 +14,33 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * FileName: WorkExperienceComponentDataPopulatorStrategy Description: Created By laughtiger Created
- * At 2025/12/14 02:50 Modified By Modified At
+ * FileName: EducationExperienceComponentDataPopulatorStrategy Description: Created By laughtiger
+ * Created At 2025/12/14 02:52 Modified By Modified At
  */
 @Component
 @RequiredArgsConstructor
-public class WorkExperienceComponentDataPopulatorStrategy
+public class EducationExperienceComponentDataPopulatorStrategy
         implements IComponentDataPopulatorStrategy {
 
-    private final WorkExperienceService workExperienceService;
+    private final EducationExperienceService educationExperienceService;
 
     @Override
     public Map<String, Object> populate(Long userId, Map<String, Object> templateProps) {
-        List<WorkExperienceView> workExperienceViews =
-                workExperienceService.listView(WorkExperience.builder().userId(userId).build());
+
+        EducationExperience entity = new EducationExperience();
+        entity.setUserId(userId);
+
+        List<EducationExperienceView> educationExperienceViews =
+                educationExperienceService.listView(entity);
 
         Map<String, Object> props = new HashMap<>(templateProps);
 
-        if (!workExperienceViews.isEmpty()) {
+        if (!educationExperienceViews.isEmpty()) {
 
             List<Map<String, Object>> realProps = Lists.newArrayList();
-            for (WorkExperienceView view : workExperienceViews) {
+
+            for (EducationExperienceView view : educationExperienceViews) {
+
                 Map<String, Object> map = BeanUtils.toMap(view);
                 realProps.add(map);
             }
@@ -49,6 +56,6 @@ public class WorkExperienceComponentDataPopulatorStrategy
 
     @Override
     public boolean supports(TemplateComponentKey componentType) {
-        return TemplateComponentKey.WORK_EXPERIENCE == componentType;
+        return TemplateComponentKey.EDUCATION_EXPERIENCE == componentType;
     }
 }

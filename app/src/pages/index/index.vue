@@ -239,7 +239,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-
+/* 顶部区域样式 */
 .brand-header {
   padding: $padding-small $padding-base;
   background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
@@ -266,28 +266,14 @@ onMounted(() => {
   color: $background-color-white;
 }
 
-.search-box {
-  flex: 1;
-  max-width: 400rpx;
-  background: rgba($background-color-white, 0.9);
-  border-radius: $border-radius-small;
-  padding: $padding-mini $padding-small;
-  display: flex;
-  align-items: center;
-  margin-left: $margin-base;
+.search-btn {
+  .icon-search {
+    font-size: $font-size-base;
+    color: $background-color-white;
+  }
 }
 
-.icon-search {
-  margin-right: $margin-mini;
-  font-size: $font-size-base;
-  color: $text-secondary;
-}
-
-.search-text {
-  color: $text-placeholder;
-  font-size: $font-size-base;
-}
-
+/* 加载状态 */
 .loading {
   text-align: center;
   padding: $padding-base;
@@ -295,6 +281,7 @@ onMounted(() => {
   font-size: $font-size-base;
 }
 
+/* 轮播图 */
 .banner-swiper {
   height: 300rpx;
   margin: $margin-small $margin-base;
@@ -308,48 +295,7 @@ onMounted(() => {
   height: 100%;
 }
 
-.function-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: $padding-base $margin-base;
-  background: $background-color-white;
-  margin: $margin-small $margin-base;
-  border-radius: $border-radius * 1.5;
-  box-shadow: $box-shadow;
-  gap: $margin-base;
-}
-
-.grid-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.grid-icon {
-  width: 80rpx;
-  height: 80rpx;
-  background: $background-color;
-  border-radius: $border-radius-round;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: $margin-mini;
-}
-
-.grid-icon .icon {
-  font-size: $font-size-medium;
-}
-
-.grid-text {
-  font-size: $font-size-small;
-  color: $text-regular;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-
+/* 通用区块样式 */
 .section {
   background: $background-color-white;
   margin: $margin-base;
@@ -371,11 +317,7 @@ onMounted(() => {
   color: $text-primary;
 }
 
-.section-more {
-  font-size: $font-size-small;
-  color: $primary-color;
-}
-
+/* 模板列表 */
 .template-scroll {
   white-space: nowrap;
 }
@@ -420,29 +362,12 @@ onMounted(() => {
   margin-bottom: $margin-mini;
 }
 
-.template-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.template-price {
-  color: $danger-color;
-  font-weight: $font-weight-bold;
-  font-size: $font-size-base;
-}
-
-.template-free {
-  color: $primary-color;
-  font-weight: $font-weight-bold;
-  font-size: $font-size-base;
-}
-
 .template-users {
   font-size: $font-size-extra-small;
   color: $text-placeholder;
 }
 
+/* 使用指南 */
 .guide-list {
   display: flex;
   flex-direction: column;
@@ -453,10 +378,10 @@ onMounted(() => {
   align-items: flex-start;
   padding: $padding-small 0;
   border-bottom: 1rpx solid $border-color-extra-light;
-}
 
-.guide-item:last-child {
-  border-bottom: none;
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .guide-number {
@@ -491,7 +416,7 @@ onMounted(() => {
   color: $text-secondary;
 }
 
-
+/* 悬浮按钮 */
 .floating-action {
   position: fixed;
   right: $margin-base;

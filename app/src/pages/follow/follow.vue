@@ -172,7 +172,7 @@ const handleUnfavoriteTemplate = async (id: number) => {
         }
       }
     },
-  });
+});
 };
 
 // 使用模板
@@ -270,11 +270,6 @@ onUnmounted(() => {
   min-height: 400rpx;
   height: 100vh;
   box-sizing: border-box;
-
-  /* 响应式间距 */
-  @media (max-width: $breakpoint-sm) {
-    padding: $padding-small;
-  }
 }
 
 .scroll-view {
@@ -312,15 +307,13 @@ onUnmounted(() => {
   }
 }
 
-/* 模板网格 - 响应式设计 */
+/* 模板网格 - 简化响应式 */
 .template-grid {
   display: grid;
   gap: $margin-base;
-
-  /* 默认：小屏幕 - 1列 */
   grid-template-columns: 1fr;
 
-  /* 中等屏幕 - 2列 */
+  /* 中等屏幕以上 - 2列 */
   @media (min-width: $screen-sm) {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -329,16 +322,6 @@ onUnmounted(() => {
   @media (min-width: $screen-lg) {
     grid-template-columns: repeat(3, 1fr);
   }
-
-  /* 超大屏幕 - 4列 */
-  @media (min-width: $screen-xl) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  /* 响应式间距 */
-  @media (max-width: $breakpoint-sm) {
-    gap: $margin-small;
-  }
 }
 
 .template-item {
@@ -346,18 +329,10 @@ onUnmounted(() => {
   flex-direction: column;
   cursor: pointer;
   overflow: hidden;
-  transition: transform $transition-fast $ease-in-out,
-  box-shadow $transition-fast $ease-in-out;
-  min-height: 0; /* 确保flex布局正确 */
+  transition: transform $transition-fast $ease-in-out;
 
   &:active {
     transform: translateY(2rpx);
-    box-shadow: $box-shadow-light !important;
-  }
-
-  /* 响应式高度调整 */
-  @media (max-width: $breakpoint-sm) {
-    min-height: 320rpx;
   }
 }
 
@@ -365,7 +340,6 @@ onUnmounted(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* 重要：防止内容溢出 */
 }
 
 .template-cover {
@@ -374,15 +348,6 @@ onUnmounted(() => {
   background: linear-gradient(135deg, $primary-color-light 0%, transparent 100%);
   object-fit: cover;
   border-radius: $border-radius $border-radius 0 0;
-
-  /* 响应式高度调整 */
-  @media (max-width: $breakpoint-sm) {
-    height: 200rpx;
-  }
-
-  @media (min-width: $screen-lg) {
-    height: 280rpx;
-  }
 }
 
 .template-info {
@@ -390,12 +355,6 @@ onUnmounted(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 防止内容溢出 */
-
-  /* 响应式内边距 */
-  @media (max-width: $breakpoint-sm) {
-    padding: 12rpx 16rpx;
-  }
 }
 
 .template-name {
@@ -404,23 +363,13 @@ onUnmounted(() => {
   font-weight: $font-weight-medium;
   color: $text-primary;
   margin-bottom: $margin-mini;
-
-  /* 响应式字体大小 */
-  @media (max-width: $breakpoint-sm) {
-    font-size: $font-size-small;
-    margin-bottom: 8rpx;
-  }
-
-  @media (min-width: $screen-lg) {
-    font-size: $font-size-medium;
-  }
 }
 
 .template-meta {
   display: flex;
   flex-direction: column;
   gap: 8rpx;
-  margin-top: auto; /* 将元信息推到底部 */
+  margin-top: auto;
 }
 
 .template-type {
@@ -429,11 +378,6 @@ onUnmounted(() => {
   background: $background-color;
   border: 1px solid $border-color-light;
   padding: 4rpx 12rpx;
-
-  @media (max-width: $breakpoint-sm) {
-    font-size: $font-size-extra-small;
-    padding: 2rpx 8rpx;
-  }
 }
 
 .template-stats {
@@ -445,10 +389,6 @@ onUnmounted(() => {
   .stat-count {
     font-size: inherit;
   }
-
-  @media (max-width: $breakpoint-sm) {
-    font-size: 18rpx;
-  }
 }
 
 .stat-icon {
@@ -459,21 +399,9 @@ onUnmounted(() => {
   padding: $padding-mini $padding-small $padding-small;
   border-top: 1px solid $border-color-lighter;
   gap: $margin-mini;
-
-  /* 响应式布局调整 */
-  @media (max-width: $breakpoint-sm) {
-    flex-direction: row;
-    padding: 12rpx;
-    gap: 8rpx;
-  }
-
-  /* 在大屏幕上提供更多空间 */
-  @media (min-width: $screen-lg) {
-    padding: 16rpx 20rpx;
-  }
 }
 
-/* 响应式显示/隐藏工具类 */
+/* 响应式显示/隐藏 */
 .hidden-sm {
   @media (max-width: $breakpoint-sm) {
     display: none !important;
@@ -488,7 +416,7 @@ onUnmounted(() => {
   }
 }
 
-/* 按钮样式 - 完全响应式 */
+/* 简化按钮样式 */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -503,38 +431,13 @@ onUnmounted(() => {
   flex: 1;
   min-height: 60rpx;
   text-align: center;
-  line-height: 1.2;
-
-  /* 响应式调整 */
-  @media (max-width: $breakpoint-sm) {
-    padding: 12rpx 16rpx;
-    min-height: 52rpx;
-    font-size: $font-size-extra-small;
-  }
-
-  @media (min-width: $screen-lg) {
-    padding: 18rpx 28rpx;
-    min-height: 64rpx;
-    font-size: $font-size-base;
-  }
 
   &-primary {
     background: $button-primary-bg;
     color: $background-color-white;
-    box-shadow: $box-shadow-light;
-
-    &:hover {
-      background: color.adjust($primary-color, $lightness: -10%);
-    }
 
     &:active {
       transform: scale(0.98);
-      box-shadow: $button-active-shadow;
-    }
-
-    /* 在小屏幕上更紧凑 */
-    @media (max-width: $breakpoint-sm) {
-      font-weight: $font-weight-bold;
     }
   }
 
@@ -554,19 +457,6 @@ onUnmounted(() => {
     min-height: 60rpx;
     flex: 1;
 
-    /* 响应式调整 */
-    @media (max-width: $breakpoint-sm) {
-      padding: 10rpx 12rpx;
-      min-height: 52rpx;
-      font-size: $font-size-extra-small;
-      gap: 4rpx;
-    }
-
-    @media (min-width: $screen-lg) {
-      padding: 14rpx 24rpx;
-      min-height: 64rpx;
-    }
-
     &-danger {
       color: $danger-color;
       border-color: rgba($danger-color, 0.3);
@@ -574,12 +464,6 @@ onUnmounted(() => {
 
       &:active {
         background: rgba($danger-color, 0.15);
-        transform: scale(0.98);
-      }
-
-      /* 在小屏幕上调整颜色对比度 */
-      @media (max-width: $breakpoint-sm) {
-        color: color.adjust($danger-color, $lightness: -10%);
       }
     }
   }
@@ -602,20 +486,12 @@ onUnmounted(() => {
   justify-content: center;
   align-items: center;
   padding: 40rpx 0;
-
-  @media (max-width: $breakpoint-sm) {
-    padding: 30rpx 0;
-  }
 }
 
 .load-more-text,
 .no-more-text {
   color: $text-secondary;
   font-size: $font-size-small;
-
-  @media (max-width: $breakpoint-sm) {
-    font-size: $font-size-extra-small;
-  }
 }
 
 .loading-more {
@@ -652,26 +528,6 @@ onUnmounted(() => {
     right: -12rpx;
     animation: pulse 1.5s infinite ease-in-out 0.3s;
   }
-
-  /* 响应式调整 */
-  @media (max-width: $breakpoint-sm) {
-    width: 6rpx;
-    height: 6rpx;
-
-    &:before,
-    &:after {
-      width: 6rpx;
-      height: 6rpx;
-    }
-
-    &:before {
-      left: -10rpx;
-    }
-
-    &:after {
-      right: -10rpx;
-    }
-  }
 }
 
 @keyframes pulse {
@@ -693,11 +549,6 @@ onUnmounted(() => {
   justify-content: center;
   padding: 120rpx $padding-base;
   min-height: 60vh;
-
-  @media (max-width: $breakpoint-sm) {
-    padding: 80rpx $padding-small;
-    min-height: 50vh;
-  }
 }
 
 .empty-icon {
@@ -705,11 +556,6 @@ onUnmounted(() => {
   color: $empty-text-color;
   margin-bottom: $margin-base;
   opacity: 0.6;
-
-  @media (max-width: $breakpoint-sm) {
-    font-size: 80rpx;
-    margin-bottom: $margin-small;
-  }
 }
 
 .empty-text {
@@ -717,16 +563,6 @@ onUnmounted(() => {
   color: $empty-text-color;
   margin-bottom: $margin-base * 2;
   text-align: center;
-
-  @media (max-width: $breakpoint-sm) {
-    font-size: $font-size-small;
-    margin-bottom: $margin-base;
-    padding: 0 20rpx;
-  }
-
-  @media (min-width: $screen-lg) {
-    font-size: $font-size-medium;
-  }
 }
 
 /* 平台特定样式 */
@@ -734,32 +570,6 @@ onUnmounted(() => {
 @media (hover: hover) {
   .template-item:hover {
     transform: translateY(-4rpx);
-    box-shadow: $box-shadow-dark !important;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-1px);
-  }
-}
-// #endif
-
-/* 设备适配 */
-// #ifdef MP-WEIXIN
-.template-grid {
-  /* 微信小程序上可能需要更保守的布局 */
-  @media (max-width: $screen-md) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-// #endif
-
-// #ifdef APP
-.template-item {
-  /* App上可以有更大的触摸区域 */
-  min-height: 340rpx;
-
-  @media (max-width: $breakpoint-sm) {
-    min-height: 300rpx;
   }
 }
 // #endif

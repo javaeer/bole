@@ -256,7 +256,7 @@ const loadListData = async (reset = false) => {
 
   isLoading.value = true;
 
-  try {
+try {
     if (reset) {
       currentPage.value = 1;
       hasMore.value = true;
@@ -349,11 +349,6 @@ onReachBottom(() => {
 </script>
 
 <style lang="scss">
-.page-container {
-  min-height: 100vh;
-  background-color: $background-color;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 100rpx);
-}
 
 .search-container {
   position: sticky;
@@ -445,10 +440,7 @@ onReachBottom(() => {
 
       .item-status {
         .status-tag {
-          padding: 4rpx 16rpx;
-          border-radius: $border-radius-small;
-          font-size: $font-size-extra-small;
-          font-weight: $font-weight-medium;
+          @extend .status-badge;
         }
       }
     }

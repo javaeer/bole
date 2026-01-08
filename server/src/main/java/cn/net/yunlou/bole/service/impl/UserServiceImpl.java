@@ -93,7 +93,7 @@ public class UserServiceImpl
         Long currentUserId = SecurityContextUtils.getCurrentUserId();
         userEdit.setId(currentUserId);
         if (!updateByEdit(userEdit)) {
-            throw new BusinessException(BusinessStatus.INTERNAL_SERVER_UPDATE_ERROR, "修改失败");
+            throw new BusinessException(BusinessStatus.UPDATE_ERROR, "修改失败");
         }
         return getViewById(currentUserId);
     }

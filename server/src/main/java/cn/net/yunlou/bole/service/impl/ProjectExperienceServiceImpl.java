@@ -11,7 +11,6 @@ import cn.net.yunlou.bole.model.view.ProjectExperienceView;
 import cn.net.yunlou.bole.service.ProjectExperienceService;
 import cn.net.yunlou.bole.struct.ProjectExperienceStructMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +29,6 @@ public class ProjectExperienceServiceImpl
                 ProjectExperienceQuery,
                 ProjectExperienceStructMapper>
         implements ProjectExperienceService {
-    @Override
-    public List<ProjectExperience> listByUserId(Long userId) {
-
-        ProjectExperience projectExperience = ProjectExperience.builder().userId(userId).build();
-
-        return list(projectExperience);
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)

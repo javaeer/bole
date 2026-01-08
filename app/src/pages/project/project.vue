@@ -432,7 +432,7 @@ const loadDetailData = async (id?: number) => {
 const validateField = (field: keyof FormErrors) => {
   const value = formData[field as keyof typeof formData];
 
-  switch (field) {
+switch (field) {
     case "name":
       if (!value?.toString().trim()) {
         errors.name = "请输入项目名称";
@@ -529,7 +529,7 @@ const handleSave = async () => {
       }
     });
   } catch (error) {
-    // 错误已经在 saveAndBack 中处理了
+// 错误已经在 saveAndBack 中处理了
     console.error("保存失败:", error);
   }
 };
@@ -593,11 +593,6 @@ onLoad((options: any) => {
 </script>
 
 <style lang="scss">
-.page-container {
-  min-height: 100vh;
-  background-color: $background-color;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 120rpx);
-}
 
 .detail-header {
   position: sticky;
@@ -610,18 +605,6 @@ onLoad((options: any) => {
   background: $background-color-white;
   border-radius: 0 0 $border-radius $border-radius;
   box-shadow: $box-shadow;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 20rpx;
-
-    .header-title {
-      font-size: $font-size-medium;
-      font-weight: $font-weight-medium;
-      color: $text-primary;
-    }
-  }
 
   .header-actions {
     display: flex;
@@ -683,6 +666,10 @@ onLoad((options: any) => {
 }
 
 .info-card {
+  background: $background-color-white;
+  border-radius: $border-radius;
+  padding: $padding-base;
+  box-shadow: $box-shadow;
   margin-bottom: $margin-base;
 
   .card-header {

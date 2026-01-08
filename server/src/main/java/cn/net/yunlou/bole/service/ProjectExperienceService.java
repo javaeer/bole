@@ -6,7 +6,6 @@ import cn.net.yunlou.bole.model.edit.ProjectExperienceEdit;
 import cn.net.yunlou.bole.model.entity.ProjectExperience;
 import cn.net.yunlou.bole.model.query.ProjectExperienceQuery;
 import cn.net.yunlou.bole.model.view.ProjectExperienceView;
-import java.util.List;
 
 /**
  * FileName: ProjectExperienceService Description: Created By MR. WANG Created At 2025/11/24 23:48
@@ -18,6 +17,4 @@ public interface ProjectExperienceService
                 ProjectExperienceCreate,
                 ProjectExperienceView,
                 ProjectExperienceEdit,
-                ProjectExperienceQuery> {
-    List<ProjectExperience> listByUserId(Long userId);
-}
+                ProjectExperienceQuery> {}

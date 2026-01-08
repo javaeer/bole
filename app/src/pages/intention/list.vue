@@ -266,7 +266,7 @@ const buildQueryParams = () => {
   // 添加工作类型筛选
   if (jobTypeIndex.value > 0) {
     const selectedType = jobTypeOptions[jobTypeIndex.value];
-    query.jobType = selectedType;
+query.jobType = selectedType;
   }
 
   // 添加排序条件
@@ -379,12 +379,6 @@ onReachBottom(() => {
 </script>
 
 <style lang="scss">
-.page-container {
-  min-height: 100vh;
-  background-color: $background-color;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 100rpx);
-}
-
 .filter-container {
   position: sticky;
   top: 0;
@@ -478,11 +472,10 @@ onReachBottom(() => {
 
 .intention-item {
   margin-bottom: $margin-base;
-  transition: all $transition-fast $ease-in-out;
+  transition: transform $transition-fast $ease-in-out;
 
   &:active {
     transform: translateY(-2rpx);
-    box-shadow: $card-hover-shadow;
   }
 
   .intention-header {

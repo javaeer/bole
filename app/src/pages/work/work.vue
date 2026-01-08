@@ -328,7 +328,7 @@ const calculateDurationDisplay = () => {
   if (!formData.startDate || (!formData.endDate && !formData.isCurrent)) return "";
 
   const start = new Date(formData.startDate);
-  const end = formData.isCurrent ? new Date() : new Date(formData.endDate || new Date());
+const end = formData.isCurrent ? new Date() : new Date(formData.endDate || new Date());
 
   const years = end.getFullYear() - start.getFullYear();
   const months = end.getMonth() - start.getMonth();
@@ -482,7 +482,7 @@ const onStartDateChange = (e: any) => {
   validateField("startDate");
   if (formData.endDate) {
     validateField("endDate");
-  }
+}
 };
 
 const onEndDateChange = (e: any) => {
@@ -590,13 +590,8 @@ onLoad((options: any) => {
 </script>
 
 <style lang="scss">
-.page-container {
-  min-height: 100vh;
-  background-color: $background-color;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 120rpx);
-}
-
 .detail-header {
+  @extend .card-container;
   position: sticky;
   top: 0;
   z-index: $z-index-base;
@@ -604,9 +599,7 @@ onLoad((options: any) => {
   justify-content: space-between;
   align-items: center;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
   border-radius: 0 0 $border-radius $border-radius;
-  box-shadow: $box-shadow;
 
   .header-left {
     display: flex;
@@ -625,29 +618,26 @@ onLoad((options: any) => {
     gap: $margin-mini;
 
     .btn {
-      padding: 12rpx 24rpx;
-      font-size: $font-size-small;
+      @extend .btn;
+      @extend .btn-small;
       min-width: 80rpx;
     }
   }
 
   .status-badge {
     .work-status {
+      @extend .status-badge;
       padding: 4rpx 12rpx;
       border-radius: $border-radius-small;
       font-size: $font-size-extra-small;
       font-weight: $font-weight-medium;
 
       &.status-current {
-        background: $success-bg;
-        color: $success-color;
-        border: 1rpx solid $success-border;
+        @extend .status-current;
       }
 
       &.status-past {
-        background: $info-bg;
-        color: $info-color;
-        border: 1rpx solid $info-border;
+        @extend .status-past;
       }
     }
   }
@@ -662,12 +652,11 @@ onLoad((options: any) => {
 }
 
 .info-card {
+  @extend .card-container;
   margin-bottom: $margin-base;
 
   .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @extend .flex-between;
     margin-bottom: $margin-base;
     padding-bottom: $margin-mini;
     border-bottom: 1rpx solid $border-color-extra-light;
@@ -682,15 +671,11 @@ onLoad((options: any) => {
 
 .form-container {
   .form-group {
+    @extend .form-group;
     margin-bottom: $margin-base;
 
     .form-label {
-      display: block;
-      font-size: $font-size-base;
-      font-weight: $font-weight-medium;
-      color: $text-primary;
-      margin-bottom: $margin-mini;
-
+      @extend .form-label;
       &.required::after {
         content: '*';
         color: $danger-color;
@@ -699,26 +684,13 @@ onLoad((options: any) => {
     }
 
     .form-input {
+      @extend .form-input;
       width: 100%;
-      padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
-      border-radius: $border-radius;
-      font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
-      transition: all $transition-fast $ease-in-out;
       min-height: 80rpx;
       box-sizing: border-box;
 
-      &:focus {
-        border-color: $primary-color;
-        box-shadow: $input-focus-shadow;
-        outline: none;
-      }
-
       &.error {
-        border-color: $danger-color;
-        box-shadow: $input-error-shadow;
+        @extend .error;
       }
 
       &[disabled] {
@@ -779,16 +751,12 @@ onLoad((options: any) => {
     }
 
     .form-textarea {
+      @extend .form-textarea;
       width: 100%;
-      padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
-      border-radius: $border-radius;
-      font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
       min-height: 160rpx;
       line-height: 1.5;
       box-sizing: border-box;
+      resize: vertical;
 
       &[disabled] {
         background: $background-color;
@@ -911,9 +879,7 @@ onLoad((options: any) => {
 
 .system-info {
   .info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @extend .flex-between;
     padding: 16rpx 0;
     border-bottom: 1rpx solid $border-color-extra-light;
 

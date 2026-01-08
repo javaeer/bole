@@ -641,7 +641,7 @@ const handleSave = async () => {
     jobType: formData.jobType,
   };
 
-  // 清理空字符串字段
+// 清理空字符串字段
   Object.keys(submitData).forEach(key => {
     const typedKey = key as keyof JobIntentionForm;
     if (submitData[typedKey] === "" || submitData[typedKey] === null || submitData[typedKey] === undefined) {
@@ -720,11 +720,6 @@ onLoad((options: any) => {
 });
 </script>
 <style lang="scss">
-.page-container {
-  min-height: 100vh;
-  background-color: $background-color;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 120rpx);
-}
 
 .detail-header {
   position: sticky;
@@ -737,18 +732,6 @@ onLoad((options: any) => {
   background: $background-color-white;
   border-radius: 0 0 $border-radius $border-radius;
   box-shadow: $box-shadow;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 20rpx;
-
-    .header-title {
-      font-size: $font-size-medium;
-      font-weight: $font-weight-medium;
-      color: $text-primary;
-    }
-  }
 
   .header-actions {
     display: flex;
@@ -852,7 +835,7 @@ onLoad((options: any) => {
       font-size: $font-size-base;
       color: $text-primary;
       background: $background-color-white;
-      transition: all $transition-fast $ease-in-out;
+      transition: border-color $transition-fast $ease-in-out;
       min-height: 80rpx;
       box-sizing: border-box;
       display: flex;
@@ -860,24 +843,19 @@ onLoad((options: any) => {
 
       &:focus {
         border-color: $primary-color;
-        box-shadow: $input-focus-shadow;
         outline: none;
       }
 
       &.error {
         border-color: $danger-color;
-        box-shadow: $input-error-shadow;
       }
 
       &.form-input-text {
         background: $background-color;
-        border: 2rpx solid $border-color-lighter;
-        color: $text-primary;
       }
 
       &.picker-input {
         cursor: pointer;
-        user-select: none;
       }
 
       &[disabled] {
@@ -892,10 +870,6 @@ onLoad((options: any) => {
         :deep(.region-cascader) {
           flex-direction: column;
           gap: 12rpx;
-
-          .picker-wrapper {
-            margin-bottom: 0;
-          }
         }
 
         :deep(.picker-view) {
@@ -904,13 +878,12 @@ onLoad((options: any) => {
           font-size: $font-size-base;
           color: $text-primary;
           background: $background-color-white;
-          transition: all $transition-fast $ease-in-out;
+          transition: border-color $transition-fast $ease-in-out;
           min-height: 80rpx;
           padding: 0 24rpx;
 
           &:focus, &:active {
             border-color: $primary-color;
-            box-shadow: $input-focus-shadow;
           }
 
           &.disabled {
@@ -975,19 +948,17 @@ onLoad((options: any) => {
         font-size: $font-size-base;
         color: $text-primary;
         background: $background-color-white;
-        transition: all $transition-fast $ease-in-out;
+        transition: border-color $transition-fast $ease-in-out;
         box-sizing: border-box;
         min-height: 80rpx;
 
         &:focus {
           border-color: $primary-color;
-          box-shadow: $input-focus-shadow;
           outline: none;
         }
 
         &.error {
           border-color: $danger-color;
-          box-shadow: $input-error-shadow;
         }
       }
 
@@ -1080,7 +1051,7 @@ onLoad((options: any) => {
 
       .progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+        background: $primary-color;
         border-radius: 4rpx;
         transition: width $transition-normal $ease-in-out;
       }
@@ -1129,16 +1100,13 @@ onLoad((options: any) => {
 }
 
 @media (max-width: $screen-md) {
-  .detail-header {
+  .detail-header,
+  .detail-footer {
     padding: 16rpx $padding-small;
   }
 
   .detail-content {
     padding: $padding-mini;
-  }
-
-  .detail-footer {
-    padding: 16rpx $padding-small;
   }
 }
 </style>

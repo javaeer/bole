@@ -70,6 +70,7 @@ $success-color: #67c23a;
 $warning-color: #e6a23c;
 $danger-color: #f56c6c;
 $info-color: #909399;
+$error-color: #e81717;
 
 /* 主色衍生色 */
 $primary-color-light: #f9f3e3;
@@ -204,7 +205,6 @@ $tab-item-height: 80rpx;
 $tab-item-font-size: $font-size-base;
 $tab-active-color: $primary-color;
 $tab-inactive-color: $text-secondary;
-
 /* 标签指示器 */
 $tab-indicator-width: 80rpx;
 $tab-indicator-height: 4rpx;
@@ -344,6 +344,37 @@ $layout-icon-size: 48rpx;
 /* 设备切换按钮 */
 $device-btn-padding: 8rpx 16rpx;
 
+
+/* 项目列表特定变量 */
+$project-item-shadow: $box-shadow;
+$project-item-hover-shadow: $box-shadow-dark;
+$project-item-padding: $padding-base;
+$project-item-margin: $margin-base;
+
+/* 状态颜色扩展 */
+$status-pending-bg: $info-bg;
+$status-pending-color: $info-color;
+$status-pending-border: $info-border;
+
+$status-in-progress-bg: $primary-color-light;
+$status-in-progress-color: $primary-color;
+$status-in-progress-border: $primary-border;
+
+$status-completed-bg: $success-bg;
+$status-completed-color: $success-color;
+$status-completed-border: $success-border;
+
+$status-paused-bg: $warning-bg;
+$status-paused-color: $warning-color;
+$status-paused-border: $warning-border;
+
+/* 进度条颜色 */
+$progress-early-color: $success-color;
+$progress-middle-color: $primary-color;
+$progress-late-color: $warning-color;
+$progress-completed-color: $info-color;
+ 
+
 /* ==================== 实用类扩展 ==================== */
 /* 文本类 */
 .text-truncate {
@@ -433,6 +464,9 @@ $device-btn-padding: 8rpx 16rpx;
 }
 
 /* ==================== 通用样式类 ==================== */
+/* 这些类是从项目中提取的重复和相似样式，统一管理 */
+
+// 布局工具类
 .flex-center {
   display: flex;
   justify-content: center;
@@ -445,19 +479,63 @@ $device-btn-padding: 8rpx 16rpx;
   align-items: center;
 }
 
+.flex-start {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+// 文本工具类
 .text-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 文本颜色类 */
-.text-primary {
-  color: $primary-color;
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.text-danger {
-  color: $danger-color;
+.text-multi-truncate {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+// 文本颜色类
+.text-primary {
+  color: $primary-color;
 }
 
 .text-success {
@@ -468,40 +546,172 @@ $device-btn-padding: 8rpx 16rpx;
   color: $warning-color;
 }
 
-/* 消息类型类 */
-.message-type-system {
-  color: $message-system-color;
+.text-danger {
+  color: $danger-color;
 }
 
-.message-type-notice {
-  color: $message-notice-color;
+.text-info {
+  color: $info-color;
 }
 
-.message-type-interact {
-  color: $message-interact-color;
+.text-secondary {
+  color: $text-secondary;
 }
 
-/* 消息状态类 */
-.status-unread {
-  position: relative;
+.text-muted {
+  color: $text-placeholder;
+}
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba($primary-color-light, 0.1);
-    border-radius: $message-border-radius;
-    pointer-events: none;
+// 状态文本类
+.status-text {
+  &.success {
+    color: $success-color;
+  }
+
+  &.warning {
+    color: $warning-color;
+  }
+
+  &.danger {
+    color: $danger-color;
+  }
+
+  &.info {
+    color: $info-color;
   }
 }
 
-/*  ==================== 基础布局类 ====================  */
-.page-container {
-  min-height: 100vh;
-  background-color: $background-color;
+// 状态背景类
+.status-bg {
+  &.success {
+    background: $success-bg;
+    border-color: $success-border;
+  }
+
+  &.warning {
+    background: $warning-bg;
+    border-color: $warning-border;
+  }
+
+  &.danger {
+    background: $danger-bg;
+    border-color: $danger-border;
+  }
+
+  &.info {
+    background: $info-bg;
+    border-color: $info-border;
+  }
+}
+
+// 状态标签类
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 12rpx;
+  border-radius: $border-radius-small;
+  font-size: $font-size-small;
+  font-weight: $font-weight-medium;
+
+  &.status-success {
+    @extend .status-success;
+  }
+
+  &.status-warning {
+    @extend .status-warning;
+  }
+
+  &.status-danger {
+    @extend .status-danger;
+  }
+
+  &.status-info {
+    @extend .status-info;
+  }
+}
+
+// 状态徽章类
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 12rpx;
+  border-radius: $border-radius-small;
+  font-size: $font-size-extra-small;
+  font-weight: $font-weight-medium;
+
+  &.status-success {
+    @extend .status-success;
+  }
+
+  &.status-warning {
+    @extend .status-warning;
+  }
+
+  &.status-danger {
+    @extend .status-danger;
+  }
+
+  &.status-info {
+    @extend .status-info;
+  }
+
+  &.status-current {
+    @extend .status-success;
+  }
+
+  &.status-past {
+    @extend .status-info;
+  }
+
+  &.status-pending {
+    @extend .status-info;
+  }
+
+  &.status-in-progress {
+    @extend .status-warning;
+  }
+
+  &.status-completed {
+    @extend .status-success;
+  }
+
+  &.status-paused {
+    @extend .status-warning;
+  }
+
+  &.status-draft {
+    @extend .status-info;
+  }
+
+  &.status-published {
+    @extend .status-success;
+  }
+
+  &.status-archived {
+    @extend .status-warning;
+  }
+
+  &.status-approved {
+    @extend .status-success;
+  }
+
+  &.status-rejected {
+    @extend .status-danger;
+  }
+
+  &.status-exported {
+    @extend .status-info;
+  }
+}
+
+// 卡片容器类
+.card-container {
+  width: 96%;
+  background: $background-color-white;
+  border-radius: $border-radius;
+  padding: $padding-base;
+  box-shadow: $box-shadow;
+  margin-bottom: $margin-base;
 }
 
 .section-container {
@@ -511,14 +721,12 @@ $device-btn-padding: 8rpx 16rpx;
   margin-bottom: $margin-base;
 }
 
-.card-container {
-  background: $background-color-white;
-  border-radius: $border-radius;
-  padding: $padding-base;
-  box-shadow: $box-shadow;
+.page-container {
+  min-height: 100vh;
+  background-color: $background-color;
 }
 
-/* 按钮样式 */
+// 按钮扩展类
 .btn {
   display: inline-flex;
   align-items: center;
@@ -530,12 +738,15 @@ $device-btn-padding: 8rpx 16rpx;
   transition: all $transition-fast $ease-in-out;
   border: none;
   cursor: pointer;
+  text-decoration: none;
+  min-height: 80rpx;
 
+  // 按钮变体
   &-primary {
     background: $primary-color;
     color: white;
 
-    &:hover {
+    &:hover, &:active {
       background: color.adjust($primary-color, $lightness: -10%);
     }
   }
@@ -545,7 +756,7 @@ $device-btn-padding: 8rpx 16rpx;
     color: $text-primary;
     border: 1px solid $border-color-light;
 
-    &:hover {
+    &:hover, &:active {
       background: $background-color;
     }
   }
@@ -554,13 +765,56 @@ $device-btn-padding: 8rpx 16rpx;
     background: $danger-color;
     color: white;
 
-    &:hover {
+    &:hover, &:active {
       background: color.adjust($danger-color, $lightness: -10%);
     }
   }
+
+  &-success {
+    background: $success-color;
+    color: white;
+
+    &:hover, &:active {
+      background: color.adjust($success-color, $lightness: -10%);
+    }
+  }
+
+  &-warning {
+    background: $warning-color;
+    color: white;
+
+    &:hover, &:active {
+      background: color.adjust($warning-color, $lightness: -10%);
+    }
+  }
+
+  // 按钮尺寸
+  &-small {
+    padding: 12rpx 24rpx;
+    font-size: $font-size-small;
+    min-height: 60rpx;
+  }
+
+  &-large {
+    padding: 24rpx 40rpx;
+    font-size: $font-size-medium;
+    min-height: 100rpx;
+  }
+
+  // 按钮状态
+  &-block {
+    width: 100%;
+    display: flex;
+  }
+
+  &-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
-/* 表单样式 */
+// 表单扩展类
 .form-group {
   margin-bottom: $margin-base;
 
@@ -579,14 +833,16 @@ $device-btn-padding: 8rpx 16rpx;
   }
 
   .form-input {
-    width: 90%;
-    padding: 20rpx;
+    width: 100%;
+    padding: 20rpx 24rpx;
     border: 2rpx solid $border-color-lighter;
     border-radius: $border-radius;
     font-size: $font-size-base;
     color: $text-primary;
     background: $background-color-white;
     transition: all $transition-fast $ease-in-out;
+    min-height: 80rpx;
+    box-sizing: border-box;
 
     &:focus {
       border-color: $primary-color;
@@ -598,10 +854,36 @@ $device-btn-padding: 8rpx 16rpx;
       border-color: $danger-color;
       box-shadow: $input-error-shadow;
     }
+
+    &[disabled] {
+      background: $background-color;
+      color: $text-secondary;
+      cursor: not-allowed;
+    }
+  }
+
+  .form-textarea {
+    width: 100%;
+    padding: 20rpx 24rpx;
+    border: 2rpx solid $border-color-lighter;
+    border-radius: $border-radius;
+    font-size: $font-size-base;
+    color: $text-primary;
+    background: $background-color-white;
+    min-height: 160rpx;
+    line-height: 1.5;
+    box-sizing: border-box;
+    resize: vertical;
+
+    &[disabled] {
+      background: $background-color;
+      color: $text-secondary;
+      cursor: not-allowed;
+    }
   }
 }
 
-/* 标签样式 */
+// 标签类
 .tag {
   display: inline-flex;
   align-items: center;
@@ -613,34 +895,63 @@ $device-btn-padding: 8rpx 16rpx;
   border: 1px solid $border-color-light;
 }
 
-/* 状态样式 */
-.status {
-  &-success {
-    color: $success-color;
-    background: $success-bg;
-    border-color: $success-border;
-  }
+// 禁用状态类
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
-  &-warning {
-    color: $warning-color;
-    background: $warning-bg;
-    border-color: $warning-border;
-  }
+// 加载状态类
+.loading {
+  position: relative;
 
-  &-danger {
-    color: $danger-color;
-    background: $danger-bg;
-    border-color: $danger-border;
-  }
-
-  &-info {
-    color: $info-color;
-    background: $info-bg;
-    border-color: $info-border;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20rpx;
+    height: 20rpx;
+    border: 2rpx solid rgba($text-primary, 0.2);
+    border-top-color: $primary-color;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
   }
 }
 
-/* 响应式调整 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// 间距工具类
+.margin-base {
+  margin: $margin-base;
+}
+
+.margin-small {
+  margin: $margin-small;
+}
+
+.margin-mini {
+  margin: $margin-mini;
+}
+
+.padding-base {
+  padding: $padding-base;
+}
+
+.padding-small {
+  padding: $padding-small;
+}
+
+.padding-mini {
+  padding: $padding-mini;
+}
+
+// 响应式调整
 @media (max-width: $screen-md) {
   .section-container {
     padding: $padding-small;
@@ -649,9 +960,14 @@ $device-btn-padding: 8rpx 16rpx;
   .btn {
     padding: 16rpx 24rpx;
   }
+
+  .card-container {
+    padding: $padding-small;
+  }
 }
 
-/* ==================== 响应式布局扩展 ==================== */
+
+/* 响应式布局扩展 */
 
 /* 容器最大宽度（基于设计规范） */
 $container-xs: 100%;

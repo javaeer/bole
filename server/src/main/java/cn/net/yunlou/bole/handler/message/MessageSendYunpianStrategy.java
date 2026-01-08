@@ -1,8 +1,9 @@
-package cn.net.yunlou.bole.handler;
+package cn.net.yunlou.bole.handler.message;
 
 import cn.net.yunlou.bole.common.MessageEntity;
 import cn.net.yunlou.bole.common.constant.MessageSendType;
 import cn.net.yunlou.bole.config.AppYunPianConfig;
+import cn.net.yunlou.bole.handler.IMessageSendStrategy;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;

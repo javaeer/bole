@@ -696,7 +696,7 @@ const handleUnbindEmail = async () => {
     });
 
   } catch (error: any) {
-    uni.showToast({
+uni.showToast({
       title: error.message || "解绑失败",
       icon: "error",
     });
@@ -787,51 +787,6 @@ onMounted(() => {
   background-color: $background-color;
 }
 
-/* 顶部导航 */
-.bind-header {
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
-  padding-top: var(--status-bar-height, 44px);
-  padding-bottom: $padding-mini;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 $padding-base;
-  height: $navigation-bar-height;
-}
-
-.header-left {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:active {
-    opacity: 0.8;
-  }
-}
-
-.back-icon {
-  font-size: $font-size-extra-large;
-  color: $background-color-white;
-  font-weight: $font-weight-bold;
-}
-
-.header-title {
-  font-size: $font-size-large;
-  font-weight: $font-weight-bold;
-  color: $background-color-white;
-  flex: 1;
-  text-align: center;
-}
-
-.header-right {
-  width: 60rpx;
-}
-
 /* 标签页容器 */
 .tab-container {
   background: $background-color-white;
@@ -852,29 +807,27 @@ onMounted(() => {
   padding: $padding-small 0;
   min-width: 80rpx;
 
-  &--active {
-    .tab-text {
-      color: $primary-color;
-      font-weight: $font-weight-bold;
-    }
+  &--active .tab-text {
+    color: $primary-color;
+    font-weight: $font-weight-bold;
+  }
 
-    .tab-indicator {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 40rpx;
-      height: 4rpx;
-      background: $primary-color;
-      border-radius: 2rpx;
-    }
+  &--active .tab-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40rpx;
+    height: 4rpx;
+    background: $primary-color;
+    border-radius: 2rpx;
   }
 }
 
 .tab-text {
   font-size: $font-size-base;
   color: $text-secondary;
-  transition: all $transition-fast;
+  transition: color $transition-fast;
 }
 
 /* 绑定内容 */
@@ -904,17 +857,18 @@ onMounted(() => {
   justify-content: center;
   margin: 0 auto $margin-small;
   font-size: $font-size-extra-large;
+  border: 2rpx solid;
 
   &.success {
     background: $success-bg;
     color: $success-color;
-    border: 2rpx solid $success-border;
+    border-color: $success-border;
   }
 
   &.warning {
     background: $warning-bg;
     color: $warning-color;
-    border: 2rpx solid $warning-border;
+    border-color: $warning-border;
   }
 }
 
@@ -966,11 +920,10 @@ onMounted(() => {
   background: $background-color-white;
   border: 2rpx solid $border-color-light;
   border-radius: $border-radius;
-  transition: all $transition-fast;
+  transition: border-color $transition-fast;
 
   &:focus {
     border-color: $primary-color;
-    box-shadow: $input-focus-shadow;
     outline: none;
   }
 
@@ -1015,7 +968,7 @@ onMounted(() => {
 }
 
 /* 按钮样式 */
-.btn-bind {
+.btn-bind, .btn-wechat {
   width: 100%;
   height: $button-height;
   background: $button-primary-bg;
@@ -1110,14 +1063,7 @@ onMounted(() => {
 }
 
 .btn-wechat {
-  width: 100%;
-  height: $button-height;
   background: $success-color;
-  border: none;
-  border-radius: $button-border-radius;
-  color: $background-color-white;
-  font-size: $font-size-base;
-  font-weight: $font-weight-medium;
   display: flex;
   align-items: center;
   justify-content: center;

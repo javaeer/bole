@@ -1,7 +1,8 @@
-package cn.net.yunlou.bole.handler;
+package cn.net.yunlou.bole.handler.component;
 
 import cn.net.yunlou.bole.common.constant.TemplateComponentKey;
 import cn.net.yunlou.bole.common.utils.BeanUtils;
+import cn.net.yunlou.bole.handler.IComponentDataPopulatorStrategy;
 import cn.net.yunlou.bole.model.entity.User;
 import cn.net.yunlou.bole.model.view.UserBasicInfoView;
 import cn.net.yunlou.bole.service.UserService;

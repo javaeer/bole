@@ -1,8 +1,9 @@
-package cn.net.yunlou.bole.handler;
+package cn.net.yunlou.bole.handler.message;
 
 import cn.net.yunlou.bole.common.MessageEntity;
 import cn.net.yunlou.bole.common.constant.MessageSendType;
 import cn.net.yunlou.bole.config.AppEmailConfig;
+import cn.net.yunlou.bole.handler.IMessageSendStrategy;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;

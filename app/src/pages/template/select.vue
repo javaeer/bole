@@ -308,6 +308,7 @@ onMounted(async () => {
 }
 
 .template-preview {
+  @extend .flex-center;
   height: 320rpx;
   border-radius: calc($border-radius-large / 2) calc($border-radius-large / 2) 0 0;
   padding: $uni-spacing-col-base;
@@ -401,7 +402,7 @@ onMounted(async () => {
   }
 
   &.badge-simple {
-    background: linear-gradient(135deg, #909399 0%, #606266 100%);
+    background: linear-gradient(135deg, #909399 0%, #609399 100%);
   }
 }
 

@@ -762,18 +762,19 @@ onMounted(async () => {
 }
 
 .status-badge {
-  &.active {
-    @extend .status-success;
+  @extend .status-badge;
+  
+  &.status-published {
+    @extend .status-published;
   }
 
-  &.inactive {
-    @extend .status-info;
+  &.status-draft {
+    @extend .status-draft;
   }
 }
 
 .status-text {
-  font-size: $font-size-extra-small;
-  font-weight: $font-weight-medium;
+  @extend .status-text;
 }
 
 .template-item-content {

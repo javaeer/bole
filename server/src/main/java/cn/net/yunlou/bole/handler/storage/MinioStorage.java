@@ -1,10 +1,11 @@
-package cn.net.yunlou.bole.handler;
+package cn.net.yunlou.bole.handler.storage;
 
 import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.StorageType;
 import cn.net.yunlou.bole.common.utils.FileHashUtils;
 import cn.net.yunlou.bole.config.StorageMinioProperties;
+import cn.net.yunlou.bole.handler.IStorage;
 import cn.net.yunlou.bole.model.entity.File;
 import io.minio.*;
 import io.minio.http.Method;
@@ -105,6 +106,17 @@ public class MinioStorage implements IStorage {
             log.error("MinIO文件上传失败", e);
             throw new BusinessException(BusinessStatus.UNSUPPORTED_CONVERT_FILE_TYPE, "文件上传失败");
         }
+    }
+
+    @Override
+    public File chunkStore(
+            MultipartFile multipartFile,
+            String fileName,
+            Long fileCrc32,
+            String fileExt,
+            Integer chunk,
+            Integer chunks) {
+        return null;
     }
 
     @Override

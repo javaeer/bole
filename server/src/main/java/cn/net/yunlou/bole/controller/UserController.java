@@ -89,7 +89,7 @@ public class UserController {
         user.setPhone(request.getPhone());
 
         if (!userService.updateById(user)) {
-            throw new BusinessException(BusinessStatus.INTERNAL_SERVER_UPDATE_ERROR, "绑定失败");
+            throw new BusinessException(BusinessStatus.UPDATE_ERROR, "绑定失败");
         }
 
         return BusinessResponse.success(userService.getViewById(currentUserId));
@@ -118,7 +118,7 @@ public class UserController {
         user.setEmail(request.getEmail());
 
         if (!userService.updateById(user)) {
-            throw new BusinessException(BusinessStatus.INTERNAL_SERVER_UPDATE_ERROR, "绑定失败");
+            throw new BusinessException(BusinessStatus.UPDATE_ERROR, "绑定失败");
         }
 
         return BusinessResponse.success(userService.getViewById(currentUserId));
@@ -146,7 +146,7 @@ public class UserController {
         }
 
         if (!userService.updateById(user)) {
-            throw new BusinessException(BusinessStatus.INTERNAL_SERVER_UPDATE_ERROR, "解绑失败");
+            throw new BusinessException(BusinessStatus.UPDATE_ERROR, "解绑失败");
         }
 
         return BusinessResponse.success(userService.getViewById(currentUserId));
@@ -177,7 +177,7 @@ public class UserController {
         user.setEmail(null);
 
         if (!userService.updateById(user)) {
-            throw new BusinessException(BusinessStatus.INTERNAL_SERVER_UPDATE_ERROR, "解绑失败");
+            throw new BusinessException(BusinessStatus.UPDATE_ERROR, "解绑失败");
         }
 
         return BusinessResponse.success(userService.getViewById(currentUserId));

@@ -217,6 +217,7 @@ public class FileSecurityUtils {
                             "flv",
                             "mkv",
                             // 其他
+                            "apk",
                             "json",
                             "xml",
                             "html",

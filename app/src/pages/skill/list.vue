@@ -400,7 +400,7 @@ const loadListData = async (reset = false) => {
       query.tags = filterTags.value;
     }
 
-    // 添加排序条件
+// 添加排序条件
     if (sortIndex.value !== undefined) {
       switch (sortIndex.value) {
         case 0: // 熟练度↓
@@ -455,7 +455,7 @@ const loadListData = async (reset = false) => {
       hasMore.value = listData.value.length < total;
 
       // 如果当前页有数据，且数据条数等于pageSize，说明可能还有下一页
-      if (records.length === pageSize.value) {
+if (records.length === pageSize.value) {
         currentPage.value++;
       }
     }
@@ -512,12 +512,11 @@ onReachBottom(() => {
 
 <style lang="scss">
 .page-container {
-  min-height: 100vh;
-  background-color: $background-color;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 100rpx);
+  @extend .page-container;
 }
 
 .filter-container {
+  @extend .card-container;
   position: sticky;
   top: 0;
   z-index: $z-index-base;
@@ -643,6 +642,7 @@ onReachBottom(() => {
 }
 
 .skill-item {
+  @extend .card-container;
   margin-bottom: $margin-base;
   transition: all $transition-fast $ease-in-out;
 
@@ -661,11 +661,14 @@ onReachBottom(() => {
       flex: 1;
 
       .skill-name {
-        font-size: $font-size-medium;
+        @extend .text-truncate;
+        flex: 1;
+        font-size: $font-size-base;
         font-weight: $font-weight-medium;
         color: $text-primary;
         margin-bottom: 8rpx;
         display: block;
+        @extend .text-truncate;
       }
 
       .skill-badges {
@@ -679,9 +682,7 @@ onReachBottom(() => {
           font-weight: $font-weight-medium;
 
           &-public {
-            background: $success-bg;
-            color: $success-color;
-            border: 1rpx solid $success-border;
+            @extend .status-success;
           }
 
           &-certified {
@@ -701,27 +702,19 @@ onReachBottom(() => {
         font-weight: $font-weight-medium;
 
         &.level-beginner {
-          background: $info-bg;
-          color: $info-color;
-          border: 1rpx solid $info-border;
+          @extend .status-info;
         }
 
         &.level-intermediate {
-          background: $success-bg;
-          color: $success-color;
-          border: 1rpx solid $success-border;
+          @extend .status-success;
         }
 
         &.level-advanced {
-          background: $warning-bg;
-          color: $warning-color;
-          border: 1rpx solid $warning-border;
+          @extend .status-warning;
         }
 
         &.level-expert {
-          background: $danger-bg;
-          color: $danger-color;
-          border: 1rpx solid $danger-border;
+          @extend .status-danger;
         }
 
         &.level-default {
@@ -763,12 +756,7 @@ onReachBottom(() => {
       gap: 8rpx;
 
       .skill-tag {
-        padding: 4rpx 12rpx;
-        background: $background-color;
-        border-radius: $border-radius-small;
-        font-size: $font-size-extra-small;
-        color: $text-secondary;
-        border: 1rpx solid $border-color-light;
+        @extend .tag;
       }
     }
   }
@@ -840,6 +828,7 @@ onReachBottom(() => {
     padding: 16rpx;
     background: $background-color;
     border-radius: $border-radius-small;
+    @extend .text-multi-truncate;
   }
 
   .skill-actions {

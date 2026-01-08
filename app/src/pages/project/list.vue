@@ -348,7 +348,6 @@ const clearSearch = () => {
   currentPage.value = 1;
   loadListData(true);
 };
-
 // 筛选处理
 const onStatusChange = (e: any) => {
   statusIndex.value = e.detail.value;
@@ -490,7 +489,7 @@ const addNewProject = () => {
 
 // 生命周期
 onMounted(() => {
-  loadListData(true);
+loadListData(true);
 });
 
 onLoad((options) => {
@@ -520,6 +519,7 @@ onReachBottom(() => {
 }
 
 .search-box {
+  @extend .form-group;
   display: flex;
   align-items: center;
   background: $background-color;
@@ -571,9 +571,8 @@ onReachBottom(() => {
     flex: 1;
 
     .filter-label {
-      display: block;
+      @extend .form-label;
       font-size: $font-size-extra-small;
-      color: $text-secondary;
       margin-bottom: 8rpx;
     }
 
@@ -602,6 +601,7 @@ onReachBottom(() => {
 }
 
 .project-item {
+  @extend .card-container;
   margin-bottom: $margin-base;
   transition: all $transition-fast $ease-in-out;
 
@@ -629,39 +629,26 @@ onReachBottom(() => {
 
       .project-badges {
         .status-badge {
-          padding: 4rpx 12rpx;
-          border-radius: $border-radius-small;
-          font-size: $font-size-extra-small;
-          font-weight: $font-weight-medium;
-
+          @extend .status-badge;
+          
           &.status-pending {
-            background: $info-bg;
-            color: $info-color;
-            border: 1rpx solid $info-border;
+            @extend .status-pending;
           }
 
           &.status-in-progress {
-            background: $primary-color-light;
-            color: $primary-color;
-            border: 1rpx solid $primary-border;
+            @extend .status-in-progress;
           }
 
           &.status-completed {
-            background: $success-bg;
-            color: $success-color;
-            border: 1rpx solid $success-border;
+            @extend .status-completed;
           }
 
           &.status-paused {
-            background: $warning-bg;
-            color: $warning-color;
-            border: 1rpx solid $warning-border;
+            @extend .status-paused;
           }
 
           &.status-default {
-            background: $background-color;
-            color: $text-secondary;
-            border: 1rpx solid $border-color-light;
+            @extend .status-info;
           }
         }
       }
@@ -838,9 +825,18 @@ onReachBottom(() => {
     margin: $margin-base 0;
 
     .action-btn {
+      @extend .btn;
       flex: 1;
       padding: 16rpx;
       font-size: $font-size-small;
+
+      &.btn-primary {
+        @extend .btn-primary;
+      }
+
+      &.btn-secondary {
+        @extend .btn-secondary;
+      }
     }
   }
 

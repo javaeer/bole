@@ -532,11 +532,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
-.page-container {
-  min-height: 100vh;
-  background-color: $background-color;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 120rpx);
-}
 
 .detail-header {
   position: sticky;

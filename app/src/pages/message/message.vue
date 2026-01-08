@@ -181,7 +181,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 
-/* 消息标签页 */
 .message-tabs {
   display: flex;
   background: $background-color-white;
@@ -203,7 +202,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   gap: 10rpx;
-  transition: all $transition-fast;
+  transition: color $transition-fast;
   cursor: pointer;
   height: $tab-item-height;
 
@@ -214,10 +213,6 @@ onMounted(() => {
     .badge {
       background: $tab-active-color;
     }
-  }
-
-  &:not(.active):hover {
-    color: color.adjust($tab-inactive-color, $lightness:  20%);
   }
 }
 
@@ -231,21 +226,8 @@ onMounted(() => {
   height: $tab-indicator-height;
   background: $tab-active-color;
   border-radius: calc($tab-indicator-height / 2);
-  animation: slideIn $transition-normal;
 }
 
-@keyframes slideIn {
-  from {
-    width: 0;
-    opacity: 0;
-  }
-  to {
-    width: $tab-indicator-width;
-    opacity: 1;
-  }
-}
-
-/* 徽章 */
 .badge {
   background: $badge-bg-color;
   color: $badge-text-color;
@@ -256,18 +238,10 @@ onMounted(() => {
   text-align: center;
   line-height: 1;
   font-weight: $font-weight-medium;
-  box-shadow: 0 2rpx 8rpx rgba($danger-color, 0.3);
 }
 
-/* 消息列表 */
 .message-list {
   padding: $padding-base;
-
-  &:empty {
-    .empty-state {
-      display: flex;
-    }
-  }
 }
 
 .message-item {
@@ -279,11 +253,9 @@ onMounted(() => {
   align-items: flex-start;
   position: relative;
   box-shadow: $message-item-shadow;
-  transition: all $transition-fast;
-  border: 1rpx solid transparent;
+  transition: transform $transition-fast;
 
   &.unread {
-    @extend .status-unread;
     border-color: rgba($primary-color, 0.1);
 
     .unread-dot {
@@ -292,16 +264,10 @@ onMounted(() => {
   }
 
   &:hover {
-    box-shadow: $message-item-hover-shadow;
     transform: translateY(-2rpx);
-  }
-
-  &:active {
-    transform: translateY(0);
   }
 }
 
-/* 消息头像 */
 .message-avatar {
   width: $avatar-size;
   height: $avatar-size;
@@ -315,17 +281,17 @@ onMounted(() => {
   overflow: hidden;
 
   &.system-avatar {
-    background: linear-gradient(135deg, $message-system-color, color.adjust($message-system-color, $lightness:  20%));
+    background: $message-system-color;
     color: $background-color-white;
   }
 
   &.notice-avatar {
-    background: linear-gradient(135deg, $message-notice-color, color.adjust($message-notice-color, $lightness:  20%));
+    background: $message-notice-color;
     color: $background-color-white;
   }
 
   &.interact-avatar {
-    background: linear-gradient(135deg, $message-interact-color, color.adjust($message-interact-color, $lightness:  20%));
+    background: $message-interact-color;
     color: $background-color-white;
   }
 }
@@ -340,10 +306,9 @@ onMounted(() => {
   color: $empty-text-color;
 }
 
-/* 消息内容区域 */
 .message-content {
   flex: 1;
-  min-width: 0; /* 防止flex溢出 */
+  min-width: 0;
 }
 
 .message-header {
@@ -352,11 +317,6 @@ onMounted(() => {
   align-items: flex-start;
   margin-bottom: $margin-mini;
   gap: $margin-mini;
-
-  .message-title-wrapper {
-    flex: 1;
-    min-width: 0;
-  }
 }
 
 .message-title {
@@ -392,7 +352,6 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* 消息操作 */
 .message-action {
   margin-top: $margin-mini;
   display: flex;
@@ -401,6 +360,8 @@ onMounted(() => {
 }
 
 .btn-reply {
+  @extend .btn;
+  @extend .btn-small;
   background: $primary-color;
   color: $background-color-white;
   border: none;
@@ -409,22 +370,16 @@ onMounted(() => {
   border-radius: $button-small-border-radius;
   font-size: $button-small-font-size;
   font-weight: $font-weight-medium;
-  transition: all $transition-fast;
+  transition: background-color $transition-fast;
   cursor: pointer;
 
   &:hover {
-    background: color.adjust($primary-color, $lightness:  -10%);
-    transform: scale(1.05);
-  }
-
-  &:active {
-    transform: scale(0.95);
+    background: color.adjust($primary-color, $lightness: -10%);
   }
 
   &:disabled {
     background: $text-placeholder;
     cursor: not-allowed;
-    transform: none;
   }
 }
 
@@ -437,23 +392,8 @@ onMounted(() => {
   background: $unread-dot-color;
   border-radius: 50%;
   display: none;
-  animation: pulse 2s infinite;
-  box-shadow: 0 0 0 rgba($danger-color, 0.4);
 }
 
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba($danger-color, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10rpx rgba($danger-color, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba($danger-color, 0);
-  }
-}
-
-/* 空状态 */
 .empty-state {
   display: none;
   flex-direction: column;
@@ -473,21 +413,8 @@ onMounted(() => {
   font-size: $empty-text-font-size;
   color: $empty-text-color;
   line-height: 1.5;
-
-  .action-text {
-    color: $primary-color;
-    font-weight: $font-weight-medium;
-    margin-top: $margin-mini;
-    display: inline-block;
-    cursor: pointer;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }
 
-/* 加载状态 */
 .loading-more {
   text-align: center;
   padding: $padding-base 0;
@@ -495,7 +422,6 @@ onMounted(() => {
   font-size: $font-size-small;
 }
 
-/* 响应式调整 */
 @media (max-width: $breakpoint-sm) {
   .message-list {
     padding: $padding-small;
@@ -524,33 +450,8 @@ onMounted(() => {
   }
 }
 
-/* 暗色模式支持 */
-/*@media (prefers-color-scheme: dark) {
-  .page-container {
-    background-color: color.adjust($background-color, $lightness:  - 80%);
-  }
-
-  .message-tabs {
-    background: color.adjust($background-color-white, $lightness:  -80%);
-    border-bottom-color: color.adjust($primary-lighter, $lightness:  -80%);
-  }
-
-  .message-item {
-    background: color.adjust($primary-lighter, $lightness:  -80%);
-  }
-
-  .message-title {
-    color: color.adjust($text-primary, $lightness:  80%);
-  }
-
-  .message-preview {
-    color: color.adjust($text-regular, $lightness:  60%);
-  }
-}*/
-// 优化颜色使用
 .tab-item.active {
-  color: $tab-active-color; // 使用统一的主色
-  border-bottom-color: $primary-color;
+  color: $tab-active-color;
 }
 
 .badge {

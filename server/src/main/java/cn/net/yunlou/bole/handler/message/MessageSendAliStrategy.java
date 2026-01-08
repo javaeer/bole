@@ -1,7 +1,8 @@
-package cn.net.yunlou.bole.handler;
+package cn.net.yunlou.bole.handler.message;
 
 import cn.net.yunlou.bole.common.MessageEntity;
 import cn.net.yunlou.bole.common.constant.MessageSendType;
+import cn.net.yunlou.bole.handler.IMessageSendStrategy;
 
 /**
  * FileName: MessageSendAliStrategy Description: Created By laughtiger Created At 2025/12/25 00:01

@@ -418,7 +418,7 @@ const loadDetailData = async (id?: number) => {
       }
     } else {
       // 新增模式
-      detailData.value = {
+detailData.value = {
         id: null,
         createdAt: "",
         updatedAt: "",
@@ -562,7 +562,6 @@ const addTag = () => {
 
   tagInputRef.value = "";
 };
-
 const onTagInputBlur = () => {
   // 失去焦点时也尝试添加标签
   if (tagInputRef.value.trim()) {
@@ -676,12 +675,11 @@ onLoad((options: any) => {
 
 <style lang="scss">
 .page-container {
-  min-height: 100vh;
-  background-color: $background-color;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 120rpx);
+  @extend .page-container;
 }
 
 .detail-header {
+  @extend .card-container;
   position: sticky;
   top: 0;
   z-index: $z-index-base;
@@ -689,21 +687,6 @@ onLoad((options: any) => {
   justify-content: space-between;
   align-items: center;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
-  border-radius: 0 0 $border-radius $border-radius;
-  box-shadow: $box-shadow;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 20rpx;
-
-    .header-title {
-      font-size: $font-size-medium;
-      font-weight: $font-weight-medium;
-      color: $text-primary;
-    }
-  }
 
   .header-actions {
     display: flex;
@@ -718,24 +701,14 @@ onLoad((options: any) => {
 
   .status-badges {
     display: flex;
-    gap: 8rpx;
-
-    .badge {
-      padding: 4rpx 12rpx;
-      border-radius: $border-radius-small;
-      font-size: $font-size-extra-small;
-      font-weight: $font-weight-medium;
-
-      &-public {
-        background: $success-bg;
-        color: $success-color;
-        border: 1rpx solid $success-border;
-      }
-
-      &-certified {
-        background: $primary-color-light;
-        color: $primary-color;
-        border: 1rpx solid $primary-border;
+    gap: $margin-mini;
+    flex-wrap: wrap;
+    
+    .skill-level-badge {
+      @extend .status-badge;
+      
+      &.level-expert {
+        @extend .status-success;
       }
     }
   }
@@ -750,6 +723,7 @@ onLoad((options: any) => {
 }
 
 .info-card {
+  @extend .card-container;
   margin-bottom: $margin-base;
 
   .card-header {
@@ -927,15 +901,10 @@ onLoad((options: any) => {
       margin-top: $margin-mini;
 
       .tag-item {
+        @extend .tag;
         display: flex;
         align-items: center;
         gap: 8rpx;
-        padding: 8rpx 16rpx;
-        background: $background-color;
-        border-radius: $border-radius-round;
-        font-size: $font-size-small;
-        color: $text-regular;
-        border: 1rpx solid $border-color-light;
 
         .tag-remove-btn {
           background: transparent;

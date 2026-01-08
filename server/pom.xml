@@ -36,6 +36,7 @@
         <springdoc.version>2.2.0</springdoc.version>
         <poi.version>5.2.4</poi.version>
         <minio.version>8.5.2</minio.version>
+        <fastdfs-client.version>1.27.2</fastdfs-client.version>
         <velocity.version>2.3</velocity.version>
         <h2.version>2.2.224</h2.version>
         <knife4j.version>4.4.0</knife4j.version>
@@ -66,9 +67,20 @@
 
     <dependencies>
         <!-- Spring Boot Starters -->
+        <!-- 切换到 Undertow -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -192,6 +204,12 @@
             <version>${minio.version}</version> <!-- 建议使用最新稳定版本 -->
         </dependency>
 
+        <dependency>
+            <groupId>com.github.tobato</groupId>
+            <artifactId>fastdfs-client</artifactId>
+            <version>${fastdfs-client.version}</version>
+        </dependency>
+
         <!-- 文件处理 -->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -213,12 +231,12 @@
         </dependency>
 
         <!-- 开发工具 -->
-<!--        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-devtools</artifactId>
+                    <scope>runtime</scope>
+                    <optional>true</optional>
+                </dependency>-->
 
         <!-- MapStruct -->
         <dependency>
@@ -681,7 +699,6 @@
             </build>
         </profile>
     </profiles>
-
 
 
 </project>
