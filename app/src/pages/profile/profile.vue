@@ -40,18 +40,18 @@
 
       <view class="stats">
         <!-- 简历管理 -->
-        <view class="stat-card" @click="handleResumes">
-          <view class="stat-card-inner">
-            <text class="stat-icon">📝</text>
-            <text class="stat-title">简历管理</text>
-          </view>
-        </view>
+<!--        <view class="stat-card" @click="handleResumes">-->
+<!--          <view class="stat-card-inner">-->
+<!--            <text class="stat-icon">📝</text>-->
+<!--            <text class="stat-title">简历管理</text>-->
+<!--          </view>-->
+<!--        </view>-->
 
         <!-- 学历管理 -->
         <view class="stat-card" @click="handleEducationExperiences">
           <view class="stat-card-inner">
             <text class="stat-icon">🎓</text>
-            <text class="stat-title">学历管理</text>
+            <text class="stat-title">学习经历</text>
           </view>
         </view>
 
@@ -112,6 +112,16 @@
       </view>
 
       <view class="menu-list">
+
+        <view class="menu-item" @click="handleFollow">
+          <view class="menu-left">
+            <view class="menu-icon-wrapper" style="background: rgba(236,226,32,0.65);">
+              <text class="menu-icon" style="color: #ECE220FF;">✨</text>
+            </view>
+            <text class="menu-text">收藏管理</text>
+          </view>
+          <text class="menu-arrow">›</text>
+        </view>
         <view class="menu-item" @click="handleFeedback">
           <view class="menu-left">
             <view class="menu-icon-wrapper" style="background: rgba(33, 150, 243, 0.1);">
@@ -267,6 +277,12 @@ const handleSelfEvaluations = () => {
 const handleFeedback = () => {
   uni.navigateTo({
     url: "/subpackages/pages/feedback/feedback",
+  });
+};
+
+const handleFollow = () => {
+  uni.navigateTo({
+    url: "/pages/follow/follow",
   });
 };
 

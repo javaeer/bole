@@ -179,10 +179,10 @@
         "text": "模板"
       },
       {
-        "pagePath": "pages/follow/follow",
-        "iconPath": "static/tabbar/follow.png",
-        "selectedIconPath": "static/tabbar/follow-active.png",
-        "text": "收藏"
+        "pagePath": "pages/resumes/list",
+        "iconPath": "static/tabbar/resumes.png",
+        "selectedIconPath": "static/tabbar/resumes-active.png",
+        "text": "简历"
       },
       {
         "pagePath": "pages/profile/profile",

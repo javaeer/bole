@@ -786,7 +786,7 @@ const showHistorySection = computed(() => {
   flex: 1;
   font-size: $font-size-small;
   color: $text-primary;
-  @extend .text-ellipsis;
+  @extend .text-truncate;
   margin-right: $margin-small;
 }
 

@@ -565,7 +565,7 @@ onLoad((options) => {
     font-size: $font-size-medium;
     font-weight: $font-weight-semibold;
     color: $text-primary;
-    @extend .text-ellipsis;
+    @extend .text-truncate;
     margin: 0 20rpx;
   }
 

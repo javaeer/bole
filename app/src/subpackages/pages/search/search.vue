@@ -502,7 +502,7 @@ onMounted(() => {
   .history-text {
     font-size: $font-size-base;
     color: $text-regular;
-    @extend .text-ellipsis;
+    @extend .text-truncate;
     flex: 1;
   }
 
@@ -544,7 +544,7 @@ onMounted(() => {
 
   .tag-text {
     flex: 1;
-    @extend .text-ellipsis;
+    @extend .text-truncate;
   }
 
   .hot-badge {
@@ -584,7 +584,7 @@ onMounted(() => {
     .suggestion-text {
       font-size: $font-size-base;
       color: $text-regular;
-      @extend .text-ellipsis;
+      @extend .text-truncate;
       flex: 1;
     }
   }
@@ -639,7 +639,7 @@ onMounted(() => {
       font-weight: $font-weight-bold;
       color: $text-primary;
       margin-bottom: $margin-mini;
-      @extend .text-ellipsis;
+      @extend .text-truncate;
     }
 
     .result-desc {

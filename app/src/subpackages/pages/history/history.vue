@@ -463,7 +463,7 @@ onMounted(() => {
   color: $text-primary;
   font-weight: $font-weight-medium;
   margin-bottom: $margin-mini;
-  @extend .text-ellipsis;
+  @extend .text-truncate;
 }
 
 .item-meta {
@@ -491,7 +491,7 @@ onMounted(() => {
 }
 
 .item-desc {
-  @extend .text-ellipsis;
+  @extend .text-truncate;
 }
 
 .item-desc-text {

@@ -96,17 +96,20 @@ $background-color-white: #ffffff;
 $danger-light: #fee;
 $warning-light: #fef6ec;
 
-/* 尺寸变量 */
+/* ==================== 尺寸系统 ==================== */
+/* 圆角 */
 $border-radius: 15rpx;
 $border-radius-small: 10rpx;
 $border-radius-large: 20rpx;
 $border-radius-round: 50%;
 $card-border-radius-lg: 20rpx;
 
+/* 内边距 */
 $padding-base: 30rpx;
 $padding-small: 20rpx;
 $padding-mini: 15rpx;
 
+/* 外边距 */
 $margin-base: 30rpx;
 $margin-small: 20rpx;
 $margin-mini: 15rpx;
@@ -127,7 +130,10 @@ $font-weight-medium: 500;
 $font-weight-semibold: 500;
 $font-weight-bold: 600;
 
-/* 平台特定变量 */
+/* 高度扩展 */
+$card-height: 120rpx;
+
+/* ==================== 平台特定变量 ==================== */
 // #ifdef MP-WEIXIN
 $tabbar-height: 100rpx;
 $navigation-bar-height: 88rpx;
@@ -143,12 +149,12 @@ $tabbar-height: 80rpx;
 $navigation-bar-height: 64rpx;
 // #endif
 
-/* 阴影 */
+/* ==================== 阴影系统 ==================== */
 $box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
 $box-shadow-light: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
 $box-shadow-dark: 0 8rpx 40rpx rgba(0, 0, 0, 0.08);
 
-/* 动画 */
+/* ==================== 动画系统 ==================== */
 $transition-duration: 0.3s;
 $transition-timing-function: ease-in-out;
 $transition-fast: 0.2s;
@@ -160,52 +166,59 @@ $ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 $ease-out: cubic-bezier(0, 0, 0.2, 1);
 $ease-in: cubic-bezier(0.4, 0, 1, 1);
 
-/* 状态颜色 */
+/* ==================== 状态颜色系统 ==================== */
+/* 边框颜色 */
 $focus-border-color: $primary-color;
 $error-border-color: $danger-color;
 $success-border-color: $success-color;
 
-/* 状态背景色 */
+/* 背景颜色 */
 $success-bg: rgba($success-color, 0.1);
 $warning-bg: rgba($warning-color, 0.1);
 $danger-bg: rgba($danger-color, 0.1);
 $info-bg: rgba($info-color, 0.1);
-/* 状态边框颜色*/
+
+/* 边框透明色 */
 $primary-border: rgba($primary-color, 0.3);
 $success-border: rgba($success-color, 0.3);
 $warning-border: rgba($warning-color, 0.3);
 $danger-border: rgba($danger-color, 0.3);
 $info-border: rgba($info-color, 0.3);
 
-/* 阴影扩展 */
-$input-focus-shadow: 0 0 0 2rpx rgba($primary-color, 0.2);
-$input-error-shadow: 0 0 0 2rpx rgba($danger-color, 0.2);
-$button-active-shadow: 0 4rpx 12rpx rgba($primary-color, 0.3);
-$button-disabled-opacity: 0.6;
-$button-disabled-bg: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness: -10%) 100%);
-
-/* 按钮变量扩展 */
+/* ==================== 组件变量 ==================== */
+/* 按钮变量 */
+$button-height: 80rpx;
 $button-small-height: 50rpx;
 $button-small-font-size: $font-size-small;
 $button-small-border-radius: $border-radius-small;
+$button-border-radius: $border-radius;
+$button-primary-bg: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
+$button-disabled-opacity: 0.6;
+$button-disabled-bg: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness: -10%) 100%);
+$button-active-shadow: 0 4rpx 12rpx rgba($primary-color, 0.3);
 
-/* 组件变量 - 登录/注册页 */
-$button-height: 80rpx;
+/* 输入框变量 */
 $input-height: 80rpx;
 $input-border-radius: 12rpx;
+$input-focus-border-color: $primary-color;
+$input-error-border: $danger-color;
+$input-success-border: $success-color;
+$input-focus-shadow: 0 0 0 2rpx rgba($primary-color, 0.2);
+$input-error-shadow: 0 0 0 2rpx rgba($danger-color, 0.2);
 
-/* 组件变量 - 消息页 */
+/* 消息组件变量 */
 $message-bg-color: $background-color-white;
 $message-border-radius: $border-radius;
 $message-padding: $padding-base;
 $message-margin-bottom: $margin-small;
+$message-item-shadow: $box-shadow-light;
+$message-item-hover-shadow: $box-shadow;
 
 /* 标签页变量 */
 $tab-item-height: 80rpx;
 $tab-item-font-size: $font-size-base;
 $tab-active-color: $primary-color;
 $tab-inactive-color: $text-secondary;
-/* 标签指示器 */
 $tab-indicator-width: 80rpx;
 $tab-indicator-height: 4rpx;
 
@@ -236,122 +249,13 @@ $empty-icon-size: 120rpx;
 $empty-text-color: $text-placeholder;
 $empty-text-font-size: $font-size-base;
 
-/* 消息项阴影 */
-$message-item-shadow: $box-shadow-light;
-$message-item-hover-shadow: $box-shadow;
-
-/* ==================== 扩展成就列表相关变量 ==================== */
-/* 成就列表颜色 */
-$achievement-add-bg: $primary-color-light;
-$achievement-add-color: $primary-color;
-$achievement-add-border: $primary-color;
-$achievement-remove-bg: $danger-color;
-$achievement-remove-color: $background-color-white;
-
-/* 成就列表尺寸 */
-$achievement-item-height: 60rpx;
-$achievement-input-height: 60rpx;
-$achievement-remove-btn-size: 60rpx;
-$achievement-item-gap: 16rpx;
-$achievement-index-width: 40rpx;
-
-/* 成就列表边框 */
-$achievement-input-border: 2rpx solid $border-color-lighter;
-$achievement-add-border-style: dashed;
-
-/* 成就列表圆角 */
-$achievement-input-radius: $border-radius;
-$achievement-remove-btn-radius: $border-radius-small;
-
-/* 成就列表字体 */
-$achievement-content-color: $text-regular;
-$achievement-index-color: $text-secondary;
-$achievement-count-color: $text-secondary;
-
-/* 空状态 */
-$achievement-empty-color: $text-placeholder;
-$achievement-empty-font-size: $font-size-base;
-
-/* 层级 */
-$z-index-base: 1;
-$z-index-dropdown: 1000;
-$z-index-modal: 2000;
-$z-index-toast: 3000;
-
-/* 响应式断点 */
-$breakpoint-xs: 320px;
-$breakpoint-sm: 375px;
-$breakpoint-md: 414px;
-$breakpoint-lg: 768px;
-
-/* 屏幕断点（基于rpx） */
-$screen-sm: 640rpx;
-$screen-md: 768rpx;
-$screen-lg: 1024rpx;
-$screen-xl: 1280rpx;
-
-/* 间距扩展（基于已有变量的倍数） */
-$padding-large: $padding-base * 1.5; // 45rpx
-$margin-large: $margin-base * 1.5; // 45rpx
-
-/* 高度扩展 */
-$card-height: 120rpx;
-
 /* 卡片相关 */
 $card-border-radius: $border-radius * 1.5; // 22.5rpx
 $card-padding: $padding-base;
 $card-shadow: $box-shadow;
-$card-hover-shadow: $box-shadow-dark;
+$card-hover-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.12);
 
-/* 按钮相关 */
-$button-border-radius: $border-radius;
-$button-primary-bg: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
-
-/* 输入框相关 */
-$input-focus-border-color: $primary-color;
-$input-error-border: $danger-color;
-$input-success-border: $success-color;
-
-/* ==================== 模板编辑器特定变量 ==================== */
-/* 布局变量 */
-$layout-column-preview-height: 120rpx;
-
-/* 拖拽相关 */
-$drag-handle-width: 60rpx;
-$drag-icon-opacity: 0.5;
-
-/* 预览面板 */
-$preview-placeholder-icon-size: 120rpx;
-$preview-min-height: 400rpx;
-
-/* 区块管理 */
-$section-item-height: 80rpx;
-$section-item-gap: 16rpx;
-
-/* 颜色输入 */
-$color-input-width: 120rpx;
-$color-preview-size: 40rpx;
-
-/* 字体大小输入 */
-$font-size-input-width: 80rpx;
-
-/* 间距输入 */
-$spacing-input-width: 120rpx;
-
-/* 布局图标 */
-$layout-icon-size: 48rpx;
-
-/* 设备切换按钮 */
-$device-btn-padding: 8rpx 16rpx;
-
-
-/* 项目列表特定变量 */
-$project-item-shadow: $box-shadow;
-$project-item-hover-shadow: $box-shadow-dark;
-$project-item-padding: $padding-base;
-$project-item-margin: $margin-base;
-
-/* 状态颜色扩展 */
+/* ==================== 项目状态颜色 ==================== */
 $status-pending-bg: $info-bg;
 $status-pending-color: $info-color;
 $status-pending-border: $info-border;
@@ -373,100 +277,139 @@ $progress-early-color: $success-color;
 $progress-middle-color: $primary-color;
 $progress-late-color: $warning-color;
 $progress-completed-color: $info-color;
- 
 
-/* ==================== 实用类扩展 ==================== */
-/* 文本类 */
-.text-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+/* ==================== 成就列表相关变量 ==================== */
+$achievement-add-bg: $primary-color-light;
+$achievement-add-color: $primary-color;
+$achievement-add-border: $primary-color;
+$achievement-remove-bg: $danger-color;
+$achievement-remove-color: $background-color-white;
+$achievement-item-height: 60rpx;
+$achievement-input-height: 60rpx;
+$achievement-remove-btn-size: 60rpx;
+$achievement-item-gap: 16rpx;
+$achievement-index-width: 40rpx;
+$achievement-input-border: 2rpx solid $border-color-lighter;
+$achievement-add-border-style: dashed;
+$achievement-input-radius: $border-radius;
+$achievement-remove-btn-radius: $border-radius-small;
+$achievement-content-color: $text-regular;
+$achievement-index-color: $text-secondary;
+$achievement-count-color: $text-secondary;
+$achievement-empty-color: $text-placeholder;
+$achievement-empty-font-size: $font-size-base;
 
-.text-multi-truncate {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+/* ==================== 模板编辑器特定变量 ==================== */
+$layout-column-preview-height: 120rpx;
+$drag-handle-width: 60rpx;
+$drag-icon-opacity: 0.5;
+$preview-placeholder-icon-size: 120rpx;
+$preview-min-height: 400rpx;
+$section-item-height: 80rpx;
+$section-item-gap: 16rpx;
+$color-input-width: 120rpx;
+$color-preview-size: 40rpx;
+$font-size-input-width: 80rpx;
+$spacing-input-width: 120rpx;
+$layout-icon-size: 48rpx;
+$device-btn-padding: 8rpx 16rpx;
 
-/* 状态文本色 */
-.status-text {
-  &.success {
-    color: $success-color;
-  }
+/* ==================== 响应式系统 ==================== */
+/* 容器最大宽度 */
+$container-xs: 100%;
+$container-sm: 540px;
+$container-md: 720px;
+$container-lg: 960px;
+$container-xl: 1140px;
+$container-xxl: 1320px;
 
-  &.warning {
-    color: $warning-color;
-  }
+/* 断点像素值（用于媒体查询） */
+$breakpoint-xs: 320px;    // 对应 640rpx
+$breakpoint-sm: 375px;    // 对应 750rpx
+$breakpoint-md: 414px;    // 对应 828rpx
+$breakpoint-lg: 768px;    // 对应 1536rpx
+$breakpoint-xl: 1024px;   // 对应 2048rpx
 
-  &.danger {
-    color: $danger-color;
-  }
+/* 屏幕断点（基于rpx） */
+$screen-sm: 640rpx;
+$screen-md: 768rpx;
+$screen-lg: 1024rpx;
+$screen-xl: 1280rpx;
 
-  &.info {
-    color: $info-color;
-  }
-}
+/* 安全区域（适配全面屏） */
+$safe-area-inset-top: env(safe-area-inset-top);
+$safe-area-inset-bottom: env(safe-area-inset-bottom);
+$safe-area-inset-left: env(safe-area-inset-left);
+$safe-area-inset-right: env(safe-area-inset-right);
 
-/* 状态背景 */
-.status-bg {
-  &.success {
-    background: $success-bg;
-    border-color: $success-border;
-  }
+/* 间距扩展（系统化） */
+$spacing-0: 0;
+$spacing-1: 8rpx;
+$spacing-2: 16rpx;
+$spacing-3: 24rpx;
+$spacing-4: 32rpx;
+$spacing-5: 40rpx;
+$spacing-6: 48rpx;
+$spacing-7: 56rpx;
+$spacing-8: 64rpx;
+$spacing-9: 72rpx;
+$spacing-10: 80rpx;
 
-  &.warning {
-    background: $warning-bg;
-    border-color: $warning-border;
-  }
+/* 字体大小扩展（系统化） */
+$font-size-2xs: 20rpx;
+$font-size-xs: 24rpx;
+$font-size-sm: 28rpx;
+$font-size-base: 32rpx;
+$font-size-lg: 36rpx;
+$font-size-xl: 40rpx;
+$font-size-2xl: 44rpx;
+$font-size-3xl: 48rpx;
+$font-size-4xl: 52rpx;
 
-  &.danger {
-    background: $danger-bg;
-    border-color: $danger-border;
-  }
+/* 圆角扩展（系统化） */
+$rounded-none: 0;
+$rounded-sm: 4rpx;
+$rounded: 8rpx;
+$rounded-md: 12rpx;
+$rounded-lg: 16rpx;
+$rounded-xl: 20rpx;
+$rounded-2xl: 24rpx;
+$rounded-3xl: 32rpx;
+$rounded-full: 9999rpx;
 
-  &.info {
-    background: $info-bg;
-    border-color: $info-border;
-  }
-}
+/* 阴影扩展（系统化） */
+$shadow-xs: 0 1rpx 2rpx 0 rgba(0, 0, 0, 0.05);
+$shadow-sm: 0 1rpx 3rpx 0 rgba(0, 0, 0, 0.1), 0 1rpx 2rpx 0 rgba(0, 0, 0, 0.06);
+$shadow: 0 4rpx 6rpx -1rpx rgba(0, 0, 0, 0.1), 0 2rpx 4rpx -1rpx rgba(0, 0, 0, 0.06);
+$shadow-md: 0 10rpx 15rpx -3rpx rgba(0, 0, 0, 0.1), 0 4rpx 6rpx -2rpx rgba(0, 0, 0, 0.05);
+$shadow-lg: 0 20rpx 25rpx -5rpx rgba(0, 0, 0, 0.1), 0 10rpx 10rpx -5rpx rgba(0, 0, 0, 0.04);
+$shadow-xl: 0 25rpx 50rpx -12rpx rgba(0, 0, 0, 0.25);
 
-/* 禁用状态 */
-.disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  pointer-events: none;
-}
+/* 层级系统 */
+$z-index-0: 0;
+$z-index-10: 10;
+$z-index-20: 20;
+$z-index-30: 30;
+$z-index-40: 40;
+$z-index-50: 50;
+$z-index-auto: auto;
+$z-index-base: 1000;
+$z-index-dropdown: 2000;
+$z-index-modal: 3000;
+$z-index-toast: 4000;
 
-/* 加载状态 */
-.loading {
-  position: relative;
+/* 间距扩展（基于已有变量的倍数） */
+$padding-large: $padding-base * 1.5; // 45rpx
+$margin-large: $margin-base * 1.5; // 45rpx
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20rpx;
-    height: 20rpx;
-    border: 2rpx solid rgba($text-primary, 0.2);
-    border-top-color: $primary-color;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-}
+/* ==================== 项目列表特定变量 ==================== */
+$project-item-shadow: $box-shadow;
+$project-item-hover-shadow: $box-shadow-dark;
+$project-item-padding: $padding-base;
+$project-item-margin: $margin-base;
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ==================== 通用样式类 ==================== */
-/* 这些类是从项目中提取的重复和相似样式，统一管理 */
-
-// 布局工具类
+/* ==================== 工具类系统 ==================== */
+/* ===== 布局工具类 ===== */
 .flex-center {
   display: flex;
   justify-content: center;
@@ -501,13 +444,29 @@ $progress-completed-color: $info-color;
   flex-wrap: wrap;
 }
 
-// 文本工具类
-.text-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* 布局容器类 */
+.page-container {
+  min-height: 100vh;
+  background-color: $background-color;
+  padding-bottom: calc(#{$safe-area-inset-bottom} + 100rpx);
 }
 
+.filter-container {
+  background: $background-color-white;
+  border-radius: 0 0 $border-radius $border-radius;
+  box-shadow: $box-shadow;
+  padding: $padding-small;
+  position: sticky;
+  top: 0;
+  z-index: $z-index-base;
+}
+
+.list-scroll {
+  height: calc(100vh - 220rpx);
+  padding: $padding-small;
+}
+
+/* ===== 文本工具类 ===== */
 .text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -521,6 +480,7 @@ $progress-completed-color: $info-color;
   overflow: hidden;
 }
 
+
 .text-center {
   text-align: center;
 }
@@ -533,7 +493,7 @@ $progress-completed-color: $info-color;
   text-align: right;
 }
 
-// 文本颜色类
+/* 文本颜色类 */
 .text-primary {
   color: $primary-color;
 }
@@ -562,7 +522,7 @@ $progress-completed-color: $info-color;
   color: $text-placeholder;
 }
 
-// 状态文本类
+/* ===== 状态工具类 ===== */
 .status-text {
   &.success {
     color: $success-color;
@@ -581,7 +541,6 @@ $progress-completed-color: $info-color;
   }
 }
 
-// 状态背景类
 .status-bg {
   &.success {
     background: $success-bg;
@@ -604,7 +563,7 @@ $progress-completed-color: $info-color;
   }
 }
 
-// 状态标签类
+/* 状态标签类 */
 .status-tag {
   display: inline-flex;
   align-items: center;
@@ -614,23 +573,31 @@ $progress-completed-color: $info-color;
   font-weight: $font-weight-medium;
 
   &.status-success {
-    @extend .status-success;
+    background: $success-bg;
+    color: $success-color;
+    border: 1rpx solid $success-border;
   }
 
   &.status-warning {
-    @extend .status-warning;
+    background: $warning-bg;
+    color: $warning-color;
+    border: 1rpx solid $warning-border;
   }
 
   &.status-danger {
-    @extend .status-danger;
+    background: $danger-bg;
+    color: $danger-color;
+    border: 1rpx solid $danger-border;
   }
 
   &.status-info {
-    @extend .status-info;
+    background: $info-bg;
+    color: $info-color;
+    border: 1rpx solid $info-border;
   }
 }
 
-// 状态徽章类
+/* 状态徽章类 */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -639,72 +606,90 @@ $progress-completed-color: $info-color;
   font-size: $font-size-extra-small;
   font-weight: $font-weight-medium;
 
+  /* 通用状态 */
   &.status-success {
-    @extend .status-success;
+    background: $success-bg;
+    color: $success-color;
+    border: 1rpx solid $success-border;
   }
 
   &.status-warning {
-    @extend .status-warning;
+    background: $warning-bg;
+    color: $warning-color;
+    border: 1rpx solid $warning-border;
   }
 
   &.status-danger {
-    @extend .status-danger;
+    background: $danger-bg;
+    color: $danger-color;
+    border: 1rpx solid $danger-border;
   }
 
   &.status-info {
-    @extend .status-info;
+    background: $info-bg;
+    color: $info-color;
+    border: 1rpx solid $info-border;
   }
 
-  &.status-current {
-    @extend .status-success;
-  }
-
-  &.status-past {
-    @extend .status-info;
-  }
-
+  /* 项目特定状态 */
   &.status-pending {
-    @extend .status-info;
+    background: $status-pending-bg;
+    color: $status-pending-color;
+    border: 1rpx solid $status-pending-border;
   }
 
   &.status-in-progress {
-    @extend .status-warning;
+    background: $status-in-progress-bg;
+    color: $status-in-progress-color;
+    border: 1rpx solid $status-in-progress-border;
   }
 
   &.status-completed {
-    @extend .status-success;
+    background: $status-completed-bg;
+    color: $status-completed-color;
+    border: 1rpx solid $status-completed-border;
   }
 
   &.status-paused {
-    @extend .status-warning;
-  }
-
-  &.status-draft {
-    @extend .status-info;
-  }
-
-  &.status-published {
-    @extend .status-success;
-  }
-
-  &.status-archived {
-    @extend .status-warning;
-  }
-
-  &.status-approved {
-    @extend .status-success;
-  }
-
-  &.status-rejected {
-    @extend .status-danger;
-  }
-
-  &.status-exported {
-    @extend .status-info;
+    background: $status-paused-bg;
+    color: $status-paused-color;
+    border: 1rpx solid $status-paused-border;
   }
 }
 
-// 卡片容器类
+/* 徽章样式类 */
+.badge {
+  padding: 4rpx 12rpx;
+  border-radius: $border-radius-small;
+  font-size: $font-size-extra-small;
+  font-weight: $font-weight-medium;
+
+  &-current, &-public, &-published, &-approved, &-completed {
+    background: $success-bg;
+    color: $success-color;
+    border: 1rpx solid $success-border;
+  }
+
+  &-past, &-pending, &-draft, &-archived, &-exported {
+    background: $info-bg;
+    color: $info-color;
+    border: 1rpx solid $info-border;
+  }
+
+  &-in-progress, &-certified {
+    background: $primary-color-light;
+    color: $primary-color;
+    border: 1rpx solid $primary-border;
+  }
+
+  &-paused, &-rejected {
+    background: $warning-bg;
+    color: $warning-color;
+    border: 1rpx solid $warning-border;
+  }
+}
+
+/* ===== 卡片容器类 ===== */
 .card-container {
   width: 96%;
   background: $background-color-white;
@@ -721,12 +706,7 @@ $progress-completed-color: $info-color;
   margin-bottom: $margin-base;
 }
 
-.page-container {
-  min-height: 100vh;
-  background-color: $background-color;
-}
-
-// 按钮扩展类
+/* ===== 按钮系统 ===== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -741,7 +721,7 @@ $progress-completed-color: $info-color;
   text-decoration: none;
   min-height: 80rpx;
 
-  // 按钮变体
+  /* 按钮变体 */
   &-primary {
     background: $primary-color;
     color: white;
@@ -788,7 +768,7 @@ $progress-completed-color: $info-color;
     }
   }
 
-  // 按钮尺寸
+  /* 按钮尺寸 */
   &-small {
     padding: 12rpx 24rpx;
     font-size: $font-size-small;
@@ -801,7 +781,7 @@ $progress-completed-color: $info-color;
     min-height: 100rpx;
   }
 
-  // 按钮状态
+  /* 按钮状态 */
   &-block {
     width: 100%;
     display: flex;
@@ -814,7 +794,7 @@ $progress-completed-color: $info-color;
   }
 }
 
-// 表单扩展类
+/* ===== 表单系统 ===== */
 .form-group {
   margin-bottom: $margin-base;
 
@@ -883,7 +863,295 @@ $progress-completed-color: $info-color;
   }
 }
 
-// 标签类
+/* 搜索框组件类 */
+.search-box {
+  display: flex;
+  align-items: center;
+  background: $background-color;
+  border-radius: $border-radius;
+  padding: 20rpx 24rpx;
+  margin-bottom: $margin-small;
+  border: 1rpx solid $border-color-light;
+
+  .search-icon, .icon {
+    font-size: 32rpx;
+    color: $text-secondary;
+  }
+
+  .search-input {
+    flex: 1;
+    font-size: $font-size-base;
+    color: $text-primary;
+    margin-left: 16rpx;
+    background: transparent;
+  }
+
+  .clear-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .clear-icon, .icon {
+      font-size: 36rpx;
+      color: $text-secondary;
+      width: 40rpx;
+      height: 40rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+.filter-row {
+  display: flex;
+  gap: $margin-small;
+  justify-content: space-between;
+
+  .filter-group {
+    flex: 1;
+
+    .filter-label {
+      display: block;
+      font-size: $font-size-extra-small;
+      color: $text-secondary;
+      margin-bottom: 8rpx;
+    }
+
+    .filter-select {
+      padding: 16rpx;
+      background: $background-color;
+      border-radius: $border-radius-small;
+      font-size: $font-size-small;
+      color: $text-primary;
+      border: 1rpx solid $border-color-light;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .arrow-down {
+        font-size: 20rpx;
+        color: $text-secondary;
+      }
+    }
+  }
+}
+
+/* ===== 列表项样式 ===== */
+.list-item {
+  margin-bottom: $margin-base;
+  position: relative;
+  transition: all $transition-fast $ease-in-out;
+
+  &:active {
+    transform: translateY(-2rpx);
+    box-shadow: $card-hover-shadow;
+  }
+
+  .item-index {
+    position: absolute;
+    left: 20rpx;
+    top: 20rpx;
+    width: 40rpx;
+    height: 40rpx;
+    background: $primary-color-light;
+    border-radius: $border-radius-round;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .index-number {
+      font-size: $font-size-small;
+      font-weight: $font-weight-bold;
+      color: $primary-color;
+    }
+  }
+}
+
+/* 标签筛选组件类 */
+.tags-scroll {
+  width: 100%;
+  white-space: nowrap;
+  padding: $padding-mini $padding-small;
+  background: $background-color-white;
+  border-bottom: 1rpx solid $border-color-extra-light;
+
+  .tags-container {
+    display: flex;
+    gap: $margin-mini;
+
+    .tag-filter {
+      display: flex;
+      align-items: center;
+      gap: 8rpx;
+      padding: 8rpx 16rpx;
+      background: $primary-color-light;
+      border-radius: $border-radius-round;
+      font-size: $font-size-extra-small;
+      color: $primary-color;
+      border: 1rpx solid $primary-border;
+
+      .icon {
+        font-size: 24rpx;
+      }
+    }
+
+    .tag-clear {
+      padding: 8rpx 16rpx;
+      background: $background-color;
+      border-radius: $border-radius-small;
+      font-size: $font-size-extra-small;
+      color: $text-secondary;
+      border: 1rpx solid $border-color-light;
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+/* ===== 时间线样式类 ===== */
+.timeline {
+  position: relative;
+  padding: 0 0 $margin-base 40rpx;
+  margin-bottom: $margin-base;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 16rpx;
+    top: 0;
+    bottom: 0;
+    width: 2rpx;
+    background: $border-color-light;
+  }
+
+  .timeline-item {
+    position: relative;
+
+    .timeline-dot {
+      position: absolute;
+      left: -30rpx;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12rpx;
+      height: 12rpx;
+      border-radius: 50%;
+      background: $primary-color;
+      border: 2rpx solid $background-color-white;
+      box-shadow: 0 0 0 2rpx $primary-color;
+    }
+
+    .timeline-range {
+      display: flex;
+      align-items: center;
+      gap: 12rpx;
+      margin-bottom: 8rpx;
+
+      .timeline-date {
+        font-size: $font-size-base;
+        font-weight: $font-weight-medium;
+        color: $text-primary;
+
+        &.current-date {
+          color: $success-color;
+          font-weight: $font-weight-bold;
+        }
+      }
+
+      .timeline-separator {
+        font-size: $font-size-small;
+        color: $text-secondary;
+      }
+    }
+
+    .timeline-duration {
+      font-size: $font-size-small;
+      color: $text-secondary;
+      background: $background-color;
+      padding: 4rpx 12rpx;
+      border-radius: $border-radius-small;
+      display: inline-block;
+    }
+  }
+}
+
+/* ===== 成就列表样式类 ===== */
+.achievements-container {
+  margin-bottom: $margin-base;
+  padding: 16rpx;
+  background: $warning-light;
+  border-radius: $border-radius-small;
+  border: 1rpx solid $warning-border;
+
+  .achievements-header {
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    margin-bottom: 12rpx;
+
+    .star-icon {
+      font-size: 20rpx;
+      color: $warning-color;
+    }
+
+    .achievements-title {
+      font-size: $font-size-small;
+      font-weight: $font-weight-medium;
+      color: $warning-color;
+    }
+
+    .achievements-count {
+      font-size: $font-size-extra-small;
+      color: $text-secondary;
+    }
+  }
+
+  .achievements-list {
+    .achievement-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 12rpx;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .achievement-index {
+        width: 30rpx;
+        color: $warning-color;
+        font-weight: $font-weight-medium;
+        font-size: $font-size-extra-small;
+      }
+
+      .achievement-text {
+        flex: 1;
+        font-size: $font-size-small;
+        color: $text-regular;
+        line-height: 1.5;
+        -webkit-line-clamp: 2;
+      }
+    }
+
+    .more-achievements {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8rpx 0;
+      color: $primary-color;
+      font-size: $font-size-extra-small;
+      border-top: 1rpx solid $border-color-extra-light;
+      margin-top: 8rpx;
+      cursor: pointer;
+    }
+  }
+}
+
+/* ===== 其他工具类 ===== */
+/* 标签类 */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -895,14 +1163,76 @@ $progress-completed-color: $info-color;
   border: 1px solid $border-color-light;
 }
 
-// 禁用状态类
+/* 技能等级标签类 */
+.level-tag {
+  padding: 4rpx 16rpx;
+  border-radius: $border-radius-small;
+  font-size: $font-size-extra-small;
+  font-weight: $font-weight-medium;
+
+  &.level-beginner {
+    background: $info-bg;
+    color: $info-color;
+    border: 1rpx solid $info-border;
+  }
+
+  &.level-intermediate {
+    background: $success-bg;
+    color: $success-color;
+    border: 1rpx solid $success-border;
+  }
+
+  &.level-advanced {
+    background: $warning-bg;
+    color: $warning-color;
+    border: 1rpx solid $warning-border;
+  }
+}
+
+/* 内容描述样式类 */
+.content-desc {
+  font-size: $font-size-small;
+  color: $text-regular;
+  line-height: 1.6;
+  background: $background-color;
+  padding: 16rpx;
+  border-radius: $border-radius-small;
+}
+
+/* 公司标签样式类 */
+.company-tag {
+  font-size: $font-size-small;
+  color: $text-secondary;
+  background: $background-color;
+  padding: 4rpx 12rpx;
+  border-radius: $border-radius-small;
+}
+
+/* 标题区域样式类 */
+.title-section {
+  flex: 1;
+
+  .title-text {
+    font-size: $font-size-medium;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    margin-bottom: 8rpx;
+    display: block;
+  }
+
+  .title-badges {
+    display: flex;
+    gap: 8rpx;
+  }
+}
+
+/* ===== 状态类 ===== */
 .disabled {
   opacity: 0.6;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-// 加载状态类
 .loading {
   position: relative;
 
@@ -926,7 +1256,7 @@ $progress-completed-color: $info-color;
   }
 }
 
-// 间距工具类
+/* ===== 间距工具类 ===== */
 .margin-base {
   margin: $margin-base;
 }
@@ -951,8 +1281,21 @@ $progress-completed-color: $info-color;
   padding: $padding-mini;
 }
 
-// 响应式调整
+/* ===== 响应式调整 ===== */
 @media (max-width: $screen-md) {
+  .page-container {
+    padding-bottom: calc(#{$safe-area-inset-bottom} + 80rpx);
+  }
+
+  .list-scroll {
+    height: calc(100vh - 200rpx);
+    padding: $padding-mini;
+  }
+
+  .filter-container {
+    padding: $padding-mini;
+  }
+
   .section-container {
     padding: $padding-small;
   }
@@ -965,79 +1308,3 @@ $progress-completed-color: $info-color;
     padding: $padding-small;
   }
 }
-
-
-/* 响应式布局扩展 */
-
-/* 容器最大宽度（基于设计规范） */
-$container-xs: 100%;
-$container-sm: 540px;
-$container-md: 720px;
-$container-lg: 960px;
-$container-xl: 1140px;
-$container-xxl: 1320px;
-
-/* 断点像素值（用于媒体查询） */
-$breakpoint-xs: 320px;    // 对应 640rpx
-$breakpoint-sm: 375px;    // 对应 750rpx
-$breakpoint-md: 414px;    // 对应 828rpx
-$breakpoint-lg: 768px;    // 对应 1536rpx
-$breakpoint-xl: 1024px;   // 对应 2048rpx
-
-/* 安全区域（适配全面屏） */
-$safe-area-inset-top: env(safe-area-inset-top);
-$safe-area-inset-bottom: env(safe-area-inset-bottom);
-$safe-area-inset-left: env(safe-area-inset-left);
-$safe-area-inset-right: env(safe-area-inset-right);
-
-/* 间距扩展（系统化） */
-$spacing-0: 0;
-$spacing-1: 8rpx;
-$spacing-2: 16rpx;
-$spacing-3: 24rpx;
-$spacing-4: 32rpx;
-$spacing-5: 40rpx;
-$spacing-6: 48rpx;
-$spacing-7: 56rpx;
-$spacing-8: 64rpx;
-$spacing-9: 72rpx;
-$spacing-10: 80rpx;
-
-/* 字体大小扩展（系统化） */
-$font-size-2xs: 20rpx;
-$font-size-xs: 24rpx;
-$font-size-sm: 28rpx;
-$font-size-base: 32rpx;
-$font-size-lg: 36rpx;
-$font-size-xl: 40rpx;
-$font-size-2xl: 44rpx;
-$font-size-3xl: 48rpx;
-$font-size-4xl: 52rpx;
-
-/* 圆角扩展（系统化） */
-$rounded-none: 0;
-$rounded-sm: 4rpx;
-$rounded: 8rpx;
-$rounded-md: 12rpx;
-$rounded-lg: 16rpx;
-$rounded-xl: 20rpx;
-$rounded-2xl: 24rpx;
-$rounded-3xl: 32rpx;
-$rounded-full: 9999rpx;
-
-/* 阴影扩展（系统化） */
-$shadow-xs: 0 1rpx 2rpx 0 rgba(0, 0, 0, 0.05);
-$shadow-sm: 0 1rpx 3rpx 0 rgba(0, 0, 0, 0.1), 0 1rpx 2rpx 0 rgba(0, 0, 0, 0.06);
-$shadow: 0 4rpx 6rpx -1rpx rgba(0, 0, 0, 0.1), 0 2rpx 4rpx -1rpx rgba(0, 0, 0, 0.06);
-$shadow-md: 0 10rpx 15rpx -3rpx rgba(0, 0, 0, 0.1), 0 4rpx 6rpx -2rpx rgba(0, 0, 0, 0.05);
-$shadow-lg: 0 20rpx 25rpx -5rpx rgba(0, 0, 0, 0.1), 0 10rpx 10rpx -5rpx rgba(0, 0, 0, 0.04);
-$shadow-xl: 0 25rpx 50rpx -12rpx rgba(0, 0, 0, 0.25);
-
-/* z-index 系统化 */
-$z-index-0: 0;
-$z-index-10: 10;
-$z-index-20: 20;
-$z-index-30: 30;
-$z-index-40: 40;
-$z-index-50: 50;
-$z-index-auto: auto;

@@ -324,13 +324,13 @@ onMounted(() => {
   font-weight: $font-weight-semibold;
   color: $text-primary;
   margin-bottom: 2rpx;
-  @extend .text-ellipsis;
+  @extend .text-truncate;
 }
 
 .message-sender {
   font-size: $font-size-small;
   color: $text-secondary;
-  @extend .text-ellipsis;
+  @extend .text-truncate;
 }
 
 .message-time {

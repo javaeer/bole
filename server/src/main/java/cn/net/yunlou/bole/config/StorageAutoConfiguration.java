@@ -8,18 +8,12 @@ import cn.net.yunlou.bole.service.impl.FileServiceImpl;
 import cn.net.yunlou.bole.service.impl.StorageServiceImpl;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.github.tobato.fastdfs.FdfsClientConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableMBeanExport;
-import org.springframework.context.annotation.Import;
-import org.springframework.jmx.support.RegistrationPolicy;
-
 
 /** 存储自动配置类 负责自动配置存储相关组件 */
 @Slf4j

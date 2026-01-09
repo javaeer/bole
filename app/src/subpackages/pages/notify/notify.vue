@@ -577,7 +577,7 @@ const handleReport = () => {
 .attachment-name {
   font-size: $font-size-base;
   color: $text-primary;
-  @extend .text-ellipsis;
+  @extend .text-truncate;
 }
 
 .attachment-size {
@@ -629,7 +629,7 @@ const handleReport = () => {
   flex: 1;
   font-size: $font-size-base;
   color: $text-primary;
-  @extend .text-ellipsis;
+  @extend .text-truncate;
 }
 
 .link-arrow {
@@ -810,7 +810,7 @@ const handleReport = () => {
 .related-title {
   font-size: $font-size-base;
   color: $text-primary;
-  @extend .text-ellipsis;
+  @extend .text-truncate;
   max-width: 400rpx;
 }
 

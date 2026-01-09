@@ -597,7 +597,7 @@ onMounted(() => {
   font-size: $font-size-base;
   color: $text-primary;
   margin-bottom: calc($margin-mini / 2);
-  @extend .text-ellipsis;
+  @extend .text-truncate;
 }
 
 .file-time {

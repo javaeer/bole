@@ -516,11 +516,6 @@ onReachBottom(() => {
   align-items: center;
 }
 
-.text-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 .btn {
   border: none;
@@ -847,7 +842,7 @@ font-weight: $font-weight-medium;
         font-weight: $font-weight-medium;
         color: $text-primary;
         margin-bottom: $margin-mini;
-        @extend .text-ellipsis;
+        @extend .text-truncate;
         max-width: 400rpx;
       }
 
