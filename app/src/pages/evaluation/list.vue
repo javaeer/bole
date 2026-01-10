@@ -58,7 +58,7 @@
       </view>
 
       <!-- 列表内容 -->
-      <view v-else>
+      <view v-else >
         <view
           v-for="(item, index) in listData"
           :key="item.id"

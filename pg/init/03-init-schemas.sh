@@ -90,7 +90,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_banner.updated_at IS '更新时间';
     COMMENT ON COLUMN bole_app.t_banner.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
--- 字典表
+    -- 字典表
     CREATE TABLE IF NOT EXISTS bole_app.t_dict (
         -- 主键字段
         id BIGSERIAL PRIMARY KEY,
@@ -1534,6 +1534,62 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
     COMMENT ON COLUMN bole_app.t_follow_university.user_id IS '用户ID';
     COMMENT ON COLUMN bole_app.t_follow_university.university_id IS '大学ID';
     COMMENT ON COLUMN bole_app.t_follow_university.created_at IS '创建时间';
+
+
+    -- 文档任务表
+    CREATE TABLE IF NOT EXISTS bole_app.t_document_task (
+        -- 主键字段（继承自 BaseEntity）
+        id BIGSERIAL PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        resumes_id BIGINT NOT NULL,
+        document_type VARCHAR(50) NOT NULL,
+        status VARCHAR(50) DEFAULT 'PENDING',
+        file_url VARCHAR(500),
+        file_name VARCHAR(255),
+        file_size BIGINT,
+        error_message TEXT,
+        retry_count INTEGER DEFAULT 0,
+        start_at TIMESTAMP,
+        end_at TIMESTAMP,
+        
+        -- 时间字段（继承自 BaseEntity）
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        
+        -- 逻辑删除字段（继承自 BaseEntity）
+        deleted INTEGER DEFAULT 0,
+        
+        -- 外键约束（根据实际情况添加）
+        CONSTRAINT fk_document_task_user FOREIGN KEY (user_id) REFERENCES bole_app.t_user(id),
+        CONSTRAINT fk_document_task_resumes FOREIGN KEY (resumes_id) REFERENCES bole_app.t_resumes(id)
+    );
+
+    -- 创建索引
+    CREATE INDEX IF NOT EXISTS idx_document_task_user_id ON bole_app.t_document_task(user_id);
+    CREATE INDEX IF NOT EXISTS idx_document_task_resumes_id ON bole_app.t_document_task(resumes_id);
+    CREATE INDEX IF NOT EXISTS idx_document_task_status ON bole_app.t_document_task(status);
+    CREATE INDEX IF NOT EXISTS idx_document_task_document_type ON bole_app.t_document_task(document_type);
+    CREATE INDEX IF NOT EXISTS idx_document_task_created_at ON bole_app.t_document_task(created_at);
+    CREATE INDEX IF NOT EXISTS idx_document_task_start_at ON bole_app.t_document_task(start_at);
+    CREATE INDEX IF NOT EXISTS idx_document_task_end_at ON bole_app.t_document_task(end_at);
+
+    -- 注释
+    COMMENT ON TABLE bole_app.t_document_task IS '文档任务表';
+    COMMENT ON COLUMN bole_app.t_document_task.id IS '主键ID';
+    COMMENT ON COLUMN bole_app.t_document_task.user_id IS '用户ID';
+    COMMENT ON COLUMN bole_app.t_document_task.resumes_id IS '简历ID';
+    COMMENT ON COLUMN bole_app.t_document_task.document_type IS '文档类型';
+    COMMENT ON COLUMN bole_app.t_document_task.status IS '任务状态（PENDING:待处理, PROCESSING:处理中, COMPLETED:已完成, FAILED:失败）';
+    COMMENT ON COLUMN bole_app.t_document_task.file_url IS '文件URL';
+    COMMENT ON COLUMN bole_app.t_document_task.file_name IS '文件名称';
+    COMMENT ON COLUMN bole_app.t_document_task.file_size IS '文件大小（字节）';
+    COMMENT ON COLUMN bole_app.t_document_task.error_message IS '错误信息';
+    COMMENT ON COLUMN bole_app.t_document_task.retry_count IS '重试次数';
+    COMMENT ON COLUMN bole_app.t_document_task.start_at IS '开始时间';
+    COMMENT ON COLUMN bole_app.t_document_task.end_at IS '结束时间';
+    COMMENT ON COLUMN bole_app.t_document_task.created_at IS '创建时间';
+    COMMENT ON COLUMN bole_app.t_document_task.updated_at IS '更新时间';
+    COMMENT ON COLUMN bole_app.t_document_task.deleted IS '逻辑删除标志(0:未删除,1:已删除)';
 
     -- 审计日志表
     CREATE TABLE IF NOT EXISTS bole_audit.audit_logs (

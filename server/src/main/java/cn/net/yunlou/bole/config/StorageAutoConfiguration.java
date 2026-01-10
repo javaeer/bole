@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.config;
 
-import cn.net.yunlou.bole.handler.IStorage;
+import cn.net.yunlou.bole.handler.IStorageStrategy;
 import cn.net.yunlou.bole.handler.StorageStrategyRegistry;
 import cn.net.yunlou.bole.service.FileService;
 import cn.net.yunlou.bole.service.StorageService;
@@ -33,9 +33,9 @@ public class StorageAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public StorageStrategyRegistry storageStrategyRegistry(ObjectProvider<IStorage> strategies) {
+    public StorageStrategyRegistry storageStrategyRegistry(ObjectProvider<IStorageStrategy> strategies) {
 
-        List<IStorage> strategyList = strategies.stream().collect(Collectors.toList());
+        List<IStorageStrategy> strategyList = strategies.stream().collect(Collectors.toList());
 
         return new StorageStrategyRegistry(strategyList);
     }

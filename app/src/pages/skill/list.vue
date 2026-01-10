@@ -636,13 +636,10 @@ onReachBottom(() => {
   }
 }
 
-.list-scroll {
-  height: calc(100vh - 300rpx);
-  padding: $padding-small;
-}
-
 .skill-item {
   @extend .card-container;
+  width: 96%;
+  align-items: center;
   margin-bottom: $margin-base;
   transition: all $transition-fast $ease-in-out;
 

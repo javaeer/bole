@@ -3,46 +3,72 @@ package cn.net.yunlou.bole.common.handler;
 import com.baomidou.mybatisplus.extension.handlers.AbstractJsonTypeHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;
 import org.apache.ibatis.type.MappedTypes;
 import org.postgresql.util.PGobject;
 
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 @Slf4j
 @MappedTypes({Object.class})
 @MappedJdbcTypes(JdbcType.OTHER)
-public class JsonbTypeHandler extends AbstractJsonTypeHandler<Object> {
+public class JsonbTypeHandler<T> extends AbstractJsonTypeHandler<T> {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private final Class<?> type;
-    private final TypeReference<?> typeReference;
+    private final TypeReference<T> typeReference;
+    private final Class<T> rawType;
 
-    public JsonbTypeHandler(Class<?> type) {
+    public JsonbTypeHandler(Class<T> type) {
         super(type);
         if (log.isTraceEnabled()) {
             log.trace("JsonbTypeHandler(" + type + ")");
         }
-        this.type = type;
-        this.typeReference =
-                new TypeReference<>() {
-                    @Override
-                    public Class<?> getType() {
-                        return type;
-                    }
-                };
+        this.rawType = type;
+        this.typeReference = createTypeReference(type);
+    }
+
+    @SuppressWarnings("unchecked")
+    public JsonbTypeHandler(Type type) {
+        super(getRawType(type));
+        if (log.isTraceEnabled()) {
+            log.trace("JsonbTypeHandler(Type: " + type + ")");
+        }
+        this.rawType = (Class<T>) getRawType(type);
+        this.typeReference = createTypeReference(type);
+    }
+
+    private static Class<?> getRawType(Type type) {
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            return (Class<?>) ((ParameterizedType) type).getRawType();
+        } else {
+            throw new IllegalArgumentException("Unsupported type: " + type);
+        }
+    }
+
+    private TypeReference<T> createTypeReference(Type type) {
+        return new TypeReference<>() {
+            @Override
+            public Type getType() {
+                return type;
+            }
+        };
     }
 
     @Override
-    public Object parse(String json) {
+    public T parse(String json) {
         try {
-            if (type == String.class) {
-                return json;
+            if (rawType == String.class) {
+                return rawType.cast(json);
             }
             return OBJECT_MAPPER.readValue(json, typeReference);
         } catch (IOException e) {
@@ -64,7 +90,7 @@ public class JsonbTypeHandler extends AbstractJsonTypeHandler<Object> {
 
     @Override
     public void setNonNullParameter(
-            PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
+            PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
         PGobject pgObject = new PGobject();
         pgObject.setType("jsonb");
         pgObject.setValue(toJson(parameter));
@@ -72,7 +98,7 @@ public class JsonbTypeHandler extends AbstractJsonTypeHandler<Object> {
     }
 
     @Override
-    public Object getNullableResult(ResultSet rs, String columnName) throws SQLException {
+    public T getNullableResult(ResultSet rs, String columnName) throws SQLException {
         Object value = rs.getObject(columnName);
         if (value instanceof PGobject) {
             return parse(((PGobject) value).getValue());
@@ -81,7 +107,7 @@ public class JsonbTypeHandler extends AbstractJsonTypeHandler<Object> {
     }
 
     @Override
-    public Object getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+    public T getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         Object value = rs.getObject(columnIndex);
         if (value instanceof PGobject) {
             return parse(((PGobject) value).getValue());

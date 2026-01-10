@@ -4,12 +4,10 @@ import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.constant.StorageType;
 import cn.net.yunlou.bole.config.StorageProperties;
-import cn.net.yunlou.bole.handler.IStorage;
+import cn.net.yunlou.bole.handler.IStorageStrategy;
 import cn.net.yunlou.bole.handler.StorageStrategyRegistry;
 import cn.net.yunlou.bole.model.entity.File;
 import cn.net.yunlou.bole.service.StorageService;
-import java.io.InputStream;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -17,12 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class StorageServiceImpl implements StorageService {
 
     private final StorageStrategyRegistry registry;
+
     private final StorageProperties properties;
 
     @Override
@@ -36,13 +38,11 @@ public class StorageServiceImpl implements StorageService {
 
         // 3. 获取存储策略
         String storageType = properties.getType();
-        IStorage strategy = registry.getStrategy(storageType);
+        IStorageStrategy strategy = registry.getStrategy(storageType);
 
         // 4. 存储文件
         File storedFile = strategy.store(file);
 
-        // 5. 保存文件记录到数据库（如果需要）
-        // fileService.save(storedFile);
 
         log.info(
                 "文件上传成功: {}, 存储类型: {}, 访问地址: {}",
@@ -55,7 +55,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public InputStream download(String filePath, String storageType) {
-        IStorage strategy = registry.getStrategy(storageType);
+        IStorageStrategy strategy = registry.getStrategy(storageType);
         return strategy.download(filePath);
     }
 
@@ -66,7 +66,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public boolean delete(String filePath, String storageType) {
-        IStorage strategy = registry.getStrategy(storageType);
+        IStorageStrategy strategy = registry.getStrategy(storageType);
         return strategy.delete(filePath);
     }
 
@@ -84,6 +84,25 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public List<StorageType> getAvailableStorageTypes() {
         return registry.getAvailableTypes();
+    }
+
+    @Override
+    public File uploadFile(java.io.File file, String fileName) {
+
+        // 1. 获取存储策略
+        String storageType = properties.getType();
+        IStorageStrategy strategy = registry.getStrategy(storageType);
+
+        // 2. 存储文件
+        File storedFile = strategy.storeFile(file,fileName);
+
+        log.info(
+                "文件上传成功: {}, 存储类型: {}, 访问地址: {}",
+                storedFile.getOriginalFilename(),
+                storageType,
+                storedFile.getAccessUrl());
+
+        return storedFile;
     }
 
     // 私有辅助方法

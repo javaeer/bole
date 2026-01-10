@@ -19,4 +19,6 @@ public interface StorageService {
     void switchStorageType(String newStorageType);
 
     List<StorageType> getAvailableStorageTypes();
+
+    File uploadFile(java.io.File file, String fileName);
 }

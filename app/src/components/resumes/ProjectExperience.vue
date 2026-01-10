@@ -3,7 +3,9 @@
     :title="componentName"
     :component-data="componentData"
     :global-style="globalStyle"
-    :custom-styles="customStyles"
+    :override-styles="customStyles"
+    :responsive-center="true"
+    :max-width="maxWidth" 
   >
     <template #default="{ styles }">
       <view
@@ -183,6 +185,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
+// ===================== 计算属性 =====================
+
 // 组件数据
 const componentData = computed(() => props.componentData || {});
 const componentProps = computed(() => componentData.value.props || {});
@@ -191,6 +195,12 @@ const defaultConfig = computed(() => componentData.value.defaultConfig || {});
 const componentName = computed(() =>
   componentData.value.name || defaultConfig.value.props?.title || '项目经验'
 );
+
+// 最大宽度 - 根据布局类型自适应
+const maxWidth = computed(() => {
+  // 可以从 globalStyle 或布局配置中获取
+  return props.globalStyle?.maxWidth || "100%";
+});
 
 // 项目经验数据
 const projects = computed(() =>
@@ -253,6 +263,8 @@ const sortedProjects = computed(() => {
   return items;
 });
 
+// ===================== 工具函数 =====================
+
 // 格式化日期
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '';
@@ -276,8 +288,8 @@ const getContainerStyle = (styles: any) => {
     fontFamily: styles.fontFamily,
     fontSize: styles.bodySize,
     lineHeight: styles.lineHeight,
-    width: '100%', // 添加宽度控制
-    boxSizing: 'border-box', // 确保内边距不增加宽度
+    width: '100%',
+    boxSizing: 'border-box',
   };
 };
 
@@ -293,7 +305,7 @@ const getProjectItemStyle = (styles: any) => {
     transition: 'all 0.3s ease',
     position: 'relative',
     overflow: 'hidden',
-    width: '100%', // 确保项目项填满容器
+    width: '94%',
   };
 
   return defaultStyle;
@@ -308,7 +320,7 @@ const getHeaderStyle = (styles: any) => {
     alignItems: 'flex-start',
     marginBottom: '12px',
     flexWrap: 'wrap',
-    gap: '8px', // 添加间距
+    gap: '8px',
   };
 };
 
@@ -318,11 +330,11 @@ const getProjectNameStyle = (styles: any) => {
   return {
     fontSize: '17px',
     fontWeight: 'bold',
-    color: styles.companyColor || styles.primaryColor || '#1890ff',
+    color: 'var(--base-title-color, #1890ff)',
     lineHeight: '1.3',
     marginBottom: '6px',
     display: 'block',
-    width: '100%', // 确保名称不溢出
+    width: '100%',
   };
 };
 
@@ -332,7 +344,7 @@ const getRoleStyle = (styles: any) => {
   return {
     fontSize: '13px',
     color: '#fff',
-    background: `linear-gradient(135deg, ${styles.accentColor || '#5ac8fa'}, ${styles.primaryColor || '#1890ff'})`,
+    background: `linear-gradient(135deg, var(--base-accent-color, #5ac8fa), var(--base-primary-color, #1890ff))`,
     padding: '3px 10px',
     borderRadius: '12px',
     fontWeight: '500',
@@ -350,7 +362,7 @@ const getTimeStyle = (styles: any) => {
     padding: '3px 10px',
     borderRadius: '12px',
     whiteSpace: 'nowrap',
-    flexShrink: 0, // 防止时间被压缩
+    flexShrink: 0,
   };
 };
 
@@ -358,12 +370,12 @@ const getDescriptionStyle = (styles: any) => {
   if (!styles) return {};
 
   return {
-    color: styles.textColor || '#555',
+    color: 'var(--base-text-color, #555)',
     fontSize: styles.bodySize || '14px',
     lineHeight: styles.lineHeight || '1.6',
     marginBottom: '16px',
     paddingBottom: '12px',
-    borderBottom: '1px dashed #eee',
+    borderBottom: '1px dashed var(--base-secondary-color, #eee)',
     width: '100%',
   };
 };
@@ -377,9 +389,9 @@ const getLinkContainerStyle = (styles: any) => {
     gap: '6px',
     marginBottom: '12px',
     padding: '8px 12px',
-    background: styles.linkBackground || '#f0f7ff',
+    background: styles.linkBackground || 'var(--base-tag-bg, #f0f7ff)',
     borderRadius: '6px',
-    borderLeft: `3px solid ${styles.accentColor || '#5ac8fa'}`,
+    borderLeft: `3px solid var(--base-accent-color, #5ac8fa)`,
     width: '100%',
     boxSizing: 'border-box',
   };
@@ -390,7 +402,7 @@ const getLinkIconStyle = (styles: any) => {
 
   return {
     fontSize: '14px',
-    flexShrink: 0, // 防止图标被压缩
+    flexShrink: 0,
   };
 };
 
@@ -399,7 +411,7 @@ const getLinkTextStyle = (styles: any) => {
 
   return {
     fontSize: '13px',
-    color: styles.linkColor || styles.primaryColor || '#1890ff',
+    color: styles.linkColor || 'var(--base-primary-color, #1890ff)',
     flex: 1,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -418,7 +430,7 @@ const getSectionStyle = (styles: any, sectionType: string) => {
   if (sectionType === 'achievements') {
     baseStyle.marginTop = '16px';
     baseStyle.paddingTop = '16px';
-    baseStyle.borderTop = '1px dashed #eee';
+    baseStyle.borderTop = '1px dashed var(--base-secondary-color, #eee)';
   }
 
   return baseStyle;
@@ -429,7 +441,7 @@ const getSectionTitleStyle = (styles: any) => {
 
   return {
     fontSize: '14px',
-    color: styles.titleColor || '#333',
+    color: 'var(--base-title-color, #333)',
     fontWeight: '500',
     display: 'block',
     marginBottom: '8px',
@@ -449,9 +461,9 @@ const getListItemStyle = (styles: any, type: string) => {
 
   if (type === 'achievement') {
     baseStyle.padding = '6px 10px';
-    baseStyle.background = `linear-gradient(135deg, ${styles.achievementBackground || '#f0fff4'}, ${styles.achievementHighlight || '#e6fff7'})`;
+    baseStyle.background = `linear-gradient(135deg, var(--base-highlight-bg, #f0fff4), var(--base-accent-color, #e6fff7)20)`;
     baseStyle.borderRadius = '6px';
-    baseStyle.borderLeft = `3px solid ${styles.successColor || '#52c41a'}`;
+    baseStyle.borderLeft = `3px solid var(--base-accent-color, #52c41a)`;
     baseStyle.marginBottom = '6px';
   }
 
@@ -463,7 +475,7 @@ const getListItemTextStyle = (styles: any) => {
 
   return {
     fontSize: '13px',
-    color: styles.textColor || '#666',
+    color: 'var(--base-text-color, #666)',
     lineHeight: '1.5',
     flex: 1,
   };
@@ -473,7 +485,7 @@ const getMarkerStyle = (styles: any) => {
   if (!styles) return {};
 
   return {
-    color: styles.markerColor || styles.accentColor || '#5ac8fa',
+    color: 'var(--base-accent-color, #5ac8fa)',
     fontSize: '14px',
     marginTop: '2px',
     flexShrink: 0,
@@ -484,7 +496,7 @@ const getAchievementMarkerStyle = (styles: any) => {
   if (!styles) return {};
 
   return {
-    color: styles.successColor || '#52c41a',
+    color: 'var(--base-accent-color, #52c41a)',
     fontSize: '14px',
     marginTop: '1px',
     flexShrink: 0,
@@ -508,10 +520,10 @@ const getTechTagStyle = (styles: any, tech: string) => {
     // 数据库
     'MySQL': { background: '#f0f7ff', color: '#00758f' },
     'MongoDB': { background: '#f6ffed', color: '#47a248' },
-    // 默认
+    // 默认使用CSS变量
     'default': {
-      background: styles.tagBackground || '#e6f7ff',
-      color: styles.tagColor || styles.accentColor || '#5ac8fa'
+      background: 'var(--base-tag-bg, #e6f7ff)',
+      color: 'var(--base-accent-color, #5ac8fa)'
     }
   };
 
@@ -527,7 +539,7 @@ const getTechTagStyle = (styles: any, tech: string) => {
     background: background,
     padding: '4px 10px',
     borderRadius: '15px',
-    border: `1px solid ${color}30`, // 30表示透明度0.3
+    border: `1px solid ${color}30`,
     transition: 'all 0.2s ease',
     display: 'inline-block',
   };
@@ -541,11 +553,11 @@ const getMetricsStyle = (styles: any) => {
     justifyContent: 'space-around',
     marginTop: '16px',
     paddingTop: '16px',
-    borderTop: '1px solid #eee',
+    borderTop: '1px solid var(--base-secondary-color, #eee)',
     textAlign: 'center',
     width: '100%',
-    flexWrap: 'wrap', // 允许换行
-    gap: '12px', // 添加间距
+    flexWrap: 'wrap',
+    gap: '12px',
   };
 };
 
@@ -554,7 +566,7 @@ const getMetricValueStyle = (styles: any) => {
 
   return {
     fontSize: '20px',
-    color: styles.primaryColor || '#1890ff',
+    color: 'var(--base-primary-color, #1890ff)',
     fontWeight: 'bold',
     display: 'block',
     marginBottom: '4px',
@@ -566,7 +578,7 @@ const getMetricLabelStyle = (styles: any) => {
 
   return {
     fontSize: '12px',
-    color: '#666',
+    color: 'var(--base-text-color, #666)',
     display: 'block',
   };
 };
@@ -577,10 +589,10 @@ const getEmptyStateStyle = (styles: any) => {
   return {
     textAlign: 'center',
     padding: '60px 20px',
-    color: '#999',
+    color: 'var(--base-secondary-color, #999)',
     background: 'repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f0f0f0 10px, #f0f0f0 20px)',
     borderRadius: '8px',
-    border: '2px dashed #ddd',
+    border: '2px dashed var(--base-secondary-color, #ddd)',
     width: '100%',
     boxSizing: 'border-box',
   };
@@ -611,7 +623,7 @@ const getEmptyStateStyle = (styles: any) => {
     top: 0;
     bottom: 0;
     width: 4px;
-    background: linear-gradient(to bottom, #52c41a, #73d13d);
+    background: linear-gradient(to bottom, var(--base-accent-color, #52c41a), var(--base-primary-color, #73d13d));
     border-radius: 2px 0 0 2px;
   }
 }
@@ -624,7 +636,7 @@ const getEmptyStateStyle = (styles: any) => {
 
 .project-title-section {
   flex: 1;
-  min-width: 0; // 防止flex item溢出
+  min-width: 0;
 }
 
 .project-role {
@@ -651,6 +663,7 @@ const getEmptyStateStyle = (styles: any) => {
 .project-description {
   text-align: justify;
   width: 100%;
+  word-break: break-word;
 }
 
 .project-responsibilities,
@@ -676,7 +689,7 @@ const getEmptyStateStyle = (styles: any) => {
 .achievements-list {
   .list-item {
     &:hover {
-      background: rgba(90, 200, 250, 0.05);
+      background: rgba(var(--base-primary-color-rgb, 90, 200, 250), 0.05);
       border-radius: 4px;
       padding-left: 8px;
     }
@@ -731,11 +744,12 @@ const getEmptyStateStyle = (styles: any) => {
   .empty-text {
     font-size: 16px;
     font-weight: 500;
+    color: var(--base-text-color, #333);
   }
 
   .empty-hint {
     font-size: 12px;
-    color: #ccc;
+    color: var(--base-secondary-color, #ccc);
   }
 }
 
@@ -851,6 +865,31 @@ const getEmptyStateStyle = (styles: any) => {
   .project-header {
     flex-direction: column !important;
     align-items: flex-start !important;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .project-item {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+    border-color: #424242;
+  }
+
+  .project-link {
+    background: #2d3748 !important;
+    border-left-color: var(--base-accent-color, #5ac8fa) !important;
+  }
+
+  .tech-tag {
+    background: #374151 !important;
+    color: #e5e7eb !important;
+    border-color: #4b5563 !important;
+  }
+
+  .empty-state {
+    background: #374151;
+    border-color: #4b5563;
+    color: #9ca3af;
   }
 }
 </style>

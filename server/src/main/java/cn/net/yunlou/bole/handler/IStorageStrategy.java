@@ -13,7 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 /** 策略 接口 */
-public interface IStorage {
+public interface IStorageStrategy {
 
     /** 获取存储类型 */
     StorageType getType();
@@ -25,6 +25,9 @@ public interface IStorage {
      * @return 存储后的文件信息
      */
     File store(MultipartFile multipartFile);
+
+
+    File storeFile(java.io.File file, String fileName);
 
     /**
      * 存储文件 分片上传
@@ -128,4 +131,6 @@ public interface IStorage {
         String extension = getFileExtension(filename).toLowerCase();
         return allowedExtensions.contains(extension);
     }
+
+
 }

@@ -1091,11 +1091,30 @@ onShow(() => {
 
 <style lang="scss" scoped>
 /* ==================== 查看模式样式 ==================== */
+/* 查看模式样式调整 */
 .resume-view-container {
   min-height: 100vh;
   background: $background-color;
   display: flex;
   flex-direction: column;
+  
+  .preview-content {
+    flex: 1;
+    background: $background-color-white;
+    box-sizing: border-box;
+    overflow-y: auto;
+    
+    /* 确保 DynamicRenderer 在 scroll-view 中居中 */
+    display: flex;
+    justify-content: center;
+    
+    /* 添加样式以支持居中 */
+    > * {
+      width: 100%;
+      max-width: 100%; /* A4 宽度 */
+      margin: 0 auto;
+    }
+  }
 }
 
 .preview-content {

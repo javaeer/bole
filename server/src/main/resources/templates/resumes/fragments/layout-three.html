@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 三栏布局 -->
+<div th:fragment="layout-three(layoutData, globalStyle)"
+     class="layout-three-column" th:classappend="${layoutData.layoutClass}">
+
+    <th:block th:if="${layoutData.columns}" th:each="column, colIter : ${layoutData.columns}">
+        <div class="column" th:attr="data-column-index=${colIter.index}">
+            <th:block th:if="${column != null and not #lists.isEmpty(column)}">
+                <th:block th:each="component, compIter : ${column}" th:object="${component}">
+                    <div class="resume-component mb-3"
+                         th:attr="data-component-id=*{componentId},
+                                      data-component-order=${compIter.index}">
+
+                        <!-- 使用通用组件渲染器 -->
+                        <th:block th:replace="~{resumes/fragments/component-renderer ::
+                                component-renderer(${component}, ${globalStyle})}">
+                        </th:block>
+                    </div>
+                </th:block>
+            </th:block>
+
+            <!-- 空状态 -->
+            <th:block th:unless="${column != null and not #lists.isEmpty(column)}">
+                <div class="empty-column text-center py-5 border rounded bg-light">
+                    <div th:switch="${colIter.index}">
+                        <div th:case="0">
+                            <i class="bi bi-layout-three-columns text-muted display-4"></i>
+                            <p class="mt-3 text-muted">左侧栏位<br><small>可放置联系信息、个人简介等</small></p>
+                        </div>
+                        <div th:case="1">
+                            <i class="bi bi-layout-three-columns text-muted display-4"></i>
+                            <p class="mt-3 text-muted">中间栏位<br><small>可放置教育经历、工作经历等</small></p>
+                        </div>
+                        <div th:case="2">
+                            <i class="bi bi-layout-three-columns text-muted display-4"></i>
+                            <p class="mt-3 text-muted">右侧栏位<br><small>可放置技能、项目、证书等</small></p>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </th:block>
+
+    <!-- 如果没有columns数据（异常情况处理） -->
+    <th:block th:unless="${layoutData.columns}">
+        <div class="alert alert-warning text-center py-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            布局数据异常，无法显示三栏布局
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

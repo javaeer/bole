@@ -11,14 +11,20 @@
       <!-- 根据组件key显示不同的预览内容 -->
       <template v-if="componentKey === 'UserBasicInfo'">
         <view class="preview-placeholder">
-          <view class="preview-avatar" v-if="componentProps?.showAvatar">
+          <view class="preview-avatar">
             <view class="avatar-placeholder">👤</view>
           </view>
           <view class="preview-info">
-            <view class="preview-line">姓名：伯乐大师</view>
-            <view class="preview-line" v-if="componentProps?.showContact">电话：138****8888</view>
-            <view class="preview-line" v-if="componentProps?.showContact">邮箱：zhangsan@example.com</view>
-            <view class="preview-line">地址：北京市海淀区</view>
+            <view class="preview-line-bold">王彦博</view>
+            <view class="preview-line">高级工程师</view>
+            <view class="preview-line">工作年限：5年</view>
+            <view class="preview-line">性别：男</view>
+            <view class="preview-line">所在地：深圳</view>
+            <view class="preview-line">电话：186****0038</view>
+            <view class="preview-line">邮箱：zhangsan@tencent.com</view>
+            <view class="preview-line">个人网站：https://zhangsan.dev</view>
+            <view class="preview-line">GitHub：zhangsan</view>
+            <view class="preview-line">微信：zhangsan_wx</view>
           </view>
         </view>
       </template>
@@ -26,16 +32,24 @@
       <template v-else-if="componentKey === 'WorkExperience'">
         <view class="preview-placeholder">
           <view class="preview-section">
-            <view class="preview-line-bold">伯乐简历大师科技有限公司</view>
-            <view class="preview-line" v-if="componentProps?.showDuration">高级前端开发工程师 | 2020.06 - 至今</view>
-            <view class="preview-line" v-else>高级前端开发工程师</view>
-            <view class="preview-line">负责公司核心产品的开发与维护</view>
+            <view class="preview-line-bold">伯乐科技</view>
+            <view class="preview-line">高级软件工程师 | 2023.07 - 至今</view>
+            <view class="preview-line">负责系统架构设计和团队指导</view>
+            <view class="achievements">
+              <view class="achievement-title">主要成就：</view>
+              <view class="achievement-item">• 主导系统重构</view>
+              <view class="achievement-item">• 培养3名初级工程师</view>
+            </view>
           </view>
           <view class="preview-section">
-            <view class="preview-line-bold">XYZ互联网公司</view>
-            <view class="preview-line" v-if="componentProps?.showDuration">前端开发工程师 | 2018.03 - 2020.05</view>
-            <view class="preview-line" v-else>前端开发工程师</view>
-            <view class="preview-line">参与多个大型项目开发</view>
+            <view class="preview-line-bold">伯乐科技</view>
+            <view class="preview-line">软件工程师 | 2021.07 - 2023.06</view>
+            <view class="preview-line">负责核心业务功能开发</view>
+            <view class="achievements">
+              <view class="achievement-title">主要成就：</view>
+              <view class="achievement-item">• 完成3个重大项目</view>
+              <view class="achievement-item">• 获得年度优秀员工</view>
+            </view>
           </view>
         </view>
       </template>
@@ -43,36 +57,141 @@
       <template v-else-if="componentKey === 'EducationExperience'">
         <view class="preview-placeholder">
           <view class="preview-section">
-            <view class="preview-line-bold">清华大学</view>
-            <view class="preview-line" v-if="componentProps?.showTime">计算机科学与技术 | 硕士 | 2016.09 - 2019.06</view>
-            <view class="preview-line" v-else-if="componentProps?.showDegree">计算机科学与技术 | 硕士</view>
-            <view class="preview-line" v-else>计算机科学与技术</view>
+            <view class="preview-line-bold">北京大学出版社</view>
+            <view class="preview-line">后背 | 博士 | 1997.10 - 2026.01</view>
+            <view class="preview-line description-text">哒哒哒哒哒哒多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多多</view>
           </view>
           <view class="preview-section">
             <view class="preview-line-bold">北京大学</view>
-            <view class="preview-line" v-if="componentProps?.showTime">软件工程 | 本科 | 2012.09 - 2016.06</view>
-            <view class="preview-line" v-else-if="componentProps?.showDegree">软件工程 | 本科</view>
-            <view class="preview-line" v-else>软件工程</view>
+            <view class="preview-line">软件工程 | 硕士 | 2018.09 - 2021.06</view>
+            <view class="preview-line description-text">研究方向：分布式系统</view>
+            <view class="achievements">
+              <view class="achievement-title">荣誉奖项：</view>
+              <view class="achievement-item">• 发表论文2篇</view>
+              <view class="achievement-item">• 国家奖学金</view>
+            </view>
+          </view>
+          <view class="preview-section">
+            <view class="preview-line-bold">清华大学</view>
+            <view class="preview-line">计算机科学与技术 | 本科 | 2014.09 - 2018.06</view>
+            <view class="preview-line description-text">主修计算机相关课程</view>
+            <view class="achievements">
+              <view class="achievement-title">荣誉奖项：</view>
+              <view class="achievement-item">• 校级优秀毕业生</view>
+              <view class="achievement-item">• ACM竞赛二等奖</view>
+            </view>
           </view>
         </view>
       </template>
 
       <template v-else-if="componentKey === 'Skills'">
         <view class="preview-placeholder">
-          <view class="preview-tags">
-            <view class="tag" v-for="tag in skillTags" :key="tag">{{ tag }}</view>
-          </view>
-          <view v-if="componentProps?.skillLevel" class="skill-levels">
-            <view class="skill-item">
-              <text class="skill-name">Vue.js</text>
-              <view class="skill-level-bar">
-                <view class="skill-level-fill" :style="{ width: '90%' }"></view>
+          <!-- 按分类分组显示 -->
+          <view class="skill-category">
+            <view class="category-title">编程语言</view>
+            <view class="skill-items">
+              <view class="skill-item">
+                <view class="skill-header">
+                  <text class="skill-name">Java编程</text>
+                  <view class="skill-badge">高级</view>
+                </view>
+                <view class="skill-details">
+                  <view class="skill-progress">
+                    <view class="skill-progress-bar">
+                      <view class="skill-progress-fill" :style="{ width: '85%' }"></view>
+                    </view>
+                    <text class="skill-level">高级 (85%)</text>
+                  </view>
+                  <view class="experience-years">
+                    经验：5.5年
+                  </view>
+                  <view class="certification">
+                    认证：Oracle Certified Professional
+                  </view>
+                </view>
+                <view class="skill-description">熟练掌握Java语言特性，包括集合、多线程、IO等</view>
+                <view class="skill-tags">
+                  <view class="skill-tag">Java</view>
+                  <view class="skill-tag">编程</view>
+                </view>
               </view>
             </view>
-            <view class="skill-item">
-              <text class="skill-name">React</text>
-              <view class="skill-level-bar">
-                <view class="skill-level-fill" :style="{ width: '80%' }"></view>
+          </view>
+          
+          <view class="skill-category">
+            <view class="category-title">框架工具</view>
+            <view class="skill-items">
+              <view class="skill-item">
+                <view class="skill-header">
+                  <text class="skill-name">Spring框架</text>
+                  <view class="skill-badge">高级</view>
+                </view>
+                <view class="skill-details">
+                  <view class="skill-progress">
+                    <view class="skill-progress-bar">
+                      <view class="skill-progress-fill" :style="{ width: '90%' }"></view>
+                    </view>
+                    <text class="skill-level">高级 (90%)</text>
+                  </view>
+                  <view class="experience-years">
+                    经验：4年
+                  </view>
+                  <view class="certification">
+                    认证：Spring Professional Certification
+                  </view>
+                </view>
+                <view class="skill-description">精通Spring、Spring Boot、Spring Cloud等框架</view>
+              </view>
+              
+              <view class="skill-item">
+                <view class="skill-header">
+                  <text class="skill-name">SpringCloud</text>
+                  <view class="skill-badge">专家</view>
+                </view>
+                <view class="skill-details">
+                  <view class="skill-progress">
+                    <view class="skill-progress-bar">
+                      <view class="skill-progress-fill" :style="{ width: '100%' }"></view>
+                    </view>
+                    <text class="skill-level">专家 (100%)</text>
+                  </view>
+                  <view class="experience-years">
+                    经验：10年
+                  </view>
+                </view>
+                <view class="skill-description">VVVVVV</view>
+                <view class="skill-tags">
+                  <view class="skill-tag">河流</view>
+                  <view class="skill-tag">天剑</view>
+                </view>
+              </view>
+            </view>
+          </view>
+          
+          <view class="skill-category">
+            <view class="category-title">数据库</view>
+            <view class="skill-items">
+              <view class="skill-item">
+                <view class="skill-header">
+                  <text class="skill-name">MySQL</text>
+                  <view class="skill-badge">中级</view>
+                </view>
+                <view class="skill-details">
+                  <view class="skill-progress">
+                    <view class="skill-progress-bar">
+                      <view class="skill-progress-fill" :style="{ width: '75%' }"></view>
+                    </view>
+                    <text class="skill-level">中级 (75%)</text>
+                  </view>
+                  <view class="experience-years">
+                    经验：3年
+                  </view>
+                </view>
+                <view class="skill-description">熟悉MySQL数据库设计、优化和SQL调优</view>
+                <view class="skill-tags">
+                  <view class="skill-tag">sss</view>
+                  <view class="skill-tag">okook</view>
+                </view>
               </view>
             </view>
           </view>
@@ -82,33 +201,64 @@
       <template v-else-if="componentKey === 'ProjectExperience'">
         <view class="preview-placeholder">
           <view class="preview-section">
-            <view class="preview-line-bold">电商后台管理系统</view>
-            <view class="preview-line" v-if="componentProps?.showRole">技术负责人 | 2021.03 - 至今</view>
-            <view class="preview-line">技术栈：Vue3 + TypeScript + Element Plus</view>
-            <view v-if="componentProps?.showTechnologies" class="preview-tech-tags">
-              <view class="tech-tag">Vue3</view>
-              <view class="tech-tag">TypeScript</view>
-              <view class="tech-tag">Element Plus</view>
+            <view class="preview-line-bold">分布式消息队列系统</view>
+            <view class="preview-line">技术负责人 | 2022.01 - 2022.12</view>
+            <view class="preview-line description-text">设计并实现高可用分布式消息队列</view>
+            <view class="preview-tech-tags">
+              <view class="tech-tag">分布式系统</view>
+              <view class="tech-tag">消息队列</view>
+              <view class="tech-tag">高可用</view>
             </view>
-            <view class="preview-line">负责前端架构设计和核心模块开发</view>
+            <view class="achievements">
+              <view class="achievement-title">项目成果：</view>
+              <view class="achievement-item">• 系统吞吐量提升50%</view>
+              <view class="achievement-item">• 支持每秒百万级消息处理</view>
+            </view>
+          </view>
+          <view class="preview-section">
+            <view class="preview-line-bold">微服务架构迁移</view>
+            <view class="preview-line">核心开发 | 2021.03 - 2021.11</view>
+            <view class="preview-line description-text">将单体应用迁移到微服务架构</view>
+            <view class="preview-tech-tags">
+              <view class="tech-tag">微服务</view>
+              <view class="tech-tag">Spring Cloud</view>
+              <view class="tech-tag">架构迁移</view>
+            </view>
+            <view class="achievements">
+              <view class="achievement-title">项目成果：</view>
+              <view class="achievement-item">• 系统可用性达到99.99%</view>
+              <view class="achievement-item">• 开发效率提升30%</view>
+            </view>
           </view>
         </view>
       </template>
 
       <template v-else-if="componentKey === 'SelfEvaluation'">
         <view class="preview-placeholder">
-          <view class="preview-line">5年前端开发经验，精通Vue生态，熟悉React、TypeScript等现代前端技术。</view>
-          <view class="preview-line">具备良好的团队协作能力和沟通能力，能够快速适应新环境。</view>
-          <view class="preview-line">对技术有热情，喜欢研究新技术并应用到实际项目中。</view>
+          <view class="evaluation-item">
+            <view class="evaluation-content">
+              6666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
+            </view>
+            <view class="highlights">
+              <view class="highlight-tag">6</view>
+              <view class="highlight-tag">7</view>
+              <view class="highlight-tag">8</view>
+              <view class="highlight-tag">9</view>
+              <view class="highlight-tag">0</view>
+              <view class="highlight-tag">777</view>
+            </view>
+          </view>
         </view>
       </template>
 
       <template v-else-if="componentKey === 'JobIntention'">
         <view class="preview-placeholder">
-          <view class="preview-line">期望职位：高级前端开发工程师</view>
-          <view class="preview-line" v-if="componentProps?.showSalary">期望薪资：25-35K</view>
-          <view class="preview-line" v-if="componentProps?.showLocation">工作地点：北京</view>
-          <view class="preview-line">到岗时间：1个月内</view>
+          <view class="intention-item">
+            <view class="preview-line">期望职位：CTO</view>
+            <view class="preview-line">期望薪资：100万</view>
+            <view class="preview-line">工作地点：北京市</view>
+            <view class="preview-line">工作类型：全职</view>
+          </view>
         </view>
       </template>
 
@@ -161,10 +311,6 @@ const dangerColor = computed(() => '#f56c6c');
 
 const componentKey = computed(() => props.component?.key || '');
 const componentName = computed(() => props.component?.name || '未命名区块');
-const componentProps = computed(() => props.component?.props || {});
-const componentStyles = computed(() => props.component?.styles || {});
-
-const skillTags = computed(() => ['Vue.js', 'React', 'TypeScript', 'Node.js', 'Webpack', 'uniApp']);
 
 const mergedStyle = computed(() => {
   const baseStyle = {
@@ -173,8 +319,7 @@ const mergedStyle = computed(() => {
     borderRadius: '8rpx',
     padding: '16rpx',
     background: 'white',
-    transition: 'all 0.3s',
-    ...componentStyles.value
+    transition: 'all 0.3s'
   };
 
   return {
@@ -316,19 +461,141 @@ const emit = defineEmits(['remove', 'configure']);
   color: #333;
 }
 
-.preview-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8rpx;
-  margin-bottom: 16rpx;
+/* 描述文本添加自动换行 */
+.description-text {
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.5;
 }
 
-.tag {
-  padding: 4rpx 12rpx;
-  background: #e8f4ff;
-  border-radius: 4rpx;
+.achievements {
+  margin-top: 8rpx;
+  padding-left: 16rpx;
+}
+
+.achievement-title {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.achievement-item {
+  color: #666;
+  margin-bottom: 2rpx;
   font-size: 22rpx;
-  color: #007aff;
+}
+
+.skill-category {
+  margin-bottom: 24rpx;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.category-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12rpx;
+  padding-bottom: 4rpx;
+  border-bottom: 1px solid #eee;
+}
+
+.skill-item {
+  margin-bottom: 12rpx;
+  padding: 12rpx;
+  background: #f9f9f9;
+  border-radius: 6rpx;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.skill-name {
+  font-weight: bold;
+  color: #333;
+  font-size: 26rpx;
+}
+
+.skill-badge {
+  background: #1890ff;
+  color: white;
+  padding: 2rpx 8rpx;
+  border-radius: 4rpx;
+  font-size: 20rpx;
+}
+
+.skill-details {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+  font-size: 22rpx;
+  color: #666;
+  flex-wrap: wrap;
+}
+
+.skill-progress {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  width: 100%;
+}
+
+.skill-progress-bar {
+  flex: 1;
+  height: 8rpx;
+  background: #e9ecef;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.skill-progress-fill {
+  height: 100%;
+  background: #1890ff;
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4rpx;
+  margin-top: 8rpx;
+}
+
+.skill-tag {
+  background: #e9ecef;
+  color: #495057;
+  padding: 2rpx 6rpx;
+  border-radius: 3rpx;
+  font-size: 20rpx;
+}
+
+.skill-description {
+  color: #777;
+  font-size: 22rpx;
+  margin-top: 4rpx;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.5;
+}
+
+.certification {
+  background: #f6ffed;
+  color: #52c41a;
+  padding: 2rpx 6rpx;
+  border-radius: 3rpx;
+  font-size: 20rpx;
 }
 
 .preview-tech-tags {
@@ -346,40 +613,44 @@ const emit = defineEmits(['remove', 'configure']);
   color: #495057;
 }
 
-.skill-levels {
-  margin-top: 16rpx;
-}
-
-.skill-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12rpx;
-
+/* 自我介绍内容自动换行 */
+.evaluation-item {
+  margin-bottom: 16rpx;
+  
   &:last-child {
     margin-bottom: 0;
   }
 }
 
-.skill-name {
-  width: 80rpx;
-  font-size: 22rpx;
+.evaluation-content {
   color: #555;
+  line-height: 1.6;
+  margin-bottom: 8rpx;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+  line-height: 1.5;
 }
 
-.skill-level-bar {
-  flex: 1;
-  height: 8rpx;
-  background: #e9ecef;
-  border-radius: 4rpx;
-  overflow: hidden;
-  margin-left: 12rpx;
+.highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
 }
 
-.skill-level-fill {
-  height: 100%;
-  background: var(--primary-color);
+.highlight-tag {
+  background: #fff7e6;
+  color: #fa8c16;
+  padding: 2rpx 8rpx;
   border-radius: 4rpx;
-  transition: width 0.3s ease;
+  font-size: 20rpx;
+}
+
+.intention-item {
+  padding: 12rpx;
+  background: #f9f9f9;
+  border-radius: 6rpx;
 }
 
 .placeholder-text {
@@ -388,5 +659,8 @@ const emit = defineEmits(['remove', 'configure']);
   text-align: center;
   display: block;
   padding: 20rpx;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
 }
 </style>

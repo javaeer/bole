@@ -7,6 +7,7 @@
       :component-data="componentData"
       :global-style="globalStyle"
       :override-styles="customStyles"
+	  :responsive-center="true"
     />
 
     <WorkExperience
@@ -14,6 +15,7 @@
       :component-data="componentData"
       :global-style="globalStyle"
       :override-styles="customStyles"
+	  :responsive-center="true"
     />
 
     <EducationExperience
@@ -21,6 +23,7 @@
       :component-data="componentData"
       :global-style="globalStyle"
       :override-styles="customStyles"
+	  :responsive-center="true"
     />
 
     <Skills
@@ -28,6 +31,7 @@
       :component-data="componentData"
       :global-style="globalStyle"
       :override-styles="customStyles"
+	  :responsive-center="true"
     />
 
     <ProjectExperience
@@ -35,6 +39,7 @@
       :component-data="componentData"
       :global-style="globalStyle"
       :override-styles="customStyles"
+	  :responsive-center="true"
     />
 
     <SelfEvaluation
@@ -42,6 +47,7 @@
       :component-data="componentData"
       :global-style="globalStyle"
       :override-styles="customStyles"
+	  :responsive-center="true"
     />
 
     <JobIntention
@@ -49,6 +55,7 @@
       :component-data="componentData"
       :global-style="globalStyle"
       :override-styles="customStyles"
+	  :responsive-center="true"
     />
 
     <!-- 默认组件 -->

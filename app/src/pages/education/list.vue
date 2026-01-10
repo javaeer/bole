@@ -418,6 +418,8 @@ onReachBottom(() => {
 }
 
 .list-item {
+  width: 96%;
+  align-items: center;
   margin-bottom: $margin-base;
   position: relative;
   transition: all $transition-fast $ease-in-out;

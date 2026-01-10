@@ -159,7 +159,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  width: "210mm", // A4纸宽度
+  width: "auto", // A4纸宽度
   height: "auto"
 });
 
@@ -230,7 +230,7 @@ const bottomRightComponents = computed(() => {
   return bottomComponents.value.filter((_, index) => index % 2 === 1);
 });
 
-// 简历容器样式 - 修复居中问题
+// 简历容器样式 - 简化居中逻辑
 const resumeContainerStyle = computed(() => {
   const style: any = {
     width: "100%",
@@ -240,12 +240,9 @@ const resumeContainerStyle = computed(() => {
     fontFamily: globalStyle.value.fontFamily || "'PingFang SC', 'Helvetica Neue', Arial, sans-serif",
     fontSize: (globalStyle.value.fontSizes?.body ? `${globalStyle.value.fontSizes.body}px` : "13px"),
     lineHeight: globalStyle.value.spacing?.lineHeight || "1.5",
-    margin: "0 auto",
+    margin: "0 auto", // 主容器居中
     boxSizing: "border-box",
     minHeight: "297mm", // A4纸高度
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
   };
 
   // 根据布局类型调整内边距
@@ -261,34 +258,52 @@ const resumeContainerStyle = computed(() => {
   return style;
 });
 
-// 单列布局样式 - 修复居中
+// 单列布局样式 - 简化，让组件项自己控制居中
 const singleLayoutStyle = computed(() => ({
-  width: "100%",
-  maxWidth: "800px",
-  margin: "0 auto"
+  width: "90%",
+  // 注意：不在这个层级设置 maxWidth，让每个组件项自己控制
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "stretch", // 让子项拉伸填满宽度
+  gap: globalStyle.value.spacing?.sectionMargin || "16px"
 }));
 
 // 双列布局样式 - 修复响应式
-const twoColumnLayoutStyle = computed(() => ({
-  display: "flex",
-  gap: layout.value.gap || globalStyle.value.spacing?.sectionMargin || "20px",
-  width: "100%",
-  maxWidth: "1200px",
-  margin: "0 auto"
-}));
+const twoColumnLayoutStyle = computed(() => {
+  const baseStyle: any = {
+    display: "flex",
+    gap: layout.value.gap || globalStyle.value.spacing?.sectionMargin || "20px",
+    width: "90%",
+    maxWidth: "1200px",
+    margin: "0 auto"
+  };
+
+  // 根据屏幕宽度调整
+  // if (props.width === "210mm") {
+  //   baseStyle.maxWidth = "1200px";
+  // }
+
+  return baseStyle;
+});
 
 const leftColumnStyle = computed(() => ({
-  flex: 1
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  gap: globalStyle.value.spacing?.sectionMargin || "16px"
 }));
 
 const rightColumnStyle = computed(() => ({
-  flex: 1
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  gap: globalStyle.value.spacing?.sectionMargin || "16px"
 }));
 
 // 时间线布局样式 - 修复响应式
 const timelineLayoutStyle = computed(() => ({
   position: "relative",
-  width: "100%",
+  width: "90%",
   maxWidth: "900px",
   margin: "0 auto",
   padding: "20px 0"
@@ -324,44 +339,87 @@ const cardLayoutStyle = computed(() => ({
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   gap: "20px",
-  width: "100%",
+  width: "90%",
   maxWidth: "1200px",
   margin: "0 auto"
 }));
 
 // 混合布局样式
 const mixedLayoutStyle = computed(() => ({
-  width: "100%",
+  width: "90%",
   maxWidth: "1000px",
-  margin: "0 auto"
+  margin: "0 auto",
+  display: "flex",
+  flexDirection: "column",
+  gap: globalStyle.value.spacing?.sectionMargin || "20px"
 }));
 
 const mixedBottomStyle = computed(() => ({
   display: "flex",
-  gap: "20px",
+  gap: layout.value.gap || globalStyle.value.spacing?.sectionMargin || "20px",
   width: "100%",
   marginTop: "30px"
 }));
 
-// 获取组件样式
+// 获取组件样式 - 重新设计居中逻辑
 const getComponentItemStyle = (component: any) => {
   const baseStyle: any = {
     width: "100%",
     marginBottom: globalStyle.value.spacing?.sectionMargin || "16px",
   };
 
-  // 如果是卡片布局，添加额外样式
-  if (layoutType.value === 'card') {
-    baseStyle.marginBottom = "0";
+  // 根据布局类型设置不同的样式
+  switch (layoutType.value) {
+    case 'single':
+      // 单列布局：组件自己居中
+      baseStyle.maxWidth = "800px";
+      baseStyle.marginLeft = "auto";
+      baseStyle.marginRight = "auto";
+      break;
+      
+    case 'two-column':
+      // 双列布局：由列容器控制，组件不额外设置最大宽度
+      baseStyle.maxWidth = "100%";
+      break;
+      
+    case 'timeline':
+      // 时间线布局：组件不额外设置最大宽度，由timeline-content控制
+      baseStyle.maxWidth = "100%";
+      break;
+      
+    case 'card':
+      // 卡片布局：不设置外边距，由网格控制
+      baseStyle.marginBottom = "0";
+      baseStyle.maxWidth = "100%";
+      break;
+      
+    case 'mixed':
+      // 混合布局：顶部组件居中，底部由双列控制
+      const isTopComponent = topComponents.value.includes(component);
+      if (isTopComponent) {
+        baseStyle.maxWidth = "800px";
+        baseStyle.marginLeft = "auto";
+        baseStyle.marginRight = "auto";
+      } else {
+        baseStyle.maxWidth = "100%";
+      }
+      break;
+      
+    default:
+      // 默认布局：居中显示
+      baseStyle.maxWidth = "800px";
+      baseStyle.marginLeft = "auto";
+      baseStyle.marginRight = "auto";
   }
 
+  // 添加组件的自定义样式
   if (component.styles && Object.keys(component.styles).length > 0) {
-    return { ...baseStyle, ...component.styles };
+    Object.assign(baseStyle, component.styles);
   }
 
-  // 使用默认配置的样式
+  // 添加默认配置的样式
   if (component.defaultConfig?.styles) {
-    return { ...baseStyle, ...component.defaultConfig.styles };
+    Object.assign(baseStyle, component.defaultConfig.styles);
   }
 
   return baseStyle;
@@ -379,9 +437,10 @@ const getTimelineItemStyle = (index: number) => {
   };
 };
 
-// 获取时间线内容样式 - 修复左右交替布局
+// 获取时间线内容样式 - 修复左右交替布局和居中
 const getTimelineContentStyle = (component: any) => {
-  const isEven = orderedComponents.value.indexOf(component) % 2 === 0;
+  const index = orderedComponents.value.indexOf(component);
+  const isEven = index % 2 === 0;
 
   const baseStyle: any = {
     position: "relative",
@@ -389,11 +448,12 @@ const getTimelineContentStyle = (component: any) => {
     borderRadius: "8px",
     padding: "20px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-    width: "calc(50% - 40px)",
+    width: "calc(50% - 20px)", // 占50%宽度，减去间隔
     marginLeft: isEven ? "0" : "auto",
     marginRight: isEven ? "auto" : "0",
     borderLeft: isEven ? `4px solid ${globalStyle.value.primaryColor || "#5ac8fa"}` : "none",
-    borderRight: !isEven ? `4px solid ${globalStyle.value.primaryColor || "#5ac8fa"}` : "none"
+    borderRight: !isEven ? `4px solid ${globalStyle.value.primaryColor || "#5ac8fa"}` : "none",
+    maxWidth: "450px" // 限制最大宽度，确保在时间线容器内
   };
 
   // 添加组件的自定义样式
@@ -416,7 +476,9 @@ const getCardItemStyle = (component: any) => {
     borderRadius: "12px",
     boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
     overflow: "hidden",
-    height: "100%"
+    height: "100%",
+    display: "flex",
+    flexDirection: "column"
   };
 
   return baseStyle;
@@ -425,7 +487,8 @@ const getCardItemStyle = (component: any) => {
 // 获取卡片内容样式
 const getCardContentStyle = (component: any) => {
   const baseStyle: any = {
-    padding: "24px"
+    padding: "24px",
+    flex: 1
   };
 
   return baseStyle;
@@ -544,6 +607,100 @@ const getCardContentStyle = (component: any) => {
   }
 }
 
+/* 响应式设计 - 修复居中问题 */
+@media (max-width: 768px) {
+  .resume-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 16px !important;
+    min-height: auto !important;
+    margin: 0 !important;
+  }
+
+  /* 单列布局在移动端 */
+  .single-layout {
+    gap: 12px !important;
+  }
+
+  /* 双列布局在移动端改为单列 */
+  .two-column-layout {
+    flex-direction: column !important;
+    gap: 12px !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .two-column-layout .left-column,
+  .two-column-layout .right-column {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  /* 混合布局在移动端改为单列 */
+  .mixed-layout {
+    max-width: 100% !important;
+    margin: 0 !important;
+    gap: 12px !important;
+  }
+
+  .mixed-bottom {
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-top: 20px !important;
+  }
+
+  .mixed-bottom .left-column,
+  .mixed-bottom .right-column {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  /* 卡片布局在移动端改为单列 */
+  .card-layout {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* 时间线布局在移动端改为居中单列 */
+  .timeline-layout {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .timeline-line {
+    display: none;
+  }
+
+  .timeline-node {
+    display: none;
+  }
+
+  .timeline-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto 16px auto !important;
+    border-left: 4px solid #5ac8fa !important;
+    border-right: none !important;
+  }
+
+  /* 组件项在移动端取消最大宽度限制 */
+  .component-item {
+    margin-bottom: 12px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* 移除悬停效果 */
+  .component-item:hover,
+  .card-item:hover {
+    transform: none !important;
+  }
+}
+
 /* 小屏幕手机 */
 @media (max-width: 480px) {
   .resume-container {
@@ -554,7 +711,7 @@ const getCardContentStyle = (component: any) => {
   .timeline-layout,
   .card-layout,
   .mixed-layout {
-    max-width: 100% !important;
+    gap: 8px !important;
   }
 
   .timeline-content {
@@ -562,66 +719,48 @@ const getCardContentStyle = (component: any) => {
   }
 
   .card-layout {
-    gap: 12px !important;
+    gap: 8px !important;
   }
 
   .component-item {
-    margin-bottom: 12px !important;
+    margin-bottom: 8px !important;
   }
 }
 
 /* 平板设备 */
 @media (min-width: 769px) and (max-width: 1024px) {
   .resume-container {
-    padding: 24px !important;
+    padding: 20px !important;
   }
 
   .card-layout {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 20px !important;
+    grid-templateColumns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    max-width: 100% !important;
   }
 
   .timeline-content {
-    width: calc(50% - 20px) !important;
+    width: calc(50% - 16px) !important;
+    max-width: 400px !important;
+  }
+  
+  .single-layout .component-item {
+    max-width: 700px !important;
   }
 }
 
-/* 打印样式 */
-@media print {
-  .resume-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: auto !important;
-    padding: 0 !important;
-    background-color: white !important;
-    box-shadow: none !important;
+/* 大屏幕 */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .two-column-layout {
+    max-width: 1100px !important;
   }
-
-  .component-item {
-    break-inside: avoid;
-    page-break-inside: avoid;
-    margin-bottom: 12px !important;
+  
+  .card-layout {
+    max-width: 1100px !important;
   }
-
+  
   .timeline-layout {
-    padding: 20px 0 !important;
-  }
-
-  .timeline-content {
-    box-shadow: none !important;
-    border: 1px solid #eee !important;
-  }
-
-  .card-item {
-    box-shadow: none !important;
-    border: 1px solid #eee !important;
-  }
-
-  /* 打印时隐藏时间线 */
-  .timeline-line,
-  .timeline-node {
-    display: none;
+    max-width: 800px !important;
   }
 }
 </style>

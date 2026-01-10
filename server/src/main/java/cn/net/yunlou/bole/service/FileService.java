@@ -30,4 +30,6 @@ public interface FileService extends IBaseService<File, FileCreate, FileView, Fi
     List<StorageType> getAvailableStorageTypes();
 
     File getByFileKey(String fileKey);
+
+    File uploadLocalFile(java.io.File file, String fileName);
 }

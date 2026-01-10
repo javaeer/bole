@@ -6,7 +6,7 @@ import cn.net.yunlou.bole.common.constant.StorageType;
 import cn.net.yunlou.bole.common.utils.FileHashUtils;
 import cn.net.yunlou.bole.config.AppConfigProperties;
 import cn.net.yunlou.bole.config.StorageLocalProperties;
-import cn.net.yunlou.bole.handler.IStorage;
+import cn.net.yunlou.bole.handler.IStorageStrategy;
 import cn.net.yunlou.bole.model.entity.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,14 +30,14 @@ import org.springframework.web.multipart.MultipartFile;
         name = "type",
         havingValue = "local",
         matchIfMissing = true)
-public class LocalStorage implements IStorage {
+public class LocalStorageStrategy implements IStorageStrategy {
 
     private final StorageLocalProperties storageLocalProperties;
     private final AppConfigProperties appConfigProperties;
     private final Path storagePath;
 
     @Autowired
-    public LocalStorage(
+    public LocalStorageStrategy(
             StorageLocalProperties storageLocalProperties,
             AppConfigProperties appConfigProperties) {
         this.storageLocalProperties = storageLocalProperties;
@@ -99,20 +101,68 @@ public class LocalStorage implements IStorage {
                     .accessUrl(getAccessUrl(datePathFileName))
                     .build();
 
-            /*File file = new File();
-            file.setFileName(fileName);
-            file.setFileKey(fileKey);
-            file.setOriginalFilename(originalFilename);
-            file.setStoragePath(targetPath.toString());
-            file.setFileSizeBytes(multipartFile.getSize());
-            //file.setContentType(multipartFile.getContentType());
-            file.setStorageType(StorageType.LOCAL.getValue());
-            file.setAccessUrl(getAccessUrl(fileName));
-            return file;*/
 
         } catch (Exception e) {
             log.error("本地文件上传失败", e);
             throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "文件上传失败");
+        }
+    }
+
+    @Override
+    public File storeFile(java.io.File file, String fileName) {
+        try {
+            // 验证源文件是否存在且可读
+            if (!file.exists()) {
+                throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "源文件不存在");
+            }
+            if (!file.canRead()) {
+                throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "源文件不可读");
+            }
+
+            // 1. 计算源文件的哈希值
+            String fileKey = FileHashUtils.calculateHash(file);
+
+            // 2. 生成唯一文件名
+            String uniqueFilename = generateUniqueFilename(fileName);
+
+            // 3. 按日期生成存储路径
+            String datePathFileName = generateDatePathFileName(uniqueFilename);
+
+            // 4. 构建目标路径
+            Path targetPath = storagePath.resolve(datePathFileName);
+
+            // 5. 确保目录存在
+            Files.createDirectories(targetPath.getParent());
+
+            // 6. 移动文件到指定目录
+            Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+            // 7. 获取文件MIME类型
+            String contentType;
+            try {
+                contentType = Files.probeContentType(targetPath);
+            } catch (IOException e) {
+                log.warn("无法探测文件类型，使用默认值", e);
+                contentType = "application/octet-stream";
+            }
+
+            // 8. 构建文件信息对象
+            return File.builder()
+                    .fileName(uniqueFilename)
+                    .fileKey(fileKey)
+                    .originalFilename(file.getName())
+                    .storagePath(targetPath.toString())
+                    .fileSizeBytes(Files.size(targetPath))
+                    .contentType(contentType)
+                    .storageType(StorageType.LOCAL.getValue())
+                    .accessUrl(getAccessUrl(datePathFileName))
+                    .build();
+
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("移动文件到存储目录失败", e);
+            throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL, "文件移动失败");
         }
     }
 

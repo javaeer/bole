@@ -22,7 +22,7 @@
         <result column="global_layout" property="globalLayout"
                 typeHandler="cn.net.yunlou.bole.common.handler.JsonbTypeHandler"/>
         <result column="components" property="components"
-                    typeHandler="cn.net.yunlou.bole.common.handler.JsonbTypeHandler"/>
+                typeHandler="cn.net.yunlou.bole.common.handler.JsonbTypeListHandler$ResumesTemplateComponentListHandler"/>
 
         <association column="template_id" property="template"
                      select="cn.net.yunlou.bole.mapper.ResumesTemplateMapper.selectById"/>

@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.text.StringSubstitutor;
+import org.springframework.lang.Nullable;
 
 /**
  * @Author javaeer(javaeer @ aliyun.com) @Date 2018/11/27 13:50 @Version 1.0
@@ -1042,4 +1043,28 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
                 unicodeDecode(
                         "\u65b0\u7528\u6237\u8d26\u53f7\u5bc6\u7801\u4ee5\u77ed\u4fe1\u5f62\u5f0f\u53d1\u9001"));
     }
+
+    public static boolean hasText(@Nullable CharSequence str) {
+        if (str == null) {
+            return false;
+        }
+
+        int strLen = str.length();
+        if (strLen == 0) {
+            return false;
+        }
+
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(str.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public static boolean hasText(@Nullable String str) {
+        return (str != null && !str.isBlank());
+    }
+
 }

@@ -1,0 +1,42 @@
+<div th:fragment="userBasicInfo(component, style)" class="user-basic-info">
+    <h2 class="section-title" th:text="${component.name}">基本信息</h2>
+    <div class="user-info-content" style="display: flex; align-items: center;">
+        <!-- 头像 -->
+        <div th:if="${component.props.showAvatar}" class="avatar-container" style="margin-right: 20px;">
+            <img th:src="${component.props.avatar}"
+                 alt="头像"
+                 style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid #eee;"
+                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIiBmaWxsPSIjOTk5Ij5BdmF0YXI8L3RleHQ+PC9zdmc+'"/>
+        </div>
+
+        <!-- 基本信息 -->
+        <div class="user-details">
+            <div style="font-size: 24px; font-weight: bold; color: [[${style.primaryColor}]]; margin-bottom: 8px;">
+                [[${component.props.name}]]
+                <span th:if="${component.props.title}" style="font-size: 18px; color: #666; margin-left: 10px;">
+                    [[${component.props.title}]]
+                </span>
+            </div>
+
+            <div style="color: #666; line-height: 1.8;">
+                <div th:if="${component.props.showContact}">
+                    <span th:if="${component.props.phone}">📱 [[${component.props.phone}]]</span>
+                    <span th:if="${component.props.email}" style="margin-left: 15px;">📧 [[${component.props.email}]]</span>
+                </div>
+
+                <div>
+                    <span th:if="${component.props.location}">📍 [[${component.props.location}]]</span>
+                    <span th:if="${component.props.workYears}" style="margin-left: 15px;">
+                        ⏱ [[${component.props.workYears}]]年经验
+                    </span>
+                </div>
+
+                <div th:if="${component.props.website}">
+                    🌐 <a th:href="${component.props.website}" style="color: [[${style.primaryColor}]]; text-decoration: none;">
+                    [[${component.props.website}]]
+                </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

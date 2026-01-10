@@ -1,224 +1,106 @@
-<!-- components/resumes/EducationExperience.vue -->
 <template>
   <BaseComponent
-    :title="componentName"
     :component-data="componentData"
     :global-style="globalStyle"
-    :custom-styles="customStyles"
+    :override-styles="customStyles"
+    :responsive-center="true"
+    :show-header="showTitle"
   >
     <template #default="{ styles }">
-      <view
-        class="education-experience-container"
-        :style="getContainerStyle(styles)"
-      >
-        <!-- 时间线布局 -->
+      <view class="education-experience-container">
+        <!-- 空状态 -->
         <view
-          v-if="layoutType === 'timeline'"
-          class="timeline-layout"
-          :style="getTimelineLayoutStyle(styles)"
+          v-if="sortedEducations.length === 0"
+          class="empty-state"
+        >
+          <view class="empty-icon">🎓</view>
+          <text class="empty-title">
+            暂无教育经历
+          </text>
+          <text class="empty-description">
+            请添加您的教育背景信息
+          </text>
+        </view>
+
+        <!-- 教育经历列表 -->
+        <view
+          v-else
+          class="education-list"
         >
           <view
             v-for="(education, index) in sortedEducations"
             :key="education.id || index"
-            class="timeline-item"
-            :style="getTimelineItemStyle(styles, index)"
+            class="education-item"
+            :class="{ 'current-item': education.isCurrent }"
           >
-            <!-- 时间线节点 -->
-            <view class="timeline-node" :style="getTimelineNodeStyle(styles, education)">
-              <view class="node-core" :style="getNodeCoreStyle(styles, education)"></view>
-              <view
-                v-if="index < sortedEducations.length - 1"
-                class="timeline-connector"
-                :style="getTimelineConnectorStyle(styles)"
-              ></view>
-            </view>
+            <!-- 左侧竖线装饰 -->
+            <view class="item-decoration"></view>
 
             <!-- 内容区域 -->
-            <view class="timeline-content" :style="getContentStyle(styles)">
-              <!-- 学校信息 -->
-              <view class="education-header">
-                <view class="school-row">
-                  <text
-                    class="school-name"
-                    :style="getSchoolNameStyle(styles)"
-                  >
-                    {{ education.university || '未填写学校' }}
-                  </text>
-
-                  <!-- 学校Logo（如果配置显示） -->
-                  <view
-                    v-if="showSchoolLogo && education.logo"
-                    class="school-logo"
-                    :style="getSchoolLogoStyle(styles)"
-                  >
-                    <image
-                      :src="education.logo"
-                      mode="aspectFit"
-                      class="logo-image"
-                    />
-                  </view>
-                </view>
-
+            <view class="item-content">
+              <!-- 学校信息行 -->
+              <view class="school-info">
+                <text class="school-name">
+                  {{ education.university || '未填写学校' }}
+                </text>
                 <view class="degree-major">
-                  <text
-                    class="major"
-                    :style="getMajorStyle(styles)"
-                  >
+                  <text class="major">
                     {{ education.major || '专业未填写' }}
                   </text>
-
                   <text
                     v-if="showDegree && education.degree"
                     class="degree"
-                    :style="getDegreeStyle(styles)"
                   >
-                    {{ education.degree }}
+                    | {{ education.degree }}
                   </text>
                 </view>
               </view>
 
-              <!-- 学习时间 -->
+              <!-- 时间信息 -->
               <view
-                v-if="showWorkPeriod"
-                class="time-period"
-                :style="getTimePeriodStyle(styles)"
+                v-if="showEducationPeriod"
+                class="time-info"
               >
-                <view class="time-info">
-                  <text class="time-icon">📅</text>
-                  <text class="time-text">
-                    {{ formatDate(education.startDate) }} -
-                    {{ education.isCurrent ? '至今' : formatDate(education.endDate) }}
-                  </text>
-                </view>
-
-                <!-- 成绩信息 -->
-                <view
-                  v-if="showGPA && (education.gpa || education.grade)"
-                  class="achievement-info"
-                >
-                  <text class="achievement-icon">🎯</text>
-                  <text class="achievement-text">
-                    {{ education.gpa ? `GPA: ${education.gpa}` : '' }}
-                    {{ education.grade ? `成绩: ${education.grade}` : '' }}
-                  </text>
-                </view>
+                <text class="time-icon">📅</text>
+                <text class="time-text">
+                  {{ formatDate(education.startDate) }} - 
+                  {{ education.isCurrent ? '至今' : formatDate(education.endDate) }}
+                </text>
               </view>
 
-              <!-- 学院/专业描述 -->
+              <!-- 描述 -->
               <view
                 v-if="education.description"
                 class="description"
-                :style="getDescriptionStyle(styles)"
               >
                 {{ education.description }}
               </view>
 
-              <!-- 课程亮点 -->
-              <view
-                v-if="education.courses && education.courses.length > 0"
-                class="courses-section"
-              >
-                <text class="section-title" :style="getSectionTitleStyle(styles)">
-                  相关课程：
-                </text>
-                <view class="courses-tags">
-                  <view
-                    v-for="(course, courseIndex) in getLimitedCourses(education.courses)"
-                    :key="courseIndex"
-                    class="course-tag"
-                    :style="getCourseTagStyle(styles)"
-                  >
-                    {{ course }}
-                  </view>
-                  <view
-                    v-if="education.courses.length > maxCourses"
-                    class="more-courses"
-                    :style="getMoreCoursesStyle(styles)"
-                  >
-                    +{{ education.courses.length - maxCourses }}更多
-                  </view>
-                </view>
-              </view>
-
               <!-- 荣誉奖项 -->
               <view
-                v-if="education.honors && education.honors.length > 0"
-                class="honors-section"
-              >
-                <text class="section-title" :style="getSectionTitleStyle(styles)">
-                  荣誉奖项：
-                </text>
-                <view class="honors-list">
-                  <view
-                    v-for="(honor, honorIndex) in education.honors"
-                    :key="honorIndex"
-                    class="honor-item"
-                    :style="getHonorItemStyle(styles)"
-                  >
-                    <text class="honor-icon">🏆</text>
-                    <text class="honor-text">{{ honor }}</text>
-                  </view>
-                </view>
-              </view>
-
-              <!-- 在校活动 -->
-              <view
-                v-if="education.activities && education.activities.length > 0"
-                class="activities-section"
-              >
-                <text class="section-title" :style="getSectionTitleStyle(styles)">
-                  在校活动：
-                </text>
-                <view class="activities-list">
-                  <view
-                    v-for="(activity, activityIndex) in education.activities"
-                    :key="activityIndex"
-                    class="activity-item"
-                    :style="getActivityItemStyle(styles)"
-                  >
-                    <text class="activity-icon">🎨</text>
-                    <text class="activity-text">{{ activity }}</text>
-                  </view>
-                </view>
-              </view>
-
-              <!-- 学术成果 -->
-              <view
-                v-if="education.achievements && education.achievements.length > 0"
+                v-if="showHonors && education.achievements && education.achievements.length > 0"
                 class="achievements-section"
               >
-                <text class="section-title" :style="getSectionTitleStyle(styles)">
-                  学术成果：
-                </text>
+                <text class="section-title">荣誉奖项：</text>
                 <view class="achievements-list">
                   <view
                     v-for="(achievement, achievementIndex) in education.achievements"
                     :key="achievementIndex"
                     class="achievement-item"
-                    :style="getAchievementItemStyle(styles)"
                   >
-                    <text class="achievement-icon">📚</text>
+                    <text class="achievement-icon">🏆</text>
                     <text class="achievement-text">{{ achievement }}</text>
                   </view>
                 </view>
               </view>
+
+              <!-- 分隔线（非最后一个项目） -->
+              <view
+                v-if="index < sortedEducations.length - 1"
+                class="item-divider"
+              ></view>
             </view>
           </view>
-        </view>
-
-        <!-- 空状态 -->
-        <view
-          v-if="sortedEducations.length === 0"
-          class="empty-state"
-          :style="getEmptyStateStyle(styles)"
-        >
-          <view class="empty-icon">🎓</view>
-          <text class="empty-title" :style="getEmptyTitleStyle(styles)">
-            暂无教育经历
-          </text>
-          <text class="empty-description" :style="getEmptyDescriptionStyle(styles)">
-            请添加您的教育背景信息
-          </text>
         </view>
       </view>
     </template>
@@ -228,66 +110,41 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import BaseComponent from "./BaseComponent.vue";
-import type { TemplateGlobalStyle } from "@/types/template";
 
 interface Props {
   componentData: any;
-  globalStyle?: TemplateGlobalStyle;
+  globalStyle?: any;
   customStyles?: Record<string, any>;
 }
 
 const props = defineProps<Props>();
 
-const componentName = computed(() =>
-  props.componentData?.name || '教育经历'
-);
+// ===================== 计算属性 =====================
 
-// 组件配置
-const componentProps = computed(() =>
-  props.componentData?.props || {}
-);
+// 组件名称
+const componentName = computed(() => props.componentData?.name || '教育背景');
 
-const defaultConfig = computed(() =>
-  props.componentData?.defaultConfig || {}
-);
+// 配置选项（从defaultConfig.props中获取）
+const configProps = computed(() => props.componentData?.defaultConfig?.props || {});
+
+// 显示控制
+const showTitle = computed(() => configProps.value.showTitle ?? true);
+const showDegree = computed(() => configProps.value.showDegree ?? true);
+const showHonors = computed(() => configProps.value.showHonors ?? true);
+const showGPA = computed(() => configProps.value.showGPA ?? false);
+const showCourses = computed(() => configProps.value.showCourses ?? false);
+const showEducationPeriod = computed(() => configProps.value.showEducationPeriod ?? true);
+const showUniversityLogo = computed(() => configProps.value.showUniversityLogo ?? false);
 
 // 教育经历数据
-const educations = computed(() =>
-  componentProps.value.experiences || []
-);
+const educations = computed(() => {
+  return props.componentData?.props?.experiences || [];
+});
 
-// 配置选项
-const showWorkPeriod = computed(() =>
-  defaultConfig.value.props?.showWorkPeriod ?? true
-);
-
-const showDegree = computed(() =>
-  defaultConfig.value.props?.showDegree ?? true
-);
-
-const showGPA = computed(() =>
-  defaultConfig.value.props?.showGPA ?? false
-);
-
-const showSchoolLogo = computed(() =>
-  defaultConfig.value.props?.showSchoolLogo ?? false
-);
-
-const maxItems = computed(() =>
-  defaultConfig.value.props?.maxItems || 5
-);
-
-const maxCourses = computed(() =>
-  defaultConfig.value.props?.maxCoursesPerItem || 3
-);
-
-const layoutType = computed(() =>
-  defaultConfig.value.props?.layout || 'timeline'
-);
-
-const orderDirection = computed(() =>
-  defaultConfig.value.props?.orderDirection || 'desc'
-);
+// 排序方向
+const orderDirection = computed(() => configProps.value.orderDirection || 'desc');
+const orderBy = computed(() => configProps.value.orderBy || 'graduationDate');
+const maxItems = computed(() => configProps.value.maxItems || 3);
 
 // 按配置排序教育经历
 const sortedEducations = computed(() => {
@@ -296,19 +153,26 @@ const sortedEducations = computed(() => {
   // 限制最大显示数量
   const limitedItems = items.slice(0, maxItems.value);
 
-  // 按开始日期排序
+  // 按指定字段排序
   return limitedItems.sort((a, b) => {
-    const dateA = new Date(a.startDate || 0).getTime();
-    const dateB = new Date(b.startDate || 0).getTime();
-
-    return orderDirection.value === 'desc' ? dateB - dateA : dateA - dateB;
+    if (orderBy.value === 'graduationDate') {
+      const dateA = new Date(a.endDate || 0).getTime();
+      const dateB = new Date(b.endDate || 0).getTime();
+      return orderDirection.value === 'desc' ? dateB - dateA : dateA - dateB;
+    } else if (orderBy.value === 'startDate') {
+      const dateA = new Date(a.startDate || 0).getTime();
+      const dateB = new Date(b.startDate || 0).getTime();
+      return orderDirection.value === 'desc' ? dateB - dateA : dateA - dateB;
+    } else {
+      // 默认按开始日期排序
+      const dateA = new Date(a.startDate || 0).getTime();
+      const dateB = new Date(b.startDate || 0).getTime();
+      return orderDirection.value === 'desc' ? dateB - dateA : dateA - dateB;
+    }
   });
 });
 
-// 限制显示课程数量
-const getLimitedCourses = (courses: string[]) => {
-  return courses.slice(0, maxCourses.value);
-};
+// ===================== 工具函数 =====================
 
 // 格式化日期
 const formatDate = (dateStr: string) => {
@@ -323,514 +187,303 @@ const formatDate = (dateStr: string) => {
   }
 };
 
-// ============= 样式函数 =============
-
-const getContainerStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    width: '100%',
-    boxSizing: 'border-box',
-    fontFamily: styles.fontFamily,
-    fontSize: styles.bodySize,
-    lineHeight: styles.lineHeight
+// 格式化学位显示
+const formatDegree = (degree: string, format: string = 'full') => {
+  if (!degree) return '';
+  
+  const degreeMap: Record<string, string> = {
+    '本科': '学士',
+    '硕士': '硕士',
+    '博士': '博士',
+    '专科': '专科',
+    '高中': '高中'
   };
-};
-
-const getTimelineLayoutStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    width: '100%',
-    position: 'relative'
+  
+  const shortMap: Record<string, string> = {
+    '本科': '本',
+    '硕士': '硕',
+    '博士': '博',
+    '专科': '专',
+    '高中': '高'
   };
-};
-
-const getTimelineItemStyle = (styles: any, index: number) => {
-  if (!styles) return {};
-
-  return {
-    display: 'flex',
-    position: 'relative',
-    marginBottom: index < sortedEducations.length - 1 ?
-      (styles.itemSpacing || '24px') : '0',
-    width: '100%'
-  };
-};
-
-const getTimelineNodeStyle = (styles: any, education: any) => {
-  if (!styles) return {};
-
-  return {
-    position: 'relative',
-    width: '24px',
-    marginRight: '16px',
-    flexShrink: 0
-  };
-};
-
-const getNodeCoreStyle = (styles: any, education: any) => {
-  if (!styles) return {};
-
-  const isCurrent = education.isCurrent;
-  const nodeColor = isCurrent ? styles.accentColor : styles.primaryColor;
-
-  return {
-    width: '12px',
-    height: '12px',
-    borderRadius: '50%',
-    backgroundColor: nodeColor,
-    border: `2px solid ${styles.backgroundColor || '#fff'}`,
-    boxShadow: `0 0 0 2px ${nodeColor}`,
-    zIndex: 2,
-    position: 'relative'
-  };
-};
-
-const getTimelineConnectorStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    position: 'absolute',
-    left: '5px',
-    top: '14px',
-    bottom: '-24px',
-    width: '2px',
-    backgroundColor: styles.timelineColor || '#e8e8e8',
-    zIndex: 1
-  };
-};
-
-const getContentStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    flex: 1,
-    width: '100%',
-    paddingBottom: sortedEducations.length > 1 ? '16px' : '0',
-    borderBottom: sortedEducations.length > 1 ?
-      `1px solid ${styles.secondaryColor || '#f0f0f0'}` : 'none'
-  };
-};
-
-const getSchoolNameStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: styles.companyColor || styles.primaryColor,
-    marginBottom: '4px',
-    display: 'block'
-  };
-};
-
-const getSchoolLogoStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    overflow: 'hidden',
-    backgroundColor: '#f5f5f5',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0
-  };
-};
-
-const getMajorStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '14px',
-    color: styles.textColor,
-    fontWeight: '500',
-    marginRight: '8px'
-  };
-};
-
-const getDegreeStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '13px',
-    color: styles.periodColor || '#999',
-    marginLeft: '8px'
-  };
-};
-
-const getTimePeriodStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    marginTop: '8px',
-    marginBottom: '12px'
-  };
-};
-
-const getDescriptionStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '14px',
-    color: styles.textColor,
-    lineHeight: '1.6',
-    marginTop: '8px'
-  };
-};
-
-const getSectionTitleStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '14px',
-    color: styles.titleColor,
-    fontWeight: 'bold',
-    display: 'block',
-    marginTop: '12px',
-    marginBottom: '8px'
-  };
-};
-
-const getCourseTagStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '12px',
-    color: styles.primaryColor,
-    backgroundColor: `${styles.primaryColor}15`,
-    padding: '4px 10px',
-    borderRadius: '12px',
-    border: `1px solid ${styles.primaryColor}30`
-  };
-};
-
-const getMoreCoursesStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '11px',
-    color: styles.periodColor || '#999',
-    fontStyle: 'italic'
-  };
-};
-
-const getHonorItemStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '6px',
-    fontSize: '13px',
-    color: styles.textColor
-  };
-};
-
-const getActivityItemStyle = getHonorItemStyle;
-const getAchievementItemStyle = getHonorItemStyle;
-
-const getEmptyStateStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    textAlign: 'center',
-    padding: '60px 20px'
-  };
-};
-
-const getEmptyTitleStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    display: 'block',
-    fontSize: '16px',
-    color: styles.textColor,
-    marginTop: '12px',
-    marginBottom: '8px'
-  };
-};
-
-const getEmptyDescriptionStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    display: 'block',
-    fontSize: '14px',
-    color: styles.periodColor || '#999'
-  };
+  
+  if (format === 'short') {
+    return shortMap[degree] || degree;
+  }
+  
+  return degreeMap[degree] || degree;
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .education-experience-container {
-  font-family: inherit;
   width: 100%;
-}
-
-/* 时间线布局 */
-.timeline-layout {
-  position: relative;
-  width: 100%;
-}
-
-.timeline-item {
-  display: flex;
-  width: 100%;
-}
-
-.timeline-node {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.node-core {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  z-index: 2;
-}
-
-.timeline-connector {
-  position: absolute;
-  width: 2px;
-  z-index: 1;
-}
-
-/* 学校行 */
-.school-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 4px;
-  width: 100%;
-}
-
-.school-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.logo-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.degree-major {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-/* 时间信息 */
-.time-info, .achievement-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.time-icon, .achievement-icon {
-  font-size: 14px;
-}
-
-.time-text, .achievement-text {
-  font-size: 13px;
-}
-
-/* 标签云 */
-.courses-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-  width: 100%;
-}
-
-.course-tag {
-  transition: all 0.3s ease;
-}
-
-.course-tag:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-/* 列表样式 */
-.honors-list,
-.activities-list,
-.achievements-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 6px;
-  width: 100%;
-}
-
-.honor-item,
-.activity-item,
-.achievement-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  width: 100%;
-}
-
-.honor-icon,
-.activity-icon,
-.achievement-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.honor-text,
-.activity-text,
-.achievement-text {
-  flex: 1;
 }
 
 /* 空状态 */
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+  text-align: center;
+  padding: 60px 20px;
 }
 
 .empty-icon {
   font-size: 48px;
   opacity: 0.5;
   margin-bottom: 12px;
+  display: block;
 }
 
 .empty-title {
+  display: block;
+  font-size: 16px;
+  color: var(--base-text-color, #555);
+  margin-bottom: 8px;
   font-weight: 500;
 }
 
 .empty-description {
-  opacity: 0.7;
+  display: block;
+  font-size: 14px;
+  color: var(--base-secondary-color, #999);
 }
 
-/* ============= 响应式设计 ============= */
+/* 教育经历列表 */
+.education-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.education-item {
+  position: relative;
+  display: flex;
+  gap: 16px;
+}
+
+/* 装饰竖线 */
+.item-decoration {
+  flex-shrink: 0;
+  width: 4px;
+  border-radius: 2px;
+  background-color: var(--base-primary-color, #52c41a);
+}
+
+.current-item .item-decoration {
+  background-color: var(--base-accent-color, #fa8c16);
+}
+
+/* 内容区域 */
+.item-content {
+  flex: 1;
+  min-width: 0; /* 防止内容溢出 */
+}
+
+/* 学校信息 */
+.school-info {
+  margin-bottom: 8px;
+}
+
+.school-name {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--base-university-color, var(--base-primary-color, #52c41a));
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.degree-major {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.major {
+  font-size: 14px;
+  color: var(--base-text-color, #666);
+  font-weight: 500;
+}
+
+.degree {
+  font-size: 13px;
+  color: var(--base-accent-color, #fa8c16);
+}
+
+/* 时间信息 */
+.time-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.time-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.time-text {
+  font-size: 13px;
+  color: var(--base-period-color, var(--base-secondary-color, #999));
+}
+
+/* 描述 */
+.description {
+  font-size: 14px;
+  color: var(--base-text-color, #555);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* 荣誉奖项 */
+.achievements-section {
+  margin-top: 12px;
+}
+
+.section-title {
+  display: block;
+  font-size: 14px;
+  color: var(--base-title-color, #333);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.achievement-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.achievement-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.achievement-text {
+  font-size: 13px;
+  color: var(--base-text-color, #555);
+  flex: 1;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* 分隔线 */
+.item-divider {
+  height: 1px;
+  background-color: var(--base-secondary-color, #f0f0f0);
+  margin-top: 24px;
+}
+
+/* ===================== 响应式设计 ===================== */
 
 /* 移动端优化 */
 @media (max-width: 768px) {
-  .timeline-item {
+  .education-item {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 12px;
   }
 
-  .timeline-node {
-    position: relative;
+  .item-decoration {
     width: 100%;
-    margin-right: 0;
-    margin-bottom: 12px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+    height: 3px;
   }
 
-  .node-core {
-    margin-left: 8px;
+  .school-name {
+    font-size: 15px;
   }
 
-  .timeline-connector {
-    position: absolute;
-    left: 14px !important;
-    top: 14px !important;
-    bottom: -12px !important;
-    height: auto;
-  }
-
-  .timeline-content {
-    width: 100% !important;
-    padding-left: 32px;
-    padding-bottom: 16px;
-  }
-
-  .school-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .school-logo {
-    margin-top: 8px;
-    align-self: flex-start;
-  }
-
-  .degree-major {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+  .major {
+    font-size: 13px;
   }
 
   .degree {
-    margin-left: 0 !important;
-    margin-top: 2px;
+    font-size: 12px;
   }
 
-  .time-period {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .time-text {
+    font-size: 12px;
   }
 
-  .courses-tags {
-    gap: 6px;
+  .description {
+    font-size: 13px;
   }
 
-  .course-tag {
-    font-size: 11px !important;
-    padding: 3px 8px !important;
+  .section-title {
+    font-size: 13px;
+  }
+
+  .achievement-text {
+    font-size: 12px;
+  }
+
+  .item-divider {
+    margin-top: 20px;
+  }
+
+  .empty-icon {
+    font-size: 36px;
+  }
+  
+  .empty-title {
+    font-size: 14px;
+  }
+  
+  .empty-description {
+    font-size: 12px;
   }
 }
 
-/* 平板优化 */
+/* 平板设备 */
 @media (min-width: 769px) and (max-width: 1024px) {
-  .education-experience-container {
-    max-width: 100%;
+  .education-list {
+    gap: 20px;
   }
-
-  .timeline-content {
-    width: 100% !important;
+  
+  .school-name {
+    font-size: 15px;
   }
 }
 
-/* 打印优化 */
+/* 打印样式 */
 @media print {
   .education-experience-container {
     break-inside: avoid;
-    page-break-inside: avoid;
-    width: 100% !important;
   }
 
-  .timeline-item {
+  .education-item {
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
-  .course-tag {
-    border: 1px solid #333 !important;
-    background: white !important;
+  .item-decoration {
+    background-color: #333 !important;
+  }
+
+  .school-name {
+    color: #000 !important;
+  }
+
+  .description,
+  .achievement-text {
     color: #333 !important;
+  }
+
+  .item-divider {
+    background-color: #ddd !important;
+  }
+
+  .empty-icon {
+    display: none;
   }
 }
 </style>

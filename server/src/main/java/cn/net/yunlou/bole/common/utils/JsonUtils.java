@@ -26,17 +26,20 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.common.collect.Lists;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -44,6 +47,10 @@ public class JsonUtils {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static char INT_SPACE = 0x0020;
+
+    private JsonUtils() {
+        // 拒绝外部实例
+    }
 
     public static ObjectMapper getInstance() {
 
@@ -67,11 +74,21 @@ public class JsonUtils {
         OBJECT_MAPPER.enable(
                 JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER.mappedFeature());
 
-        return OBJECT_MAPPER;
-    }
+        OBJECT_MAPPER.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        // 使用JSR310提供的序列化类,里面包含了大量的JDK8时间序列化类
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
 
-    private JsonUtils() {
-        // 拒绝外部实例
+        // 配置LocalDateTime序列化和反序列化格式
+        javaTimeModule.addSerializer(
+                LocalDateTime.class,
+                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        javaTimeModule.addDeserializer(
+                LocalDateTime.class,
+                new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        OBJECT_MAPPER.registerModule(javaTimeModule);
+
+        return OBJECT_MAPPER;
     }
 
     /**
@@ -122,8 +139,8 @@ public class JsonUtils {
      *
      * @param json
      * @param typeReference new TypeReference<List<T>>>(){} 或 new TypeReference<T>(){}
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> T fromJson(String json, TypeReference<T> typeReference) {
         try {
@@ -144,8 +161,8 @@ public class JsonUtils {
     /**
      * 处理泛型类型的JSON反序列化
      *
-     * @param json JSON字符串
-     * @param parametrized 泛型类型的原始类（如 CustomerResponse.class）
+     * @param json             JSON字符串
+     * @param parametrized     泛型类型的原始类（如 CustomerResponse.class）
      * @param parameterClasses 泛型参数类型（如 String.class, User.class 等）
      * @return 反序列化后的对象
      */

@@ -1,46 +1,40 @@
-<!-- components/resumes/WorkExperience.vue -->
 <template>
   <BaseComponent
-    :title="componentName"
     :component-data="componentData"
     :global-style="globalStyle"
-    :custom-styles="customStyles"
+    :show-header="showTitle"
+    :custom-title="title"
+    :responsive-center="responsiveCenter"
+    :max-width="maxWidth"
   >
     <template #default="{ styles }">
-      <view
-        class="work-experience-container"
-        :style="getContainerStyle(styles)"
-      >
+      <view class="work-experience-container">
         <!-- 时间线样式 -->
-        <view class="timeline-line" :style="getTimelineStyle(styles)"></view>
+        <view v-if="showTimeline && experiences.length > 0" class="timeline-line"></view>
 
+        <!-- 工作经历列表 -->
         <view
           v-for="(experience, index) in sortedExperiences"
           :key="experience.id || index"
           class="experience-item"
-          :style="getItemStyle(styles, index, experience.isCurrent)"
+          :class="{ 'current-item': experience.isCurrent }"
         >
           <!-- 时间轴节点 -->
           <view
+            v-if="showTimeline"
             class="timeline-node"
-            :style="getNodeStyle(styles, experience.isCurrent)"
+            :class="{ 'current-node': experience.isCurrent }"
           ></view>
 
-          <!-- 公司信息区域 -->
-          <view class="experience-content" :style="getExperienceContentStyle(styles)">
-            <!-- 公司名称和logo -->
+          <!-- 工作经历内容 -->
+          <view class="experience-content">
+            <!-- 公司信息区域 -->
             <view class="company-header">
               <view class="company-info">
-                <text
-                  class="company-name"
-                  :style="getCompanyNameStyle(styles)"
-                >
-                  {{ experience.company }}
+                <text class="company-name">
+                  {{ experience.company || '未填写公司' }}
                 </text>
-                <text
-                  class="position"
-                  :style="getPositionStyle(styles)"
-                >
+                <text class="position" v-if="showJobTitle && experience.position">
                   {{ experience.position }}
                 </text>
               </view>
@@ -49,7 +43,6 @@
               <view
                 v-if="experience.isCurrent"
                 class="current-badge"
-                :style="getCurrentBadgeStyle(styles)"
               >
                 <text class="badge-text">在职</text>
               </view>
@@ -59,10 +52,10 @@
             <view v-if="showWorkPeriod" class="meta-info">
               <view v-if="showDuration" class="time-period">
                 <text class="time-icon">📅</text>
-                <text class="time-text" :style="getPeriodStyle(styles)">
+                <text class="time-text">
                   {{ formatDate(experience.startDate) }} -
-                  {{ experience.isCurrent ? "至今" : formatDate(experience.endDate) }}
-                  <text v-if="calculateDuration(experience)" class="duration">
+                  {{ experience.isCurrent ? '至今' : formatDate(experience.endDate) }}
+                  <text v-if="showDuration && calculateDuration(experience)" class="duration">
                     ({{ calculateDuration(experience) }})
                   </text>
                 </text>
@@ -81,9 +74,8 @@
 
             <!-- 工作描述 -->
             <view
-              v-if="experience.description"
+              v-if="showWorkContent && experience.description"
               class="description"
-              :style="getDescriptionStyle(styles)"
             >
               {{ experience.description }}
             </view>
@@ -93,7 +85,7 @@
               v-if="experience.responsibilities && experience.responsibilities.length > 0"
               class="responsibilities"
             >
-              <text class="section-title" :style="getSectionTitleStyle(styles)">
+              <text class="section-title">
                 工作职责：
               </text>
               <view class="responsibilities-list">
@@ -101,7 +93,6 @@
                   v-for="(responsibility, rIndex) in experience.responsibilities"
                   :key="rIndex"
                   class="responsibility-item"
-                  :style="getListItemStyle(styles)"
                 >
                   <text class="bullet">•</text>
                   <text class="item-text">{{ responsibility }}</text>
@@ -111,10 +102,10 @@
 
             <!-- 工作成就 -->
             <view
-              v-if="experience.achievements && experience.achievements.length > 0"
+              v-if="showAchievements && experience.achievements && experience.achievements.length > 0"
               class="achievements"
             >
-              <text class="section-title" :style="getSectionTitleStyle(styles)">
+              <text class="section-title">
                 主要成就：
               </text>
               <view class="achievements-list">
@@ -122,7 +113,6 @@
                   v-for="(achievement, aIndex) in experience.achievements"
                   :key="aIndex"
                   class="achievement-item"
-                  :style="getListItemStyle(styles)"
                 >
                   <text class="bullet">🏆</text>
                   <text class="item-text">{{ achievement }}</text>
@@ -135,7 +125,7 @@
               v-if="showSkills && experience.skills && experience.skills.length > 0"
               class="skills-used"
             >
-              <text class="section-title" :style="getSectionTitleStyle(styles)">
+              <text class="section-title">
                 使用技能：
               </text>
               <view class="skills-tags">
@@ -143,7 +133,6 @@
                   v-for="(skill, sIndex) in experience.skills"
                   :key="sIndex"
                   class="skill-tag"
-                  :style="getSkillTagStyle(styles)"
                 >
                   {{ skill }}
                 </view>
@@ -155,7 +144,7 @@
               v-if="experience.projects && experience.projects.length > 0"
               class="projects"
             >
-              <text class="section-title" :style="getSectionTitleStyle(styles)">
+              <text class="section-title">
                 参与项目：
               </text>
               <view class="projects-list">
@@ -196,11 +185,9 @@
         <view
           v-if="experiences.length === 0"
           class="empty-placeholder"
-          :style="getPlaceholderStyle(styles)"
         >
           <text class="placeholder-icon">💼</text>
           <text class="placeholder-text">暂无工作经历</text>
-          <text class="placeholder-hint">点击添加工作经历</text>
         </view>
       </view>
     </template>
@@ -210,99 +197,68 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import BaseComponent from "./BaseComponent.vue";
-import type { TemplateGlobalStyle } from "@/types/template";
 
 interface Props {
   componentData: any;
-  globalStyle?: TemplateGlobalStyle;
-  customStyles?: Record<string, any>;
+  globalStyle?: any;
+  overrideStyles?: any;
+  responsiveCenter?: boolean;
+  maxWidth?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  globalStyle: () => ({}),
+  overrideStyles: () => ({}),
+  responsiveCenter: false,
+  maxWidth: "100%"
+});
 
-// 获取组件数据
-const componentName = computed(() =>
-  props.componentData?.name || "工作经历"
-);
+// ===================== 计算属性 =====================
 
-const componentProps = computed(() =>
-  props.componentData?.props || {}
-);
+// 组件数据
+const componentProps = computed(() => props.componentData?.props || {});
+const defaultConfig = computed(() => props.componentData?.defaultConfig || {});
 
-const defaultConfig = computed(() =>
-  props.componentData?.defaultConfig || {}
-);
+// 配置选项
+const showTitle = computed(() => defaultConfig.value.props?.showTitle ?? true);
+const showDuration = computed(() => componentProps.value.showDuration ?? true);
+const showJobTitle = computed(() => defaultConfig.value.props?.showJobTitle ?? true);
+const showDepartment = computed(() => defaultConfig.value.props?.showDepartment ?? false);
+const showWorkPeriod = computed(() => defaultConfig.value.props?.showWorkPeriod ?? true);
+const showWorkContent = computed(() => defaultConfig.value.props?.showWorkContent ?? true);
+const showAchievements = computed(() => defaultConfig.value.props?.showAchievements ?? true);
+const showSkills = computed(() => defaultConfig.value.props?.showSkills ?? false);
+const showLocation = computed(() => componentProps.value.showLocation ?? false);
+const showReference = computed(() => componentProps.value.showReference ?? false);
+const showTimeline = computed(() => defaultConfig.value.props?.showTimeline ?? true);
 
-const componentStyles = computed(() =>
-  props.componentData?.styles || {}
-);
+// 组件标题
+const title = computed(() => defaultConfig.value.props?.title || "工作经历");
 
-// 工作经验数据
-const experiences = computed(() =>
-  componentProps.value.experiences || []
-);
-
-// 配置选项（从默认配置中获取）
-const showDuration = computed(() =>
-  componentProps.value.showDuration ?? defaultConfig.value.props?.showWorkPeriod ?? true
-);
-
-const showCompanyLogo = computed(() =>
-  defaultConfig.value.props?.showCompanyLogo ?? false
-);
-
-const showCompanyName = computed(() =>
-  defaultConfig.value.props?.showCompanyName ?? true
-);
-
-const showJobTitle = computed(() =>
-  defaultConfig.value.props?.showJobTitle ?? true
-);
-
-const showDepartment = computed(() =>
-  defaultConfig.value.props?.showDepartment ?? false
-);
-
-const showWorkPeriod = computed(() =>
-  defaultConfig.value.props?.showWorkPeriod ?? true
-);
-
-const showWorkContent = computed(() =>
-  defaultConfig.value.props?.showWorkContent ?? true
-);
-
-const showAchievements = computed(() =>
-  defaultConfig.value.props?.showAchievements ?? true
-);
-
-const showSkills = computed(() =>
-  defaultConfig.value.props?.showSkills ?? false
-);
-
-const showLocation = computed(() =>
-  componentProps.value.showLocation ?? false
-);
-
-const showReference = computed(() =>
-  componentProps.value.showReference ?? false
-);
+// 工作经历数据
+const experiences = computed(() => componentProps.value.experiences || []);
 
 // 按开始日期倒序排序
 const sortedExperiences = computed(() => {
   const orderBy = defaultConfig.value.props?.orderBy || "startDate";
   const orderDirection = defaultConfig.value.props?.orderDirection || "desc";
+  const maxItems = defaultConfig.value.props?.maxItems || 10;
 
-  return [...experiences.value].sort((a, b) => {
-    const aValue = a[orderBy] || "";
-    const bValue = b[orderBy] || "";
-
-    if (orderDirection === "desc") {
-      return new Date(bValue).getTime() - new Date(aValue).getTime();
-    } else {
-      return new Date(aValue).getTime() - new Date(bValue).getTime();
-    }
-  }).slice(0, defaultConfig.value.props?.maxItems || 10); // 限制显示数量
+  return [...experiences.value]
+    .sort((a, b) => {
+      const aValue = a[orderBy] || "";
+      const bValue = b[orderBy] || "";
+      
+      if (orderDirection === "desc") {
+        return new Date(bValue).getTime() - new Date(aValue).getTime();
+      } else {
+        return new Date(aValue).getTime() - new Date(bValue).getTime();
+      }
+    })
+    .slice(0, maxItems);
 });
+
+// ===================== 工具函数 =====================
 
 // 格式化日期
 const formatDate = (dateStr: string) => {
@@ -319,257 +275,114 @@ const formatDate = (dateStr: string) => {
 const calculateDuration = (experience: any) => {
   if (!experience.startDate) return "";
 
-  const start = new Date(experience.startDate);
-  const end = experience.isCurrent ? new Date() : new Date(experience.endDate);
+  try {
+    const start = new Date(experience.startDate);
+    const end = experience.isCurrent ? new Date() : new Date(experience.endDate);
 
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) return "";
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return "";
 
-  const diffTime = Math.abs(end.getTime() - start.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffMonths = (end.getFullYear() - start.getFullYear()) * 12 + 
+                      (end.getMonth() - start.getMonth());
 
-  const years = Math.floor(diffDays / 365);
-  const months = Math.floor((diffDays % 365) / 30);
+    const years = Math.floor(diffMonths / 12);
+    const months = diffMonths % 12;
 
-  let result = "";
-  if (years > 0) result += `${years}年`;
-  if (months > 0) result += `${months}个月`;
+    let result = "";
+    if (years > 0) result += `${years}年`;
+    if (months > 0) result += `${months}个月`;
 
-  return result;
-};
-
-// 样式计算方法
-const getContainerStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    position: 'relative',
-    padding: styles.padding || '16px',
-    backgroundColor: styles.backgroundColor || '#ffffff',
-    borderRadius: styles.borderRadius || '8px',
-    fontFamily: styles.fontFamily,
-    fontSize: styles.bodySize || '14px',
-    lineHeight: styles.lineHeight || '1.6',
-    width: '100%',
-    boxSizing: 'border-box'
-  };
-};
-
-const getTimelineStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    position: 'absolute',
-    left: '16px',
-    top: '0',
-    bottom: '0',
-    width: '2px',
-    backgroundColor: styles.timelineColor || '#e8e8e8',
-    zIndex: '1'
-  };
-};
-
-const getItemStyle = (styles: any, index: number, isCurrent: boolean) => {
-  if (!styles) return {};
-
-  const baseStyle: any = {
-    position: 'relative',
-    paddingLeft: '40px',
-    paddingBottom: index < sortedExperiences.value.length - 1 ?
-      (styles.itemSpacing || '20px') : '0',
-    marginBottom: index < sortedExperiences.value.length - 1 ?
-      (styles.itemSpacing || '20px') : '0',
-    borderBottom: index < sortedExperiences.value.length - 1 ?
-      `1px dashed ${styles.secondaryColor || '#e8e8e8'}` : 'none',
-    width: '100%',
-    boxSizing: 'border-box'
-  };
-
-  if (isCurrent) {
-    baseStyle.borderLeft = `3px solid ${styles.accentColor || '#52c41a'}`;
-    baseStyle.paddingLeft = '37px'; // 调整左边距
-    baseStyle.backgroundColor = 'rgba(82, 196, 26, 0.05)';
-    baseStyle.borderRadius = '4px';
-    baseStyle.padding = '12px';
-    baseStyle.marginLeft = '-12px';
+    return result;
+  } catch (e) {
+    return "";
   }
-
-  return baseStyle;
-};
-
-const getNodeStyle = (styles: any, isCurrent: boolean) => {
-  if (!styles) return {};
-
-  const baseStyle: any = {
-    position: 'absolute',
-    left: '12px',
-    top: '10px',
-    width: '12px',
-    height: '12px',
-    borderRadius: '50%',
-    backgroundColor: isCurrent ?
-      (styles.accentColor || '#52c41a') :
-      (styles.primaryColor || '#1890ff'),
-    border: `2px solid ${styles.backgroundColor || '#fff'}`,
-    zIndex: '2',
-    boxShadow: `0 0 0 2px ${isCurrent ?
-      (styles.accentColor + '30' || 'rgba(82, 196, 26, 0.2)') :
-      (styles.primaryColor + '30' || 'rgba(24, 144, 255, 0.2)')}`
-  };
-
-  return baseStyle;
-};
-
-const getExperienceContentStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    width: '100%',
-    boxSizing: 'border-box'
-  };
-};
-
-const getCompanyNameStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: styles.companyColor || styles.primaryColor || '#1890ff',
-    marginBottom: '4px',
-    display: 'block',
-    width: '100%'
-  };
-};
-
-const getPositionStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '14px',
-    fontWeight: '500',
-    color: styles.textColor || '#333',
-    marginBottom: '8px',
-    display: 'block',
-    width: '100%'
-  };
-};
-
-const getCurrentBadgeStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '12px',
-    color: '#fff',
-    backgroundColor: styles.accentColor || '#52c41a',
-    padding: '2px 8px',
-    borderRadius: '10px',
-    fontWeight: 'bold'
-  };
-};
-
-const getPeriodStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '12px',
-    color: styles.periodColor || '#999999',
-    backgroundColor: '#f5f5f5',
-    padding: '2px 8px',
-    borderRadius: '10px',
-    display: 'inline-block'
-  };
-};
-
-const getDescriptionStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    color: styles.textColor || '#555',
-    fontSize: '14px',
-    lineHeight: '1.6',
-    margin: '8px 0',
-    textAlign: 'justify',
-    width: '100%'
-  };
-};
-
-const getSectionTitleStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    color: styles.titleColor || '#333',
-    marginBottom: '8px',
-    display: 'block',
-    width: '100%'
-  };
-};
-
-const getListItemStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    color: styles.textColor || '#666',
-    fontSize: '14px',
-    lineHeight: '1.5',
-    marginBottom: '4px',
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '8px',
-    width: '100%'
-  };
-};
-
-const getSkillTagStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    fontSize: '12px',
-    color: styles.primaryColor || '#1890ff',
-    backgroundColor: 'rgba(24, 144, 255, 0.1)',
-    padding: '2px 8px',
-    borderRadius: '12px',
-    border: `1px solid rgba(24, 144, 255, 0.2)`
-  };
-};
-
-const getPlaceholderStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    textAlign: 'center',
-    color: '#999',
-    padding: '40px 20px',
-    background: 'repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f0f0f0 10px, #f0f0f0 20px)',
-    borderRadius: '4px',
-    fontSize: styles.bodySize || '14px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '8px',
-    width: '100%'
-  };
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .work-experience-container {
   position: relative;
   width: 100%;
+  padding: var(--base-padding, 16px);
   box-sizing: border-box;
 }
 
+/* 时间线样式 */
 .timeline-line {
   position: absolute;
+  left: 16px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--base-secondary-color, #e8e8e8);
   z-index: 1;
+  
+  @media (max-width: 768px) {
+    left: 8px;
+    display: none;
+  }
 }
 
+/* 工作经历项 */
 .experience-item {
   position: relative;
-  z-index: 2;
+  padding-left: 40px;
+  margin-bottom: var(--base-item-spacing, 20px);
+  padding-bottom: var(--base-item-spacing, 20px);
+  border-bottom: 1px dashed var(--base-secondary-color, #e8e8e8);
   width: 100%;
   box-sizing: border-box;
+  transition: all 0.3s ease;
+  
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  
+  &.current-item {
+    border-left: 3px solid var(--base-accent-color, #52c41a);
+    padding-left: 37px;
+    background-color: rgba(82, 196, 26, 0.05);
+    border-radius: 4px;
+    padding: 12px 12px 12px 37px;
+    margin-left: -12px;
+  }
+  
+  @media (max-width: 768px) {
+    padding-left: 20px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    
+    &.current-item {
+      padding-left: 17px;
+      margin-left: 0;
+    }
+  }
+}
+
+/* 时间线节点 */
+.timeline-node {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--base-primary-color, #1890ff);
+  border: 2px solid var(--base-background-color, #fff);
+  z-index: 2;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  
+  &.current-node {
+    background-color: var(--base-accent-color, #52c41a);
+    box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);
+  }
+  
+  @media (max-width: 768px) {
+    left: 8px;
+    width: 10px;
+    height: 10px;
+  }
 }
 
 .experience-content {
@@ -578,6 +391,7 @@ const getPlaceholderStyle = (styles: any) => {
   box-sizing: border-box;
 }
 
+/* 公司信息 */
 .company-header {
   display: flex;
   justify-content: space-between;
@@ -585,19 +399,43 @@ const getPlaceholderStyle = (styles: any) => {
   margin-bottom: 8px;
   flex-wrap: wrap;
   width: 100%;
+  gap: 8px;
 }
 
 .company-info {
   flex: 1;
-  min-width: 0; /* 防止内容溢出 */
+  min-width: 0;
 }
 
+.company-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--base-company-color, var(--base-primary-color, #1890ff));
+  margin-bottom: 4px;
+  display: block;
+  width: 100%;
+}
+
+.position {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--base-text-color, #333);
+  display: block;
+  width: 100%;
+}
+
+/* 当前工作标识 */
 .current-badge {
   flex-shrink: 0;
-  margin-left: 12px;
   font-size: 12px;
+  color: #fff;
+  background-color: var(--base-accent-color, #52c41a);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: bold;
 }
 
+/* 元信息 */
 .meta-info {
   display: flex;
   flex-wrap: wrap;
@@ -621,17 +459,41 @@ const getPlaceholderStyle = (styles: any) => {
   font-size: 12px;
 }
 
-.duration {
-  margin-left: 4px;
-  color: #999;
+.time-text {
+  font-size: 12px;
+  color: var(--base-period-color, #999);
+  background-color: #f5f5f5;
+  padding: 2px 8px;
+  border-radius: 10px;
 }
 
+.duration {
+  margin-left: 4px;
+  color: var(--base-secondary-color, #999);
+}
+
+/* 描述文本 */
 .description {
-  white-space: pre-wrap;
+  color: var(--base-text-color, #555);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 8px 0;
+  text-align: justify;
+  width: 100%;
   word-break: break-word;
+}
+
+/* 分段标题 */
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--base-title-color, #333);
+  margin-bottom: 8px;
+  display: block;
   width: 100%;
 }
 
+/* 列表项 */
 .responsibilities,
 .achievements,
 .skills-used,
@@ -646,6 +508,18 @@ const getPlaceholderStyle = (styles: any) => {
   width: 100%;
 }
 
+.responsibility-item,
+.achievement-item {
+  color: var(--base-text-color, #666);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
 .bullet {
   margin-right: 4px;
   flex-shrink: 0;
@@ -653,9 +527,11 @@ const getPlaceholderStyle = (styles: any) => {
 
 .item-text {
   flex: 1;
-  min-width: 0; /* 防止文字溢出 */
+  min-width: 0;
+  word-break: break-word;
 }
 
+/* 技能标签 */
 .skills-tags {
   display: flex;
   flex-wrap: wrap;
@@ -664,6 +540,16 @@ const getPlaceholderStyle = (styles: any) => {
   width: 100%;
 }
 
+.skill-tag {
+  font-size: 12px;
+  color: var(--base-primary-color, #1890ff);
+  background-color: rgba(24, 144, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(24, 144, 255, 0.2);
+}
+
+/* 项目列表 */
 .project-item {
   margin-bottom: 12px;
   padding: 8px;
@@ -680,16 +566,17 @@ const getPlaceholderStyle = (styles: any) => {
   margin-bottom: 4px;
   flex-wrap: wrap;
   width: 100%;
+  gap: 4px;
 }
 
 .project-name {
   font-weight: 500;
-  color: #333;
+  color: var(--base-text-color, #333);
 }
 
 .project-role {
   font-size: 12px;
-  color: #666;
+  color: var(--base-text-color, #666);
   background: #e9ecef;
   padding: 1px 6px;
   border-radius: 3px;
@@ -697,17 +584,18 @@ const getPlaceholderStyle = (styles: any) => {
 
 .project-description {
   font-size: 12px;
-  color: #666;
+  color: var(--base-text-color, #666);
   line-height: 1.4;
   width: 100%;
 }
 
+/* 证明人 */
 .reference {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px dashed #eee;
+  border-top: 1px dashed var(--base-secondary-color, #eee);
   font-size: 12px;
-  color: #888;
+  color: var(--base-secondary-color, #888);
   width: 100%;
 }
 
@@ -721,8 +609,24 @@ const getPlaceholderStyle = (styles: any) => {
   margin-left: 8px;
 }
 
+/* 空状态 */
 .empty-placeholder {
-  min-height: 100px;
+  text-align: center;
+  color: var(--base-secondary-color, #999);
+  padding: 40px 20px;
+  background: repeating-linear-gradient(
+    45deg,
+    #fafafa,
+    #fafafa 10px,
+    #f0f0f0 10px,
+    #f0f0f0 20px
+  );
+  border-radius: 4px;
+  font-size: var(--base-body-size, 14px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -734,94 +638,81 @@ const getPlaceholderStyle = (styles: any) => {
 
 .placeholder-text {
   font-size: 14px;
-  color: #999;
+  color: var(--base-secondary-color, #999);
 }
 
-.placeholder-hint {
-  font-size: 12px;
-  color: #ccc;
-}
-
-/* 响应式设计 */
+/* ===================== 响应式设计 ===================== */
 @media (max-width: 768px) {
   .work-experience-container {
     padding: 12px !important;
   }
-
-  .experience-item {
-    padding-left: 20px !important;
-    margin-bottom: 16px !important;
-  }
-
-  .timeline-line {
-    left: 8px !important;
-    display: none; /* 移动端隐藏时间线 */
-  }
-
-  .timeline-node {
-    left: 8px !important;
-    width: 10px !important;
-    height: 10px !important;
-  }
-
+  
   .company-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-
+  
   .current-badge {
     margin-left: 0;
     align-self: flex-start;
   }
-
+  
   .meta-info {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-
+  
   .company-name {
     font-size: 15px !important;
   }
-
+  
   .position {
     font-size: 13px !important;
   }
-
+  
   .description {
     font-size: 13px !important;
     line-height: 1.5 !important;
   }
+  
+  .section-title {
+    font-size: 13px !important;
+  }
 }
 
-/* 小屏幕手机 */
 @media (max-width: 480px) {
   .work-experience-container {
     padding: 10px !important;
   }
-
+  
   .experience-item {
     padding-left: 16px !important;
     margin-bottom: 12px !important;
+    padding-bottom: 12px !important;
+    
+    &.current-item {
+      padding-left: 13px !important;
+    }
   }
-
+  
   .company-name {
     font-size: 14px !important;
   }
-
+  
   .position {
     font-size: 12px !important;
   }
-
+  
   .description {
     font-size: 12px !important;
   }
-
+  
   .skills-tags {
     gap: 4px;
   }
-
+  
   .skill-tag {
     font-size: 10px !important;
     padding: 1px 6px !important;
@@ -833,18 +724,6 @@ const getPlaceholderStyle = (styles: any) => {
   .work-experience-container {
     padding: 20px !important;
   }
-
-  .experience-item {
-    padding-left: 30px !important;
-  }
-
-  .timeline-line {
-    left: 12px !important;
-  }
-
-  .timeline-node {
-    left: 10px !important;
-  }
 }
 
 /* 打印样式 */
@@ -853,21 +732,28 @@ const getPlaceholderStyle = (styles: any) => {
     break-inside: avoid;
     page-break-inside: avoid;
   }
-
+  
   .current-badge {
     background: #fff !important;
     color: #000 !important;
     border: 1px solid #000 !important;
   }
-
+  
   .timeline-line,
   .timeline-node {
     display: none;
   }
-
+  
   .experience-item {
     padding-left: 0 !important;
     border-bottom: 1px solid #eee !important;
+  }
+  
+  .company-name,
+  .position,
+  .description,
+  .item-text {
+    color: #333 !important;
   }
 }
 </style>

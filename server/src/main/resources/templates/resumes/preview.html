@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{resumes/layout/base}">
+<head>
+    <title th:text="${resumes.name + ' - 简历预览'}">简历预览</title>
+
+    <!-- 页面专属CSS -->
+    <style th:inline="text">
+        /* 动态CSS变量 - 基于全局样式 */
+        :root {
+            [[${globalStyle?.primaryColor} ? '--primary-color: ' + globalStyle.primaryColor + ';' : '']]
+        [[${globalStyle?.secondaryColor} ? '--secondary-color: ' + globalStyle.secondaryColor + ';' : '']]
+        [[${globalStyle?.accentColor} ? '--accent-color: ' + globalStyle.accentColor + ';' : '']]
+        [[${globalStyle?.backgroundColor} ? '--bg-color: ' + globalStyle.backgroundColor + ';' : '']]
+        [[${globalStyle?.fontFamily} ? '--font-family: ' + globalStyle.fontFamily + ';' : '']]
+        }
+
+        /* 设备特定的基础样式 */
+        .resume-preview-container.mobile {
+            max-width: 375px;
+            margin: 0 auto;
+            font-size: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .resume-preview-container.tablet {
+            max-width: 768px;
+            margin: 0 auto;
+            font-size: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .resume-preview-container.desktop {
+            max-width: 100%;
+            font-size: 16px;
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <!-- 简历预览主容器 -->
+    <div th:class="'resume-preview-container ' + ${device}"
+         th:style="${containerStyle}">
+
+        <!-- 布局渲染区域 -->
+        <div th:switch="${layoutData.layoutType}">
+
+
+
+            <!-- 双栏布局 -->
+            <div th:case="'two-column'">
+                <div th:replace="~{resumes/fragments/layout-two ::
+                        layout-two(${layoutData}, ${globalStyle})}">
+                </div>
+            </div>
+
+            <!-- 三栏布局 -->
+            <div th:case="'three-column'">
+                <div th:replace="~{resumes/fragments/layout-three ::
+                        layout-three(${layoutData}, ${globalStyle})}">
+                </div>
+            </div>
+
+            <!-- 默认布局 == 单栏布局 -->
+            <div th:case="*">
+                <div th:replace="~{resumes/fragments/layout-single ::
+                        layout-single(${layoutData}, ${globalStyle})}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 内联脚本（处理交互） -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // 组件悬停效果
+            document.querySelectorAll('.resume-component').forEach(function(component) {
+                component.addEventListener('mouseenter', function() {
+                    this.classList.add('component-hover');
+                });
+                component.addEventListener('mouseleave', function() {
+                    this.classList.remove('component-hover');
+                });
+            });
+
+            // 打印样式调整
+            window.addEventListener('beforeprint', function() {
+                document.querySelector('.resume-preview-container').classList.add('print-mode');
+                document.querySelector('.device-switcher').style.display = 'none';
+                document.querySelector('.action-buttons').style.display = 'none';
+            });
+
+            window.addEventListener('afterprint', function() {
+                document.querySelector('.resume-preview-container').classList.remove('print-mode');
+                document.querySelector('.device-switcher').style.display = '';
+                document.querySelector('.action-buttons').style.display = '';
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+/* /resources/static/css/resumes-common.css */
+
+/* CSS变量定义 */
+:root {
+    --primary-color: #4a6fa5;
+    --secondary-color: #f8f9fa;
+    --accent-color: #6b93c5;
+    --bg-color: #ffffff;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 布局样式 */
+.layout-single-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.layout-two-column {
+    display: flex;
+    gap: 20px;
+}
+
+.layout-three-column {
+    display: flex;
+    gap: 15px;
+}
+
+/* 列样式 */
+.column-left, .column-right, .column {
+    display: flex;
+    flex-direction: column;
+}
+
+.column {
+    flex: 1;
+}
+
+/* 简历组件通用样式 */
+.resume-component {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.resume-component:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 颜色预览栏 */
+.color-preview-bar .color-block {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.color-preview-bar .color-block:hover {
+    filter: brightness(1.1);
+    transform: scale(1.02);
+}
+
+/* 空状态样式 */
+.empty-state {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 10px;
+    border: 2px dashed #dee2e6;
+}
+
+.empty-column {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+    min-height: 150px;
+}
+
+/* 打印样式 */
+@media print {
+    .device-switcher,
+    .action-buttons,
+    .color-preview-bar,
+    .resume-meta,
+    .social-links,
+    .badge {
+        display: none !important;
+    }
+
+    .resume-preview-container {
+        max-width: 100% !important;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        margin: 0 !important;
+        padding: 0.5in !important;
+    }
+
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+
+    .resume-component {
+        break-inside: avoid;
+    }
+
+    a {
+        color: #000 !important;
+        text-decoration: none !important;
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .layout-two-column,
+    .layout-three-column {
+        flex-direction: column;
+    }
+
+    .layout-two-column .column-left,
+    .layout-two-column .column-right,
+    .layout-three-column .column {
+        width: 100% !important;
+    }
+
+    .resume-preview-container {
+        padding: 15px !important;
+    }
+
+    .personal-info-component .row > div {
+        width: 100% !important;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.resume-component {
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* 组件悬停状态 */
+.component-hover {
+    z-index: 10;
+    position: relative;
+}
+
+/* 工具类 */
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}

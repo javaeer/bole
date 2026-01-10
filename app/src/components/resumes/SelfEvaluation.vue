@@ -1,17 +1,16 @@
-<!-- components/resumes/SelfEvaluation.vue -->
 <template>
   <BaseComponent
-    :title="componentName"
     :component-data="componentData"
     :global-style="globalStyle"
-    :custom-styles="customStyles"
+    :override-styles="overrideStyles"
+    :show-header="showTitle"
+    :custom-title="title"
+    :responsive-center="true"
+    :max-width="maxWidth"
   >
     <template #default="{ styles }">
-      <!-- 这里styles一定存在，来自BaseComponent的安全计算 -->
-      <view
-        class="self-evaluation-container"
-        :style="getContainerStyle(styles)"
-      >
+      <view class="self-evaluation-container">
+        <!-- 评估列表 -->
         <view
           v-for="(evaluation, index) in evaluations"
           :key="evaluation.id || index"
@@ -65,53 +64,53 @@
 import { computed } from "vue";
 import BaseComponent from "./BaseComponent.vue";
 import type { TemplateGlobalStyle } from "@/types/template";
+import type { TemplateComponentResult } from "@/types/template-component";
 
 interface Props {
-  componentData: any;
+  componentData: TemplateComponentResult;
   globalStyle?: TemplateGlobalStyle;
   customStyles?: Record<string, any>;
+  responsiveCenter?: boolean;
+  maxWidth?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  globalStyle: () => ({}),
+  customStyles: () => ({}),
+  responsiveCenter: false,
+  maxWidth: "100%"
+});
 
-const componentName = computed(() =>
-  props.componentData?.name || '自我评价'
-);
+// ===================== 计算属性 =====================
 
 // 组件数据
-const componentProps = computed(() =>
-  props.componentData?.props || {}
-);
+const componentProps = computed(() => props.componentData?.props || {});
+const defaultConfig = computed(() => props.componentData?.defaultConfig || {});
 
-const defaultConfig = computed(() =>
-  props.componentData?.defaultConfig || {}
-);
+// 配置选项
+const configProps = computed(() => defaultConfig.value?.props || {});
+
+// 组件标题
+const title = computed(() => configProps.value.title || '自我评价');
+const showTitle = computed(() => configProps.value.showTitle !== false);
 
 // 评价数据
 const evaluations = computed(() => {
   return componentProps.value.evaluations || [];
 });
 
-// 样式函数 - 全部使用传入的安全styles对象
-const getContainerStyle = (styles: any) => {
-  if (!styles) return {};
-
+// 合并样式 - 将 customStyles 作为 overrideStyles 传递给 BaseComponent
+const overrideStyles = computed(() => {
   return {
-    border: styles.border,
-    borderRadius: styles.borderRadius,
-    backgroundColor: styles.backgroundColor,
-    padding: styles.padding,
-    margin: styles.margin,
-    fontFamily: styles.fontFamily,
-    fontSize: styles.bodySize,
-    lineHeight: styles.lineHeight,
-    overflow: 'hidden',
-    // 新增：确保容器宽度适应父容器
-    width: '100%',
-    boxSizing: 'border-box'
+    ...defaultConfig.value?.styles,
+    ...props.componentData?.styles,
+    ...props.customStyles
   };
-};
+});
 
+// ===================== 样式计算函数 =====================
+
+// 项目样式
 const getItemStyle = (styles: any, index: number) => {
   if (!styles) return {};
 
@@ -119,50 +118,51 @@ const getItemStyle = (styles: any, index: number) => {
     marginBottom: index < evaluations.value.length - 1 ? '20px' : '0',
     paddingBottom: index < evaluations.value.length - 1 ? '20px' : '0',
     borderBottom: index < evaluations.value.length - 1 ?
-      `1px dashed ${styles.secondaryColor || '#e8e8e8'}` : 'none'
+      `1px dashed var(--base-secondary-color, #e8e8e8)` : 'none'
   };
 };
 
+// 内容样式
 const getContentStyle = (styles: any) => {
   if (!styles) return {};
 
   return {
-    color: styles.textColor,
-    fontSize: styles.bodySize,
-    lineHeight: styles.lineHeight,
+    color: 'var(--base-text-color, #555)',
+    fontSize: styles.bodySize || '14px',
+    lineHeight: styles.lineHeight || '1.6',
     textAlign: 'justify',
     whiteSpace: 'pre-wrap',
     wordBreak: 'break-word',
     marginBottom: '16px',
-    // 新增：确保内容不溢出
     maxWidth: '100%',
     overflowWrap: 'break-word'
   };
 };
 
+// 区域标题样式
 const getSectionTitleStyle = (styles: any) => {
   if (!styles) return {};
 
   return {
-    color: styles.titleColor,
-    fontSize: styles.bodySize,
-    fontWeight: 'bold',
+    color: 'var(--base-title-color, #333)',
+    fontSize: styles.bodySize || '14px',
+    fontWeight: '600',
     marginBottom: '8px',
     display: 'block'
   };
 };
 
+// 高亮标签样式
 const getHighlightTagStyle = (styles: any) => {
   if (!styles) return {};
 
   return {
     fontSize: '12px',
-    color: styles.accentColor || '#ff7a45',
-    backgroundColor: styles.highlightBackground || '#fff7e6',
+    color: 'var(--base-accent-color, #ff7a45)',
+    backgroundColor: 'var(--base-highlight-bg, #fff7e6)',
     padding: '4px 12px',
     borderRadius: '16px',
-    border: `1px solid ${styles.accentColor ? `${styles.accentColor}30` : 'rgba(255, 122, 69, 0.3)'}`,
-    // 新增：确保标签不超出容器
+    border: `1px solid color-mix(in srgb, var(--base-accent-color, #ff7a45) 30%, transparent)`,
     maxWidth: '100%',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -170,6 +170,7 @@ const getHighlightTagStyle = (styles: any) => {
   };
 };
 
+// 占位符样式
 const getPlaceholderStyle = (styles: any) => {
   if (!styles) return {};
 
@@ -179,26 +180,23 @@ const getPlaceholderStyle = (styles: any) => {
     padding: '40px 20px',
     background: 'repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f0f0f0 10px, #f0f0f0 20px)',
     borderRadius: '4px',
-    fontSize: styles.bodySize,
-    // 新增：确保占位符宽度适应
+    fontSize: styles.bodySize || '14px',
     width: '100%',
     boxSizing: 'border-box'
   };
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .self-evaluation-container {
-  font-family: inherit;
-  /* 新增：确保基础样式 */
   width: 100%;
   box-sizing: border-box;
+  font-family: inherit;
 }
 
 .evaluation-content {
   white-space: pre-wrap;
   word-break: break-word;
-  /* 新增：响应式文本 */
   hyphens: auto;
 }
 
@@ -231,7 +229,6 @@ const getPlaceholderStyle = (styles: any) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  /* 新增：确保占位符响应式 */
   width: 100%;
   box-sizing: border-box;
 }
@@ -249,8 +246,7 @@ const getPlaceholderStyle = (styles: any) => {
 /* 响应式样式 */
 @media (max-width: 768px) {
   .self-evaluation-container {
-    padding: 16px !important; /* 移动端减小内边距 */
-    margin: 0 0 16px 0 !important; /* 移动端减小外边距 */
+    padding: 0 !important;
   }
 
   .evaluation-item {
@@ -259,9 +255,9 @@ const getPlaceholderStyle = (styles: any) => {
   }
 
   .evaluation-content {
-    font-size: 14px !important; /* 移动端字体稍微调整 */
+    font-size: 14px !important;
     line-height: 1.6 !important;
-    text-align: left; /* 移动端左对齐，更易读 */
+    text-align: left;
     hyphens: auto;
   }
 
@@ -276,13 +272,11 @@ const getPlaceholderStyle = (styles: any) => {
   .highlight-tag {
     font-size: 11px;
     padding: 3px 8px;
-    /* 移动端禁用长文本省略，直接换行 */
     white-space: normal;
     word-break: break-word;
   }
 
-  .highlights-title,
-  .section-title {
+  .highlights-title {
     font-size: 14px !important;
   }
 
@@ -301,11 +295,6 @@ const getPlaceholderStyle = (styles: any) => {
 
 /* 小屏幕手机 */
 @media (max-width: 480px) {
-  .self-evaluation-container {
-    padding: 12px !important;
-    border-radius: 6px !important;
-  }
-
   .evaluation-item {
     margin-bottom: 12px !important;
     padding-bottom: 12px !important;
@@ -334,10 +323,6 @@ const getPlaceholderStyle = (styles: any) => {
 
 /* 平板设备 */
 @media (min-width: 769px) and (max-width: 1024px) {
-  .self-evaluation-container {
-    padding: 20px !important;
-  }
-
   .evaluation-content {
     font-size: 14px !important;
   }
@@ -362,11 +347,6 @@ const getPlaceholderStyle = (styles: any) => {
 /* 打印样式 */
 @media print {
   .self-evaluation-container {
-    border: none !important;
-    box-shadow: none !important;
-    background: white !important;
-    padding: 12px !important;
-    margin: 0 0 12px 0 !important;
     break-inside: avoid;
     page-break-inside: avoid;
   }

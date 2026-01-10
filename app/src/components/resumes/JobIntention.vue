@@ -1,20 +1,18 @@
 <template>
   <BaseComponent
-    :title="componentName"
     :component-data="componentData"
     :global-style="globalStyle"
-    :custom-styles="customStyles"
+    :override-styles="customStyles"
+    :responsive-center="true"
+    :show-header="showTitle"
+    :custom-title="title"
   >
     <template #default="{ styles }">
-      <view
-        class="job-intention-container"
-        :style="getContainerStyle(styles)"
-      >
+      <view class="job-intention-container">
         <!-- 占位符：当没有意向数据时 -->
         <view
           v-if="intentions.length === 0"
           class="empty-placeholder"
-          :style="getPlaceholderStyle(styles)"
         >
           <view class="placeholder-icon">🎯</view>
           <text class="placeholder-text">暂无求职意向信息</text>
@@ -27,17 +25,17 @@
             v-for="(intention, index) in sortedIntentions"
             :key="intention.id"
             class="intention-item"
-            :style="getItemStyle(styles, index)"
+            :style="getItemStyle(index)"
             @click="handleItemClick(intention)"
           >
             <!-- 职位意向主信息 -->
             <view class="intention-main">
               <view class="position-row">
                 <text class="position-icon">👔</text>
-                <text class="position-value" :style="getHighlightStyle(styles)">
+                <text class="position-value">
                   {{ intention.position }}
                 </text>
-                <view v-if="intention.isPrimary" class="primary-badge" :style="getBadgeStyle(styles)">
+                <view v-if="intention.isPrimary" class="primary-badge">
                   主意向
                 </view>
               </view>
@@ -46,8 +44,7 @@
               <view class="intention-tags">
                 <view
                   v-if="showJobType && intention.jobType"
-                  class="tag-item"
-                  :style="getTagStyle(styles, 'type')"
+                  class="tag-item tag-type"
                 >
                   <text class="tag-icon">📝</text>
                   <text class="tag-text">{{ intention.jobType }}</text>
@@ -55,8 +52,7 @@
 
                 <view
                   v-if="showWorkLocation && intention.city"
-                  class="tag-item"
-                  :style="getTagStyle(styles, 'location')"
+                  class="tag-item tag-location"
                 >
                   <text class="tag-icon">📍</text>
                   <text class="tag-text">{{ intention.city }}</text>
@@ -64,8 +60,7 @@
 
                 <view
                   v-if="showExpectedSalary && intention.salary"
-                  class="tag-item"
-                  :style="getTagStyle(styles, 'salary')"
+                  class="tag-item tag-salary"
                 >
                   <text class="tag-icon">💰</text>
                   <text class="tag-text">{{ formatSalary(intention.salary) }}</text>
@@ -73,8 +68,7 @@
 
                 <view
                   v-if="showOnboardingTime && intention.onboardingTime"
-                  class="tag-item"
-                  :style="getTagStyle(styles, 'time')"
+                  class="tag-item tag-time"
                 >
                   <text class="tag-icon">📅</text>
                   <text class="tag-text">{{ intention.onboardingTime }}</text>
@@ -86,7 +80,6 @@
             <view
               v-if="showDetailFields && isExpandedIndex === index"
               class="intention-details"
-              :style="getDetailStyle(styles)"
             >
               <view class="detail-grid">
                 <view
@@ -160,10 +153,6 @@ const props = defineProps<Props>();
 // 展开状态的索引
 const isExpandedIndex = ref<number | null>(null);
 
-const componentName = computed(() =>
-  props.componentData?.name || '求职意向'
-);
-
 // 组件数据和配置
 const componentProps = computed(() =>
   props.componentData?.props || {}
@@ -220,137 +209,24 @@ const showDetailFields = computed(() =>
   defaultConfig.value.props?.showDetailFields ?? true
 );
 
+const showTitle = computed(() =>
+  defaultConfig.value.props?.showTitle !== false
+);
+
 const salaryUnit = computed(() =>
   defaultConfig.value.props?.salaryUnit || 'K'
 );
 
-// 样式计算函数
-const getContainerStyle = (styles: any) => {
-  if (!styles) return {};
+const title = computed(() =>
+  defaultConfig.value.props?.title || '求职意向'
+);
 
+// 样式计算函数 - 简化版本
+const getItemStyle = (index: number) => {
+  const isLast = index === sortedIntentions.value.length - 1;
+  
   return {
-    padding: styles.padding,
-    backgroundColor: styles.backgroundColor,
-    borderRadius: styles.borderRadius,
-    boxShadow: styles.boxShadow,
-    fontFamily: styles.fontFamily,
-    fontSize: styles.bodySize,
-    lineHeight: styles.lineHeight,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px'
-  };
-};
-
-const getItemStyle = (styles: any, index: number) => {
-  if (!styles) return {};
-
-  return {
-    padding: '16px',
-    backgroundColor: '#ffffff',
-    borderRadius: '8px',
-    border: `1px solid ${styles.secondaryColor || '#e8e8e8'}`,
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-    marginBottom: index < sortedIntentions.value.length - 1 ? '12px' : '0',
-    transition: 'all 0.3s ease',
-    cursor: 'pointer',
-    width: '100%',
-    boxSizing: 'border-box'
-  };
-};
-
-const getHighlightStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    color: styles.highlightColor || styles.primaryColor || '#1890ff',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    marginLeft: '8px'
-  };
-};
-
-const getBadgeStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    backgroundColor: styles.primaryColor || '#1890ff',
-    color: '#ffffff',
-    fontSize: '12px',
-    padding: '2px 8px',
-    borderRadius: '12px',
-    marginLeft: '12px'
-  };
-};
-
-const getTagStyle = (styles: any, type: string) => {
-  if (!styles) return {};
-
-  const baseStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    padding: '6px 12px',
-    borderRadius: '16px',
-    fontSize: '12px',
-    fontWeight: 500
-  };
-
-  const typeColors: Record<string, any> = {
-    salary: {
-      backgroundColor: 'rgba(255, 107, 107, 0.1)',
-      color: '#ff6b6b',
-      border: '1px solid rgba(255, 107, 107, 0.2)'
-    },
-    location: {
-      backgroundColor: 'rgba(90, 200, 250, 0.1)',
-      color: '#5ac8fa',
-      border: '1px solid rgba(90, 200, 250, 0.2)'
-    },
-    type: {
-      backgroundColor: 'rgba(82, 196, 26, 0.1)',
-      color: '#52c41a',
-      border: '1px solid rgba(82, 196, 26, 0.2)'
-    },
-    time: {
-      backgroundColor: 'rgba(255, 193, 7, 0.1)',
-      color: '#ffc107',
-      border: '1px solid rgba(255, 193, 7, 0.2)'
-    }
-  };
-
-  return {
-    ...baseStyle,
-    ...typeColors[type] || {
-      backgroundColor: 'rgba(0, 0, 0, 0.05)',
-      color: '#666',
-      border: '1px solid rgba(0, 0, 0, 0.1)'
-    }
-  };
-};
-
-const getDetailStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    marginTop: '16px',
-    paddingTop: '16px',
-    borderTop: `1px dashed ${styles.secondaryColor || '#eee'}`,
-    animation: 'slideDown 0.3s ease-out'
-  };
-};
-
-const getPlaceholderStyle = (styles: any) => {
-  if (!styles) return {};
-
-  return {
-    textAlign: 'center',
-    padding: '40px 20px',
-    color: '#999',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '12px'
+    marginBottom: isLast ? '0' : '12px'
   };
 };
 
@@ -391,9 +267,21 @@ const handleItemClick = (intention: JobIntentionResult) => {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .job-intention-container {
   font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.intention-item {
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid var(--base-secondary-color, #e8e8e8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
   width: 100%;
   box-sizing: border-box;
 }
@@ -401,7 +289,7 @@ const handleItemClick = (intention: JobIntentionResult) => {
 .intention-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border-color: rgba(90, 200, 250, 0.5);
+  border-color: var(--base-primary-color, #5ac8fa);
 }
 
 .position-row {
@@ -423,6 +311,19 @@ const handleItemClick = (intention: JobIntentionResult) => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--base-primary-color, #1890ff);
+  font-size: 18px;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.primary-badge {
+  background-color: var(--base-primary-color, #1890ff);
+  color: #ffffff;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 12px;
 }
 
 .intention-tags {
@@ -433,9 +334,13 @@ const handleItemClick = (intention: JobIntentionResult) => {
 }
 
 .tag-item {
-  width: 80%;
   display: flex;
   align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
   transition: all 0.2s ease;
   flex-shrink: 0;
 }
@@ -454,6 +359,31 @@ const handleItemClick = (intention: JobIntentionResult) => {
   white-space: nowrap;
 }
 
+// 标签类型样式
+.tag-salary {
+  background-color: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+.tag-location {
+  background-color: rgba(var(--base-primary-rgb, 90, 200, 250), 0.1);
+  color: var(--base-primary-color, #5ac8fa);
+  border: 1px solid rgba(var(--base-primary-rgb, 90, 200, 250), 0.2);
+}
+
+.tag-type {
+  background-color: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+  border: 1px solid rgba(82, 196, 26, 0.2);
+}
+
+.tag-time {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -470,18 +400,25 @@ const handleItemClick = (intention: JobIntentionResult) => {
 }
 
 .detail-label {
-  color: #666;
+  color: var(--base-secondary-color, #666);
   font-size: 13px;
   min-width: 80px;
   flex-shrink: 0;
 }
 
 .detail-value {
-  color: #333;
+  color: var(--base-text-color, #333);
   font-size: 14px;
   line-height: 1.5;
   word-break: break-word;
   flex: 1;
+}
+
+.intention-details {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--base-secondary-color, #eee);
+  animation: slideDown 0.3s ease-out;
 }
 
 .expand-toggle {
@@ -491,15 +428,15 @@ const handleItemClick = (intention: JobIntentionResult) => {
   gap: 6px;
   margin-top: 16px;
   padding: 8px;
-  color: #5ac8fa;
+  color: var(--base-primary-color, #5ac8fa);
   font-size: 13px;
   cursor: pointer;
   user-select: none;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--base-secondary-color, #f0f0f0);
 }
 
 .expand-toggle:hover {
-  background: rgba(90, 200, 250, 0.05);
+  background: rgba(var(--base-primary-rgb, 90, 200, 250), 0.05);
   border-radius: 4px;
 }
 
@@ -508,11 +445,14 @@ const handleItemClick = (intention: JobIntentionResult) => {
 }
 
 .empty-placeholder {
-  min-height: 120px;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--base-secondary-color, #999);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+  min-height: 120px;
   width: 100%;
 }
 
@@ -524,14 +464,14 @@ const handleItemClick = (intention: JobIntentionResult) => {
 
 .placeholder-text {
   font-size: 14px;
-  color: #666;
+  color: var(--base-secondary-color, #666);
   margin-bottom: 4px;
   text-align: center;
 }
 
 .placeholder-hint {
   font-size: 12px;
-  color: #999;
+  color: var(--base-secondary-color, #999);
   text-align: center;
 }
 
@@ -549,17 +489,8 @@ const handleItemClick = (intention: JobIntentionResult) => {
   }
 }
 
-.intention-details {
-  animation: slideDown 0.3s ease-out;
-  overflow: hidden;
-}
-
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .job-intention-container {
-    padding: 16px !important;
-  }
-
   .intention-item {
     padding: 12px !important;
     margin-bottom: 12px !important;
@@ -646,7 +577,6 @@ const handleItemClick = (intention: JobIntentionResult) => {
 /* 小屏幕手机 */
 @media (max-width: 480px) {
   .job-intention-container {
-    padding: 12px !important;
     gap: 12px !important;
   }
 
@@ -711,10 +641,6 @@ const handleItemClick = (intention: JobIntentionResult) => {
 
 /* 打印优化 */
 @media print {
-  .job-intention-container {
-    box-shadow: none !important;
-  }
-
   .intention-item {
     break-inside: avoid;
     border: 1px solid #ddd !important;
