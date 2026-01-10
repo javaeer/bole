@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{resumes/layout/base}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <title th:text="${resumes.name + ' - 简历预览'}">简历预览</title>
 
@@ -9,34 +8,311 @@
     <style th:inline="text">
         /* 动态CSS变量 - 基于全局样式 */
         :root {
-            [[${globalStyle?.primaryColor} ? '--primary-color: ' + globalStyle.primaryColor + ';' : '']]
-        [[${globalStyle?.secondaryColor} ? '--secondary-color: ' + globalStyle.secondaryColor + ';' : '']]
-        [[${globalStyle?.accentColor} ? '--accent-color: ' + globalStyle.accentColor + ';' : '']]
-        [[${globalStyle?.backgroundColor} ? '--bg-color: ' + globalStyle.backgroundColor + ';' : '']]
-        [[${globalStyle?.fontFamily} ? '--font-family: ' + globalStyle.fontFamily + ';' : '']]
+            [[${globalStyle?.primaryColor} ? '--primary-color: ' + globalStyle.primaryColor + ';' : '--primary-color: #d4af37;']]
+        [[${globalStyle?.secondaryColor} ? '--secondary-color: ' + globalStyle.secondaryColor + ';' : '--secondary-color: #f9f3e3;']]
+        [[${globalStyle?.accentColor} ? '--accent-color: ' + globalStyle.accentColor + ';' : '--accent-color: #f7ef8a;']]
+        [[${globalStyle?.backgroundColor} ? '--bg-color: ' + globalStyle.backgroundColor + ';' : '--bg-color: #ffffff;']]
+        [[${globalStyle?.fontFamily} ? '--font-family: ' + globalStyle.fontFamily + ';' : '--font-family: "Microsoft YaHei", "PingFang SC", sans-serif;']]
+
+            /* 字体大小变量 */
+        [[${globalStyle?.fontSizes?.body} ? '--font-size-body: ' + globalStyle.fontSizes.body + 'px;' : '--font-size-body: 14px;']]
+        [[${globalStyle?.fontSizes?.h1} ? '--font-size-h1: ' + globalStyle.fontSizes.h1 + 'px;' : '--font-size-h1: 24px;']]
+
+            /* 间距变量 */
+        [[${globalStyle?.spacing?.sectionMargin} ? '--section-margin: ' + globalStyle.spacing.sectionMargin + ';' : '--section-margin: 20px;']]
+        [[${globalStyle?.spacing?.padding} ? '--spacing-padding: ' + globalStyle.spacing.padding + ';' : '--spacing-padding: 15px;']]
+        [[${globalStyle?.spacing?.lineHeight} ? '--line-height: ' + globalStyle.spacing.lineHeight + ';' : '--line-height: 1.5;']]
         }
 
-        /* 设备特定的基础样式 */
+        /* 重置 Bootstrap 影响简历样式的部分 */
+        .resume-preview-container .layout-single-column,
+        .resume-preview-container .layout-two-column,
+        .resume-preview-container .layout-three-column {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+        }
+
+        .resume-preview-container .resume-component {
+            margin-bottom: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: none !important;
+        }
+
+        /* 设备特定的基础样式 - 匹配Vue样式 */
+        .resume-preview-container {
+            font-family: var(--font-family, "Microsoft YaHei", "PingFang SC", sans-serif);
+            background-color: var(--bg-color, #ffffff);
+            font-size: var(--font-size-body, 14px);
+            line-height: var(--line-height, 1.5);
+            min-height: 200px;
+            transition: all 0.3s ease;
+            padding: var(--spacing-padding, 15px);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* 颜色预览栏 - 匹配Vue效果 */
+        .resume-preview-container .color-preview-bar {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .resume-preview-container .color-preview-bar .color-block {
+            flex: 1;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .resume-preview-container .color-preview-bar .color-block.primary {
+            background-color: var(--primary-color, #d4af37);
+        }
+
+        .resume-preview-container .color-preview-bar .color-block.secondary {
+            background-color: var(--secondary-color, #f9f3e3);
+            color: #333;
+        }
+
+        .resume-preview-container .color-preview-bar .color-block.accent {
+            background-color: var(--accent-color, #f7ef8a);
+            color: #333;
+        }
+
+        .resume-preview-container .color-preview-bar .color-block:hover {
+            filter: brightness(1.1);
+        }
+
+        /* 设备适配 - 精确匹配Vue尺寸 */
         .resume-preview-container.mobile {
-            max-width: 375px;
-            margin: 0 auto;
-            font-size: 14px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            max-width: 375px !important;
+            margin: 0 auto !important;
+            font-size: 14px !important;
+            padding: 7.5px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
         }
 
         .resume-preview-container.tablet {
-            max-width: 768px;
-            margin: 0 auto;
-            font-size: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            max-width: 768px !important;
+            margin: 0 auto !important;
+            padding: 12.5px !important;
+            border-radius: 6px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
         }
 
         .resume-preview-container.desktop {
-            max-width: 100%;
-            font-size: 16px;
-            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+            max-width: 100% !important;
+            padding: 15px !important;
+            border-radius: 4px !important;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        /* 布局样式 - 覆盖Bootstrap */
+        .layout-single-column {
+            display: flex;
+            flex-direction: column;
+            gap: var(--section-margin, 20px);
+        }
+
+        .layout-two-column {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .layout-two-column .column-left,
+        .layout-two-column .column-right {
+            display: flex;
+            flex-direction: column;
+            gap: var(--section-margin, 20px);
+            min-height: 100px;
+            box-sizing: border-box;
+        }
+
+        .layout-three-column {
+            display: flex;
+            gap: 7.5px;
+            align-items: flex-start;
+        }
+
+        .layout-three-column .column {
+            display: flex;
+            flex-direction: column;
+            gap: var(--section-margin, 20px);
+            flex: 1;
+            min-height: 100px;
+            box-sizing: border-box;
+        }
+
+        /* 组件包装器样式 - 匹配Vue效果 */
+        .resume-component {
+            background: white !important;
+            border-radius: 4px !important;
+            overflow: hidden !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+            transition: all 0.3s ease !important;
+            border-left: 2px solid var(--primary-color, #d4af37) !important;
+            background-color: rgba(var(--secondary-color-rgb, 249, 243, 227), 0.125) !important;
+            padding: var(--spacing-padding, 15px) !important;
+            margin-bottom: var(--section-margin, 20px) !important;
+        }
+
+        .resume-component:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        .resume-component.component-hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        /* 空状态样式 - 覆盖Bootstrap */
+        .empty-state,
+        .empty-column {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            height: 150px !important;
+            background: rgba(255, 255, 255, 0.7) !important;
+            border-radius: 4px !important;
+            border: 1px dashed #ddd !important;
+            padding: 40px 20px !important;
+            box-sizing: border-box !important;
+            text-align: center !important;
+        }
+
+        .empty-state i,
+        .empty-column i {
+            font-size: 48px !important;
+            margin-bottom: 20px !important;
+            opacity: 0.5 !important;
+            color: #666 !important;
+        }
+
+        .empty-state h4,
+        .empty-column p {
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            color: #666 !important;
+            margin: 0 0 5px 0 !important;
+            line-height: 1.4 !important;
+        }
+
+        .empty-state small,
+        .empty-column small {
+            font-size: 12px !important;
+            color: #999 !important;
+            line-height: 1.4 !important;
+        }
+
+        .empty-column {
+            background: rgba(0, 0, 0, 0.02) !important;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .resume-preview-container {
+                padding: 10px !important;
+            }
+
+            .layout-two-column,
+            .layout-three-column {
+                flex-direction: column !important;
+                gap: var(--section-margin, 20px) !important;
+            }
+
+            .layout-two-column .column-left,
+            .layout-two-column .column-right,
+            .layout-three-column .column {
+                width: 100% !important;
+            }
+
+            .empty-state,
+            .empty-column {
+                height: 100px !important;
+                padding: 20px !important;
+            }
+
+            .empty-state i,
+            .empty-column i {
+                font-size: 36px !important;
+                margin-bottom: 10px !important;
+            }
+
+            .color-preview-bar {
+                margin-bottom: 15px !important;
+            }
+
+            .color-preview-bar .color-block {
+                height: 16px !important;
+                font-size: 8px !important;
+            }
+        }
+
+        /* 打印样式 */
+        .resume-preview-container.print-mode {
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+        }
+
+        .print-mode .device-switcher,
+        .print-mode .action-buttons {
+            display: none !important;
+        }
+
+        .print-mode .resume-component {
+            box-shadow: none !important;
+            border: 1px solid #eee !important;
+            page-break-inside: avoid !important;
+        }
+
+        /* 组件内容样式 */
+        .resume-component h1,
+        .resume-component h2,
+        .resume-component h3,
+        .resume-component h4 {
+            color: var(--primary-color, #d4af37) !important;
+            font-family: var(--font-family, "Microsoft YaHei", "PingFang SC", sans-serif) !important;
+            margin-top: 0 !important;
+        }
+
+        .resume-component h1 {
+            font-size: var(--font-size-h1, 24px) !important;
+        }
+
+        .resume-component p,
+        .resume-component li,
+        .resume-component span {
+            font-family: var(--font-family, "Microsoft YaHei", "PingFang SC", sans-serif) !important;
+            font-size: var(--font-size-body, 14px) !important;
+            line-height: var(--line-height, 1.5) !important;
+            color: #333 !important;
+        }
+
+        .resume-component a {
+            color: var(--accent-color, #f7ef8a) !important;
+            text-decoration: none !important;
+        }
+
+        .resume-component a:hover {
+            text-decoration: underline !important;
         }
     </style>
+
 </head>
 <body>
 <div layout:fragment="content">
@@ -46,9 +322,6 @@
 
         <!-- 布局渲染区域 -->
         <div th:switch="${layoutData.layoutType}">
-
-
-
             <!-- 双栏布局 -->
             <div th:case="'two-column'">
                 <div th:replace="~{resumes/fragments/layout-two ::
@@ -88,15 +361,47 @@
             // 打印样式调整
             window.addEventListener('beforeprint', function() {
                 document.querySelector('.resume-preview-container').classList.add('print-mode');
-                document.querySelector('.device-switcher').style.display = 'none';
-                document.querySelector('.action-buttons').style.display = 'none';
+                var deviceSwitcher = document.querySelector('.device-switcher');
+                var actionButtons = document.querySelector('.action-buttons');
+                if (deviceSwitcher) deviceSwitcher.style.display = 'none';
+                if (actionButtons) actionButtons.style.display = 'none';
             });
 
             window.addEventListener('afterprint', function() {
                 document.querySelector('.resume-preview-container').classList.remove('print-mode');
-                document.querySelector('.device-switcher').style.display = '';
-                document.querySelector('.action-buttons').style.display = '';
+                var deviceSwitcher = document.querySelector('.device-switcher');
+                var actionButtons = document.querySelector('.action-buttons');
+                if (deviceSwitcher) deviceSwitcher.style.display = '';
+                if (actionButtons) actionButtons.style.display = '';
             });
+
+            // 动态计算RGB颜色值用于透明度
+            function hexToRgb(hex) {
+                var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+
+            // 设置CSS变量用于透明度
+            var primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+            var secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim();
+
+            if (primaryColor && primaryColor !== '#d4af37') {
+                var rgb = hexToRgb(primaryColor);
+                if (rgb) {
+                    document.documentElement.style.setProperty('--primary-color-rgb', rgb.r + ', ' + rgb.g + ', ' + rgb.b);
+                }
+            }
+
+            if (secondaryColor && secondaryColor !== '#f9f3e3') {
+                var rgb = hexToRgb(secondaryColor);
+                if (rgb) {
+                    document.documentElement.style.setProperty('--secondary-color-rgb', rgb.r + ', ' + rgb.g + ', ' + rgb.b);
+                }
+            }
         });
     </script>
 </div>

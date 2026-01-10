@@ -9,7 +9,8 @@
     <div class="column-left" th:style="'width:' + ${layoutData.leftWidth}">
         <th:block th:if="${layoutData.leftColumnComponents != null and not #lists.isEmpty(layoutData.leftColumnComponents)}">
             <th:block th:each="component,iter : ${layoutData.leftColumnComponents}" th:object="${component}">
-                <div class="resume-component mb-3" th:attr="data-component-id=*{componentId}">
+                <div class="resume-component" th:classappend="${iter.last} ? 'last-component' : ''"
+                     th:attr="data-component-id=*{componentId}">
                     <!-- 组件渲染器（可复用单栏的组件逻辑） -->
                     <th:block th:replace="~{resumes/fragments/component-renderer ::
                             component-renderer(${component}, ${globalStyle})}">
@@ -20,9 +21,10 @@
 
         <!-- 左侧空状态 -->
         <th:block th:unless="${layoutData.leftColumnComponents != null and not #lists.isEmpty(layoutData.leftColumnComponents)}">
-            <div class="empty-column text-center py-4 border rounded bg-light">
-                <i class="bi bi-layout-sidebar text-muted h3"></i>
-                <p class="text-muted mt-2 mb-0">左侧栏位（可放置联系信息、技能等）</p>
+            <div class="empty-column">
+                <div class="empty-icon">⬅️</div>
+                <div class="empty-title">左侧栏位</div>
+                <div class="empty-desc">可放置联系信息、技能等</div>
             </div>
         </th:block>
     </div>
@@ -31,7 +33,8 @@
     <div class="column-right" th:style="'width:' + ${layoutData.rightWidth}">
         <th:block th:if="${layoutData.rightColumnComponents != null and not #lists.isEmpty(layoutData.rightColumnComponents)}">
             <th:block th:each="component,iter : ${layoutData.rightColumnComponents}" th:object="${component}">
-                <div class="resume-component mb-3" th:attr="data-component-id=*{componentId}">
+                <div class="resume-component" th:classappend="${iter.last} ? 'last-component' : ''"
+                     th:attr="data-component-id=*{componentId}">
                     <!-- 组件渲染器 -->
                     <th:block th:replace="~{resumes/fragments/component-renderer ::
                             component-renderer(${component}, ${globalStyle})}">
@@ -42,9 +45,10 @@
 
         <!-- 右侧空状态 -->
         <th:block th:unless="${layoutData.rightColumnComponents != null and not #lists.isEmpty(layoutData.rightColumnComponents)}">
-            <div class="empty-column text-center py-4 border rounded bg-light">
-                <i class="bi bi-layout-sidebar-inset-reverse text-muted h3"></i>
-                <p class="text-muted mt-2 mb-0">右侧栏位（可放置工作经历、项目经验等）</p>
+            <div class="empty-column">
+                <div class="empty-icon">➡️</div>
+                <div class="empty-title">右侧栏位</div>
+                <div class="empty-desc">可放置工作经历、项目经验等</div>
             </div>
         </th:block>
     </div>
