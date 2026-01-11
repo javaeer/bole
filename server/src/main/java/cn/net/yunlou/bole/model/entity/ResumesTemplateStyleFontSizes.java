@@ -10,7 +10,11 @@ import lombok.Data;
 @Data
 public class ResumesTemplateStyleFontSizes implements Serializable {
 
+    private String title;
+
     private String h1;
+
+    private String h2;
 
     private String body;
 }

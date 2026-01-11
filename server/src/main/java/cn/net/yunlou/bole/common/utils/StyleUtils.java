@@ -1,32 +1,52 @@
 package cn.net.yunlou.bole.common.utils;
 
-import org.springframework.stereotype.Component;
+import java.util.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-@Component
 public class StyleUtils {
+
+    public StyleUtils() {
+    }
 
     /**
      * 将样式Map转换为CSS字符串
      */
-    public String toCssString(Map<String, String> styles) {
-        if (styles == null || styles.isEmpty()) {
+    public static String toCss(Map<String, String> styleMap, String... excludeKeys) {
+        if (styleMap == null || styleMap.isEmpty()) {
             return "";
         }
 
-        return styles.entrySet().stream()
-                .filter(entry -> entry.getKey() != null && entry.getValue() != null)
-                .map(entry -> entry.getKey() + ": " + entry.getValue() + ";")
-                .collect(Collectors.joining(" "));
+        Set<String> excludes = new HashSet<>(Arrays.asList(excludeKeys));
+        StringBuilder css = new StringBuilder();
+
+        for (Map.Entry<String, String> entry : styleMap.entrySet()) {
+            if (entry.getKey() != null &&
+                    entry.getValue() != null &&
+                    !entry.getValue().trim().isEmpty() &&
+                    !excludes.contains(entry.getKey())) {
+                css.append(entry.getKey())
+                        .append(": ")
+                        .append(entry.getValue())
+                        .append("; ");
+            }
+        }
+        return css.toString().trim();
+    }
+
+    /**
+     * 提取特定样式（用于需要特殊处理的样式）
+     */
+    public static String getStyleValue(Map<String, String> styleMap, String key, String defaultValue) {
+        if (styleMap != null && styleMap.containsKey(key)) {
+            String value = styleMap.get(key);
+            return value != null && !value.trim().isEmpty() ? value : defaultValue;
+        }
+        return defaultValue;
     }
 
     /**
      * 获取CSS安全颜色（确保颜色值有效）
      */
-    public String getSafeColor(String color) {
+    public static String getSafeColor(String color) {
         if (!StringUtils.hasText(color)) {
             return "#6c757d"; // Bootstrap默认灰色
         }
@@ -53,7 +73,7 @@ public class StyleUtils {
     /**
      * 生成渐变色样式
      */
-    public String generateGradient(String color1, String color2, String direction) {
+    public static String generateGradient(String color1, String color2, String direction) {
         String safeColor1 = getSafeColor(color1);
         String safeColor2 = getSafeColor(color2);
         String dir = "to right"; // 默认方向
@@ -70,7 +90,7 @@ public class StyleUtils {
     /**
      * 根据背景色确定文本颜色（确保可读性）
      */
-    public String getContrastColor(String backgroundColor) {
+    public static String getContrastColor(String backgroundColor) {
         if (!StringUtils.hasText(backgroundColor) || !backgroundColor.startsWith("#")) {
             return "#212529"; // Bootstrap默认深色
         }

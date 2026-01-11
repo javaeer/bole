@@ -1,155 +1,462 @@
-/* /resources/static/css/resumes-common.css */
-
-/* CSS变量定义 */
+/* ============================================
+   1. CSS变量定义 - 匹配Vue样式系统
+   ============================================ */
 :root {
-    --primary-color: #4a6fa5;
-    --secondary-color: #f8f9fa;
-    --accent-color: #6b93c5;
-    --bg-color: #ffffff;
-    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* 颜色变量 */
+    --base-primary-color: #5ac8fa;
+    --base-accent-color: #52c41a;
+    --base-secondary-color: #f0f0f0;
+    --base-text-color: #555555;
+    --base-title-color: #1890ff;
+    --base-background-color: #f0f8ff;
+
+    /* 字体变量 */
+    --base-font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+    --base-font-size-body: 13px;
+    --base-font-size-title: 18px;
+
+    /* 间距变量 */
+    --base-padding: 20px;
+    --base-section-margin: 16px;
+    --base-line-height: 1.5;
+
+    /* 布局变量 */
+    --base-max-width-single: 800px;
+    --base-max-width-two-column: 1200px;
+    --base-max-width-timeline: 900px;
 }
 
-/* 布局样式 */
+/* ============================================
+   2. 重置Thymeleaf页面样式
+   ============================================ */
+.resume-preview-container {
+    font-family: var(--base-font-family) !important;
+    font-size: var(--base-font-size-body) !important;
+    line-height: var(--base-line-height) !important;
+    background-color: var(--base-background-color) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    min-height: 297mm !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* 移除Bootstrap影响 */
+.resume-preview-container * {
+    box-sizing: border-box !important;
+}
+
+/* ============================================
+   3. 布局样式覆盖 - 对应Vue的DynamicRenderer
+   ============================================ */
+
+/* 单列布局 */
 .layout-single-column {
-    display: flex;
-    flex-direction: column;
+    width: 90% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: var(--base-section-margin) !important;
+    margin: 0 auto !important;
 }
 
+/* 双列布局 */
 .layout-two-column {
-    display: flex;
-    gap: 20px;
+    display: flex !important;
+    gap: 20px !important;
+    width: 90% !important;
+    max-width: var(--base-max-width-two-column) !important;
+    margin: 0 auto !important;
 }
 
+.layout-two-column .column-left,
+.layout-two-column .column-right {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--base-section-margin) !important;
+}
+
+/* 三列布局 */
 .layout-three-column {
-    display: flex;
-    gap: 15px;
+    display: flex !important;
+    gap: 20px !important;
+    width: 90% !important;
+    max-width: var(--base-max-width-two-column) !important;
+    margin: 0 auto !important;
 }
 
-/* 列样式 */
-.column-left, .column-right, .column {
-    display: flex;
-    flex-direction: column;
+.layout-three-column .column {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--base-section-margin) !important;
 }
 
-.column {
-    flex: 1;
-}
 
-/* 简历组件通用样式 */
+
+/* ============================================
+   4. 组件容器样式 - 对应Vue的BaseComponent
+   ============================================ */
 .resume-component {
-    transition: all 0.3s ease;
-    border-radius: 8px;
-    overflow: hidden;
+    transition: all 0.3s ease !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 100% !important;
+    margin-bottom: var(--base-section-margin) !important;
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    position: relative !important;
 }
 
-.resume-component:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+/* 组件标题样式 */
+.component-header {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--base-secondary-color) !important;
 }
 
-/* 颜色预览栏 */
-.color-preview-bar .color-block {
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
+.component-title {
+    flex: 1 !important;
+    font-size: var(--base-font-size-title) !important;
+    color: var(--base-title-color) !important;
+    font-weight: bold !important;
+    line-height: 1.2 !important;
 }
 
-.color-preview-bar .color-block:hover {
-    filter: brightness(1.1);
-    transform: scale(1.02);
+/* ============================================
+   5. 具体组件样式覆盖
+   ============================================ */
+
+/* 5.1 教育经历组件 */
+.education-experience-container .experience-item {
+    position: relative !important;
+    display: flex !important;
+    gap: 16px !important;
+    margin-bottom: 24px !important;
 }
 
-/* 空状态样式 */
-.empty-state {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-radius: 10px;
-    border: 2px dashed #dee2e6;
+.education-experience-container .item-decoration {
+    width: 4px !important;
+    border-radius: 2px !important;
+    background-color: var(--base-primary-color) !important;
+    flex-shrink: 0 !important;
 }
 
-.empty-column {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-radius: 8px;
-    min-height: 150px;
+.education-experience-container .school-name {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    color: var(--base-primary-color) !important;
+    margin-bottom: 4px !important;
+    display: block !important;
 }
 
-/* 打印样式 */
-@media print {
-    .device-switcher,
-    .action-buttons,
-    .color-preview-bar,
-    .resume-meta,
-    .social-links,
-    .badge {
-        display: none !important;
-    }
-
-    .resume-preview-container {
-        max-width: 100% !important;
-        box-shadow: none !important;
-        border: 1px solid #ddd !important;
-        margin: 0 !important;
-        padding: 0.5in !important;
-    }
-
-    .card {
-        border: 1px solid #ddd !important;
-        box-shadow: none !important;
-    }
-
-    .resume-component {
-        break-inside: avoid;
-    }
-
-    a {
-        color: #000 !important;
-        text-decoration: none !important;
-    }
+/* 5.2 求职意向组件 */
+.job-intention-container .intention-item {
+    padding: 16px !important;
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--base-secondary-color) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+    margin-bottom: 12px !important;
+    transition: all 0.3s ease !important;
 }
 
-/* 响应式调整 */
+.job-intention-container .position-value {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    color: var(--base-primary-color) !important;
+    margin-left: 8px !important;
+}
+
+/* 5.3 项目经验组件 */
+.project-experience-container .project-item {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 10px !important;
+    padding: 20px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+    margin-bottom: 24px !important;
+    width: 94% !important;
+}
+
+.project-experience-container .project-name {
+    font-size: 17px !important;
+    font-weight: bold !important;
+    color: var(--base-title-color) !important;
+}
+
+/* 5.4 技能组件 */
+.skills-component .skill-item {
+    padding: 16px !important;
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    border: 1px solid #f0f0f0 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+    margin-bottom: 16px !important;
+    border-left: 3px solid var(--base-primary-color) !important;
+}
+
+.skills-component .skill-name {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+}
+
+/* 5.5 基本信息组件 */
+.user-basic-info-container .basic-section {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+    margin-bottom: 16px !important;
+}
+
+.user-basic-info-container .name {
+    font-size: 20px !important;
+    font-weight: bold !important;
+    color: #333 !important;
+    margin-right: 12px !important;
+}
+
+/* 5.6 工作经历组件 */
+.work-experience-container .experience-item {
+    position: relative !important;
+    padding-left: 40px !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 20px !important;
+    border-bottom: 1px dashed var(--base-secondary-color) !important;
+}
+
+.work-experience-container .company-name {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    color: var(--base-primary-color) !important;
+    margin-bottom: 4px !important;
+    display: block !important;
+}
+
+/* ============================================
+   6. 响应式设计覆盖
+   ============================================ */
+
+/* 移动端优化 (max-width: 768px) */
 @media (max-width: 768px) {
+    /* 容器响应式 */
+    .resume-preview-container {
+        padding: 16px !important;
+        min-height: auto !important;
+    }
+
+    /* 布局响应式 */
     .layout-two-column,
     .layout-three-column {
-        flex-direction: column;
+        flex-direction: column !important;
+        gap: 16px !important;
+        max-width: 100% !important;
     }
 
     .layout-two-column .column-left,
     .layout-two-column .column-right,
     .layout-three-column .column {
         width: 100% !important;
+        flex: none !important;
     }
 
-    .resume-preview-container {
-        padding: 15px !important;
+    /* 组件响应式 */
+    .resume-component {
+        padding: 12px !important;
+        margin-bottom: 12px !important;
+        border-radius: 6px !important;
     }
 
-    .personal-info-component .row > div {
+    .component-title {
+        font-size: 16px !important;
+    }
+
+    /* 教育经历响应式 */
+    .education-experience-container .experience-item {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    .education-experience-container .item-decoration {
         width: 100% !important;
+        height: 3px !important;
+    }
+
+    /* 求职意向响应式 */
+    .job-intention-container .intention-item {
+        padding: 12px !important;
+    }
+
+    .job-intention-container .position-value {
+        font-size: 16px !important;
+        margin-left: 0 !important;
+    }
+
+    /* 项目经验响应式 */
+    .project-experience-container .project-item {
+        padding: 16px !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+    }
+
+    /* 技能组件响应式 */
+    .skills-component .skill-item {
+        padding: 12px !important;
+    }
+
+    /* 基本信息响应式 */
+    .user-basic-info-container .basic-section {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 16px !important;
+    }
+
+    .user-basic-info-container .name {
+        font-size: 18px !important;
+    }
+
+    /* 工作经历响应式 */
+    .work-experience-container .experience-item {
+        padding-left: 20px !important;
+        margin-bottom: 16px !important;
+        padding-bottom: 16px !important;
     }
 }
 
-/* 动画效果 */
+/* 小屏幕手机 (max-width: 480px) */
+@media (max-width: 480px) {
+    .resume-preview-container {
+        padding: 12px !important;
+    }
+
+    .resume-component {
+        padding: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .component-title {
+        font-size: 15px !important;
+    }
+}
+
+/* 平板设备 (769px-1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .resume-preview-container {
+        padding: 20px !important;
+    }
+
+    .layout-two-column {
+        gap: 16px !important;
+    }
+}
+
+/* ============================================
+   7. 打印样式优化
+   ============================================ */
+@media print {
+    .resume-preview-container {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        background-color: white !important;
+    }
+
+    .resume-component {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-bottom: 12px !important;
+        padding: 8px !important;
+        background-color: white !important;
+    }
+
+    .component-title {
+        color: #000 !important;
+    }
+
+    /* 移除不必要的交互元素 */
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   8. 动画效果
+   ============================================ */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .resume-component {
-    animation: fadeIn 0.4s ease-out;
+    animation: fadeIn 0.5s ease-out;
 }
 
-/* 组件悬停状态 */
-.component-hover {
-    z-index: 10;
-    position: relative;
+/* ============================================
+   9. 深色模式支持
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+    .resume-preview-container:not([data-theme="light"]) {
+        --base-text-color: #e0e0e0;
+        --base-title-color: #64b5f6;
+        --base-secondary-color: #424242;
+        --base-background-color: #1e1e1e;
+    }
+
+    .resume-component {
+        background-color: #2a2a2a !important;
+        border-color: #424242 !important;
+    }
 }
 
-/* 工具类 */
-.text-gradient {
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+/* ============================================
+   10. 空状态样式
+   ============================================ */
+.empty-state,
+.empty-column {
+    text-align: center !important;
+    padding: 40px 20px !important;
+    color: var(--base-secondary-color) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-height: 120px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.empty-icon {
+    font-size: 48px !important;
+    opacity: 0.5 !important;
+    margin-bottom: 12px !important;
+    display: block !important;
+}
+
+.empty-title {
+    display: block !important;
+    font-size: 16px !important;
+    color: var(--base-text-color) !important;
+    margin-bottom: 8px !important;
+    font-weight: 500 !important;
 }

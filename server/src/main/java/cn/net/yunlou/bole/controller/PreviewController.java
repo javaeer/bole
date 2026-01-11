@@ -1,6 +1,7 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.utils.JsonUtils;
+import cn.net.yunlou.bole.common.utils.StyleUtils;
 import cn.net.yunlou.bole.handler.resumes.ResumesLayoutCalculator;
 import cn.net.yunlou.bole.handler.resumes.ResumesStyleCalculator;
 import cn.net.yunlou.bole.model.entity.Resumes;
@@ -50,22 +51,31 @@ public class PreviewController {
         Map<String, Object> layoutData = resumesLayoutCalculator.calculateLayout(components, globalLayout, globalStyle);
 
 
-        // 4. 创建 ModelAndView
+        // 4.计算容器样式
+        String layoutType = (String) layoutData.get("layoutType");
+        Map<String, String> containerStyle = resumesStyleCalculator.getContainerStyle(globalStyle, layoutType);
+
+        // 5.获取响应式样式
+        Map<String, String> responsiveStyles = resumesLayoutCalculator.getResponsiveStyles();
+
+
+        // 6. 创建 ModelAndView
         ModelAndView modelAndView = new ModelAndView("resumes/preview");
 
-        // 5. 添加主要数据
+        // 7. 添加主要数据
         modelAndView.addObject("resumes", resumes);
         modelAndView.addObject("device", device);
 
-        // 6. 添加布局相关数据
+        // 8. 添加布局相关数据
         modelAndView.addObject("layoutData", layoutData);
         modelAndView.addObject("globalStyle", globalStyle);
         modelAndView.addObject("globalLayout", globalLayout);
+        modelAndView.addObject("responsiveStyles", responsiveStyles);
+        modelAndView.addObject("responsiveStylesCss", StyleUtils.toCss(responsiveStyles));
+        modelAndView.addObject("containerStyle", containerStyle);
+        modelAndView.addObject("containerStyleCss", StyleUtils.toCss(containerStyle));
 
-        // 7. 添加样式数据（供模板使用）
-        modelAndView.addObject("containerStyle", resumesStyleCalculator.getContainerStyle(globalStyle));
-
-        log.info(JsonUtils.toJson(layoutData.get("allComponents")));
+        log.info("ModelAndView:{}", JsonUtils.toJson(modelAndView));
 
         return modelAndView;
     }

@@ -28,6 +28,10 @@ public class ResumesTemplateStyle implements Serializable {
 
     private String backgroundColor;
 
+    private String textColor;
+
+    private String titleColor;
+
     @TableField(typeHandler = JsonbTypeHandler.class)
     private ResumesTemplateStyleSpacing spacing;
 }

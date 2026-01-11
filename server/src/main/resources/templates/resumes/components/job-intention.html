@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 求职意向组件 -->
+<div th:fragment="job-intention(component, globalStyle)"
+     class="job-intention">
+    <th:block th:if="${component.props.intentions != null and not #lists.isEmpty(component.props.intentions)}">
+        <div th:each="intention : ${component.props.intentions}" class="intention-item">
+            <div class="intention-main">
+                <div class="position-row">
+                    <span class="position-icon">👔</span>
+                    <span class="position-value" th:text="${intention.position}"></span>
+                </div>
+
+                <div class="intention-tags">
+                    <div th:if="${intention.jobType != null}" class="tag-item tag-type">
+                        <span class="tag-icon">📝</span>
+                        <span class="tag-text" th:text="${intention.jobType}"></span>
+                    </div>
+
+                    <div th:if="${intention.city != null}" class="tag-item tag-location">
+                        <span class="tag-icon">📍</span>
+                        <span class="tag-text" th:text="${intention.city}"></span>
+                    </div>
+
+                    <div th:if="${intention.salary != null}" class="tag-item tag-salary">
+                        <span class="tag-icon">💰</span>
+                        <span class="tag-text" th:text="${intention.salary}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block th:unless="${component.props.intentions != null and not #lists.isEmpty(component.props.intentions)}">
+        <div class="empty-state">
+            <span class="empty-icon">🎯</span>
+            <span class="empty-title">暂无求职意向信息</span>
+            <span class="empty-description">请添加您的求职意向</span>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

@@ -1,16 +1,22 @@
 package cn.net.yunlou.bole.handler.document;
 
 import cn.net.yunlou.bole.common.constant.DocumentType;
-import cn.net.yunlou.bole.common.utils.BeanUtils;
-import cn.net.yunlou.bole.common.utils.JsonUtils;
+import cn.net.yunlou.bole.common.utils.StyleUtils;
 import cn.net.yunlou.bole.config.DocumentGeneratorConfig;
 import cn.net.yunlou.bole.handler.IDocumentGeneratorStrategy;
+import cn.net.yunlou.bole.handler.resumes.ResumesLayoutCalculator;
+import cn.net.yunlou.bole.handler.resumes.ResumesStyleCalculator;
 import cn.net.yunlou.bole.model.entity.Resumes;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateStyle;
 import cn.net.yunlou.bole.service.ResumesService;
+import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -23,6 +29,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +51,10 @@ public class PdfDocumentGeneratorStrategy implements IDocumentGeneratorStrategy 
 
     private final DocumentGeneratorConfig documentGeneratorConfig;
 
+    private final ResumesLayoutCalculator resumesLayoutCalculator;
+
+    private final ResumesStyleCalculator resumesStyleCalculator;
+
     @Override
     public DocumentType getType() {
         return DocumentType.PDF;
@@ -52,43 +63,80 @@ public class PdfDocumentGeneratorStrategy implements IDocumentGeneratorStrategy 
     @Override
     public File generate(Long resumesId) {
 
-        //获取数据
-        Resumes resumes = resumesService.getById(resumesId);
+        try {
 
-        Map<String, Object> map = BeanUtils.toMap(resumes);
+            // 1. 获取数据
+            Resumes resumes = resumesService.getById(resumesId);
+            if (resumes == null) {
+                throw new ResourceNotFoundException("简历不存在，ID: " + resumesId);
+            }
 
-        log.info(JsonUtils.toJson(map));
+            // 2. 准备数据
+            List<ResumesTemplateComponent> components = resumes.getComponents();
+            ResumesTemplateStyle globalStyle = resumes.getGlobalStyle();
+            ResumesTemplateLayout globalLayout = resumes.getGlobalLayout();
 
-        //  渲染HTML
-        Context context = new Context();
-        context.setVariables(map);
+            // 3. 【核心】计算布局
+            Map<String, Object> layoutData = resumesLayoutCalculator.calculateLayout(components, globalLayout, globalStyle);
+
+            // 4. 计算容器样式
+            String layoutType = (String) layoutData.get("layoutType");
+            Map<String, String> containerStyle = resumesStyleCalculator.getContainerStyle(globalStyle, layoutType);
+
+            // 5. 获取响应式样式
+            Map<String, String> responsiveStyles = resumesLayoutCalculator.getResponsiveStyles();
+
+            // 6. 创建 Model
+            Map<String, Object> variables = Maps.newConcurrentMap();
+
+            // 7. 添加主要数据
+            variables.put("resumes", resumes);
+            variables.put("device", "desktop");
+            variables.put("components", components);
+
+            // 8. 添加布局相关数据
+            variables.put("layoutData", layoutData);
+            variables.put("globalStyle", globalStyle);
+            variables.put("globalLayout", globalLayout);
+            variables.put("responsiveStyles", responsiveStyles);
+            variables.put("responsiveStylesCss", StyleUtils.toCss(responsiveStyles));
+            variables.put("containerStyle", containerStyle);
+            variables.put("containerStyleCss", StyleUtils.toCss(containerStyle));
 
 
-        String processed = templateEngine.process("resumes/resumes", context);
+            // 10. 渲染HTML
+            Context context = new Context();
+            context.setVariables(variables);
 
-        // 2. 创建PDF渲染器
-        ITextRenderer renderer = new ITextRenderer();
+            String processed = templateEngine.process("resumes/preview", context);
 
-        // 3. 设置中文字体
-        setupChineseFonts(renderer);
+            // 11. 创建PDF渲染器
+            ITextRenderer renderer = new ITextRenderer();
 
-        // 4. 设置文档
-        renderer.setDocumentFromString(processed);
-        renderer.layout();
+            // 12. 设置中文字体
+            setupChineseFonts(renderer);
 
-        // 5. 生成PDF文件
-        String fileName = "resumes_" + resumesId + "_" + System.currentTimeMillis() + ".pdf";
-        File outputFile = new File(documentGeneratorConfig.getTempDir(), fileName);
+            // 13. 设置文档
+            renderer.setDocumentFromString(processed);
+            renderer.layout();
 
-        try (OutputStream os = new FileOutputStream(outputFile)) {
+            // 14. 生成PDF文件
+            String fileName = "resumes_" + resumesId + "_" + System.currentTimeMillis() + ".pdf";
+            File outputFile = new File(documentGeneratorConfig.getTempDir(), fileName);
+            outputFile.deleteOnExit();
+
+            OutputStream os = new FileOutputStream(outputFile);
+
             renderer.createPDF(os);
-        } catch (IOException | DocumentException e) {
-            throw new RuntimeException(e);
+
+            log.info("简历PDF已生成，文件路径: {}, 简历ID: {}", outputFile.getAbsolutePath(), resumesId);
+            return outputFile;
+
+        } catch (DocumentException | IOException e) {
+            log.error("PDF生成失败，简历ID: {}", resumesId, e);
+            throw new RuntimeException("简历PDF生成失败", e);
         }
 
-        log.info("PDF生成成功: {}", outputFile.getAbsolutePath());
-
-        return null;
 
     }
 
@@ -122,14 +170,15 @@ public class PdfDocumentGeneratorStrategy implements IDocumentGeneratorStrategy 
         }
     }
 
-/*    *//**
+    /*    */
+
+    /**
      * 生成PDF字节数组
      *//*
     public byte[] generatePdfBytes(Long resumeId, GeneratorConfig config) throws Exception {
         File pdfFile = generate(resumeId);
         return Files.readAllBytes(pdfFile.toPath());
     }*/
-
     @Override
     public boolean supports(DocumentType documentType) {
         return documentType == DocumentType.PDF;

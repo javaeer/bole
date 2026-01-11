@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 学习历程组件 -->
+<div th:fragment="education-experience(component, globalStyle)"
+     class="education-experience">
+    <th:block th:if="${component.props.experiences != null and not #lists.isEmpty(component.props.experiences)}">
+        <div class="education-list">
+            <div th:each="education : ${component.props.experiences}" class="education-item">
+                <div class="item-decoration"></div>
+
+                <div class="item-content">
+                    <div class="school-info">
+                        <span class="school-name" th:text="${education.university}"></span>
+                        <div class="degree-major">
+                            <span class="major" th:text="${education.major}"></span>
+                            <span th:if="${education.degree != null}" class="degree"
+                                  th:text="'| ' + ${education.degree}"></span>
+                        </div>
+                    </div>
+
+                    <div class="time-info">
+                        <span class="time-icon">📅</span>
+                        <span class="time-text">
+                                            <span th:text="${education.startDate}"></span>
+                                            -
+                                            <span th:if="${education.isHighest == 1}">至今</span>
+                                            <span th:unless="${education.isHighest == 1}"
+                                                  th:text="${education.endDate}"></span>
+                                        </span>
+                    </div>
+
+                    <div th:if="${education.description != null}" class="description"
+                         th:text="${education.description}">
+                    </div>
+
+                    <th:block th:if="${education.achievements != null and not #lists.isEmpty(education.achievements)}">
+                        <div class="achievements-section">
+                            <span class="section-title">荣誉奖项：</span>
+                            <div class="achievements-list">
+                                <div th:each="achievement : ${education.achievements}" class="achievement-item">
+                                    <span class="achievement-icon">🏆</span>
+                                    <span class="achievement-text" th:text="${achievement}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block th:unless="${component.props.experiences != null and not #lists.isEmpty(component.props.experiences)}">
+        <div class="empty-state">
+            <span class="empty-icon">🎓</span>
+            <span class="empty-title">暂无教育经历</span>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

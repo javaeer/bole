@@ -1,30 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<!-- 单栏布局 -->
+<!-- 单列布局 -->
 <div th:fragment="layout-single(layoutData, globalStyle)"
-     class="layout-single-column">
+     class="single-layout"
+     th:style="${layoutData.layoutStyle != null ? layoutData.layoutStyle : ''}">
 
-  <th:block th:if="${layoutData.allComponents != null and not #lists.isEmpty(layoutData.allComponents)}">
-    <th:block th:each="component,iter : ${layoutData.allComponents}" th:object="${component}">
-      <div class="resume-component" th:classappend="${iter.last} ? 'last-component' : ''"
-           th:attr="data-component-id=*{componentId}, data-component-key=*{key}">
-        <!-- 组件渲染器（可复用单栏的组件逻辑） -->
-        <th:block th:replace="~{resumes/fragments/component-renderer ::
+  <th:block th:if="${not layoutData.isEmpty}">
+    <th:block th:each="component : ${layoutData.allComponents}">
+      <div class="resume-component"
+           th:style="${component.stylesCss}"
+           th:attr="data-component-id=${component.componentId},
+                          data-component-key=${component.key}">
+
+        <!-- 组件头部 -->
+        <div class="component-header" th:if="${component.name != null}"
+             th:style="${component.headerStyle}">
+                    <span class="component-title"
+                          th:style="${component.titleStyle}"
+                          th:text="${component.name}">
+                        未命名组件
+                    </span>
+        </div>
+
+        <!-- 组件内容 -->
+        <div class="component-content" th:style="${component.contentStyle}">
+          <div th:replace="~{resumes/fragments/component-renderer ::
                             component-renderer(${component}, ${globalStyle})}">
-        </th:block>
+          </div>
+        </div>
       </div>
     </th:block>
   </th:block>
 
   <!-- 空状态 -->
-  <th:block th:unless="${layoutData.allComponents != null and not #lists.isEmpty(layoutData.allComponents)}">
-    <div class="empty-state">
-      <div class="empty-icon">📄</div>
-      <div class="empty-title">暂无内容</div>
-      <div class="empty-desc">请添加区块以预览模板效果</div>
-    </div>
-  </th:block>
+  <div th:if="${layoutData.isEmpty}" class="empty-state">
+    <div class="empty-icon">📄</div>
+    <div class="empty-title">暂无内容</div>
+  </div>
 </div>
 </body>
 </html>

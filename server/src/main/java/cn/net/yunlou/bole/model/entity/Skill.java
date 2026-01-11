@@ -4,10 +4,11 @@ import cn.net.yunlou.bole.common.BaseEntity;
 import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.*;
 
 /**
  * FileName: Skill Description: Created By MR. WANG Created At 2025/11/19 13:31 Modified By Modified
@@ -47,4 +48,7 @@ public class Skill extends BaseEntity {
     private Boolean isPublic;
 
     private Integer sort;
+
+    @TableField(exist = false)
+    private Boolean groupByCategory = true;
 }

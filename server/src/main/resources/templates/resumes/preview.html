@@ -1,342 +1,1030 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${resumes.name + ' - 简历预览'}">简历预览</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${resumes.name} + ' - 简历预览'">简历预览</title>
 
     <!-- 页面专属CSS -->
     <style th:inline="text">
-        /* 动态CSS变量 - 基于全局样式 */
+        /* ============================================
+           CSS变量定义 - 基于全局样式
+           ============================================ */
         :root {
-            [[${globalStyle?.primaryColor} ? '--primary-color: ' + globalStyle.primaryColor + ';' : '--primary-color: #d4af37;']]
-        [[${globalStyle?.secondaryColor} ? '--secondary-color: ' + globalStyle.secondaryColor + ';' : '--secondary-color: #f9f3e3;']]
-        [[${globalStyle?.accentColor} ? '--accent-color: ' + globalStyle.accentColor + ';' : '--accent-color: #f7ef8a;']]
-        [[${globalStyle?.backgroundColor} ? '--bg-color: ' + globalStyle.backgroundColor + ';' : '--bg-color: #ffffff;']]
-        [[${globalStyle?.fontFamily} ? '--font-family: ' + globalStyle.fontFamily + ';' : '--font-family: "Microsoft YaHei", "PingFang SC", sans-serif;']]
+            /* 颜色变量 */
+            --primary-color: [[${layoutData.globalStyle?.primaryColor ?: '#722ed1'}]];
+            --accent-color: [[${layoutData.globalStyle?.accentColor ?: '#9254de'}]];
+            --secondary-color: [[${layoutData.globalStyle?.secondaryColor ?: '#531dab'}]];
+            --bg-color: [[${layoutData.globalStyle?.backgroundColor ?: '#f9f0ff'}]];
+            --header-color: [[${layoutData.globalStyle?.headerColor ?: '#722ed1'}]];
+            --text-color: #333333;
 
-            /* 字体大小变量 */
-        [[${globalStyle?.fontSizes?.body} ? '--font-size-body: ' + globalStyle.fontSizes.body + 'px;' : '--font-size-body: 14px;']]
-        [[${globalStyle?.fontSizes?.h1} ? '--font-size-h1: ' + globalStyle.fontSizes.h1 + 'px;' : '--font-size-h1: 24px;']]
+            /* 字体变量 */
+            --font-family: [[${layoutData.globalStyle?.fontFamily ?: "'Playfair Display', 'Georgia', serif"}]];
+            --font-size-h1: [[${layoutData.globalStyle?.fontSizes?.h1 ?: '32'}]]px;
+            --font-size-body: [[${layoutData.globalStyle?.fontSizes?.body ?: '13'}]]px;
 
             /* 间距变量 */
-        [[${globalStyle?.spacing?.sectionMargin} ? '--section-margin: ' + globalStyle.spacing.sectionMargin + ';' : '--section-margin: 20px;']]
-        [[${globalStyle?.spacing?.padding} ? '--spacing-padding: ' + globalStyle.spacing.padding + ';' : '--spacing-padding: 15px;']]
-        [[${globalStyle?.spacing?.lineHeight} ? '--line-height: ' + globalStyle.spacing.lineHeight + ';' : '--line-height: 1.5;']]
+            --section-margin: [[${layoutData.globalStyle?.spacing?.sectionMargin ?: '16px'}]];
+            --spacing-padding: [[${layoutData.globalStyle?.spacing?.padding ?: '20px'}]];
+            --line-height: [[${layoutData.globalStyle?.spacing?.lineHeight ?: '1.6'}]];
+
+            /* 布局变量 */
+            --max-width-single: 800px;
+            --max-width-two-column: 1200px;
+            --max-width-timeline: 900px;
+            --max-width-card: 1200px;
+            --max-width-mixed: 1000px;
         }
 
-        /* 重置 Bootstrap 影响简历样式的部分 */
-        .resume-preview-container .layout-single-column,
-        .resume-preview-container .layout-two-column,
-        .resume-preview-container .layout-three-column {
-            margin: 0 !important;
-            padding: 0 !important;
-            background: transparent !important;
-        }
-
-        .resume-preview-container .resume-component {
-            margin-bottom: 0 !important;
-            padding: 0 !important;
-            background: transparent !important;
-            border: none !important;
-        }
-
-        /* 设备特定的基础样式 - 匹配Vue样式 */
-        .resume-preview-container {
-            font-family: var(--font-family, "Microsoft YaHei", "PingFang SC", sans-serif);
-            background-color: var(--bg-color, #ffffff);
-            font-size: var(--font-size-body, 14px);
-            line-height: var(--line-height, 1.5);
-            min-height: 200px;
-            transition: all 0.3s ease;
-            padding: var(--spacing-padding, 15px);
-            border-radius: 4px;
+        /* ============================================
+           全局基础样式
+           ============================================ */
+        * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        /* 颜色预览栏 - 匹配Vue效果 */
-        .resume-preview-container .color-preview-bar {
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-body);
+            line-height: var(--line-height);
+            color: var(--text-color);
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        /* ============================================
+           简历容器样式
+           ============================================ */
+        .resume-container {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+            background-color: var(--bg-color);
+            font-family: var(--font-family);
+            font-size: var(--font-size-body);
+            line-height: var(--line-height);
+            box-sizing: border-box;
+            min-height: 297mm;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            padding: var(--spacing-padding);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* ============================================
+           布局样式
+           ============================================ */
+
+        /* 单列布局 */
+        .single-layout {
+            width: 90%;
             display: flex;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            flex-direction: column;
+            align-items: stretch;
+            gap: var(--section-margin);
+            margin: 0 auto;
         }
 
-        .resume-preview-container .color-preview-bar .color-block {
+        /* 双列布局 */
+        .two-column-layout {
+            display: flex;
+            gap: 20px;
+            width: 90%;
+            max-width: var(--max-width-two-column);
+            margin: 0 auto;
+        }
+
+        .two-column-layout .left-column,
+        .two-column-layout .right-column {
             flex: 1;
-            height: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--section-margin);
+        }
+
+        /* 三列布局 */
+        .three-column-layout {
+            display: flex;
+            gap: 20px;
+            width: 90%;
+            max-width: var(--max-width-two-column);
+            margin: 0 auto;
+        }
+
+        .three-column-layout .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--section-margin);
+        }
+
+        /* 时间线布局 */
+        .timeline-layout {
+            position: relative;
+            width: 90%;
+            max-width: var(--max-width-timeline);
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: var(--secondary-color);
+            opacity: 0.6;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .timeline-node {
+            position: absolute;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            border: 3px solid var(--bg-color);
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        /* 卡片布局 */
+        .card-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: var(--max-width-card);
+            margin: 0 auto;
+        }
+
+        /* 混合布局 */
+        .mixed-layout {
+            width: 90%;
+            max-width: var(--max-width-mixed);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--section-margin);
+        }
+
+        .mixed-bottom {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        /* ============================================
+           组件基础样式
+           ============================================ */
+        .resume-component {
+            transition: all 0.3s ease;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .component-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+
+        .component-title {
+            flex: 1;
+            font-size: var(--font-size-h1);
+            color: var(--header-color);
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .component-content {
+            min-height: 20px;
+        }
+
+        /* ============================================
+           具体组件样式
+           ============================================ */
+
+        /* 基本信息组件 */
+        .user-basic-info {
+            width: 100%;
+        }
+
+        .basic-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .avatar-section {
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #e8e8e8;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
-            color: white;
-            text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.3);
+            font-size: 32px;
+            color: #999;
+            border: 2px solid #e8e8e8;
+        }
+
+        .info-section {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .name-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .name {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-right: 12px;
+        }
+
+        .title-tag {
+            color: var(--primary-color);
+            font-size: 12px;
+            background-color: rgba(114, 46, 209, 0.1);
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon {
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .contact-text {
+            color: #666;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .other-info-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 24px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--secondary-color);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .label {
+            color: #999;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .value {
+            color: #666;
+            font-size: 13px;
+            word-break: break-word;
+        }
+
+        /* 技能组件 */
+        .skills-component {
+            width: 100%;
+        }
+
+        .category-header {
+            margin-bottom: 16px;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 8px;
+            display: inline-block;
+        }
+
+        .category-count {
+            font-size: 14px;
+            color: #666;
+            opacity: 0.8;
+            display: inline-block;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .skill-item {
+            padding: 16px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .skill-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .skill-level-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f6f6f6;
+            border-radius: 16px;
+            padding: 4px 12px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .level-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .skill-description {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #fafafa;
+            border-radius: 6px;
+            border-left: 3px solid #e8e8e8;
+        }
+
+        .skill-tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .tag-item {
+            background-color: #e6f7ff;
+            border: 1px solid rgba(24, 144, 255, 0.2);
+            border-radius: 12px;
+            padding: 2px 10px;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .skill-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--secondary-color);
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+        }
+
+        /* 自我评价组件 */
+        .self-evaluation-container {
+            width: 100%;
+        }
+
+        .evaluation-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--secondary-color);
+        }
+
+        .evaluation-content {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: justify;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 16px;
+        }
+
+        .highlights-section {
+            margin-top: 16px;
+        }
+
+        .highlights-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .highlight-tag {
+            font-size: 12px;
+            color: var(--accent-color);
+            background-color: rgba(146, 84, 222, 0.1);
+            padding: 4px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(146, 84, 222, 0.3);
+        }
+
+        /* 工作经历组件 */
+        .work-experience-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .experience-item {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--secondary-color);
+        }
+
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .company-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .position {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            display: block;
+        }
+
+        .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .time-period {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .time-text {
+            font-size: 12px;
+            color: #999;
+            background-color: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .description {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 8px 0;
+            text-align: justify;
+        }
+
+        .achievements-list {
+            padding-left: 16px;
+            margin-top: 8px;
+        }
+
+        .achievement-item {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        /* 教育背景组件 */
+        .education-experience-container {
+            width: 100%;
+        }
+
+        .education-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .education-item {
+            position: relative;
+            display: flex;
+            gap: 16px;
+        }
+
+        .item-decoration {
+            flex-shrink: 0;
+            width: 4px;
+            border-radius: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .school-name {
+            display: block;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .degree-major {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .major {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .degree {
+            font-size: 13px;
+            color: var(--accent-color);
+        }
+
+        .time-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* 项目经历组件 */
+        .project-experience-container {
+            width: 100%;
+        }
+
+        .project-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            width: 94%;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .project-name {
+            font-size: 17px;
+            font-weight: bold;
+            color: var(--header-color);
+            line-height: 1.3;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .project-description {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--secondary-color);
+        }
+
+        .responsibilities-list,
+        .achievements-list {
+            padding-left: 16px;
+            margin-top: 8px;
+        }
+
+        .responsibility-item,
+        .achievement-item {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        /* 求职意向组件 */
+        .job-intention-container {
+            width: 100%;
+        }
+
+        .intention-item {
+            padding: 16px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            border: 1px solid var(--secondary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 12px;
             transition: all 0.3s ease;
         }
 
-        .resume-preview-container .color-preview-bar .color-block.primary {
-            background-color: var(--primary-color, #d4af37);
-        }
-
-        .resume-preview-container .color-preview-bar .color-block.secondary {
-            background-color: var(--secondary-color, #f9f3e3);
-            color: #333;
-        }
-
-        .resume-preview-container .color-preview-bar .color-block.accent {
-            background-color: var(--accent-color, #f7ef8a);
-            color: #333;
-        }
-
-        .resume-preview-container .color-preview-bar .color-block:hover {
-            filter: brightness(1.1);
-        }
-
-        /* 设备适配 - 精确匹配Vue尺寸 */
-        .resume-preview-container.mobile {
-            max-width: 375px !important;
-            margin: 0 auto !important;
-            font-size: 14px !important;
-            padding: 7.5px !important;
-            border-radius: 8px !important;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
-        }
-
-        .resume-preview-container.tablet {
-            max-width: 768px !important;
-            margin: 0 auto !important;
-            padding: 12.5px !important;
-            border-radius: 6px !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-        }
-
-        .resume-preview-container.desktop {
-            max-width: 100% !important;
-            padding: 15px !important;
-            border-radius: 4px !important;
-            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06) !important;
-        }
-
-        /* 布局样式 - 覆盖Bootstrap */
-        .layout-single-column {
+        .position-row {
             display: flex;
-            flex-direction: column;
-            gap: var(--section-margin, 20px);
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            gap: 8px;
         }
 
-        .layout-two-column {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .layout-two-column .column-left,
-        .layout-two-column .column-right {
-            display: flex;
-            flex-direction: column;
-            gap: var(--section-margin, 20px);
-            min-height: 100px;
-            box-sizing: border-box;
-        }
-
-        .layout-three-column {
-            display: flex;
-            gap: 7.5px;
-            align-items: flex-start;
-        }
-
-        .layout-three-column .column {
-            display: flex;
-            flex-direction: column;
-            gap: var(--section-margin, 20px);
+        .position-value {
             flex: 1;
-            min-height: 100px;
-            box-sizing: border-box;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 8px;
         }
 
-        /* 组件包装器样式 - 匹配Vue效果 */
-        .resume-component {
-            background: white !important;
-            border-radius: 4px !important;
-            overflow: hidden !important;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
-            transition: all 0.3s ease !important;
-            border-left: 2px solid var(--primary-color, #d4af37) !important;
-            background-color: rgba(var(--secondary-color-rgb, 249, 243, 227), 0.125) !important;
-            padding: var(--spacing-padding, 15px) !important;
-            margin-bottom: var(--section-margin, 20px) !important;
+        .intention-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
         }
 
-        .resume-component:last-child {
-            margin-bottom: 0 !important;
+        .tag-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
         }
 
-        .resume-component.component-hover {
-            transform: translateY(-1px) !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+        /* 空状态样式 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
         }
 
-        /* 空状态样式 - 覆盖Bootstrap */
-        .empty-state,
-        .empty-column {
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
-            height: 150px !important;
-            background: rgba(255, 255, 255, 0.7) !important;
-            border-radius: 4px !important;
-            border: 1px dashed #ddd !important;
-            padding: 40px 20px !important;
-            box-sizing: border-box !important;
-            text-align: center !important;
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
         }
 
-        .empty-state i,
-        .empty-column i {
-            font-size: 48px !important;
-            margin-bottom: 20px !important;
-            opacity: 0.5 !important;
-            color: #666 !important;
+        .empty-title {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
-        .empty-state h4,
-        .empty-column p {
-            font-size: 14px !important;
-            font-weight: 500 !important;
-            color: #666 !important;
-            margin: 0 0 5px 0 !important;
-            line-height: 1.4 !important;
+        .empty-description {
+            font-size: 14px;
+            color: #ccc;
         }
 
-        .empty-state small,
-        .empty-column small {
-            font-size: 12px !important;
-            color: #999 !important;
-            line-height: 1.4 !important;
-        }
-
-        .empty-column {
-            background: rgba(0, 0, 0, 0.02) !important;
-        }
-
-        /* 响应式调整 */
+        /* ============================================
+           响应式设计
+           ============================================ */
         @media (max-width: 768px) {
-            .resume-preview-container {
-                padding: 10px !important;
+            body {
+                padding: 10px;
             }
 
-            .layout-two-column,
-            .layout-three-column {
+            .resume-container {
+                padding: 16px !important;
+                min-height: auto !important;
+                border-radius: 4px;
+            }
+
+            /* 单列布局在移动端 */
+            .single-layout {
+                gap: 12px !important;
+            }
+
+            /* 双列布局在移动端改为单列 */
+            .two-column-layout {
                 flex-direction: column !important;
-                gap: var(--section-margin, 20px) !important;
+                gap: 12px !important;
+                max-width: 100% !important;
+                margin: 0 !important;
             }
 
-            .layout-two-column .column-left,
-            .layout-two-column .column-right,
-            .layout-three-column .column {
+            .two-column-layout .left-column,
+            .two-column-layout .right-column {
+                width: 100% !important;
+                flex: none !important;
+            }
+
+            /* 三列布局在移动端改为单列 */
+            .three-column-layout {
+                flex-direction: column !important;
+                gap: 12px !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
+
+            .three-column-layout .column {
                 width: 100% !important;
             }
 
-            .empty-state,
-            .empty-column {
-                height: 100px !important;
+            /* 混合布局在移动端改为单列 */
+            .mixed-layout {
+                max-width: 100% !important;
+                margin: 0 !important;
+                gap: 12px !important;
+            }
+
+            .mixed-bottom {
+                flex-direction: column !important;
+                gap: 12px !important;
+                margin-top: 20px !important;
+            }
+
+            /* 卡片布局在移动端改为单列 */
+            .card-layout {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
+
+            /* 时间线布局在移动端改为居中单列 */
+            .timeline-layout {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .timeline-line {
+                display: none;
+            }
+
+            .timeline-node {
+                display: none;
+            }
+
+            /* 组件项在移动端取消最大宽度限制 */
+            .resume-component {
+                margin-bottom: 12px !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                max-width: 100% !important;
+            }
+
+            .component-title {
+                font-size: 18px !important;
+            }
+
+            /* 基本信息响应式 */
+            .basic-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 16px;
+            }
+
+            .avatar,
+            .avatar-placeholder {
+                width: 60px !important;
+                height: 60px !important;
+            }
+
+            .name {
+                font-size: 18px !important;
+            }
+
+            .contact-item {
+                justify-content: center;
+            }
+
+            .other-info-section {
+                justify-content: center;
+                text-align: center;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .resume-container {
+                padding: 12px !important;
+            }
+
+            .single-layout,
+            .timeline-layout,
+            .card-layout,
+            .mixed-layout {
+                gap: 8px !important;
+            }
+
+            .component-title {
+                font-size: 16px !important;
+            }
+
+            .resume-component {
+                padding: 12px !important;
+                margin-bottom: 8px !important;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .resume-container {
                 padding: 20px !important;
             }
 
-            .empty-state i,
-            .empty-column i {
-                font-size: 36px !important;
-                margin-bottom: 10px !important;
-            }
-
-            .color-preview-bar {
-                margin-bottom: 15px !important;
-            }
-
-            .color-preview-bar .color-block {
-                height: 16px !important;
-                font-size: 8px !important;
+            .card-layout {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 16px !important;
             }
         }
 
-        /* 打印样式 */
-        .resume-preview-container.print-mode {
-            box-shadow: none !important;
-            border: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            max-width: 100% !important;
-        }
+        /* ============================================
+           打印样式
+           ============================================ */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
 
-        .print-mode .device-switcher,
-        .print-mode .action-buttons {
-            display: none !important;
-        }
+            .resume-container {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                background-color: white !important;
+                min-height: auto !important;
+            }
 
-        .print-mode .resume-component {
-            box-shadow: none !important;
-            border: 1px solid #eee !important;
-            page-break-inside: avoid !important;
-        }
+            .resume-component {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                margin-bottom: 12px !important;
+                padding: 12px !important;
+                background-color: white !important;
+            }
 
-        /* 组件内容样式 */
-        .resume-component h1,
-        .resume-component h2,
-        .resume-component h3,
-        .resume-component h4 {
-            color: var(--primary-color, #d4af37) !important;
-            font-family: var(--font-family, "Microsoft YaHei", "PingFang SC", sans-serif) !important;
-            margin-top: 0 !important;
-        }
+            .component-title {
+                color: #000 !important;
+            }
 
-        .resume-component h1 {
-            font-size: var(--font-size-h1, 24px) !important;
-        }
-
-        .resume-component p,
-        .resume-component li,
-        .resume-component span {
-            font-family: var(--font-family, "Microsoft YaHei", "PingFang SC", sans-serif) !important;
-            font-size: var(--font-size-body, 14px) !important;
-            line-height: var(--line-height, 1.5) !important;
-            color: #333 !important;
-        }
-
-        .resume-component a {
-            color: var(--accent-color, #f7ef8a) !important;
-            text-decoration: none !important;
-        }
-
-        .resume-component a:hover {
-            text-decoration: underline !important;
+            /* 确保打印时内容居中 */
+            .basic-section,
+            .other-info-section {
+                justify-content: flex-start !important;
+            }
         }
     </style>
-
 </head>
 <body>
-<div layout:fragment="content">
+<div th:fragment="content">
     <!-- 简历预览主容器 -->
-    <div th:class="'resume-preview-container ' + ${device}"
-         th:style="${containerStyle}">
+    <div class="resume-container" th:classappend="${device}">
 
         <!-- 布局渲染区域 -->
         <div th:switch="${layoutData.layoutType}">
-            <!-- 双栏布局 -->
+
+            <!-- 双列布局 -->
             <div th:case="'two-column'">
                 <div th:replace="~{resumes/fragments/layout-two ::
                         layout-two(${layoutData}, ${globalStyle})}">
                 </div>
             </div>
 
-            <!-- 三栏布局 -->
+            <!-- 三列布局 -->
             <div th:case="'three-column'">
                 <div th:replace="~{resumes/fragments/layout-three ::
                         layout-three(${layoutData}, ${globalStyle})}">
                 </div>
             </div>
 
-            <!-- 默认布局 == 单栏布局 -->
+            <!-- 时间线布局 -->
+            <div th:case="'timeline'">
+                <div th:replace="~{resumes/fragments/layout-timeline ::
+                        layout-timeline(${layoutData}, ${globalStyle})}">
+                </div>
+            </div>
+
+            <!-- 卡片布局 -->
+            <div th:case="'card'">
+                <div th:replace="~{resumes/fragments/layout-card ::
+                        layout-card(${layoutData}, ${globalStyle})}">
+                </div>
+            </div>
+
+            <!-- 混合布局 -->
+            <div th:case="'mixed'">
+                <div th:replace="~{resumes/fragments/layout-mixed ::
+                        layout-mixed(${layoutData}, ${globalStyle})}">
+                </div>
+            </div>
+
+            <!-- 默认单列布局 -->
             <div th:case="*">
                 <div th:replace="~{resumes/fragments/layout-single ::
                         layout-single(${layoutData}, ${globalStyle})}">
@@ -345,64 +1033,32 @@
         </div>
     </div>
 
-    <!-- 内联脚本（处理交互） -->
+    <!-- JavaScript交互 -->
     <script th:inline="javascript">
+        /*<![CDATA[*/
         document.addEventListener('DOMContentLoaded', function() {
             // 组件悬停效果
             document.querySelectorAll('.resume-component').forEach(function(component) {
                 component.addEventListener('mouseenter', function() {
-                    this.classList.add('component-hover');
+                    this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                    this.style.transform = 'translateY(-2px)';
                 });
                 component.addEventListener('mouseleave', function() {
-                    this.classList.remove('component-hover');
+                    this.style.boxShadow = '';
+                    this.style.transform = '';
                 });
             });
 
             // 打印样式调整
             window.addEventListener('beforeprint', function() {
-                document.querySelector('.resume-preview-container').classList.add('print-mode');
-                var deviceSwitcher = document.querySelector('.device-switcher');
-                var actionButtons = document.querySelector('.action-buttons');
-                if (deviceSwitcher) deviceSwitcher.style.display = 'none';
-                if (actionButtons) actionButtons.style.display = 'none';
+                document.querySelector('.resume-container').classList.add('print-mode');
             });
 
             window.addEventListener('afterprint', function() {
-                document.querySelector('.resume-preview-container').classList.remove('print-mode');
-                var deviceSwitcher = document.querySelector('.device-switcher');
-                var actionButtons = document.querySelector('.action-buttons');
-                if (deviceSwitcher) deviceSwitcher.style.display = '';
-                if (actionButtons) actionButtons.style.display = '';
+                document.querySelector('.resume-container').classList.remove('print-mode');
             });
-
-            // 动态计算RGB颜色值用于透明度
-            function hexToRgb(hex) {
-                var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                return result ? {
-                    r: parseInt(result[1], 16),
-                    g: parseInt(result[2], 16),
-                    b: parseInt(result[3], 16)
-                } : null;
-            }
-
-            // 设置CSS变量用于透明度
-            var primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
-            var secondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim();
-
-            if (primaryColor && primaryColor !== '#d4af37') {
-                var rgb = hexToRgb(primaryColor);
-                if (rgb) {
-                    document.documentElement.style.setProperty('--primary-color-rgb', rgb.r + ', ' + rgb.g + ', ' + rgb.b);
-                }
-            }
-
-            if (secondaryColor && secondaryColor !== '#f9f3e3') {
-                var rgb = hexToRgb(secondaryColor);
-                if (rgb) {
-                    document.documentElement.style.setProperty('--secondary-color-rgb', rgb.r + ', ' + rgb.g + ', ' + rgb.b);
-                }
-            }
         });
+        /*]]>*/
     </script>
 </div>
 </body>

@@ -26,6 +26,8 @@ import lombok.Data;
 public class ResumesTemplateLayout implements Serializable {
     private String type;
 
+    private String gap;
+
     @TableField(typeHandler = JsonbTypeHandler.class)
     private ResumesTemplateLayoutColumns columns;
 
