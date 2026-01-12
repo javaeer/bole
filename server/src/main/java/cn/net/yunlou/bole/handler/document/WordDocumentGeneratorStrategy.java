@@ -7,13 +7,6 @@ import cn.net.yunlou.bole.model.entity.Resumes;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.service.ResumesService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,10 +15,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xwpf.usermodel.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-/**
- * Word文档生成策略（基于ResumeDataParser优化版）
- */
+/** Word文档生成策略（基于ResumeDataParser优化版） */
 @Slf4j
 @Component
 public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrategy {
@@ -45,9 +42,10 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     private static final int SECTION_FONT_SIZE = 14;
     private static final int SUB_SECTION_FONT_SIZE = 12;
 
-    public WordDocumentGeneratorStrategy(DocumentDirectoryManager directoryManager,
-                                         ResumesService resumesService,
-                                         ResumeDataParser resumeDataParser) {
+    public WordDocumentGeneratorStrategy(
+            DocumentDirectoryManager directoryManager,
+            ResumesService resumesService,
+            ResumeDataParser resumeDataParser) {
         super(directoryManager, resumesService);
         this.resumeDataParser = resumeDataParser;
         log.info("Word文档生成策略初始化完成");
@@ -64,8 +62,7 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     }
 
     @Override
-    @Cacheable(value = CACHE_NAME, key = "#resumesId + '_' + #version",
-            unless = "#result == null")
+    @Cacheable(value = CACHE_NAME, key = "#resumesId + '_' + #version", unless = "#result == null")
     public File generate(Long resumesId, String device, String version) {
         if (!StringUtils.hasText(version)) {
             version = "v1";
@@ -97,8 +94,11 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             long endTime = System.nanoTime();
             long duration = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
 
-            log.info("Word简历生成完成，简历ID: {}, 耗时: {}ms, 文件大小: {}字节",
-                    resumesId, duration, outputFile.length());
+            log.info(
+                    "Word简历生成完成，简历ID: {}, 耗时: {}ms, 文件大小: {}字节",
+                    resumesId,
+                    duration,
+                    outputFile.length());
 
             return outputFile;
 
@@ -110,9 +110,7 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 创建Word文档
-     */
+    /** 创建Word文档 */
     private XWPFDocument createWordDocument(Resumes resumes) throws Exception {
         XWPFDocument document = new XWPFDocument();
 
@@ -153,9 +151,7 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         return document;
     }
 
-    /**
-     * 解析全局样式
-     */
+    /** 解析全局样式 */
     @SuppressWarnings("unchecked")
     private Map<String, Object> parseGlobalStyle(Resumes resumes) {
         try {
@@ -166,9 +162,7 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 解析简历数据
-     */
+    /** 解析简历数据 */
     @SuppressWarnings("unchecked")
     private Map<String, Object> parseResumeData(Resumes resumes) {
         try {
@@ -184,9 +178,7 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 获取组件顺序
-     */
+    /** 获取组件顺序 */
     @SuppressWarnings("unchecked")
     private List<String> getComponentOrder(Resumes resumes) {
         try {
@@ -200,10 +192,9 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         return null;
     }
 
-    /**
-     * 根据ID查找组件
-     */
-    private ResumesTemplateComponent findComponentById(List<ResumesTemplateComponent> components, String componentId) {
+    /** 根据ID查找组件 */
+    private ResumesTemplateComponent findComponentById(
+            List<ResumesTemplateComponent> components, String componentId) {
         if (components == null) return null;
 
         return components.stream()
@@ -212,11 +203,12 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
                 .orElse(null);
     }
 
-    /**
-     * 创建组件内容
-     */
-    private void createComponent(XWPFDocument document, ResumesTemplateComponent component,
-                                 Map<String, Object> globalStyle) throws Exception {
+    /** 创建组件内容 */
+    private void createComponent(
+            XWPFDocument document,
+            ResumesTemplateComponent component,
+            Map<String, Object> globalStyle)
+            throws Exception {
         // 解析组件数据
         Map<String, Object> componentData = resumeDataParser.parseComponentData(component);
         if (componentData.isEmpty()) {
@@ -224,7 +216,8 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
 
         // 获取组件名称（修复中文编码）
-        String componentName = resumeDataParser.fixChineseEncoding((String) componentData.get("name"));
+        String componentName =
+                resumeDataParser.fixChineseEncoding((String) componentData.get("name"));
 
         // 创建组件标题
         String titleColor = getColorFromStyle(globalStyle, "headerColor", "#333333");
@@ -270,27 +263,23 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         document.createParagraph();
     }
 
-    /**
-     * 设置页面属性
-     */
+    /** 设置页面属性 */
     private void setPageProperties(XWPFDocument document) {
         CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
         CTPageSz pageSz = sectPr.addNewPgSz();
-        pageSz.setW(BigInteger.valueOf(11906));  // A4纸宽度 (21cm)
-        pageSz.setH(BigInteger.valueOf(16838));  // A4纸高度 (29.7cm)
+        pageSz.setW(BigInteger.valueOf(11906)); // A4纸宽度 (21cm)
+        pageSz.setH(BigInteger.valueOf(16838)); // A4纸高度 (29.7cm)
 
         CTPageMar pageMar = sectPr.addNewPgMar();
-        pageMar.setLeft(BigInteger.valueOf(1701));    // 左边距 3cm
-        pageMar.setRight(BigInteger.valueOf(1701));   // 右边距 3cm
-        pageMar.setTop(BigInteger.valueOf(1417));     // 上边距 2.5cm
-        pageMar.setBottom(BigInteger.valueOf(1417));  // 下边距 2.5cm
-        pageMar.setHeader(BigInteger.valueOf(851));   // 页眉边距 1.5cm
-        pageMar.setFooter(BigInteger.valueOf(851));   // 页脚边距 1.5cm
+        pageMar.setLeft(BigInteger.valueOf(1701)); // 左边距 3cm
+        pageMar.setRight(BigInteger.valueOf(1701)); // 右边距 3cm
+        pageMar.setTop(BigInteger.valueOf(1417)); // 上边距 2.5cm
+        pageMar.setBottom(BigInteger.valueOf(1417)); // 下边距 2.5cm
+        pageMar.setHeader(BigInteger.valueOf(851)); // 页眉边距 1.5cm
+        pageMar.setFooter(BigInteger.valueOf(851)); // 页脚边距 1.5cm
     }
 
-    /**
-     * 创建标题
-     */
+    /** 创建标题 */
     private void createTitle(XWPFDocument document, String title, String color) {
         XWPFParagraph titleParagraph = document.createParagraph();
         titleParagraph.setAlignment(ParagraphAlignment.CENTER);
@@ -307,14 +296,12 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         document.createParagraph();
     }
 
-    /**
-     * 创建子章节标题
-     */
+    /** 创建子章节标题 */
     private void createSubSection(XWPFDocument document, String subSectionTitle, String color) {
         XWPFParagraph sectionParagraph = document.createParagraph();
         sectionParagraph.setAlignment(ParagraphAlignment.LEFT);
-        sectionParagraph.setSpacingBefore(200);  // 段前间距
-        sectionParagraph.setSpacingAfter(100);   // 段后间距
+        sectionParagraph.setSpacingBefore(200); // 段前间距
+        sectionParagraph.setSpacingAfter(100); // 段后间距
 
         XWPFRun sectionRun = sectionParagraph.createRun();
         sectionRun.setText(resumeDataParser.fixChineseEncoding(subSectionTitle));
@@ -327,12 +314,11 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         addBottomBorder(sectionParagraph, color);
     }
 
-    /**
-     * 创建基本信息
-     */
+    /** 创建基本信息 */
     @SuppressWarnings("unchecked")
-    private void createUserBasicInfo(XWPFDocument document, Map<String, Object> props,
-                                     Map<String, Object> styles) throws Exception {
+    private void createUserBasicInfo(
+            XWPFDocument document, Map<String, Object> props, Map<String, Object> styles)
+            throws Exception {
         if (props.isEmpty()) {
             createEmptyContent(document);
             return;
@@ -427,12 +413,11 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 创建技能内容
-     */
+    /** 创建技能内容 */
     @SuppressWarnings("unchecked")
-    private void createSkillsContent(XWPFDocument document, Map<String, Object> props,
-                                     Map<String, Object> styles) throws Exception {
+    private void createSkillsContent(
+            XWPFDocument document, Map<String, Object> props, Map<String, Object> styles)
+            throws Exception {
         List<Map<String, Object>> skills = (List<Map<String, Object>>) props.get("skills");
         if (skills == null || skills.isEmpty()) {
             createEmptyContent(document);
@@ -480,7 +465,8 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
                 // 技能等级
                 if (skill.get("level") != null) {
                     skillText.append("（");
-                    skillText.append(resumeDataParser.fixChineseEncoding(skill.get("level").toString()));
+                    skillText.append(
+                            resumeDataParser.fixChineseEncoding(skill.get("level").toString()));
                     skillText.append("）");
                 }
 
@@ -497,7 +483,9 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
                 // 技能描述
                 if (skill.get("description") != null) {
-                    String description = resumeDataParser.fixChineseEncoding(skill.get("description").toString());
+                    String description =
+                            resumeDataParser.fixChineseEncoding(
+                                    skill.get("description").toString());
                     if (!description.trim().isEmpty()) {
                         XWPFParagraph descPara = document.createParagraph();
                         descPara.setAlignment(ParagraphAlignment.LEFT);
@@ -514,13 +502,13 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 创建自我评价内容
-     */
+    /** 创建自我评价内容 */
     @SuppressWarnings("unchecked")
-    private void createSelfEvaluationContent(XWPFDocument document, Map<String, Object> props,
-                                             Map<String, Object> styles) throws Exception {
-        List<Map<String, Object>> evaluations = (List<Map<String, Object>>) props.get("evaluations");
+    private void createSelfEvaluationContent(
+            XWPFDocument document, Map<String, Object> props, Map<String, Object> styles)
+            throws Exception {
+        List<Map<String, Object>> evaluations =
+                (List<Map<String, Object>>) props.get("evaluations");
         if (evaluations == null || evaluations.isEmpty()) {
             createEmptyContent(document);
             return;
@@ -532,7 +520,8 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
         for (Map<String, Object> evaluation : evaluations) {
             if (evaluation.get("content") != null) {
-                String content = resumeDataParser.fixChineseEncoding(evaluation.get("content").toString());
+                String content =
+                        resumeDataParser.fixChineseEncoding(evaluation.get("content").toString());
                 if (!content.trim().isEmpty()) {
                     XWPFParagraph evalPara = document.createParagraph();
                     evalPara.setAlignment(ParagraphAlignment.LEFT);
@@ -551,13 +540,13 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 创建工作经历内容
-     */
+    /** 创建工作经历内容 */
     @SuppressWarnings("unchecked")
-    private void createWorkExperienceContent(XWPFDocument document, Map<String, Object> props,
-                                             Map<String, Object> styles) throws Exception {
-        List<Map<String, Object>> experiences = (List<Map<String, Object>>) props.get("experiences");
+    private void createWorkExperienceContent(
+            XWPFDocument document, Map<String, Object> props, Map<String, Object> styles)
+            throws Exception {
+        List<Map<String, Object>> experiences =
+                (List<Map<String, Object>>) props.get("experiences");
         if (experiences == null || experiences.isEmpty()) {
             createEmptyContent(document);
             return;
@@ -580,7 +569,8 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
             String startDate = resumeDataParser.formatDate(exp.get("startDate"));
             String endDate;
-            if (exp.get("isCurrent") != null && Boolean.parseBoolean(exp.get("isCurrent").toString())) {
+            if (exp.get("isCurrent") != null
+                    && Boolean.parseBoolean(exp.get("isCurrent").toString())) {
                 endDate = "至今";
             } else {
                 endDate = resumeDataParser.formatDate(exp.get("endDate"));
@@ -605,7 +595,8 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
             // 工作描述
             if (exp.get("description") != null) {
-                String description = resumeDataParser.fixChineseEncoding(exp.get("description").toString());
+                String description =
+                        resumeDataParser.fixChineseEncoding(exp.get("description").toString());
                 if (!description.trim().isEmpty()) {
                     XWPFParagraph descPara = document.createParagraph();
                     descPara.setAlignment(ParagraphAlignment.LEFT);
@@ -655,13 +646,13 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 创建教育背景内容
-     */
+    /** 创建教育背景内容 */
     @SuppressWarnings("unchecked")
-    private void createEducationContent(XWPFDocument document, Map<String, Object> props,
-                                        Map<String, Object> styles) throws Exception {
-        List<Map<String, Object>> experiences = (List<Map<String, Object>>) props.get("experiences");
+    private void createEducationContent(
+            XWPFDocument document, Map<String, Object> props, Map<String, Object> styles)
+            throws Exception {
+        List<Map<String, Object>> experiences =
+                (List<Map<String, Object>>) props.get("experiences");
         if (experiences == null || experiences.isEmpty()) {
             createEmptyContent(document);
             return;
@@ -679,7 +670,8 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
             XWPFRun schoolRun = schoolPara.createRun();
 
-            String university = resumeDataParser.fixChineseEncoding(edu.get("university").toString());
+            String university =
+                    resumeDataParser.fixChineseEncoding(edu.get("university").toString());
             String degree = resumeDataParser.fixChineseEncoding(edu.get("degree").toString());
             String major = resumeDataParser.fixChineseEncoding(edu.get("major").toString());
 
@@ -705,7 +697,8 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
             // 描述
             if (edu.get("description") != null) {
-                String description = resumeDataParser.fixChineseEncoding(edu.get("description").toString());
+                String description =
+                        resumeDataParser.fixChineseEncoding(edu.get("description").toString());
                 if (!description.trim().isEmpty()) {
                     XWPFParagraph descPara = document.createParagraph();
                     descPara.setAlignment(ParagraphAlignment.LEFT);
@@ -745,13 +738,13 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 创建项目经验内容
-     */
+    /** 创建项目经验内容 */
     @SuppressWarnings("unchecked")
-    private void createProjectsContent(XWPFDocument document, Map<String, Object> props,
-                                       Map<String, Object> styles) throws Exception {
-        List<Map<String, Object>> experiences = (List<Map<String, Object>>) props.get("experiences");
+    private void createProjectsContent(
+            XWPFDocument document, Map<String, Object> props, Map<String, Object> styles)
+            throws Exception {
+        List<Map<String, Object>> experiences =
+                (List<Map<String, Object>>) props.get("experiences");
         if (experiences == null || experiences.isEmpty()) {
             createEmptyContent(document);
             return;
@@ -765,9 +758,9 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
             XWPFRun nameRun = namePara.createRun();
 
-            String projectName = resumeDataParser.fixChineseEncoding(
-                    project.getOrDefault("name", "未命名项目").toString()
-            );
+            String projectName =
+                    resumeDataParser.fixChineseEncoding(
+                            project.getOrDefault("name", "未命名项目").toString());
             String startDate = resumeDataParser.formatDate(project.get("startDate"));
             String endDate = resumeDataParser.formatDate(project.get("endDate"));
 
@@ -778,7 +771,8 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
             // 项目描述
             if (project.get("description") != null) {
-                String description = resumeDataParser.fixChineseEncoding(project.get("description").toString());
+                String description =
+                        resumeDataParser.fixChineseEncoding(project.get("description").toString());
                 if (!description.trim().isEmpty()) {
                     XWPFParagraph descPara = document.createParagraph();
                     descPara.setAlignment(ParagraphAlignment.LEFT);
@@ -828,12 +822,11 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 创建求职意向内容
-     */
+    /** 创建求职意向内容 */
     @SuppressWarnings("unchecked")
-    private void createJobIntentionContent(XWPFDocument document, Map<String, Object> props,
-                                           Map<String, Object> styles) throws Exception {
+    private void createJobIntentionContent(
+            XWPFDocument document, Map<String, Object> props, Map<String, Object> styles)
+            throws Exception {
         List<Map<String, Object>> intentions = (List<Map<String, Object>>) props.get("intentions");
         if (intentions == null || intentions.isEmpty()) {
             createEmptyContent(document);
@@ -875,10 +868,12 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             XWPFTableRow row = table.getRow(i + 1);
 
             String[] values = {
-                    resumeDataParser.fixChineseEncoding(intention.getOrDefault("position", "").toString()),
-                    resumeDataParser.fixChineseEncoding(intention.getOrDefault("jobType", "").toString()),
-                    resumeDataParser.fixChineseEncoding(intention.getOrDefault("city", "").toString()),
-                    intention.getOrDefault("salary", "").toString()
+                resumeDataParser.fixChineseEncoding(
+                        intention.getOrDefault("position", "").toString()),
+                resumeDataParser.fixChineseEncoding(
+                        intention.getOrDefault("jobType", "").toString()),
+                resumeDataParser.fixChineseEncoding(intention.getOrDefault("city", "").toString()),
+                intention.getOrDefault("salary", "").toString()
             };
 
             for (int j = 0; j < values.length; j++) {
@@ -894,17 +889,14 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 创建默认内容
-     */
-    private void createDefaultContent(XWPFDocument document, Map<String, Object> props,
-                                      Map<String, Object> styles) throws Exception {
+    /** 创建默认内容 */
+    private void createDefaultContent(
+            XWPFDocument document, Map<String, Object> props, Map<String, Object> styles)
+            throws Exception {
         createEmptyContent(document);
     }
 
-    /**
-     * 创建空内容提示
-     */
+    /** 创建空内容提示 */
     private void createEmptyContent(XWPFDocument document) throws Exception {
         XWPFParagraph emptyPara = document.createParagraph();
         emptyPara.setAlignment(ParagraphAlignment.LEFT);
@@ -917,9 +909,7 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         emptyRun.setItalic(true);
     }
 
-    /**
-     * 添加底部边框
-     */
+    /** 添加底部边框 */
     private void addBottomBorder(XWPFParagraph paragraph, String color) {
         try {
             CTP ctp = paragraph.getCTP();
@@ -941,9 +931,7 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 添加分隔线
-     */
+    /** 添加分隔线 */
     private void addSeparatorLine(XWPFDocument document) {
         XWPFParagraph separatorPara = document.createParagraph();
         separatorPara.setAlignment(ParagraphAlignment.CENTER);
@@ -957,9 +945,7 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         separatorRun.addBreak();
     }
 
-    /**
-     * 创建页脚
-     */
+    /** 创建页脚 */
     private void createFooter(XWPFDocument document, Resumes resumes) throws Exception {
         document.createParagraph();
 
@@ -967,18 +953,19 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         footerPara.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun footerRun = footerPara.createRun();
-        footerRun.setText(resumeDataParser.fixChineseEncoding(
-                "简历编号: " + resumes.getId() + " | " +
-                        "生成时间: " + LocalDateTime.now().format(DATE_FORMATTER)
-        ));
+        footerRun.setText(
+                resumeDataParser.fixChineseEncoding(
+                        "简历编号: "
+                                + resumes.getId()
+                                + " | "
+                                + "生成时间: "
+                                + LocalDateTime.now().format(DATE_FORMATTER)));
         footerRun.setFontFamily(FONT_FAMILY_SIMSUN);
         footerRun.setFontSize(9);
         footerRun.setColor("666666");
     }
 
-    /**
-     * 保存Word文档
-     */
+    /** 保存Word文档 */
     private void saveWordDocument(XWPFDocument document, File file) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(file)) {
             document.write(fos);
@@ -988,27 +975,21 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         log.debug("Word文档已保存: {}, 大小: {}字节", file.getAbsolutePath(), file.length());
     }
 
-    /**
-     * 从样式中获取颜色值
-     */
+    /** 从样式中获取颜色值 */
     private String getColorFromStyle(Map<String, Object> styles, String key, String defaultValue) {
         if (styles == null) return defaultValue;
         Object value = styles.get(key);
         return value != null ? value.toString() : defaultValue;
     }
 
-    /**
-     * 从样式中获取值
-     */
+    /** 从样式中获取值 */
     private String getStyleValue(Map<String, Object> styles, String key, String defaultValue) {
         if (styles == null) return defaultValue;
         Object value = styles.get(key);
         return value != null ? value.toString() : defaultValue;
     }
 
-    /**
-     * 字段信息辅助类
-     */
+    /** 字段信息辅助类 */
     private static class FieldInfo {
         String label;
         String value;

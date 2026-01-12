@@ -3,41 +3,36 @@ package cn.net.yunlou.bole.handler.resumes;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateStyle;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-/**
- * 布局计算工具类 - 完善版（支持Vue所有布局类型）
- */
+/** 布局计算工具类 - 完善版（支持Vue所有布局类型） */
 @Component
 @RequiredArgsConstructor
 public class ResumesLayoutCalculator {
 
     private final ResumesStyleCalculator resumesStyleCalculator;
 
-    /**
-     * 根据布局类型分配组件到各栏
-     */
-    public Map<String, Object> calculateLayout(List<ResumesTemplateComponent> components,
-                                               ResumesTemplateLayout globalLayout,
-                                               ResumesTemplateStyle globalStyle) {
+    /** 根据布局类型分配组件到各栏 */
+    public Map<String, Object> calculateLayout(
+            List<ResumesTemplateComponent> components,
+            ResumesTemplateLayout globalLayout,
+            ResumesTemplateStyle globalStyle) {
 
         Map<String, Object> result = new HashMap<>();
 
         // 转换布局类型为Vue兼容格式
-        String layoutType = resumesStyleCalculator.convertLayoutType(
-                globalLayout != null ? globalLayout.getType() : null
-        );
+        String layoutType =
+                resumesStyleCalculator.convertLayoutType(
+                        globalLayout != null ? globalLayout.getType() : null);
 
         // 过滤掉可能为空的组件
-        List<ResumesTemplateComponent> validComponents = Optional.ofNullable(components)
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter(comp -> comp != null && comp.getComponentId() != null)
-                .collect(Collectors.toList());
+        List<ResumesTemplateComponent> validComponents =
+                Optional.ofNullable(components).orElse(Collections.emptyList()).stream()
+                        .filter(comp -> comp != null && comp.getComponentId() != null)
+                        .collect(Collectors.toList());
 
         // 创建布局上下文（用于传递额外信息）
         Map<String, Object> layoutContext = new HashMap<>();
@@ -45,27 +40,31 @@ public class ResumesLayoutCalculator {
         layoutContext.put("globalStyle", globalStyle);
 
         // 处理组件数据（为每个组件添加计算好的样式）
-        List<Map<String, Object>> processedComponents = resumesStyleCalculator.processComponents(
-                validComponents, globalStyle, layoutType, layoutContext
-        );
+        List<Map<String, Object>> processedComponents =
+                resumesStyleCalculator.processComponents(
+                        validComponents, globalStyle, layoutType, layoutContext);
 
         // 按组件顺序排序（如果有配置顺序）
-        processedComponents.sort((a, b) -> {
-            Integer orderA = getComponentOrder(a, globalLayout);
-            Integer orderB = getComponentOrder(b, globalLayout);
-            return Integer.compare(orderA, orderB);
-        });
+        processedComponents.sort(
+                (a, b) -> {
+                    Integer orderA = getComponentOrder(a, globalLayout);
+                    Integer orderB = getComponentOrder(b, globalLayout);
+                    return Integer.compare(orderA, orderB);
+                });
 
         // 根据不同布局类型计算布局
         switch (layoutType) {
             case "two-column":
-                result.putAll(calculateTwoColumnLayout(processedComponents, globalLayout, globalStyle));
+                result.putAll(
+                        calculateTwoColumnLayout(processedComponents, globalLayout, globalStyle));
                 break;
             case "three-column":
-                result.putAll(calculateThreeColumnLayout(processedComponents, globalLayout, globalStyle));
+                result.putAll(
+                        calculateThreeColumnLayout(processedComponents, globalLayout, globalStyle));
                 break;
             case "timeline":
-                result.putAll(calculateTimelineLayout(processedComponents, globalLayout, globalStyle));
+                result.putAll(
+                        calculateTimelineLayout(processedComponents, globalLayout, globalStyle));
                 break;
             case "card":
                 result.putAll(calculateCardLayout(processedComponents, globalLayout, globalStyle));
@@ -81,7 +80,8 @@ public class ResumesLayoutCalculator {
         }
 
         // 添加布局样式
-        Map<String, String> layoutStyle = resumesStyleCalculator.getLayoutStyle(layoutType, globalStyle, globalLayout);
+        Map<String, String> layoutStyle =
+                resumesStyleCalculator.getLayoutStyle(layoutType, globalStyle, globalLayout);
         result.put("layoutStyle", layoutStyle);
 
         // 添加时间线/卡片特定样式
@@ -96,9 +96,7 @@ public class ResumesLayoutCalculator {
         return result;
     }
 
-    /**
-     * 获取组件顺序
-     */
+    /** 获取组件顺序 */
     private Integer getComponentOrder(Map<String, Object> component, ResumesTemplateLayout layout) {
         if (layout == null || layout.getComponentOrder() == null) {
             return 0;
@@ -116,12 +114,11 @@ public class ResumesLayoutCalculator {
         return orderList.size(); // 未排序的组件放在最后
     }
 
-    /**
-     * 双列布局计算
-     */
-    private Map<String, Object> calculateTwoColumnLayout(List<Map<String, Object>> components,
-                                                         ResumesTemplateLayout layout,
-                                                         ResumesTemplateStyle globalStyle) {
+    /** 双列布局计算 */
+    private Map<String, Object> calculateTwoColumnLayout(
+            List<Map<String, Object>> components,
+            ResumesTemplateLayout layout,
+            ResumesTemplateStyle globalStyle) {
         Map<String, Object> result = new HashMap<>();
 
         // 计算分栏点
@@ -164,12 +161,11 @@ public class ResumesLayoutCalculator {
         return result;
     }
 
-    /**
-     * 三列布局计算
-     */
-    private Map<String, Object> calculateThreeColumnLayout(List<Map<String, Object>> components,
-                                                           ResumesTemplateLayout layout,
-                                                           ResumesTemplateStyle globalStyle) {
+    /** 三列布局计算 */
+    private Map<String, Object> calculateThreeColumnLayout(
+            List<Map<String, Object>> components,
+            ResumesTemplateLayout layout,
+            ResumesTemplateStyle globalStyle) {
         Map<String, Object> result = new HashMap<>();
 
         int size = components.size();
@@ -191,22 +187,22 @@ public class ResumesLayoutCalculator {
         }
 
         result.put("columns", columns);
-        result.put("columnStyles", Arrays.asList(
-                resumesStyleCalculator.getColumnStyle("left", globalStyle),
-                resumesStyleCalculator.getColumnStyle("center", globalStyle),
-                resumesStyleCalculator.getColumnStyle("right", globalStyle)
-        ));
+        result.put(
+                "columnStyles",
+                Arrays.asList(
+                        resumesStyleCalculator.getColumnStyle("left", globalStyle),
+                        resumesStyleCalculator.getColumnStyle("center", globalStyle),
+                        resumesStyleCalculator.getColumnStyle("right", globalStyle)));
         result.put("layoutClass", "layout-three-column");
 
         return result;
     }
 
-    /**
-     * 时间线布局计算
-     */
-    private Map<String, Object> calculateTimelineLayout(List<Map<String, Object>> components,
-                                                        ResumesTemplateLayout layout,
-                                                        ResumesTemplateStyle globalStyle) {
+    /** 时间线布局计算 */
+    private Map<String, Object> calculateTimelineLayout(
+            List<Map<String, Object>> components,
+            ResumesTemplateLayout layout,
+            ResumesTemplateStyle globalStyle) {
         Map<String, Object> result = new HashMap<>();
 
         // 为每个组件添加时间线上下文
@@ -238,12 +234,11 @@ public class ResumesLayoutCalculator {
         return result;
     }
 
-    /**
-     * 卡片布局计算
-     */
-    private Map<String, Object> calculateCardLayout(List<Map<String, Object>> components,
-                                                    ResumesTemplateLayout layout,
-                                                    ResumesTemplateStyle globalStyle) {
+    /** 卡片布局计算 */
+    private Map<String, Object> calculateCardLayout(
+            List<Map<String, Object>> components,
+            ResumesTemplateLayout layout,
+            ResumesTemplateStyle globalStyle) {
         Map<String, Object> result = new HashMap<>();
 
         // 为每个组件添加卡片样式
@@ -253,7 +248,8 @@ public class ResumesLayoutCalculator {
             component.put("layoutContext", context);
 
             // 添加卡片样式
-            Map<String, String> cardStyles = resumesStyleCalculator.getCardStyles(null, globalStyle);
+            Map<String, String> cardStyles =
+                    resumesStyleCalculator.getCardStyles(null, globalStyle);
             Map<String, String> componentStyles = (Map<String, String>) component.get("styles");
             if (componentStyles != null) {
                 componentStyles.putAll(cardStyles);
@@ -266,12 +262,11 @@ public class ResumesLayoutCalculator {
         return result;
     }
 
-    /**
-     * 混合布局计算
-     */
-    private Map<String, Object> calculateMixedLayout(List<Map<String, Object>> components,
-                                                     ResumesTemplateLayout layout,
-                                                     ResumesTemplateStyle globalStyle) {
+    /** 混合布局计算 */
+    private Map<String, Object> calculateMixedLayout(
+            List<Map<String, Object>> components,
+            ResumesTemplateLayout layout,
+            ResumesTemplateStyle globalStyle) {
         Map<String, Object> result = new HashMap<>();
 
         // 前2个组件在上面（单列）
@@ -332,7 +327,8 @@ public class ResumesLayoutCalculator {
 
         if (layout != null && layout.getGap() != null) {
             mixedBottomStyle.put("gap", layout.getGap());
-        } else if (globalStyle != null && globalStyle.getSpacing() != null
+        } else if (globalStyle != null
+                && globalStyle.getSpacing() != null
                 && globalStyle.getSpacing().getSectionMargin() != null) {
             mixedBottomStyle.put("gap", globalStyle.getSpacing().getSectionMargin());
         }
@@ -345,49 +341,49 @@ public class ResumesLayoutCalculator {
         return result;
     }
 
-    /**
-     * 获取响应式样式（用于前端CSS）
-     */
+    /** 获取响应式样式（用于前端CSS） */
     public Map<String, String> getResponsiveStyles() {
         Map<String, String> styles = new HashMap<>();
 
         // 移动端样式
-        styles.put("mobileStyles",
-                "@media (max-width: 768px) {\n" +
-                        "  .resume-container {\n" +
-                        "    width: 100% !important;\n" +
-                        "    max-width: 100% !important;\n" +
-                        "    padding: 16px !important;\n" +
-                        "    min-height: auto !important;\n" +
-                        "  }\n" +
-                        "  \n" +
-                        "  .two-column-layout {\n" +
-                        "    flex-direction: column !important;\n" +
-                        "    gap: 16px !important;\n" +
-                        "  }\n" +
-                        "  \n" +
-                        "  .card-layout {\n" +
-                        "    grid-template-columns: 1fr !important;\n" +
-                        "    gap: 16px !important;\n" +
-                        "  }\n" +
-                        "  \n" +
-                        "  .timeline-line {\n" +
-                        "    display: none;\n" +
-                        "  }\n" +
-                        "  \n" +
-                        "  .timeline-content {\n" +
-                        "    width: 100% !important;\n" +
-                        "    margin: 0 auto 16px auto !important;\n" +
-                        "  }\n" +
-                        "}");
+        styles.put(
+                "mobileStyles",
+                "@media (max-width: 768px) {\n"
+                        + "  .resume-container {\n"
+                        + "    width: 100% !important;\n"
+                        + "    max-width: 100% !important;\n"
+                        + "    padding: 16px !important;\n"
+                        + "    min-height: auto !important;\n"
+                        + "  }\n"
+                        + "  \n"
+                        + "  .two-column-layout {\n"
+                        + "    flex-direction: column !important;\n"
+                        + "    gap: 16px !important;\n"
+                        + "  }\n"
+                        + "  \n"
+                        + "  .card-layout {\n"
+                        + "    grid-template-columns: 1fr !important;\n"
+                        + "    gap: 16px !important;\n"
+                        + "  }\n"
+                        + "  \n"
+                        + "  .timeline-line {\n"
+                        + "    display: none;\n"
+                        + "  }\n"
+                        + "  \n"
+                        + "  .timeline-content {\n"
+                        + "    width: 100% !important;\n"
+                        + "    margin: 0 auto 16px auto !important;\n"
+                        + "  }\n"
+                        + "}");
 
         // 平板样式
-        styles.put("tabletStyles",
-                "@media (min-width: 769px) and (max-width: 1024px) {\n" +
-                        "  .card-layout {\n" +
-                        "    grid-template-columns: repeat(2, 1fr) !important;\n" +
-                        "  }\n" +
-                        "}");
+        styles.put(
+                "tabletStyles",
+                "@media (min-width: 769px) and (max-width: 1024px) {\n"
+                        + "  .card-layout {\n"
+                        + "    grid-template-columns: repeat(2, 1fr) !important;\n"
+                        + "  }\n"
+                        + "}");
 
         return styles;
     }

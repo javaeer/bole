@@ -1,7 +1,6 @@
 package cn.net.yunlou.bole.config;
 
 import cn.net.yunlou.bole.common.handler.*;
-import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
@@ -10,10 +9,6 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.JavaType;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.mybatis.spring.annotation.MapperScan;

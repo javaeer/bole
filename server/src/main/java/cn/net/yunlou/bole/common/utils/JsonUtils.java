@@ -31,15 +31,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -161,8 +160,8 @@ public class JsonUtils {
     /**
      * 处理泛型类型的JSON反序列化
      *
-     * @param json             JSON字符串
-     * @param parametrized     泛型类型的原始类（如 CustomerResponse.class）
+     * @param json JSON字符串
+     * @param parametrized 泛型类型的原始类（如 CustomerResponse.class）
      * @param parameterClasses 泛型参数类型（如 String.class, User.class 等）
      * @return 反序列化后的对象
      */

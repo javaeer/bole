@@ -10,13 +10,14 @@ import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 
 /**
- * FileName: DocumentTaskStructMapper
- * Description:
- * Created By laughtiger
- * Created At 2026/1/9 21:59
- * Modified By
- * Modified At
+ * FileName: DocumentTaskStructMapper Description: Created By laughtiger Created At 2026/1/9 21:59
+ * Modified By Modified At
  */
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
-public interface DocumentTaskStructMapper extends BaseStructMapper<DocumentTask, DocumentTaskCreate, DocumentTaskView, DocumentTaskEdit, DocumentTaskQuery> {
-}
+public interface DocumentTaskStructMapper
+        extends BaseStructMapper<
+                DocumentTask,
+                DocumentTaskCreate,
+                DocumentTaskView,
+                DocumentTaskEdit,
+                DocumentTaskQuery> {}

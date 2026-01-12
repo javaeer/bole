@@ -10,15 +10,6 @@ import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateStyle;
 import cn.net.yunlou.bole.service.ResumesService;
 import com.google.common.collect.Maps;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,10 +19,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
-/**
- * HTML文档生成策略
- */
+/** HTML文档生成策略 */
 @Slf4j
 @Component
 public class HtmlDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrategy {
@@ -43,12 +39,13 @@ public class HtmlDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     private final ResumesLayoutCalculator resumesLayoutCalculator;
     private final ResumesStyleCalculator resumesStyleCalculator;
 
-    public HtmlDocumentGeneratorStrategy(DocumentDirectoryManager directoryManager,
-                                         TemplateEngine templateEngine,
-                                         ResumesService resumesService,
-                                         ResumesLayoutCalculator resumesLayoutCalculator,
-                                         ResumesStyleCalculator resumesStyleCalculator) {
-        super(directoryManager,resumesService);
+    public HtmlDocumentGeneratorStrategy(
+            DocumentDirectoryManager directoryManager,
+            TemplateEngine templateEngine,
+            ResumesService resumesService,
+            ResumesLayoutCalculator resumesLayoutCalculator,
+            ResumesStyleCalculator resumesStyleCalculator) {
+        super(directoryManager, resumesService);
         this.templateEngine = templateEngine;
         this.resumesLayoutCalculator = resumesLayoutCalculator;
         this.resumesStyleCalculator = resumesStyleCalculator;
@@ -67,7 +64,9 @@ public class HtmlDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     }
 
     @Override
-    @Cacheable(value = CACHE_NAME, key = "#resumesId + '_' + #device + '_' + #version",
+    @Cacheable(
+            value = CACHE_NAME,
+            key = "#resumesId + '_' + #device + '_' + #version",
             unless = "#result == null")
     public File generate(Long resumesId, String device, String version) {
         if (!StringUtils.hasText(device)) {
@@ -107,8 +106,12 @@ public class HtmlDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             long endTime = System.nanoTime();
             long duration = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
 
-            log.info("HTML简历生成完成，简历ID: {}, 耗时: {}ms, 文件大小: {}字节, 文件路径: {}",
-                    resumesId, duration, outputFile.length(), outputFile.getAbsolutePath());
+            log.info(
+                    "HTML简历生成完成，简历ID: {}, 耗时: {}ms, 文件大小: {}字节, 文件路径: {}",
+                    resumesId,
+                    duration,
+                    outputFile.length(),
+                    outputFile.getAbsolutePath());
 
             return outputFile;
 
@@ -121,30 +124,25 @@ public class HtmlDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 异步生成HTML简历
-     */
+    /** 异步生成HTML简历 */
     public CompletableFuture<File> generateAsync(Long resumesId, String device, String version) {
         return CompletableFuture.supplyAsync(() -> generate(resumesId, device, version));
     }
 
-
-    /**
-     * 准备模板数据
-     */
+    /** 准备模板数据 */
     private Map<String, Object> prepareTemplateData(Resumes resumes, String device) {
         List<ResumesTemplateComponent> components = resumes.getComponents();
         ResumesTemplateStyle globalStyle = resumes.getGlobalStyle();
         ResumesTemplateLayout globalLayout = resumes.getGlobalLayout();
 
         // 计算布局
-        Map<String, Object> layoutData = resumesLayoutCalculator.calculateLayout(
-                components, globalLayout, globalStyle);
+        Map<String, Object> layoutData =
+                resumesLayoutCalculator.calculateLayout(components, globalLayout, globalStyle);
 
         // 计算容器样式
         String layoutType = (String) layoutData.get("layoutType");
-        Map<String, String> containerStyle = resumesStyleCalculator.getContainerStyle(
-                globalStyle, layoutType);
+        Map<String, String> containerStyle =
+                resumesStyleCalculator.getContainerStyle(globalStyle, layoutType);
 
         // 获取响应式样式
         Map<String, String> responsiveStyles = resumesLayoutCalculator.getResponsiveStyles();
@@ -168,20 +166,18 @@ public class HtmlDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         variables.put("containerStyleCss", StyleUtils.toCss(containerStyle));
 
         //// 添加组件样式
-        //if (components != null) {
+        // if (components != null) {
         //    components.forEach(component -> {
         //        Map<String, String> componentStyle = resumesStyleCalculator.getComponentStyle(
         //                component, globalStyle);
         //        component.setComputedStyle(StyleUtils.toCss(componentStyle));
         //    });
-        //}
+        // }
 
         return variables;
     }
 
-    /**
-     * 渲染HTML
-     */
+    /** 渲染HTML */
     private String renderHtml(Map<String, Object> templateData, String device) {
         Context context = new Context();
         context.setVariables(templateData);
@@ -202,12 +198,11 @@ public class HtmlDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 保存HTML到文件
-     */
+    /** 保存HTML到文件 */
     private void saveHtmlToFile(String htmlContent, File file) throws IOException {
         // 使用try-with-resources确保资源关闭
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file, java.nio.charset.StandardCharsets.UTF_8))) {
+        try (PrintWriter writer =
+                new PrintWriter(new FileWriter(file, java.nio.charset.StandardCharsets.UTF_8))) {
             writer.write(htmlContent);
             writer.flush();
         }
@@ -219,32 +214,27 @@ public class HtmlDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         log.debug("HTML文件已保存: {}, 大小: {}字节", file.getAbsolutePath(), file.length());
     }
 
-    /**
-     * 获取生成的HTML文件内容
-     */
+    /** 获取生成的HTML文件内容 */
     public String getHtmlContent(Long resumesId) throws IOException {
         File htmlFile = generate(resumesId);
         return Files.readString(htmlFile.toPath(), java.nio.charset.StandardCharsets.UTF_8);
     }
 
-    /**
-     * 获取生成的HTML文件内容（指定设备）
-     */
+    /** 获取生成的HTML文件内容（指定设备） */
     public String getHtmlContent(Long resumesId, String device) throws IOException {
         File htmlFile = generate(resumesId, device, null);
         return Files.readString(htmlFile.toPath(), java.nio.charset.StandardCharsets.UTF_8);
     }
 
-    /**
-     * 验证生成的HTML文件
-     */
+    /** 验证生成的HTML文件 */
     public boolean validateHtmlFile(File htmlFile) {
         if (!validateOutputFile(htmlFile)) {
             return false;
         }
 
         try {
-            String content = Files.readString(htmlFile.toPath(), java.nio.charset.StandardCharsets.UTF_8);
+            String content =
+                    Files.readString(htmlFile.toPath(), java.nio.charset.StandardCharsets.UTF_8);
             // 基本HTML结构验证
             boolean hasHtmlTag = content.contains("<html") && content.contains("</html>");
             boolean hasBodyTag = content.contains("<body") && content.contains("</body>");
@@ -261,9 +251,7 @@ public class HtmlDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 清理指定简历的所有HTML缓存
-     */
+    /** 清理指定简历的所有HTML缓存 */
     public void clearCache(Long resumesId) {
         // 这里可以调用缓存管理器清理相关缓存
         log.info("清理简历HTML缓存，简历ID: {}", resumesId);

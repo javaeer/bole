@@ -33,7 +33,8 @@ public class StorageAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public StorageStrategyRegistry storageStrategyRegistry(ObjectProvider<IStorageStrategy> strategies) {
+    public StorageStrategyRegistry storageStrategyRegistry(
+            ObjectProvider<IStorageStrategy> strategies) {
 
         List<IStorageStrategy> strategyList = strategies.stream().collect(Collectors.toList());
 

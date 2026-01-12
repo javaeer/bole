@@ -3,21 +3,13 @@ package cn.net.yunlou.bole.model.entity;
 import cn.net.yunlou.bole.common.BaseEntity;
 import cn.net.yunlou.bole.common.constant.DocumentType;
 import cn.net.yunlou.bole.common.constant.TaskStatus;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
-import org.apache.ibatis.type.JdbcType;
-
 import java.time.LocalDateTime;
+import lombok.*;
 
 /**
- * FileName: DocumentTask
- * Description:
- * Created By laughtiger
- * Created At 2026/1/9 21:30
- * Modified By
+ * FileName: DocumentTask Description: Created By laughtiger Created At 2026/1/9 21:30 Modified By
  * Modified At
  */
 @EqualsAndHashCode(callSuper = true)

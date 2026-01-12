@@ -8,12 +8,13 @@ import cn.net.yunlou.bole.model.query.DocumentTaskQuery;
 import cn.net.yunlou.bole.model.view.DocumentTaskView;
 
 /**
- * FileName: DocumentTaskService
- * Description:
- * Created By laughtiger
- * Created At 2026/1/9 21:56
- * Modified By
- * Modified At
+ * FileName: DocumentTaskService Description: Created By laughtiger Created At 2026/1/9 21:56
+ * Modified By Modified At
  */
-public interface DocumentTaskService extends IBaseService<DocumentTask, DocumentTaskCreate, DocumentTaskView, DocumentTaskEdit, DocumentTaskQuery> {
-}
+public interface DocumentTaskService
+        extends IBaseService<
+                DocumentTask,
+                DocumentTaskCreate,
+                DocumentTaskView,
+                DocumentTaskEdit,
+                DocumentTaskQuery> {}

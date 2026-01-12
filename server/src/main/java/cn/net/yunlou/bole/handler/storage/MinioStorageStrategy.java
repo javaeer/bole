@@ -10,6 +10,15 @@ import cn.net.yunlou.bole.handler.IStorageStrategy;
 import cn.net.yunlou.bole.model.entity.File;
 import io.minio.*;
 import io.minio.http.Method;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,16 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -129,9 +128,7 @@ public class MinioStorageStrategy implements IStorageStrategy {
                             .object(datePathFileName)
                             .filename(file.getAbsolutePath())
                             .contentType(contentType)
-                            .build()
-            );
-
+                            .build());
 
             return File.builder()
                     .fileName(fileName)
@@ -194,9 +191,7 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 获取访问URL（可自定义过期时间）
-     */
+    /** 获取访问URL（可自定义过期时间） */
     public String getAccessUrl(String filePath, int duration, TimeUnit timeUnit) {
         try {
             return minioClient.getPresignedObjectUrl(
@@ -226,12 +221,10 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 下载文件为字节数组
-     */
+    /** 下载文件为字节数组 */
     public ResponseEntity<byte[]> downloadAsBytes(String filePath) {
         try (InputStream inputStream = download(filePath);
-             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
             IOUtils.copy(inputStream, outputStream);
             byte[] bytes = outputStream.toByteArray();
@@ -275,9 +268,7 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 检查bucket是否存在，不存在则创建
-     */
+    /** 检查bucket是否存在，不存在则创建 */
     public boolean ensureBucketExists(String bucketName) {
         try {
             boolean exists =
@@ -294,9 +285,7 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 创建存储bucket
-     */
+    /** 创建存储bucket */
     public boolean createBucket(String bucketName) {
         try {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
@@ -308,9 +297,7 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 删除存储bucket
-     */
+    /** 删除存储bucket */
     public boolean deleteBucket(String bucketName) {
         try {
             minioClient.removeBucket(RemoveBucketArgs.builder().bucket(bucketName).build());
@@ -322,9 +309,7 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 获取上传临时签名（用于前端直传）
-     */
+    /** 获取上传临时签名（用于前端直传） */
     public Map<String, String> generatePresignedPostFormData(
             String fileName, ZonedDateTime expirationTime) {
         try {
@@ -354,9 +339,7 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 生成预签名URL（用于上传或下载）
-     */
+    /** 生成预签名URL（用于上传或下载） */
     public String generatePresignedUrl(
             String filePath, Method method, int duration, TimeUnit timeUnit) {
         try {
@@ -373,9 +356,7 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 上传文件（直接上传方式）
-     */
+    /** 上传文件（直接上传方式） */
     public boolean uploadFile(MultipartFile file, String filePath) {
         try {
             minioClient.putObject(
@@ -394,9 +375,7 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 复制文件
-     */
+    /** 复制文件 */
     public boolean copyFile(String sourceFilePath, String targetFilePath) {
         try {
             CopySource source =
@@ -420,16 +399,12 @@ public class MinioStorageStrategy implements IStorageStrategy {
         }
     }
 
-    /**
-     * 获取默认bucket名称
-     */
+    /** 获取默认bucket名称 */
     public String getBucketName() {
         return storageMinioProperties.getBucketName();
     }
 
-    /**
-     * 获取文件的永久访问URL（需要bucket为公开访问）
-     */
+    /** 获取文件的永久访问URL（需要bucket为公开访问） */
     public String getPermanentUrl(String filePath) {
         return String.format(
                 "%s/%s/%s",

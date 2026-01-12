@@ -3,18 +3,17 @@ package cn.net.yunlou.bole.common.handler;
 import com.baomidou.mybatisplus.extension.handlers.AbstractJsonTypeHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.MappedJdbcTypes;
-import org.apache.ibatis.type.MappedTypes;
-import org.postgresql.util.PGobject;
-
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
+import org.apache.ibatis.type.MappedTypes;
+import org.postgresql.util.PGobject;
 
 @Slf4j
 @MappedTypes({Object.class})
@@ -89,8 +88,8 @@ public class JsonbTypeHandler<T> extends AbstractJsonTypeHandler<T> {
     }
 
     @Override
-    public void setNonNullParameter(
-            PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
+    public void setNonNullParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType)
+            throws SQLException {
         PGobject pgObject = new PGobject();
         pgObject.setType("jsonb");
         pgObject.setValue(toJson(parameter));

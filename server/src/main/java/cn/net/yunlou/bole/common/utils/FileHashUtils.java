@@ -1,9 +1,5 @@
 package cn.net.yunlou.bole.common.utils;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,6 +8,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.zip.CRC32;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * FileName: FileHashUtils Description: Created By laughtiger Created At 2025/12/4 01:06 Modified By
@@ -51,9 +50,7 @@ public class FileHashUtils {
         }
     }
 
-    /**
-     * 计算带文件名的复合哈希（防止不同文件同名冲突）
-     */
+    /** 计算带文件名的复合哈希（防止不同文件同名冲突） */
     public static String calculateCompositeHash(MultipartFile file) {
         try {
             // 取前32位
@@ -87,10 +84,7 @@ public class FileHashUtils {
         }
     }
 
-
-    /**
-     * 完整性校验
-     */
+    /** 完整性校验 */
     public static String calculateHashCRC32(File file) {
         if (file == null || !file.exists() || !file.isFile()) {
             return null;
@@ -123,6 +117,4 @@ public class FileHashUtils {
         }
         return new String(hexChars);
     }
-
-
 }

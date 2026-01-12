@@ -23,19 +23,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * FileName: DocumentTaskServiceImpl
- * Description:
- * Created By laughtiger
- * Created At 2026/1/9 21:57
- * Modified By
- * Modified At
+ * FileName: DocumentTaskServiceImpl Description: Created By laughtiger Created At 2026/1/9 21:57
+ * Modified By Modified At
  */
 @Slf4j
 @Service
 @AllArgsConstructor
-public class DocumentTaskServiceImpl extends
-        BaseService<DocumentTaskMapper, DocumentTask, DocumentTaskCreate, DocumentTaskView, DocumentTaskEdit,
-                DocumentTaskQuery, DocumentTaskStructMapper>
+public class DocumentTaskServiceImpl
+        extends BaseService<
+                DocumentTaskMapper,
+                DocumentTask,
+                DocumentTaskCreate,
+                DocumentTaskView,
+                DocumentTaskEdit,
+                DocumentTaskQuery,
+                DocumentTaskStructMapper>
         implements DocumentTaskService {
 
     private final RabbitTemplate rabbitTemplate;
@@ -74,10 +76,11 @@ public class DocumentTaskServiceImpl extends
         return b;
     }
 
-    /**
-     * 发送任务到队列
-     */
+    /** 发送任务到队列 */
     private void sendTaskToQueue(Long taskId) {
-        rabbitTemplate.convertAndSend(documentTaskProperties.getExchangeName(), documentTaskProperties.getRoutingKey(), taskId);
+        rabbitTemplate.convertAndSend(
+                documentTaskProperties.getExchangeName(),
+                documentTaskProperties.getRoutingKey(),
+                taskId);
     }
 }

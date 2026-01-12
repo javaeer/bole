@@ -1,22 +1,18 @@
 package cn.net.yunlou.bole.common.utils;
 
+import java.util.Map;
 import lombok.experimental.UtilityClass;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
-import java.math.BigInteger;
-import java.util.Map;
-
 @UtilityClass
 public class WordStyleUtil {
-    
-    /**
-     * 应用段落样式
-     */
+
+    /** 应用段落样式 */
     public void applyParagraphStyle(XWPFParagraph paragraph, Map<String, Object> styles) {
         if (styles == null) return;
-        
+
         // 内边距
         if (styles.get("padding") != null) {
             String padding = styles.get("padding").toString();
@@ -24,7 +20,7 @@ public class WordStyleUtil {
             paragraph.setIndentationLeft(paddingValue);
             paragraph.setIndentationRight(paddingValue);
         }
-        
+
         // 行高
         if (styles.get("lineHeight") != null) {
             String lineHeight = styles.get("lineHeight").toString();
@@ -36,13 +32,11 @@ public class WordStyleUtil {
             }
         }
     }
-    
-    /**
-     * 应用文本样式
-     */
+
+    /** 应用文本样式 */
     public void applyTextStyle(XWPFRun run, Map<String, Object> styles) {
         if (styles == null) return;
-        
+
         // 字体大小
         if (styles.get("fontSize") != null) {
             String fontSize = styles.get("fontSize").toString();
@@ -52,24 +46,23 @@ public class WordStyleUtil {
                 // 忽略解析错误
             }
         }
-        
+
         // 文字颜色
         if (styles.get("color") != null || styles.get("fieldColor") != null) {
-            String color = (styles.get("color") != null ? 
-                styles.get("color") : styles.get("fieldColor")).toString();
+            String color =
+                    (styles.get("color") != null ? styles.get("color") : styles.get("fieldColor"))
+                            .toString();
             color = color.replace("#", "");
             if (color.length() == 6) {
                 run.setColor(color);
             }
         }
     }
-    
-    /**
-     * 解析间距值
-     */
+
+    /** 解析间距值 */
     private int parseSpacing(String spacing) {
         if (spacing == null) return 0;
-        
+
         try {
             if (spacing.endsWith("px")) {
                 return Integer.parseInt(spacing.replace("px", "")) * 20; // 转换为twips
@@ -80,19 +73,17 @@ public class WordStyleUtil {
             return 0;
         }
     }
-    
-    /**
-     * 创建分隔线
-     */
+
+    /** 创建分隔线 */
     public void createSeparator(XWPFDocument document) {
         XWPFParagraph separator = document.createParagraph();
         separator.setAlignment(org.apache.poi.xwpf.usermodel.ParagraphAlignment.CENTER);
-        
+
         XWPFRun run = separator.createRun();
         run.setText("─────────────────────────────────────");
         run.setFontSize(6);
         run.setColor("cccccc");
-        
+
         document.createParagraph();
     }
 }

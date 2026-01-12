@@ -76,7 +76,9 @@ public class StorageStrategyRegistry {
      * @return 存储类型列表
      */
     public List<StorageType> getAvailableTypes() {
-        return strategyMap.values().stream().map(IStorageStrategy::getType).collect(Collectors.toList());
+        return strategyMap.values().stream()
+                .map(IStorageStrategy::getType)
+                .collect(Collectors.toList());
     }
 
     /**

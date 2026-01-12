@@ -5,9 +5,8 @@ import cn.net.yunlou.bole.common.handler.JsonbTypeHandler;
 import cn.net.yunlou.bole.common.handler.JsonbTypeListHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.*;
-
 import java.util.List;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -31,21 +30,15 @@ public class Resumes extends BaseEntity {
 
     /** 来自模板 */
 
-    /**
-     * 样式配置
-     */
+    /** 样式配置 */
     @TableField(typeHandler = JsonbTypeHandler.class)
     private ResumesTemplateStyle globalStyle;
 
-    /**
-     * 布局配置
-     */
+    /** 布局配置 */
     @TableField(typeHandler = JsonbTypeHandler.class)
     private ResumesTemplateLayout globalLayout;
 
-    /**
-     * 组件列表 [包含用户真实数据]
-     */
+    /** 组件列表 [包含用户真实数据] */
     @TableField(typeHandler = JsonbTypeListHandler.ResumesTemplateComponentListHandler.class)
     private List<ResumesTemplateComponent> components;
 

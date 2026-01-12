@@ -11,15 +11,6 @@ import cn.net.yunlou.bole.model.entity.ResumesTemplateStyle;
 import cn.net.yunlou.bole.service.ResumesService;
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.xhtmlrenderer.pdf.ITextRenderer;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,10 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
-/**
- * PDF文档生成策略
- */
+/** PDF文档生成策略 */
 @Slf4j
 @Component
 public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrategy {
@@ -49,12 +46,13 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
     // PDF配置
     private static final float PDF_DPI = 72f;
 
-    public PdfDocumentGeneratorStrategy(DocumentDirectoryManager directoryManager,
-                                        TemplateEngine templateEngine,
-                                        ResumesService resumesService,
-                                        ResumesLayoutCalculator resumesLayoutCalculator,
-                                        ResumesStyleCalculator resumesStyleCalculator) {
-        super(directoryManager,resumesService);
+    public PdfDocumentGeneratorStrategy(
+            DocumentDirectoryManager directoryManager,
+            TemplateEngine templateEngine,
+            ResumesService resumesService,
+            ResumesLayoutCalculator resumesLayoutCalculator,
+            ResumesStyleCalculator resumesStyleCalculator) {
+        super(directoryManager, resumesService);
         this.templateEngine = templateEngine;
         this.resumesLayoutCalculator = resumesLayoutCalculator;
         this.resumesStyleCalculator = resumesStyleCalculator;
@@ -73,7 +71,9 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
     }
 
     @Override
-    @Cacheable(value = CACHE_NAME, key = "#resumesId + '_' + #device + '_' + #version",
+    @Cacheable(
+            value = CACHE_NAME,
+            key = "#resumesId + '_' + #device + '_' + #version",
             unless = "#result == null")
     public File generate(Long resumesId, String device, String version) {
         // 使用抽象基类的方法简化参数处理
@@ -120,8 +120,11 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
             long endTime = System.nanoTime();
             long duration = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
 
-            log.info("PDF简历生成完成，简历ID: {}, 耗时: {}ms, 文件大小: {}字节",
-                    resumesId, duration, outputFile.length());
+            log.info(
+                    "PDF简历生成完成，简历ID: {}, 耗时: {}ms, 文件大小: {}字节",
+                    resumesId,
+                    duration,
+                    outputFile.length());
 
             return outputFile;
 
@@ -129,7 +132,7 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
             log.error("PDF简历生成失败，简历ID: {}", resumesId, e);
             throw new RuntimeException("PDF简历生成失败: " + e.getMessage(), e);
         } finally {
-        //    // 使用基类方法清理临时文件
+            //    // 使用基类方法清理临时文件
             cleanupTempFile(htmlTempFile);
             cleanupTempFile(pdfTempFile);
         }
@@ -141,23 +144,20 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
         return generate(resumesId, "desktop", "v1");
     }
 
-
-    /**
-     * 渲染HTML
-     */
+    /** 渲染HTML */
     private String renderHtml(Resumes resumes, String device) {
         List<ResumesTemplateComponent> components = resumes.getComponents();
         ResumesTemplateStyle globalStyle = resumes.getGlobalStyle();
         ResumesTemplateLayout globalLayout = resumes.getGlobalLayout();
 
         // 计算布局
-        Map<String, Object> layoutData = resumesLayoutCalculator.calculateLayout(
-                components, globalLayout, globalStyle);
+        Map<String, Object> layoutData =
+                resumesLayoutCalculator.calculateLayout(components, globalLayout, globalStyle);
 
         // 计算容器样式
         String layoutType = (String) layoutData.get("layoutType");
-        Map<String, String> containerStyle = resumesStyleCalculator.getContainerStyle(
-                globalStyle, layoutType);
+        Map<String, String> containerStyle =
+                resumesStyleCalculator.getContainerStyle(globalStyle, layoutType);
 
         // 获取响应式样式
         Map<String, String> responsiveStyles = resumesLayoutCalculator.getResponsiveStyles();
@@ -211,9 +211,7 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
         }
     }
 
-    /**
-     * 保存HTML到文件
-     */
+    /** 保存HTML到文件 */
     private void saveHtmlToFile(String htmlContent, File file) throws IOException {
         try (OutputStream os = Files.newOutputStream(file.toPath())) {
             os.write(htmlContent.getBytes("UTF-8"));
@@ -223,12 +221,13 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
         log.debug("保存HTML文件: {}, 大小: {}字节", file.getAbsolutePath(), file.length());
     }
 
-    /**
-     * 将HTML转换为PDF
-     */
-    private void convertHtmlToPdf(File htmlFile, File pdfFile) throws IOException, DocumentException {
-        log.debug("转换HTML到PDF，HTML文件: {}, PDF文件: {}",
-                htmlFile.getAbsolutePath(), pdfFile.getAbsolutePath());
+    /** 将HTML转换为PDF */
+    private void convertHtmlToPdf(File htmlFile, File pdfFile)
+            throws IOException, DocumentException {
+        log.debug(
+                "转换HTML到PDF，HTML文件: {}, PDF文件: {}",
+                htmlFile.getAbsolutePath(),
+                pdfFile.getAbsolutePath());
 
         ITextRenderer renderer = createITextRenderer();
 
@@ -247,36 +246,32 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
         }
     }
 
-    /**
-     * 创建ITextRenderer实例
-     */
+    /** 创建ITextRenderer实例 */
     private ITextRenderer createITextRenderer() {
         ITextRenderer renderer = new ITextRenderer();
         setupChineseFonts(renderer);
         return renderer;
     }
 
-    /**
-     * 设置中文字体
-     */
+    /** 设置中文字体 */
     private void setupChineseFonts(ITextRenderer renderer) {
         try {
             // 使用基类方法检查字体文件
             if (checkFontExists("simsun.ttf")) {
                 String fontPath = getFontFile("simsun.ttf").getAbsolutePath();
-                renderer.getFontResolver().addFont(
-                        fontPath,
-                        com.lowagie.text.pdf.BaseFont.IDENTITY_H,
-                        com.lowagie.text.pdf.BaseFont.EMBEDDED
-                );
+                renderer.getFontResolver()
+                        .addFont(
+                                fontPath,
+                                com.lowagie.text.pdf.BaseFont.IDENTITY_H,
+                                com.lowagie.text.pdf.BaseFont.EMBEDDED);
                 log.debug("加载中文字体: {}", fontPath);
             } else if (checkFontExists("simsun.ttc")) {
                 String fontPath = getFontFile("simsun.ttc").getAbsolutePath();
-                renderer.getFontResolver().addFont(
-                        fontPath,
-                        com.lowagie.text.pdf.BaseFont.IDENTITY_H,
-                        com.lowagie.text.pdf.BaseFont.EMBEDDED
-                );
+                renderer.getFontResolver()
+                        .addFont(
+                                fontPath,
+                                com.lowagie.text.pdf.BaseFont.IDENTITY_H,
+                                com.lowagie.text.pdf.BaseFont.EMBEDDED);
                 log.debug("加载中文字体: {}", fontPath);
             } else {
                 log.warn("未找到中文字体文件，PDF中的中文可能无法正确显示");
@@ -287,17 +282,14 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
         }
     }
 
-    /**
-     * 异步生成PDF简历
-     */
+    /** 异步生成PDF简历 */
     public CompletableFuture<File> generateAsync(Long resumesId, String device, String version) {
         return CompletableFuture.supplyAsync(() -> generate(resumesId, device, version));
     }
 
-    /**
-     * 从HTML文件生成PDF
-     */
-    public File generateFromHtml(File htmlFile, Long resumesId, String device, String version) throws IOException {
+    /** 从HTML文件生成PDF */
+    public File generateFromHtml(File htmlFile, Long resumesId, String device, String version)
+            throws IOException {
         log.debug("从HTML文件生成PDF，HTML文件: {}", htmlFile.getAbsolutePath());
 
         if (!htmlFile.exists() || !htmlFile.isFile()) {
@@ -338,9 +330,7 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
         }
     }
 
-    /**
-     * 验证PDF文件
-     */
+    /** 验证PDF文件 */
     public boolean validatePdfFile(File pdfFile) {
         // 首先使用基类的验证方法
         if (!validateOutputFile(pdfFile)) {

@@ -10,6 +10,8 @@ import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateStyle;
 import cn.net.yunlou.bole.service.ResumesService;
 import com.google.common.collect.Maps;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -18,9 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -34,8 +33,8 @@ public class PreviewController {
     private final ResumesStyleCalculator resumesStyleCalculator;
 
     @GetMapping("/preview/pdf/{id}")
-    public ModelAndView previewPdf(@PathVariable Long id,
-                                @RequestParam(defaultValue = "desktop") String device) {
+    public ModelAndView previewPdf(
+            @PathVariable Long id, @RequestParam(defaultValue = "desktop") String device) {
 
         // 1. 获取简历数据
         Resumes resumes = resumesService.getById(id);
@@ -49,16 +48,16 @@ public class PreviewController {
         ResumesTemplateLayout globalLayout = resumes.getGlobalLayout();
 
         // 3. 【核心】计算布局
-        Map<String, Object> layoutData = resumesLayoutCalculator.calculateLayout(components, globalLayout, globalStyle);
-
+        Map<String, Object> layoutData =
+                resumesLayoutCalculator.calculateLayout(components, globalLayout, globalStyle);
 
         // 4.计算容器样式
         String layoutType = (String) layoutData.get("layoutType");
-        Map<String, String> containerStyle = resumesStyleCalculator.getContainerStyle(globalStyle, layoutType);
+        Map<String, String> containerStyle =
+                resumesStyleCalculator.getContainerStyle(globalStyle, layoutType);
 
         // 5.获取响应式样式
         Map<String, String> responsiveStyles = resumesLayoutCalculator.getResponsiveStyles();
-
 
         // 6. 创建 ModelAndView
         ModelAndView modelAndView = new ModelAndView("resumes/preview-pdf");
@@ -86,14 +85,14 @@ public class PreviewController {
 
         log.info("Model:{}", JsonUtils.toJson(modelAndView.getModel()));
 
-        log.info("DATA:{}",JsonUtils.toJson(resumes));
+        log.info("DATA:{}", JsonUtils.toJson(resumes));
 
         return modelAndView;
     }
 
     @GetMapping("/preview/{id}")
-    public ModelAndView preview(@PathVariable Long id,
-                                @RequestParam(defaultValue = "desktop") String device) {
+    public ModelAndView preview(
+            @PathVariable Long id, @RequestParam(defaultValue = "desktop") String device) {
 
         // 1. 获取简历数据
         Resumes resumes = resumesService.getById(id);
@@ -107,16 +106,16 @@ public class PreviewController {
         ResumesTemplateLayout globalLayout = resumes.getGlobalLayout();
 
         // 3. 【核心】计算布局
-        Map<String, Object> layoutData = resumesLayoutCalculator.calculateLayout(components, globalLayout, globalStyle);
-
+        Map<String, Object> layoutData =
+                resumesLayoutCalculator.calculateLayout(components, globalLayout, globalStyle);
 
         // 4.计算容器样式
         String layoutType = (String) layoutData.get("layoutType");
-        Map<String, String> containerStyle = resumesStyleCalculator.getContainerStyle(globalStyle, layoutType);
+        Map<String, String> containerStyle =
+                resumesStyleCalculator.getContainerStyle(globalStyle, layoutType);
 
         // 5.获取响应式样式
         Map<String, String> responsiveStyles = resumesLayoutCalculator.getResponsiveStyles();
-
 
         // 6. 创建 ModelAndView
         ModelAndView modelAndView = new ModelAndView("resumes/preview");

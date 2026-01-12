@@ -4,12 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
- * FileName: FileUploadUtils
- * Description:
- * Created By laughtiger
- * Created At 2026/1/10 02:16
- * Modified By
- * Modified At
+ * FileName: FileUploadUtils Description: Created By laughtiger Created At 2026/1/10 02:16 Modified
+ * By Modified At
  */
 @Slf4j
 @Component
@@ -19,9 +15,7 @@ public class FileUploadUtils {
         log.debug("FileUploadUtils initialized");
     }
 
-    /**
-     * 获取Content-Type
-     */
+    /** 获取Content-Type */
     public static String getContentType(String fileName) {
         String lowerCaseName = fileName.toLowerCase();
 

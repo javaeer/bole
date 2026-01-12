@@ -9,14 +9,13 @@ import cn.net.yunlou.bole.model.entity.DocumentTask;
 import cn.net.yunlou.bole.model.entity.File;
 import cn.net.yunlou.bole.service.DocumentTaskService;
 import cn.net.yunlou.bole.service.FileService;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -28,7 +27,6 @@ public class DocumentTaskListener {
     private final DocumentGeneratorStrategyFactory documentGeneratorStrategyFactory;
 
     private final FileService fileService;
-
 
     @RabbitListener(queues = "${document.task.queue-name}")
     public void handleTask(@Payload Long taskId) {
@@ -47,7 +45,9 @@ public class DocumentTaskListener {
         try {
             // 根据文档类型选择生成器
 
-            IDocumentGeneratorStrategy documentGeneratorStrategy = documentGeneratorStrategyFactory.getDocumentGeneratorStrategy(task.getDocumentType());
+            IDocumentGeneratorStrategy documentGeneratorStrategy =
+                    documentGeneratorStrategyFactory.getDocumentGeneratorStrategy(
+                            task.getDocumentType());
             java.io.File file = documentGeneratorStrategy.generate(task.getResumesId());
 
             // 上传到文件存储

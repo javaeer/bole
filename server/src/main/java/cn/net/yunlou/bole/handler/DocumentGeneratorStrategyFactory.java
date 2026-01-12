@@ -3,21 +3,16 @@ package cn.net.yunlou.bole.handler;
 import cn.net.yunlou.bole.common.constant.DocumentType;
 import cn.net.yunlou.bole.handler.document.DocumentDirectoryManager;
 import jakarta.annotation.PostConstruct;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
- * FileName: DocumentGeneratorStrategyFactory
- * Description:
- * Created By laughtiger
- * Created At 2026/1/9 22:16
- * Modified By
- * Modified At
+ * FileName: DocumentGeneratorStrategyFactory Description: Created By laughtiger Created At 2026/1/9
+ * 22:16 Modified By Modified At
  */
 @Slf4j
 @Component
@@ -33,10 +28,7 @@ public class DocumentGeneratorStrategyFactory {
     private final Map<DocumentType, IDocumentGeneratorStrategy> strategyMap =
             new ConcurrentHashMap<>();
 
-
-    /**
-     * 初始化所有策略
-     */
+    /** 初始化所有策略 */
     @PostConstruct
     public void init() {
         for (IDocumentGeneratorStrategy strategy : strategies) {
@@ -46,7 +38,6 @@ public class DocumentGeneratorStrategyFactory {
 
         log.info("文档生成器工厂初始化完成，已注册 {} 个策略", strategyMap.size());
     }
-
 
     /**
      * 根据类型 获取 文档生成策略
@@ -61,18 +52,13 @@ public class DocumentGeneratorStrategyFactory {
                 .orElseThrow(() -> new RuntimeException("No strategy found for " + documentType));
     }
 
-    /**
-     * 获取支持的文档类型
-     */
+    /** 获取支持的文档类型 */
     public List<DocumentType> getSupportedTypes() {
         return List.copyOf(strategyMap.keySet());
     }
 
-    /**
-     * 检查是否支持指定类型
-     */
+    /** 检查是否支持指定类型 */
     public boolean supports(DocumentType documentType) {
         return strategyMap.containsKey(documentType);
     }
-    
 }

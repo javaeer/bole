@@ -26,7 +26,6 @@ public interface IStorageStrategy {
      */
     File store(MultipartFile multipartFile);
 
-
     File storeFile(java.io.File file, String fileName);
 
     /**
@@ -131,6 +130,4 @@ public interface IStorageStrategy {
         String extension = getFileExtension(filename).toLowerCase();
         return allowedExtensions.contains(extension);
     }
-
-
 }

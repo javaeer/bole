@@ -5,11 +5,6 @@ import cn.net.yunlou.bole.handler.resumes.ResumeDataParser;
 import cn.net.yunlou.bole.model.entity.Resumes;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
 import cn.net.yunlou.bole.service.ResumesService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,10 +15,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-/**
- * 纯文本文档生成策略
- */
+/** 纯文本文档生成策略 */
 @Slf4j
 @Component
 public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrategy {
@@ -41,9 +38,10 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
     private final ResumeDataParser resumeDataParser;
 
-    public TextDocumentGeneratorStrategy(DocumentDirectoryManager directoryManager,
-                                         ResumesService resumesService,
-                                         ResumeDataParser resumeDataParser) {
+    public TextDocumentGeneratorStrategy(
+            DocumentDirectoryManager directoryManager,
+            ResumesService resumesService,
+            ResumeDataParser resumeDataParser) {
         super(directoryManager, resumesService);
         this.resumeDataParser = resumeDataParser;
         log.info("纯文本文档生成策略初始化完成");
@@ -60,8 +58,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     }
 
     @Override
-    @Cacheable(value = CACHE_NAME, key = "#resumesId + '_' + #version",
-            unless = "#result == null")
+    @Cacheable(value = CACHE_NAME, key = "#resumesId + '_' + #version", unless = "#result == null")
     public File generate(Long resumesId, String device, String version) {
         if (!StringUtils.hasText(device)) {
             device = "desktop";
@@ -96,8 +93,11 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             long endTime = System.nanoTime();
             long duration = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
 
-            log.info("纯文本简历生成完成，简历ID: {}, 耗时: {}ms, 文件大小: {}字节",
-                    resumesId, duration, outputFile.length());
+            log.info(
+                    "纯文本简历生成完成，简历ID: {}, 耗时: {}ms, 文件大小: {}字节",
+                    resumesId,
+                    duration,
+                    outputFile.length());
 
             return outputFile;
 
@@ -109,9 +109,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 生成文本内容
-     */
+    /** 生成文本内容 */
     private String generateTextContent(Resumes resumes) {
         StringBuilder content = new StringBuilder();
 
@@ -124,11 +122,12 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         if (components != null && !components.isEmpty()) {
             // 按照globalLayout中的componentOrder排序
             List<String> componentOrder = resumes.getGlobalLayout().getComponentOrder();
-            components.sort((c1, c2) -> {
-                int idx1 = componentOrder.indexOf(String.valueOf(c1.getComponentId()));
-                int idx2 = componentOrder.indexOf(String.valueOf(c2.getComponentId()));
-                return Integer.compare(idx1, idx2);
-            });
+            components.sort(
+                    (c1, c2) -> {
+                        int idx1 = componentOrder.indexOf(String.valueOf(c1.getComponentId()));
+                        int idx2 = componentOrder.indexOf(String.valueOf(c2.getComponentId()));
+                        return Integer.compare(idx1, idx2);
+                    });
 
             for (ResumesTemplateComponent component : components) {
                 // 解析组件数据
@@ -156,9 +155,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         return content.toString();
     }
 
-    /**
-     * 格式化组件内容
-     */
+    /** 格式化组件内容 */
     private String formatComponent(Map<String, Object> componentData) {
         StringBuilder builder = new StringBuilder();
 
@@ -199,9 +196,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         return builder.toString();
     }
 
-    /**
-     * 提取基本信息
-     */
+    /** 提取基本信息 */
     @SuppressWarnings("unchecked")
     private void formatUserBasicInfo(Map<String, Object> props, StringBuilder builder) {
         // 检查是否有用户数据对象
@@ -216,12 +211,24 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             return;
         }
 
-        builder.append("姓名: ").append(fixEncoding(getStringValue(userData, "name", "未填写"))).append(LINE_SEPARATOR);
-        builder.append("职位: ").append(fixEncoding(getStringValue(userData, "title", "未填写"))).append(LINE_SEPARATOR);
-        builder.append("邮箱: ").append(getStringValue(userData, "email", "未填写")).append(LINE_SEPARATOR);
-        builder.append("电话: ").append(getStringValue(userData, "phone", "未填写")).append(LINE_SEPARATOR);
-        builder.append("性别: ").append(getGenderValue(userData.get("gender"))).append(LINE_SEPARATOR);
-        builder.append("所在地: ").append(fixEncoding(getStringValue(userData, "location", "未填写"))).append(LINE_SEPARATOR);
+        builder.append("姓名: ")
+                .append(fixEncoding(getStringValue(userData, "name", "未填写")))
+                .append(LINE_SEPARATOR);
+        builder.append("职位: ")
+                .append(fixEncoding(getStringValue(userData, "title", "未填写")))
+                .append(LINE_SEPARATOR);
+        builder.append("邮箱: ")
+                .append(getStringValue(userData, "email", "未填写"))
+                .append(LINE_SEPARATOR);
+        builder.append("电话: ")
+                .append(getStringValue(userData, "phone", "未填写"))
+                .append(LINE_SEPARATOR);
+        builder.append("性别: ")
+                .append(getGenderValue(userData.get("gender")))
+                .append(LINE_SEPARATOR);
+        builder.append("所在地: ")
+                .append(fixEncoding(getStringValue(userData, "location", "未填写")))
+                .append(LINE_SEPARATOR);
 
         if (userData.containsKey("workYears")) {
             Object workYears = userData.get("workYears");
@@ -240,9 +247,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 格式化教育背景
-     */
+    /** 格式化教育背景 */
     @SuppressWarnings("unchecked")
     private void formatEducationExperience(Map<String, Object> props, StringBuilder builder) {
         if (!props.containsKey("experiences") || !(props.get("experiences") instanceof List)) {
@@ -253,40 +258,52 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         List<Map<String, Object>> educations = (List<Map<String, Object>>) props.get("experiences");
 
         // 按毕业时间倒序排序
-        educations.sort((e1, e2) -> {
-            String date1 = getStringValue(e2, "endDate", "0000-00-00");
-            String date2 = getStringValue(e1, "endDate", "0000-00-00");
-            return date2.compareTo(date1);
-        });
+        educations.sort(
+                (e1, e2) -> {
+                    String date1 = getStringValue(e2, "endDate", "0000-00-00");
+                    String date2 = getStringValue(e1, "endDate", "0000-00-00");
+                    return date2.compareTo(date1);
+                });
 
         for (int i = 0; i < educations.size(); i++) {
             Map<String, Object> edu = educations.get(i);
-            builder.append(i + 1).append(". ")
+            builder.append(i + 1)
+                    .append(". ")
                     .append(fixEncoding(getStringValue(edu, "university", "未知学校")))
                     .append(LINE_SEPARATOR);
-            builder.append("   专业: ").append(fixEncoding(getStringValue(edu, "major", "未填写")))
+            builder.append("   专业: ")
+                    .append(fixEncoding(getStringValue(edu, "major", "未填写")))
                     .append(LINE_SEPARATOR);
-            builder.append("   学历: ").append(fixEncoding(getStringValue(edu, "degree", "未填写")))
+            builder.append("   学历: ")
+                    .append(fixEncoding(getStringValue(edu, "degree", "未填写")))
                     .append(LINE_SEPARATOR);
 
             String startDate = getStringValue(edu, "startDate", "");
             String endDate = getStringValue(edu, "endDate", "");
             if (!startDate.isEmpty() && !endDate.isEmpty()) {
-                builder.append("   时间: ").append(resumeDataParser.formatDate(startDate))
-                        .append(" - ").append(resumeDataParser.formatDate(endDate)).append(LINE_SEPARATOR);
+                builder.append("   时间: ")
+                        .append(resumeDataParser.formatDate(startDate))
+                        .append(" - ")
+                        .append(resumeDataParser.formatDate(endDate))
+                        .append(LINE_SEPARATOR);
             }
 
             if (edu.containsKey("description")) {
                 String description = edu.get("description").toString();
-                builder.append("   描述: ").append(fixEncoding(wrapText(description, 6))).append(LINE_SEPARATOR);
+                builder.append("   描述: ")
+                        .append(fixEncoding(wrapText(description, 6)))
+                        .append(LINE_SEPARATOR);
             }
 
-            if (edu.containsKey("achievements") && edu.get("achievements") instanceof List
-                    && !((List<?>)edu.get("achievements")).isEmpty()) {
+            if (edu.containsKey("achievements")
+                    && edu.get("achievements") instanceof List
+                    && !((List<?>) edu.get("achievements")).isEmpty()) {
                 List<String> achievements = (List<String>) edu.get("achievements");
                 builder.append("   成就: ").append(LINE_SEPARATOR);
                 for (String achievement : achievements) {
-                    builder.append("     - ").append(fixEncoding(achievement)).append(LINE_SEPARATOR);
+                    builder.append("     - ")
+                            .append(fixEncoding(achievement))
+                            .append(LINE_SEPARATOR);
                 }
             }
 
@@ -296,9 +313,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 格式化工作经历
-     */
+    /** 格式化工作经历 */
     @SuppressWarnings("unchecked")
     private void formatWorkExperience(Map<String, Object> props, StringBuilder builder) {
         if (!props.containsKey("experiences") || !(props.get("experiences") instanceof List)) {
@@ -306,27 +321,32 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             return;
         }
 
-        List<Map<String, Object>> experiences = (List<Map<String, Object>>) props.get("experiences");
+        List<Map<String, Object>> experiences =
+                (List<Map<String, Object>>) props.get("experiences");
 
         // 按开始时间倒序排序
-        experiences.sort((e1, e2) -> {
-            String date1 = getStringValue(e2, "startDate", "0000-00-00");
-            String date2 = getStringValue(e1, "startDate", "0000-00-00");
-            return date2.compareTo(date1);
-        });
+        experiences.sort(
+                (e1, e2) -> {
+                    String date1 = getStringValue(e2, "startDate", "0000-00-00");
+                    String date2 = getStringValue(e1, "startDate", "0000-00-00");
+                    return date2.compareTo(date1);
+                });
 
         for (int i = 0; i < experiences.size(); i++) {
             Map<String, Object> exp = experiences.get(i);
-            builder.append(i + 1).append(". ")
+            builder.append(i + 1)
+                    .append(". ")
                     .append(fixEncoding(getStringValue(exp, "company", "未知公司")))
                     .append(LINE_SEPARATOR);
-            builder.append("   职位: ").append(fixEncoding(getStringValue(exp, "position", "未填写")))
+            builder.append("   职位: ")
+                    .append(fixEncoding(getStringValue(exp, "position", "未填写")))
                     .append(LINE_SEPARATOR);
 
             String startDate = getStringValue(exp, "startDate", "");
             String endDate = getStringValue(exp, "endDate", "");
             Object isCurrentObj = exp.get("isCurrent");
-            Boolean isCurrent = isCurrentObj != null ? Boolean.parseBoolean(isCurrentObj.toString()) : false;
+            Boolean isCurrent =
+                    isCurrentObj != null ? Boolean.parseBoolean(isCurrentObj.toString()) : false;
 
             if (!startDate.isEmpty()) {
                 builder.append("   时间: ").append(resumeDataParser.formatDate(startDate));
@@ -340,16 +360,21 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
             if (exp.containsKey("description")) {
                 String description = exp.get("description").toString();
-                builder.append("   描述: ").append(LINE_SEPARATOR)
-                        .append(fixEncoding(wrapText(description, 6))).append(LINE_SEPARATOR);
+                builder.append("   描述: ")
+                        .append(LINE_SEPARATOR)
+                        .append(fixEncoding(wrapText(description, 6)))
+                        .append(LINE_SEPARATOR);
             }
 
-            if (exp.containsKey("achievements") && exp.get("achievements") instanceof List
-                    && !((List<?>)exp.get("achievements")).isEmpty()) {
+            if (exp.containsKey("achievements")
+                    && exp.get("achievements") instanceof List
+                    && !((List<?>) exp.get("achievements")).isEmpty()) {
                 List<String> achievements = (List<String>) exp.get("achievements");
                 builder.append("   业绩: ").append(LINE_SEPARATOR);
                 for (String achievement : achievements) {
-                    builder.append("     - ").append(fixEncoding(achievement)).append(LINE_SEPARATOR);
+                    builder.append("     - ")
+                            .append(fixEncoding(achievement))
+                            .append(LINE_SEPARATOR);
                 }
             }
 
@@ -359,9 +384,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 格式化技能
-     */
+    /** 格式化技能 */
     @SuppressWarnings("unchecked")
     private void formatSkills(Map<String, Object> props, StringBuilder builder) {
         if (!props.containsKey("skills") || !(props.get("skills") instanceof List)) {
@@ -372,13 +395,18 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         List<Map<String, Object>> skills = (List<Map<String, Object>>) props.get("skills");
 
         // 按熟练度倒序排序
-        skills.sort((s1, s2) -> {
-            Integer p1 = s1.get("proficiencyPercent") instanceof Integer ?
-                    (Integer) s1.get("proficiencyPercent") : 0;
-            Integer p2 = s2.get("proficiencyPercent") instanceof Integer ?
-                    (Integer) s2.get("proficiencyPercent") : 0;
-            return Integer.compare(p2, p1);
-        });
+        skills.sort(
+                (s1, s2) -> {
+                    Integer p1 =
+                            s1.get("proficiencyPercent") instanceof Integer
+                                    ? (Integer) s1.get("proficiencyPercent")
+                                    : 0;
+                    Integer p2 =
+                            s2.get("proficiencyPercent") instanceof Integer
+                                    ? (Integer) s2.get("proficiencyPercent")
+                                    : 0;
+                    return Integer.compare(p2, p1);
+                });
 
         for (int i = 0; i < skills.size(); i++) {
             Map<String, Object> skill = skills.get(i);
@@ -387,12 +415,19 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             // 技能等级显示
             String level = getStringValue(skill, "level", "");
             Object proficiencyObj = skill.get("proficiencyPercent");
-            Integer proficiency = proficiencyObj != null ?
-                    (proficiencyObj instanceof Integer ? (Integer) proficiencyObj :
-                            Integer.parseInt(proficiencyObj.toString())) : null;
+            Integer proficiency =
+                    proficiencyObj != null
+                            ? (proficiencyObj instanceof Integer
+                                    ? (Integer) proficiencyObj
+                                    : Integer.parseInt(proficiencyObj.toString()))
+                            : null;
 
             if (!level.isEmpty() && proficiency != null) {
-                builder.append(" (").append(fixEncoding(level)).append(" ").append(proficiency).append("%)");
+                builder.append(" (")
+                        .append(fixEncoding(level))
+                        .append(" ")
+                        .append(proficiency)
+                        .append("%)");
             } else if (!level.isEmpty()) {
                 builder.append(" (").append(fixEncoding(level)).append(")");
             } else if (proficiency != null) {
@@ -400,7 +435,9 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             }
 
             if (skill.containsKey("category")) {
-                builder.append(" [").append(fixEncoding(skill.get("category").toString())).append("]");
+                builder.append(" [")
+                        .append(fixEncoding(skill.get("category").toString()))
+                        .append("]");
             }
 
             if (skill.containsKey("experienceYears")) {
@@ -416,12 +453,15 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             if (skill.containsKey("description")) {
                 String description = skill.get("description").toString();
                 if (!description.trim().isEmpty()) {
-                    builder.append("   ").append(fixEncoding(wrapText(description, 3))).append(LINE_SEPARATOR);
+                    builder.append("   ")
+                            .append(fixEncoding(wrapText(description, 3)))
+                            .append(LINE_SEPARATOR);
                 }
             }
 
-            if (skill.containsKey("tags") && skill.get("tags") instanceof List
-                    && !((List<?>)skill.get("tags")).isEmpty()) {
+            if (skill.containsKey("tags")
+                    && skill.get("tags") instanceof List
+                    && !((List<?>) skill.get("tags")).isEmpty()) {
                 List<String> tags = (List<String>) skill.get("tags");
                 if (!tags.isEmpty()) {
                     builder.append("   标签: ");
@@ -439,9 +479,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 格式化项目经验
-     */
+    /** 格式化项目经验 */
     @SuppressWarnings("unchecked")
     private void formatProjectExperience(Map<String, Object> props, StringBuilder builder) {
         if (!props.containsKey("experiences") || !(props.get("experiences") instanceof List)) {
@@ -452,23 +490,28 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         List<Map<String, Object>> projects = (List<Map<String, Object>>) props.get("experiences");
 
         // 按开始时间倒序排序
-        projects.sort((p1, p2) -> {
-            String date1 = getStringValue(p2, "startDate", "0000-00-00");
-            String date2 = getStringValue(p1, "startDate", "0000-00-00");
-            return date2.compareTo(date1);
-        });
+        projects.sort(
+                (p1, p2) -> {
+                    String date1 = getStringValue(p2, "startDate", "0000-00-00");
+                    String date2 = getStringValue(p1, "startDate", "0000-00-00");
+                    return date2.compareTo(date1);
+                });
 
         for (int i = 0; i < projects.size(); i++) {
             Map<String, Object> project = projects.get(i);
-            builder.append(i + 1).append(". ")
+            builder.append(i + 1)
+                    .append(". ")
                     .append(fixEncoding(getStringValue(project, "name", "未知项目")))
                     .append(LINE_SEPARATOR);
 
             String startDate = getStringValue(project, "startDate", "");
             String endDate = getStringValue(project, "endDate", "");
             if (!startDate.isEmpty() && !endDate.isEmpty()) {
-                builder.append("   时间: ").append(resumeDataParser.formatDate(startDate))
-                        .append(" - ").append(resumeDataParser.formatDate(endDate)).append(LINE_SEPARATOR);
+                builder.append("   时间: ")
+                        .append(resumeDataParser.formatDate(startDate))
+                        .append(" - ")
+                        .append(resumeDataParser.formatDate(endDate))
+                        .append(LINE_SEPARATOR);
             }
 
             Object statusObj = project.get("status");
@@ -477,9 +520,15 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
                 try {
                     int status = Integer.parseInt(statusObj.toString());
                     switch (status) {
-                        case 0: statusText = "未开始"; break;
-                        case 1: statusText = "进行中"; break;
-                        case 2: statusText = "已完成"; break;
+                        case 0:
+                            statusText = "未开始";
+                            break;
+                        case 1:
+                            statusText = "进行中";
+                            break;
+                        case 2:
+                            statusText = "已完成";
+                            break;
                     }
                 } catch (NumberFormatException e) {
                     statusText = statusObj.toString();
@@ -489,16 +538,21 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
             if (project.containsKey("description")) {
                 String description = project.get("description").toString();
-                builder.append("   描述: ").append(LINE_SEPARATOR)
-                        .append(fixEncoding(wrapText(description, 6))).append(LINE_SEPARATOR);
+                builder.append("   描述: ")
+                        .append(LINE_SEPARATOR)
+                        .append(fixEncoding(wrapText(description, 6)))
+                        .append(LINE_SEPARATOR);
             }
 
-            if (project.containsKey("achievements") && project.get("achievements") instanceof List
-                    && !((List<?>)project.get("achievements")).isEmpty()) {
+            if (project.containsKey("achievements")
+                    && project.get("achievements") instanceof List
+                    && !((List<?>) project.get("achievements")).isEmpty()) {
                 List<String> achievements = (List<String>) project.get("achievements");
                 builder.append("   成就: ").append(LINE_SEPARATOR);
                 for (String achievement : achievements) {
-                    builder.append("     - ").append(fixEncoding(achievement)).append(LINE_SEPARATOR);
+                    builder.append("     - ")
+                            .append(fixEncoding(achievement))
+                            .append(LINE_SEPARATOR);
                 }
             }
 
@@ -508,9 +562,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 格式化自我评价
-     */
+    /** 格式化自我评价 */
     @SuppressWarnings("unchecked")
     private void formatSelfEvaluation(Map<String, Object> props, StringBuilder builder) {
         if (!props.containsKey("evaluations") || !(props.get("evaluations") instanceof List)) {
@@ -518,7 +570,8 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
             return;
         }
 
-        List<Map<String, Object>> evaluations = (List<Map<String, Object>>) props.get("evaluations");
+        List<Map<String, Object>> evaluations =
+                (List<Map<String, Object>>) props.get("evaluations");
 
         for (int i = 0; i < evaluations.size(); i++) {
             Map<String, Object> evaluation = evaluations.get(i);
@@ -527,8 +580,9 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
                 builder.append(fixEncoding(wrapText(content, 0))).append(LINE_SEPARATOR);
             }
 
-            if (evaluation.containsKey("highlights") && evaluation.get("highlights") instanceof List
-                    && !((List<?>)evaluation.get("highlights")).isEmpty()) {
+            if (evaluation.containsKey("highlights")
+                    && evaluation.get("highlights") instanceof List
+                    && !((List<?>) evaluation.get("highlights")).isEmpty()) {
                 List<String> highlights = (List<String>) evaluation.get("highlights");
                 builder.append(LINE_SEPARATOR).append("亮点: ").append(LINE_SEPARATOR);
                 for (String highlight : highlights) {
@@ -542,9 +596,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 格式化求职意向
-     */
+    /** 格式化求职意向 */
     @SuppressWarnings("unchecked")
     private void formatJobIntention(Map<String, Object> props, StringBuilder builder) {
         if (!props.containsKey("intentions") || !(props.get("intentions") instanceof List)) {
@@ -556,16 +608,22 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
         for (int i = 0; i < intentions.size(); i++) {
             Map<String, Object> intention = intentions.get(i);
-            builder.append("期望职位: ").append(fixEncoding(getStringValue(intention, "position", "未填写")))
+            builder.append("期望职位: ")
+                    .append(fixEncoding(getStringValue(intention, "position", "未填写")))
                     .append(LINE_SEPARATOR);
-            builder.append("工作类型: ").append(fixEncoding(getStringValue(intention, "jobType", "未填写")))
+            builder.append("工作类型: ")
+                    .append(fixEncoding(getStringValue(intention, "jobType", "未填写")))
                     .append(LINE_SEPARATOR);
-            builder.append("期望城市: ").append(fixEncoding(getStringValue(intention, "city", "未填写")))
+            builder.append("期望城市: ")
+                    .append(fixEncoding(getStringValue(intention, "city", "未填写")))
                     .append(LINE_SEPARATOR);
 
             if (intention.containsKey("salary")) {
                 Object salary = intention.get("salary");
-                builder.append("期望薪资: ").append(salary.toString()).append("元/年").append(LINE_SEPARATOR);
+                builder.append("期望薪资: ")
+                        .append(salary.toString())
+                        .append("元/年")
+                        .append(LINE_SEPARATOR);
             }
 
             if (i < intentions.size() - 1) {
@@ -574,9 +632,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         }
     }
 
-    /**
-     * 文本居中
-     */
+    /** 文本居中 */
     private String centerText(String text) {
         if (text == null) {
             return "";
@@ -596,9 +652,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         return " ".repeat(leftSpaces) + fixedText + " ".repeat(rightSpaces);
     }
 
-    /**
-     * 计算文本宽度（考虑中英文字符）
-     */
+    /** 计算文本宽度（考虑中英文字符） */
     private int getTextWidth(String text) {
         if (text == null) {
             return 0;
@@ -613,9 +667,7 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         return width;
     }
 
-    /**
-     * 文本换行
-     */
+    /** 文本换行 */
     private String wrapText(String text, int indentSpaces) {
         if (text == null || text.isEmpty()) {
             return "";
@@ -668,11 +720,10 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         return result.toString();
     }
 
-    /**
-     * 保存文本到文件
-     */
+    /** 保存文本到文件 */
     private void saveTextToFile(String textContent, File file) throws IOException {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file, java.nio.charset.StandardCharsets.UTF_8))) {
+        try (PrintWriter writer =
+                new PrintWriter(new FileWriter(file, java.nio.charset.StandardCharsets.UTF_8))) {
             writer.write(textContent);
             writer.flush();
         }
@@ -680,31 +731,26 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         log.debug("纯文本文件已保存: {}, 大小: {}字节", file.getAbsolutePath(), file.length());
     }
 
-    /**
-     * 异步生成纯文本简历
-     */
+    /** 异步生成纯文本简历 */
     public CompletableFuture<File> generateAsync(Long resumesId, String version) {
         return CompletableFuture.supplyAsync(() -> generate(resumesId, "text", version));
     }
 
-    /**
-     * 获取纯文本内容
-     */
+    /** 获取纯文本内容 */
     public String getTextContent(Long resumesId) throws IOException {
         File textFile = generate(resumesId, "text", null);
         return Files.readString(textFile.toPath(), java.nio.charset.StandardCharsets.UTF_8);
     }
 
-    /**
-     * 验证文本文件
-     */
+    /** 验证文本文件 */
     public boolean validateTextFile(File textFile) {
         if (!validateOutputFile(textFile)) {
             return false;
         }
 
         try {
-            String content = Files.readString(textFile.toPath(), java.nio.charset.StandardCharsets.UTF_8);
+            String content =
+                    Files.readString(textFile.toPath(), java.nio.charset.StandardCharsets.UTF_8);
             // 简单验证：文件非空且包含一些文本
             return !content.trim().isEmpty() && content.length() > 10;
         } catch (IOException e) {
@@ -720,25 +766,19 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
 
     // ========== 辅助方法 ==========
 
-    /**
-     * 获取字符串值，带默认值
-     */
+    /** 获取字符串值，带默认值 */
     private String getStringValue(Map<String, Object> map, String key, String defaultValue) {
         Object value = map.get(key);
         return value != null ? value.toString() : defaultValue;
     }
 
-    /**
-     * 修复中文编码
-     */
+    /** 修复中文编码 */
     private String fixEncoding(String text) {
         if (text == null) return "";
         return resumeDataParser.fixChineseEncoding(text);
     }
 
-    /**
-     * 获取性别显示值
-     */
+    /** 获取性别显示值 */
     private String getGenderValue(Object gender) {
         if (gender == null) return "未填写";
         try {
@@ -749,9 +789,12 @@ public class TextDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
                 genderValue = Integer.parseInt(gender.toString());
             }
             switch (genderValue) {
-                case 0: return "男";
-                case 1: return "女";
-                default: return "其他";
+                case 0:
+                    return "男";
+                case 1:
+                    return "女";
+                default:
+                    return "其他";
             }
         } catch (Exception e) {
             return "未填写";

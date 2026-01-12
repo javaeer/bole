@@ -2,11 +2,6 @@ package cn.net.yunlou.bole.handler.document;
 
 import cn.net.yunlou.bole.config.DocumentGeneratorProperties;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,22 +9,21 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-/**
- * 文档生成目录管理器
- */
+/** 文档生成目录管理器 */
 @Slf4j
 @Component
 public class DocumentDirectoryManager {
 
-    @Getter
-    private final Path tempPath;
+    @Getter private final Path tempPath;
 
-    @Getter
-    private final Path fontPath;
+    @Getter private final Path fontPath;
 
-    @Getter
-    private final Path outputPath;
+    @Getter private final Path outputPath;
 
     private final DocumentGeneratorProperties properties;
 
@@ -37,14 +31,20 @@ public class DocumentDirectoryManager {
         this.properties = properties;
 
         // 使用配置的目录，如果没有配置则使用默认值
-        String tempDir = StringUtils.hasText(properties.getTempDir()) ?
-                properties.getTempDir() : System.getProperty("java.io.tmpdir") + "/resume-generator/temp";
+        String tempDir =
+                StringUtils.hasText(properties.getTempDir())
+                        ? properties.getTempDir()
+                        : System.getProperty("java.io.tmpdir") + "/resume-generator/temp";
 
-        String fontDir = StringUtils.hasText(properties.getFontDir()) ?
-                properties.getFontDir() : System.getProperty("java.io.tmpdir") + "/resume-generator/fonts";
+        String fontDir =
+                StringUtils.hasText(properties.getFontDir())
+                        ? properties.getFontDir()
+                        : System.getProperty("java.io.tmpdir") + "/resume-generator/fonts";
 
-        String outputDir = StringUtils.hasText(properties.getOutputDir()) ?
-                properties.getOutputDir() : System.getProperty("java.io.tmpdir") + "/resume-generator/output";
+        String outputDir =
+                StringUtils.hasText(properties.getOutputDir())
+                        ? properties.getOutputDir()
+                        : System.getProperty("java.io.tmpdir") + "/resume-generator/output";
 
         this.tempPath = Paths.get(tempDir).toAbsolutePath();
         this.fontPath = Paths.get(fontDir).toAbsolutePath();
@@ -70,9 +70,7 @@ public class DocumentDirectoryManager {
         }
     }
 
-    /**
-     * 创建目录并设置权限
-     */
+    /** 创建目录并设置权限 */
     private void createDirectoryWithPermissions(Path path, String description) throws IOException {
         if (!Files.exists(path)) {
             Files.createDirectories(path);
@@ -85,9 +83,7 @@ public class DocumentDirectoryManager {
         setDirectoryPermissions(path);
     }
 
-    /**
-     * 设置目录权限
-     */
+    /** 设置目录权限 */
     private void setDirectoryPermissions(Path path) throws IOException {
         if (!isWindows()) {
             try {
@@ -107,30 +103,22 @@ public class DocumentDirectoryManager {
         }
     }
 
-    /**
-     * 获取临时文件路径
-     */
+    /** 获取临时文件路径 */
     public Path getTempFilePath(String filename) {
         return tempPath.resolve(filename);
     }
 
-    /**
-     * 获取输出文件路径
-     */
+    /** 获取输出文件路径 */
     public Path getOutputFilePath(String filename) {
         return outputPath.resolve(filename);
     }
 
-    /**
-     * 获取字体文件路径
-     */
+    /** 获取字体文件路径 */
     public Path getFontFilePath(String fontName) {
         return fontPath.resolve(fontName);
     }
 
-    /**
-     * 检查目录是否可写
-     */
+    /** 检查目录是否可写 */
     public boolean checkDirectoryWritable() {
         try {
             Path testFile = tempPath.resolve(".write_test");
@@ -143,9 +131,7 @@ public class DocumentDirectoryManager {
         }
     }
 
-    /**
-     * 获取临时目录大小（字节）
-     */
+    /** 获取临时目录大小（字节） */
     public long getTempDirectorySize() throws IOException {
         return Files.walk(tempPath)
                 .filter(p -> p.toFile().isFile())
@@ -153,19 +139,18 @@ public class DocumentDirectoryManager {
                 .sum();
     }
 
-    /**
-     * 清理临时目录
-     */
+    /** 清理临时目录 */
     public void cleanupTempDirectory() throws IOException {
         Files.walk(tempPath)
                 .filter(p -> !p.equals(tempPath))
-                .forEach(p -> {
-                    try {
-                        Files.delete(p);
-                    } catch (IOException e) {
-                        log.warn("无法删除文件: {}", p, e);
-                    }
-                });
+                .forEach(
+                        p -> {
+                            try {
+                                Files.delete(p);
+                            } catch (IOException e) {
+                                log.warn("无法删除文件: {}", p, e);
+                            }
+                        });
         log.info("临时目录已清理: {}", tempPath);
     }
 

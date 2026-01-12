@@ -6,12 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * FileName: DocumentTaskCreate
- * Description:
- * Created By laughtiger
- * Created At 2026/1/9 21:52
- * Modified By
- * Modified At
+ * FileName: DocumentTaskCreate Description: Created By laughtiger Created At 2026/1/9 21:52
+ * Modified By Modified At
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

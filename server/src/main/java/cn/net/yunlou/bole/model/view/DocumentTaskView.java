@@ -4,18 +4,13 @@ import cn.net.yunlou.bole.common.BaseView;
 import cn.net.yunlou.bole.common.constant.DocumentType;
 import cn.net.yunlou.bole.common.constant.TaskStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
-
 /**
- * FileName: DocumentTaskView
- * Description:
- * Created By laughtiger
- * Created At 2026/1/9 21:54
- * Modified By
- * Modified At
+ * FileName: DocumentTaskView Description: Created By laughtiger Created At 2026/1/9 21:54 Modified
+ * By Modified At
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

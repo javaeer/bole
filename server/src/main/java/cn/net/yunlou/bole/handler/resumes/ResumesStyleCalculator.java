@@ -4,20 +4,16 @@ import cn.net.yunlou.bole.common.utils.StyleUtils;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateStyle;
+import java.util.*;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-
-/**
- * 样式计算器 - 完善版（匹配Vue样式）
- */
+/** 样式计算器 - 完善版（匹配Vue样式） */
 @Component
 public class ResumesStyleCalculator {
 
-    /**
-     * 计算简历容器样式（对应Vue的resumeContainerStyle）
-     */
-    public Map<String, String> getContainerStyle(ResumesTemplateStyle globalStyle, String layoutType) {
+    /** 计算简历容器样式（对应Vue的resumeContainerStyle） */
+    public Map<String, String> getContainerStyle(
+            ResumesTemplateStyle globalStyle, String layoutType) {
         Map<String, String> css = new LinkedHashMap<>();
 
         if (globalStyle == null) {
@@ -74,11 +70,13 @@ public class ResumesStyleCalculator {
                     }
                     break;
                 default:
-                    if (globalStyle.getSpacing() != null && globalStyle.getSpacing().getPadding() != null) {
+                    if (globalStyle.getSpacing() != null
+                            && globalStyle.getSpacing().getPadding() != null) {
                         padding = globalStyle.getSpacing().getPadding();
                     }
             }
-        } else if (globalStyle.getSpacing() != null && globalStyle.getSpacing().getPadding() != null) {
+        } else if (globalStyle.getSpacing() != null
+                && globalStyle.getSpacing().getPadding() != null) {
             padding = globalStyle.getSpacing().getPadding();
         }
         css.put("padding", padding);
@@ -86,13 +84,12 @@ public class ResumesStyleCalculator {
         return css;
     }
 
-    /**
-     * 根据布局类型计算组件样式（对应Vue的getComponentItemStyle）
-     */
-    public Map<String, String> getComponentItemStyle(ResumesTemplateComponent component,
-                                                     ResumesTemplateStyle globalStyle,
-                                                     String layoutType,
-                                                     Map<String, Object> componentContext) {
+    /** 根据布局类型计算组件样式（对应Vue的getComponentItemStyle） */
+    public Map<String, String> getComponentItemStyle(
+            ResumesTemplateComponent component,
+            ResumesTemplateStyle globalStyle,
+            String layoutType,
+            Map<String, Object> componentContext) {
         Map<String, String> styles = new LinkedHashMap<>();
 
         // 基础样式
@@ -100,7 +97,8 @@ public class ResumesStyleCalculator {
         styles.put("margin-bottom", "16px");
 
         // 应用全局边距
-        if (globalStyle != null && globalStyle.getSpacing() != null
+        if (globalStyle != null
+                && globalStyle.getSpacing() != null
                 && globalStyle.getSpacing().getSectionMargin() != null) {
             styles.put("margin-bottom", globalStyle.getSpacing().getSectionMargin());
         }
@@ -126,8 +124,9 @@ public class ResumesStyleCalculator {
                     break;
                 case "mixed":
                     // 检查是否是顶部组件
-                    boolean isTopComponent = componentContext != null &&
-                            Boolean.TRUE.equals(componentContext.get("isTopComponent"));
+                    boolean isTopComponent =
+                            componentContext != null
+                                    && Boolean.TRUE.equals(componentContext.get("isTopComponent"));
                     if (isTopComponent) {
                         styles.put("max-width", "800px");
                         styles.put("margin-left", "auto");
@@ -145,32 +144,39 @@ public class ResumesStyleCalculator {
 
         // 合并组件自定义样式（优先级最高）
         if (component != null && component.getStyles() != null) {
-            component.getStyles().forEach((key, value) -> {
-                if (value != null && !value.toString().trim().isEmpty()) {
-                    styles.put(key, normalizeUnit(value.toString()));
-                }
-            });
+            component
+                    .getStyles()
+                    .forEach(
+                            (key, value) -> {
+                                if (value != null && !value.toString().trim().isEmpty()) {
+                                    styles.put(key, normalizeUnit(value.toString()));
+                                }
+                            });
         }
 
         // 合并组件默认配置样式
-        if (component != null && component.getDefaultConfig() != null
+        if (component != null
+                && component.getDefaultConfig() != null
                 && component.getDefaultConfig().getStyles() != null) {
-            component.getDefaultConfig().getStyles().forEach((key, value) -> {
-                if (value != null && !value.toString().trim().isEmpty()
-                        && !styles.containsKey(key)) {
-                    styles.put(key, normalizeUnit(value.toString()));
-                }
-            });
+            component
+                    .getDefaultConfig()
+                    .getStyles()
+                    .forEach(
+                            (key, value) -> {
+                                if (value != null
+                                        && !value.toString().trim().isEmpty()
+                                        && !styles.containsKey(key)) {
+                                    styles.put(key, normalizeUnit(value.toString()));
+                                }
+                            });
         }
 
         return styles;
     }
 
-    /**
-     * 获取布局容器样式（对应Vue的各种布局样式）
-     */
-    public Map<String, String> getLayoutStyle(String layoutType, ResumesTemplateStyle globalStyle,
-                                              ResumesTemplateLayout layout) {
+    /** 获取布局容器样式（对应Vue的各种布局样式） */
+    public Map<String, String> getLayoutStyle(
+            String layoutType, ResumesTemplateStyle globalStyle, ResumesTemplateLayout layout) {
         Map<String, String> styles = new LinkedHashMap<>();
 
         if (layoutType == null) {
@@ -185,7 +191,8 @@ public class ResumesStyleCalculator {
                 styles.put("flex-direction", "column");
                 styles.put("align-items", "stretch");
                 String gap = "16px";
-                if (globalStyle != null && globalStyle.getSpacing() != null
+                if (globalStyle != null
+                        && globalStyle.getSpacing() != null
                         && globalStyle.getSpacing().getSectionMargin() != null) {
                     gap = globalStyle.getSpacing().getSectionMargin();
                 }
@@ -202,7 +209,8 @@ public class ResumesStyleCalculator {
                 // 如果布局配置有间距，使用布局配置
                 if (layout != null && layout.getGap() != null) {
                     styles.put("gap", layout.getGap());
-                } else if (globalStyle != null && globalStyle.getSpacing() != null
+                } else if (globalStyle != null
+                        && globalStyle.getSpacing() != null
                         && globalStyle.getSpacing().getSectionMargin() != null) {
                     styles.put("gap", globalStyle.getSpacing().getSectionMargin());
                 }
@@ -240,7 +248,8 @@ public class ResumesStyleCalculator {
                 styles.put("display", "flex");
                 styles.put("flex-direction", "column");
                 gap = "20px";
-                if (globalStyle != null && globalStyle.getSpacing() != null
+                if (globalStyle != null
+                        && globalStyle.getSpacing() != null
                         && globalStyle.getSpacing().getSectionMargin() != null) {
                     gap = globalStyle.getSpacing().getSectionMargin();
                 }
@@ -251,9 +260,7 @@ public class ResumesStyleCalculator {
         return styles;
     }
 
-    /**
-     * 获取列样式（用于双列/三列布局）
-     */
+    /** 获取列样式（用于双列/三列布局） */
     public Map<String, String> getColumnStyle(String columnType, ResumesTemplateStyle globalStyle) {
         Map<String, String> styles = new LinkedHashMap<>();
 
@@ -262,7 +269,8 @@ public class ResumesStyleCalculator {
         styles.put("flex-direction", "column");
 
         String gap = "16px";
-        if (globalStyle != null && globalStyle.getSpacing() != null
+        if (globalStyle != null
+                && globalStyle.getSpacing() != null
                 && globalStyle.getSpacing().getSectionMargin() != null) {
             gap = globalStyle.getSpacing().getSectionMargin();
         }
@@ -271,9 +279,7 @@ public class ResumesStyleCalculator {
         return styles;
     }
 
-    /**
-     * 计算组件头部样式（包含边框和颜色）
-     */
+    /** 计算组件头部样式（包含边框和颜色） */
     public String getComponentHeaderStyle(ResumesTemplateStyle globalStyle) {
         StringBuilder style = new StringBuilder();
 
@@ -298,9 +304,7 @@ public class ResumesStyleCalculator {
         return style.toString();
     }
 
-    /**
-     * 计算组件标题样式
-     */
+    /** 计算组件标题样式 */
     public String getComponentTitleStyle(ResumesTemplateStyle globalStyle) {
         StringBuilder style = new StringBuilder();
 
@@ -312,10 +316,12 @@ public class ResumesStyleCalculator {
 
         // 标题字体大小
         String titleSize = "18px";
-        if (globalStyle != null && globalStyle.getFontSizes() != null
+        if (globalStyle != null
+                && globalStyle.getFontSizes() != null
                 && globalStyle.getFontSizes().getTitle() != null) {
             titleSize = globalStyle.getFontSizes().getTitle() + "px";
-        } else if (globalStyle != null && globalStyle.getFontSizes() != null
+        } else if (globalStyle != null
+                && globalStyle.getFontSizes() != null
                 && globalStyle.getFontSizes().getH1() != null) {
             titleSize = globalStyle.getFontSizes().getH1() + "px";
         }
@@ -329,9 +335,7 @@ public class ResumesStyleCalculator {
         return style.toString();
     }
 
-    /**
-     * 计算组件内容样式
-     */
+    /** 计算组件内容样式 */
     public String getComponentContentStyle(ResumesTemplateStyle globalStyle) {
         StringBuilder style = new StringBuilder();
 
@@ -350,9 +354,7 @@ public class ResumesStyleCalculator {
         return style.toString();
     }
 
-    /**
-     * 获取时间线布局特定样式
-     */
+    /** 获取时间线布局特定样式 */
     public Map<String, String> getTimelineStyles(ResumesTemplateStyle globalStyle) {
         Map<String, String> styles = new HashMap<>();
 
@@ -366,9 +368,12 @@ public class ResumesStyleCalculator {
             }
         }
 
-        styles.put("timelineLineStyle",
-                "position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; " +
-                        "background-color: " + lineColor + "; opacity: 0.6; transform: translateX(-50%); z-index: 1");
+        styles.put(
+                "timelineLineStyle",
+                "position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; "
+                        + "background-color: "
+                        + lineColor
+                        + "; opacity: 0.6; transform: translateX(-50%); z-index: 1");
 
         // 时间线节点样式
         String nodeColor = "#5ac8fa";
@@ -382,25 +387,29 @@ public class ResumesStyleCalculator {
             }
         }
 
-        styles.put("timelineNodeStyle",
-                "position: absolute; left: 50%; width: 16px; height: 16px; border-radius: 50%; " +
-                        "background-color: " + nodeColor + "; border: 3px solid " + bgColor + "; " +
-                        "transform: translate(-50%, -50%); z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.15)");
+        styles.put(
+                "timelineNodeStyle",
+                "position: absolute; left: 50%; width: 16px; height: 16px; border-radius: 50%; "
+                        + "background-color: "
+                        + nodeColor
+                        + "; border: 3px solid "
+                        + bgColor
+                        + "; "
+                        + "transform: translate(-50%, -50%); z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.15)");
 
         return styles;
     }
 
-    /**
-     * 获取卡片布局特定样式
-     */
-    public Map<String, String> getCardStyles(ResumesTemplateComponent component,
-                                             ResumesTemplateStyle globalStyle) {
+    /** 获取卡片布局特定样式 */
+    public Map<String, String> getCardStyles(
+            ResumesTemplateComponent component, ResumesTemplateStyle globalStyle) {
         Map<String, String> styles = new HashMap<>();
 
         // 卡片项样式
-        styles.put("cardItemStyle",
-                "background-color: #ffffff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); " +
-                        "overflow: hidden; height: 100%; display: flex; flex-direction: column");
+        styles.put(
+                "cardItemStyle",
+                "background-color: #ffffff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); "
+                        + "overflow: hidden; height: 100%; display: flex; flex-direction: column");
 
         // 卡片内容样式
         styles.put("cardContentStyle", "padding: 24px; flex: 1");
@@ -408,13 +417,12 @@ public class ResumesStyleCalculator {
         return styles;
     }
 
-    /**
-     * 处理组件数据（为每个组件添加计算好的样式）
-     */
-    public List<Map<String, Object>> processComponents(List<ResumesTemplateComponent> components,
-                                                       ResumesTemplateStyle globalStyle,
-                                                       String layoutType,
-                                                       Map<String, Object> layoutContext) {
+    /** 处理组件数据（为每个组件添加计算好的样式） */
+    public List<Map<String, Object>> processComponents(
+            List<ResumesTemplateComponent> components,
+            ResumesTemplateStyle globalStyle,
+            String layoutType,
+            Map<String, Object> layoutContext) {
         if (components == null) {
             return Collections.emptyList();
         }
@@ -444,7 +452,8 @@ public class ResumesStyleCalculator {
             }
 
             // 计算组件项样式
-            Map<String, String> componentStyles = getComponentItemStyle(component, globalStyle, layoutType, componentContext);
+            Map<String, String> componentStyles =
+                    getComponentItemStyle(component, globalStyle, layoutType, componentContext);
             componentData.put("styles", componentStyles);
             componentData.put("stylesCss", StyleUtils.toCss(componentStyles));
 
@@ -456,10 +465,12 @@ public class ResumesStyleCalculator {
             // 添加特殊布局样式
             if ("timeline".equals(layoutType)) {
                 componentData.put("timelineStyles", getTimelineStyles(globalStyle));
-                componentData.put("timelineStylesCss", StyleUtils.toCss(getTimelineStyles(globalStyle)));
+                componentData.put(
+                        "timelineStylesCss", StyleUtils.toCss(getTimelineStyles(globalStyle)));
             } else if ("card".equals(layoutType)) {
                 componentData.put("cardStyles", getCardStyles(component, globalStyle));
-                componentData.put("cardStylesCss", StyleUtils.toCss(getCardStyles(component, globalStyle)));
+                componentData.put(
+                        "cardStylesCss", StyleUtils.toCss(getCardStyles(component, globalStyle)));
             }
 
             processed.add(componentData);
@@ -468,9 +479,7 @@ public class ResumesStyleCalculator {
         return processed;
     }
 
-    /**
-     * 转换布局类型到Vue兼容格式
-     */
+    /** 转换布局类型到Vue兼容格式 */
     public String convertLayoutType(String dbLayoutType) {
         if (dbLayoutType == null) {
             return "single";
@@ -492,9 +501,7 @@ public class ResumesStyleCalculator {
         }
     }
 
-    /**
-     * 标准化CSS单位
-     */
+    /** 标准化CSS单位 */
     private String normalizeUnit(String value) {
         if (value == null || value.trim().isEmpty()) {
             return "";
@@ -503,8 +510,12 @@ public class ResumesStyleCalculator {
         value = value.trim();
 
         // 如果已经是带单位的，直接返回
-        if (value.endsWith("px") || value.endsWith("em") || value.endsWith("rem") ||
-                value.endsWith("%") || value.endsWith("vh") || value.endsWith("vw")) {
+        if (value.endsWith("px")
+                || value.endsWith("em")
+                || value.endsWith("rem")
+                || value.endsWith("%")
+                || value.endsWith("vh")
+                || value.endsWith("vw")) {
             return value;
         }
 

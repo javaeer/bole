@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -100,7 +99,6 @@ public class LocalStorageStrategy implements IStorageStrategy {
                     .storageType(StorageType.LOCAL.getValue())
                     .accessUrl(getAccessUrl(datePathFileName))
                     .build();
-
 
         } catch (Exception e) {
             log.error("本地文件上传失败", e);

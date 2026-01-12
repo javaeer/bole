@@ -8,15 +8,14 @@ import cn.net.yunlou.bole.handler.IStorageStrategy;
 import cn.net.yunlou.bole.handler.StorageStrategyRegistry;
 import cn.net.yunlou.bole.model.entity.File;
 import cn.net.yunlou.bole.service.StorageService;
+import java.io.InputStream;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.InputStream;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -42,7 +41,6 @@ public class StorageServiceImpl implements StorageService {
 
         // 4. 存储文件
         File storedFile = strategy.store(file);
-
 
         log.info(
                 "文件上传成功: {}, 存储类型: {}, 访问地址: {}",
@@ -94,7 +92,7 @@ public class StorageServiceImpl implements StorageService {
         IStorageStrategy strategy = registry.getStrategy(storageType);
 
         // 2. 存储文件
-        File storedFile = strategy.storeFile(file,fileName);
+        File storedFile = strategy.storeFile(file, fileName);
 
         log.info(
                 "文件上传成功: {}, 存储类型: {}, 访问地址: {}",

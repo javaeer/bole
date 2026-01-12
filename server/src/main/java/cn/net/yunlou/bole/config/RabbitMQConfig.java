@@ -19,6 +19,7 @@ public class RabbitMQConfig {
 
     /**
      * 消息消费方 对象序列化配置
+     *
      * @param connectionFactory
      * @return
      */
@@ -31,14 +32,15 @@ public class RabbitMQConfig {
 
     /**
      * 消息发送方 序列化配置
-     * <p>
-     * 被序列化对象应该提供一个无参构造 否则会报错
+     *
+     * <p>被序列化对象应该提供一个无参构造 否则会报错
      *
      * @param connectionFactory
      * @return
      */
     @Bean
-    public RabbitListenerContainerFactory<?> rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+    public RabbitListenerContainerFactory<?> rabbitListenerContainerFactory(
+            ConnectionFactory connectionFactory) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(jackson2JsonMessageConverter());
@@ -52,10 +54,9 @@ public class RabbitMQConfig {
     }
 
     @Bean("jackson2JsonMessageConverter")
-    public Jackson2JsonMessageConverter jackson2JsonMessageConverter(){
+    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
-
 
     @Bean
     public Queue documentQueue(DocumentTaskProperties properties) {
@@ -64,18 +65,16 @@ public class RabbitMQConfig {
 
     @Bean
     public TopicExchange documentExchange(DocumentTaskProperties properties) {
-        return ExchangeBuilder.topicExchange(properties.getExchangeName())
-                .durable(true)
-                .build();
+        return ExchangeBuilder.topicExchange(properties.getExchangeName()).durable(true).build();
     }
 
     @Bean
-    public Binding documentBinding(Queue documentQueue,
-                                   TopicExchange documentExchange,
-                                   DocumentTaskProperties properties) {
+    public Binding documentBinding(
+            Queue documentQueue,
+            TopicExchange documentExchange,
+            DocumentTaskProperties properties) {
         return BindingBuilder.bind(documentQueue)
                 .to(documentExchange)
                 .with(properties.getRoutingKey());
     }
-
 }
