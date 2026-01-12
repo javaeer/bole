@@ -16,9 +16,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Slf4j
 @Component
@@ -53,9 +51,7 @@ public class DocumentTaskListener {
             java.io.File file = documentGeneratorStrategy.generate(task.getResumesId());
 
             // 上传到文件存储
-            String fileName = task.getFileName() != null ?
-                    task.getFileName() : generateFileName(task);
-
+            String fileName = file.getName();
 
             // 上传到文件存储
             File uploaded = fileService.uploadLocalFile(file, fileName);
@@ -82,18 +78,5 @@ public class DocumentTaskListener {
             task.setEndAt(LocalDateTime.now());
             documentTaskService.updateById(task);
         }
-    }
-
-    private String generateFileName(DocumentTask task) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String dateStr = sdf.format(new Date());
-
-        String extension = task.getDocumentType().name().toLowerCase();
-        if (extension.equals("word")) {
-            extension = "docx";
-        }
-
-        return String.format("resume_%s_%s.%s",
-                task.getResumesId(), dateStr, extension);
     }
 }

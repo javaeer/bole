@@ -4,9 +4,7 @@ import cn.net.yunlou.bole.common.constant.DocumentType;
 import cn.net.yunlou.bole.handler.IDocumentGeneratorStrategy;
 import cn.net.yunlou.bole.model.entity.Resumes;
 import cn.net.yunlou.bole.service.ResumesService;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.util.StringUtils;
@@ -111,20 +109,26 @@ public abstract class AbstractDocumentGeneratorStrategy implements IDocumentGene
      * 生成文件名
      */
     protected String generateFilename(Long resumesId, DocumentType documentType,
-                                      String device,
-                                      String version) {
+                                      String device, String version) {
+        // 临时添加调试日志
+        String extension = getFileExtension();
+        System.out.println("扩展名返回值: " + extension);  // 或使用日志框架
+
         String timestamp = LocalDateTime.now().format(TIMESTAMP_FORMATTER);
         String deviceSuffix = StringUtils.hasText(device) ? "_" + device : "";
         String versionSuffix = StringUtils.hasText(version) ? "_" + version : "";
 
-        // 确保包含正确的文件扩展名
-        return String.format("resume_%d_%s%s%s_%s.%s",
+        // 生成完整文件名
+        String fullName = String.format("resume_%d_%s%s%s_%s.%s",
                 resumesId,
                 documentType.name().toLowerCase(),
                 deviceSuffix,
                 versionSuffix,
                 timestamp,
-                getFileExtension());
+                extension);
+
+        System.out.println("生成的文件名: " + fullName);  // 调试输出
+        return fullName;
     }
 
     /**
@@ -150,7 +154,7 @@ public abstract class AbstractDocumentGeneratorStrategy implements IDocumentGene
     }
 
     /**
-     * 清理临时文件（供子类调用）
+     * 清理临时文件
      */
     protected void cleanupTempFile(File file) {
         if (file != null && file.exists()) {

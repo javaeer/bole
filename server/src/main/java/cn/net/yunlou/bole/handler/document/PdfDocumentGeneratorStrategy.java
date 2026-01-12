@@ -129,7 +129,7 @@ public class PdfDocumentGeneratorStrategy extends AbstractDocumentGeneratorStrat
             log.error("PDF简历生成失败，简历ID: {}", resumesId, e);
             throw new RuntimeException("PDF简历生成失败: " + e.getMessage(), e);
         } finally {
-            // 使用基类方法清理临时文件
+        //    // 使用基类方法清理临时文件
             cleanupTempFile(htmlTempFile);
             cleanupTempFile(pdfTempFile);
         }
