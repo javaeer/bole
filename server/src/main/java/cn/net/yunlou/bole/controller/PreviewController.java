@@ -9,6 +9,7 @@ import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateStyle;
 import cn.net.yunlou.bole.service.ResumesService;
+import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -31,6 +32,64 @@ public class PreviewController {
     private final ResumesLayoutCalculator resumesLayoutCalculator;
 
     private final ResumesStyleCalculator resumesStyleCalculator;
+
+    @GetMapping("/preview/pdf/{id}")
+    public ModelAndView previewPdf(@PathVariable Long id,
+                                @RequestParam(defaultValue = "desktop") String device) {
+
+        // 1. 获取简历数据
+        Resumes resumes = resumesService.getById(id);
+        if (resumes == null) {
+            throw new ResourceNotFoundException("简历不存在");
+        }
+
+        // 2. 准备数据
+        List<ResumesTemplateComponent> components = resumes.getComponents();
+        ResumesTemplateStyle globalStyle = resumes.getGlobalStyle();
+        ResumesTemplateLayout globalLayout = resumes.getGlobalLayout();
+
+        // 3. 【核心】计算布局
+        Map<String, Object> layoutData = resumesLayoutCalculator.calculateLayout(components, globalLayout, globalStyle);
+
+
+        // 4.计算容器样式
+        String layoutType = (String) layoutData.get("layoutType");
+        Map<String, String> containerStyle = resumesStyleCalculator.getContainerStyle(globalStyle, layoutType);
+
+        // 5.获取响应式样式
+        Map<String, String> responsiveStyles = resumesLayoutCalculator.getResponsiveStyles();
+
+
+        // 6. 创建 ModelAndView
+        ModelAndView modelAndView = new ModelAndView("resumes/preview-pdf");
+
+        // 7. 添加主要数据
+        modelAndView.addObject("resumes", resumes);
+        modelAndView.addObject("device", device);
+
+        // 8. 添加布局相关数据
+        modelAndView.addObject("layoutData", layoutData);
+        modelAndView.addObject("globalStyle", globalStyle);
+        modelAndView.addObject("globalLayout", globalLayout);
+        modelAndView.addObject("responsiveStyles", responsiveStyles);
+        modelAndView.addObject("responsiveStylesCss", StyleUtils.toCss(responsiveStyles));
+        modelAndView.addObject("containerStyle", containerStyle);
+        modelAndView.addObject("containerStyleCss", StyleUtils.toCss(containerStyle));
+
+        // 添加PDF特定样式
+        Map<String, String> pdfStyles = Maps.newHashMap();
+        pdfStyles.put("page-break-inside", "avoid");
+        pdfStyles.put("page-break-before", "auto");
+        pdfStyles.put("page-break-after", "auto");
+        modelAndView.addObject("pdfStyles", pdfStyles);
+        modelAndView.addObject("pdfStylesCss", StyleUtils.toCss(pdfStyles));
+
+        log.info("Model:{}", JsonUtils.toJson(modelAndView.getModel()));
+
+        log.info("DATA:{}",JsonUtils.toJson(resumes));
+
+        return modelAndView;
+    }
 
     @GetMapping("/preview/{id}")
     public ModelAndView preview(@PathVariable Long id,

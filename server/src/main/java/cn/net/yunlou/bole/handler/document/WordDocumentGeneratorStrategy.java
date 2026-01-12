@@ -1,13 +1,14 @@
 package cn.net.yunlou.bole.handler.document;
 
 import cn.net.yunlou.bole.common.constant.DocumentType;
+import cn.net.yunlou.bole.common.utils.JsonUtils;
+import cn.net.yunlou.bole.handler.resumes.ResumeDataParser;
 import cn.net.yunlou.bole.model.entity.Resumes;
 import cn.net.yunlou.bole.model.entity.ResumesTemplateComponent;
+import cn.net.yunlou.bole.model.entity.ResumesTemplateLayout;
 import cn.net.yunlou.bole.service.ResumesService;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTBorders;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -19,13 +20,11 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Word文档生成策略（使用Apache POI）
+ * Word文档生成策略（基于ResumeDataParser优化版）
  */
 @Slf4j
 @Component
@@ -35,17 +34,22 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy年MM月dd日");
 
-    // 字体配置
-    private static final String FONT_FAMILY_SIMSUN = "宋体";
-    private static final String FONT_FAMILY_MICROSOFT_YAHEI = "微软雅黑";
+    private final ResumeDataParser resumeDataParser;
+
+    // 字体配置 - 使用系统字体避免乱码
+    private static final String FONT_FAMILY_SIMSUN = "SimSun";
+    private static final String FONT_FAMILY_MICROSOFT_YAHEI = "Microsoft YaHei";
+    private static final String FONT_FAMILY_HEITI = "SimHei";
     private static final int DEFAULT_FONT_SIZE = 10;
-    private static final int TITLE_FONT_SIZE = 16;
+    private static final int TITLE_FONT_SIZE = 18;
     private static final int SECTION_FONT_SIZE = 14;
     private static final int SUB_SECTION_FONT_SIZE = 12;
 
     public WordDocumentGeneratorStrategy(DocumentDirectoryManager directoryManager,
-                                         ResumesService resumesService) {
-        super(directoryManager,resumesService);
+                                         ResumesService resumesService,
+                                         ResumeDataParser resumeDataParser) {
+        super(directoryManager, resumesService);
+        this.resumeDataParser = resumeDataParser;
         log.info("Word文档生成策略初始化完成");
     }
 
@@ -63,7 +67,6 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     @Cacheable(value = CACHE_NAME, key = "#resumesId + '_' + #version",
             unless = "#result == null")
     public File generate(Long resumesId, String device, String version) {
-        // Word 文档通常不需要设备类型
         if (!StringUtils.hasText(version)) {
             version = "v1";
         }
@@ -116,15 +119,31 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         // 设置页面属性
         setPageProperties(document);
 
-        // 1. 标题
-        createTitle(document, "个人简历");
+        // 1. 解析全局样式
+        Map<String, Object> globalStyle = parseGlobalStyle(resumes);
 
-        // 2. 简历组件
+        // 2. 创建标题（使用全局样式中的主题色）
+        String primaryColor = getColorFromStyle(globalStyle, "primaryColor", "#333333");
+        createTitle(document, "个人简历", primaryColor);
+
+        // 3. 按照模板中的顺序渲染组件
+        Map<String, Object> resumeData = parseResumeData(resumes);
+
+        // 获取组件顺序
+        List<String> componentOrder = getComponentOrder(resumes);
         List<ResumesTemplateComponent> components = resumes.getComponents();
-        if (components != null && !components.isEmpty()) {
+
+        if (componentOrder != null && !componentOrder.isEmpty()) {
+            for (String componentId : componentOrder) {
+                ResumesTemplateComponent component = findComponentById(components, componentId);
+                if (component != null) {
+                    createComponent(document, component, globalStyle);
+                }
+            }
+        } else {
+            // 如果没有指定顺序，按默认顺序渲染
             for (ResumesTemplateComponent component : components) {
-                createSubSection(document, component.getName());
-                createComponentContent(document, component);
+                createComponent(document, component, globalStyle);
             }
         }
 
@@ -135,14 +154,130 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     }
 
     /**
+     * 解析全局样式
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> parseGlobalStyle(Resumes resumes) {
+        try {
+            return resumeDataParser.parseGlobalStyle(JsonUtils.toJson(resumes.getGlobalStyle()));
+        } catch (Exception e) {
+            log.error("解析全局样式失败", e);
+            return Collections.emptyMap();
+        }
+    }
+
+    /**
+     * 解析简历数据
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> parseResumeData(Resumes resumes) {
+        try {
+            // 简单的数据转换
+            Map<String, Object> result = new HashMap<>();
+            result.put("id", resumes.getId());
+            result.put("globalStyle", parseGlobalStyle(resumes));
+            result.put("globalLayout", resumes.getGlobalLayout());
+            return result;
+        } catch (Exception e) {
+            log.error("解析简历数据失败", e);
+            return new HashMap<>();
+        }
+    }
+
+    /**
+     * 获取组件顺序
+     */
+    @SuppressWarnings("unchecked")
+    private List<String> getComponentOrder(Resumes resumes) {
+        try {
+            ResumesTemplateLayout globalLayout = resumes.getGlobalLayout();
+            if (globalLayout != null) {
+                return globalLayout.getComponentOrder();
+            }
+        } catch (Exception e) {
+            log.warn("获取组件顺序失败", e);
+        }
+        return null;
+    }
+
+    /**
+     * 根据ID查找组件
+     */
+    private ResumesTemplateComponent findComponentById(List<ResumesTemplateComponent> components, String componentId) {
+        if (components == null) return null;
+
+        return components.stream()
+                .filter(c -> String.valueOf(c.getComponentId()).equals(componentId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * 创建组件内容
+     */
+    private void createComponent(XWPFDocument document, ResumesTemplateComponent component,
+                                 Map<String, Object> globalStyle) throws Exception {
+        // 解析组件数据
+        Map<String, Object> componentData = resumeDataParser.parseComponentData(component);
+        if (componentData.isEmpty()) {
+            return;
+        }
+
+        // 获取组件名称（修复中文编码）
+        String componentName = resumeDataParser.fixChineseEncoding((String) componentData.get("name"));
+
+        // 创建组件标题
+        String titleColor = getColorFromStyle(globalStyle, "headerColor", "#333333");
+        createSubSection(document, componentName, titleColor);
+
+        // 根据组件类型创建不同的内容
+        String componentKey = (String) componentData.get("key");
+        Map<String, Object> props = (Map<String, Object>) componentData.get("props");
+        Map<String, Object> styles = (Map<String, Object>) componentData.get("styles");
+
+        if (props == null) {
+            createEmptyContent(document);
+            return;
+        }
+
+        switch (componentKey) {
+            case "UserBasicInfo":
+                createUserBasicInfo(document, props, styles);
+                break;
+            case "Skills":
+                createSkillsContent(document, props, styles);
+                break;
+            case "SelfEvaluation":
+                createSelfEvaluationContent(document, props, styles);
+                break;
+            case "WorkExperience":
+                createWorkExperienceContent(document, props, styles);
+                break;
+            case "EducationExperience":
+                createEducationContent(document, props, styles);
+                break;
+            case "ProjectExperience":
+                createProjectsContent(document, props, styles);
+                break;
+            case "JobIntention":
+                createJobIntentionContent(document, props, styles);
+                break;
+            default:
+                createDefaultContent(document, props, styles);
+        }
+
+        // 添加间距
+        document.createParagraph();
+    }
+
+    /**
      * 设置页面属性
      */
     private void setPageProperties(XWPFDocument document) {
-        // 设置页边距
         CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
         CTPageSz pageSz = sectPr.addNewPgSz();
-        pageSz.setW(BigInteger.valueOf(11906));  // A4纸宽度 (21cm * 567 = 11907)
-        pageSz.setH(BigInteger.valueOf(16838));  // A4纸高度 (29.7cm * 567 = 16838)
+        pageSz.setW(BigInteger.valueOf(11906));  // A4纸宽度 (21cm)
+        pageSz.setH(BigInteger.valueOf(16838));  // A4纸高度 (29.7cm)
 
         CTPageMar pageMar = sectPr.addNewPgMar();
         pageMar.setLeft(BigInteger.valueOf(1701));    // 左边距 3cm
@@ -156,196 +291,262 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     /**
      * 创建标题
      */
-    private void createTitle(XWPFDocument document, String title) {
+    private void createTitle(XWPFDocument document, String title, String color) {
         XWPFParagraph titleParagraph = document.createParagraph();
         titleParagraph.setAlignment(ParagraphAlignment.CENTER);
+        titleParagraph.setSpacingAfter(400); // 增加标题后的间距
 
         XWPFRun titleRun = titleParagraph.createRun();
-        titleRun.setText(title);
+        titleRun.setText(resumeDataParser.fixChineseEncoding(title));
         titleRun.setFontFamily(FONT_FAMILY_MICROSOFT_YAHEI);
         titleRun.setFontSize(TITLE_FONT_SIZE);
         titleRun.setBold(true);
+        titleRun.setColor(color != null ? color.replace("#", "") : "000000");
 
         // 添加空行
         document.createParagraph();
     }
 
     /**
-     * 创建章节标题
+     * 创建子章节标题
      */
-    private void createSection(XWPFDocument document, String sectionTitle) {
+    private void createSubSection(XWPFDocument document, String subSectionTitle, String color) {
         XWPFParagraph sectionParagraph = document.createParagraph();
         sectionParagraph.setAlignment(ParagraphAlignment.LEFT);
         sectionParagraph.setSpacingBefore(200);  // 段前间距
+        sectionParagraph.setSpacingAfter(100);   // 段后间距
 
         XWPFRun sectionRun = sectionParagraph.createRun();
-        sectionRun.setText(sectionTitle);
+        sectionRun.setText(resumeDataParser.fixChineseEncoding(subSectionTitle));
         sectionRun.setFontFamily(FONT_FAMILY_MICROSOFT_YAHEI);
         sectionRun.setFontSize(SECTION_FONT_SIZE);
         sectionRun.setBold(true);
-        sectionRun.setColor("000000");
+        sectionRun.setColor(color != null ? color.replace("#", "") : "333333");
 
-        // 添加下划线
-        addBottomBorder(sectionParagraph);
-
-        document.createParagraph();
-    }
-
-    /**
-     * 创建子章节标题
-     */
-    private void createSubSection(XWPFDocument document, String subSectionTitle) {
-        XWPFParagraph subSectionParagraph = document.createParagraph();
-        subSectionParagraph.setAlignment(ParagraphAlignment.LEFT);
-        subSectionParagraph.setSpacingBefore(100);  // 段前间距
-
-        XWPFRun subSectionRun = subSectionParagraph.createRun();
-        subSectionRun.setText(subSectionTitle);
-        subSectionRun.setFontFamily(FONT_FAMILY_MICROSOFT_YAHEI);
-        subSectionRun.setFontSize(SUB_SECTION_FONT_SIZE);
-        subSectionRun.setBold(true);
-        subSectionRun.setColor("333333");
-
-        document.createParagraph();
-    }
-
-    /**
-     * 创建组件内容
-     */
-    private void createComponentContent(XWPFDocument document, ResumesTemplateComponent component) throws Exception {
-        if (component.getProps() == null) {
-            createEmptyContent(document);
-            return;
-        }
-
-        // 根据组件类型创建不同的内容
-        switch (component.getKey()) {
-            case "userBaseInfo":
-                createUserBasicInfo(document,component);
-                break;
-            case "education":
-                createEducationContent(document, component);
-                break;
-            case "work_experience":
-                createWorkExperienceContent(document, component);
-                break;
-            case "skills":
-                createSkillsContent(document, component);
-                break;
-            case "projects":
-                createProjectsContent(document, component);
-                break;
-            case "certificates":
-                createCertificatesContent(document, component);
-                break;
-            case "self_evaluation":
-                createSelfEvaluationContent(document, component);
-                break;
-            default:
-                createDefaultContent(document, component);
-        }
-
-        document.createParagraph();
+        // 添加下边框线
+        addBottomBorder(sectionParagraph, color);
     }
 
     /**
      * 创建基本信息
      */
-    private void createUserBasicInfo(XWPFDocument document, ResumesTemplateComponent component) throws Exception {
-
-        Map<String, Object> basicInfo = component.getProps();
-
-        // 使用表格布局基本信息
-        XWPFTable table = document.createTable(basicInfo.size(), 2);
-        table.setWidth("100%");
-
-        int rowIndex = 0;
-        for (Map.Entry<String, Object> entry : basicInfo.entrySet()) {
-            XWPFTableRow row = table.getRow(rowIndex);
-
-            // 标签单元格
-            XWPFTableCell labelCell = row.getCell(0);
-            labelCell.setWidth("30%");
-            XWPFParagraph labelPara = labelCell.getParagraphs().get(0);
-            labelPara.setAlignment(ParagraphAlignment.LEFT);
-
-            XWPFRun labelRun = labelPara.createRun();
-            labelRun.setText(entry.getKey() + ":");
-            labelRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            labelRun.setFontSize(DEFAULT_FONT_SIZE);
-            labelRun.setBold(true);
-
-            // 值单元格
-            XWPFTableCell valueCell = row.getCell(1);
-            valueCell.setWidth("70%");
-            XWPFParagraph valuePara = valueCell.getParagraphs().get(0);
-            valuePara.setAlignment(ParagraphAlignment.LEFT);
-
-            XWPFRun valueRun = valuePara.createRun();
-            String value = entry.getValue() != null ? entry.getValue().toString() : "";
-            valueRun.setText(value);
-            valueRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            valueRun.setFontSize(DEFAULT_FONT_SIZE);
-
-            rowIndex++;
-        }
-
-        document.createParagraph();
-    }
-
-
-    /**
-     * 创建教育背景内容
-     */
     @SuppressWarnings("unchecked")
-    private void createEducationContent(XWPFDocument document, ResumesTemplateComponent component) throws Exception {
-        List<Map<String, Object>> educations = (List<Map<String, Object>>)
-                component.getProps().get("educations");
-
-        if (educations == null || educations.isEmpty()) {
+    private void createUserBasicInfo(XWPFDocument document, Map<String, Object> props,
+                                     Map<String, Object> styles) throws Exception {
+        if (props.isEmpty()) {
             createEmptyContent(document);
             return;
         }
 
-        for (int i = 0; i < educations.size(); i++) {
-            Map<String, Object> edu = educations.get(i);
+        // 获取样式设置
+        String backgroundColor = getColorFromStyle(styles, "backgroundColor", "#FFFFFF");
+        String titleColor = getColorFromStyle(styles, "titleColor", "#333333");
+        String fieldColor = getColorFromStyle(styles, "fieldColor", "#666666");
+        String padding = getStyleValue(styles, "padding", "20px");
 
-            // 创建学校和时间行
-            XWPFParagraph schoolPara = document.createParagraph();
-            schoolPara.setAlignment(ParagraphAlignment.LEFT);
+        // 基本信息字段
+        List<FieldInfo> fields = new ArrayList<>();
 
-            XWPFRun schoolRun = schoolPara.createRun();
-            schoolRun.setText(edu.get("school") + " | " + edu.get("degree"));
-            schoolRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            schoolRun.setFontSize(DEFAULT_FONT_SIZE);
-            schoolRun.setBold(true);
+        // 姓名
+        if (props.get("name") != null) {
+            fields.add(new FieldInfo("姓名", props.get("name").toString()));
+        }
 
-            // 专业和时间
-            XWPFParagraph detailPara = document.createParagraph();
-            detailPara.setAlignment(ParagraphAlignment.LEFT);
-            detailPara.setIndentationLeft(200);  // 缩进
-
-            XWPFRun detailRun = detailPara.createRun();
-            detailRun.setText(edu.get("major") + " | " +
-                    edu.get("startDate") + " - " + edu.get("endDate"));
-            detailRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            detailRun.setFontSize(DEFAULT_FONT_SIZE);
-            detailRun.setColor("666666");
-
-            // 描述
-            if (edu.get("description") != null) {
-                XWPFParagraph descPara = document.createParagraph();
-                descPara.setAlignment(ParagraphAlignment.LEFT);
-                descPara.setIndentationLeft(400);
-
-                XWPFRun descRun = descPara.createRun();
-                descRun.setText(edu.get("description").toString());
-                descRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                descRun.setFontSize(DEFAULT_FONT_SIZE);
+        // 性别
+        if (props.get("gender") != null) {
+            String genderText = "男";
+            try {
+                int gender = Integer.parseInt(props.get("gender").toString());
+                genderText = gender == 0 ? "男" : (gender == 1 ? "女" : "未知");
+            } catch (Exception e) {
+                genderText = props.get("gender").toString();
             }
+            fields.add(new FieldInfo("性别", genderText));
+        }
 
-            if (i < educations.size() - 1) {
-                document.createParagraph();
+        // 邮箱
+        if (props.get("email") != null) {
+            fields.add(new FieldInfo("邮箱", props.get("email").toString()));
+        }
+
+        // 电话
+        if (props.get("phone") != null) {
+            fields.add(new FieldInfo("电话", props.get("phone").toString()));
+        }
+
+        // 所在地
+        if (props.get("location") != null) {
+            fields.add(new FieldInfo("所在地", props.get("location").toString()));
+        }
+
+        // 工作年限
+        if (props.get("workYears") != null) {
+            fields.add(new FieldInfo("工作年限", props.get("workYears") + "年"));
+        }
+
+        // 职位
+        if (props.get("title") != null) {
+            fields.add(new FieldInfo("职位", props.get("title").toString()));
+        }
+
+        // 创建表格布局
+        int rows = (int) Math.ceil(fields.size() / 2.0);
+        XWPFTable table = document.createTable(rows, 4);
+        table.setWidth("100%");
+
+        // 填充表格
+        for (int i = 0; i < fields.size(); i++) {
+            FieldInfo field = fields.get(i);
+            int row = i / 2;
+            int col = (i % 2) * 2;
+
+            // 字段名单元格
+            XWPFTableCell labelCell = table.getRow(row).getCell(col);
+            labelCell.setWidth("20%");
+            XWPFParagraph labelPara = labelCell.getParagraphs().get(0);
+            labelPara.setAlignment(ParagraphAlignment.LEFT);
+
+            XWPFRun labelRun = labelPara.createRun();
+            labelRun.setText(resumeDataParser.fixChineseEncoding(field.label + ":"));
+            labelRun.setFontFamily(FONT_FAMILY_SIMSUN);
+            labelRun.setFontSize(DEFAULT_FONT_SIZE);
+            labelRun.setBold(true);
+            labelRun.setColor(fieldColor.replace("#", ""));
+
+            // 字段值单元格
+            XWPFTableCell valueCell = table.getRow(row).getCell(col + 1);
+            valueCell.setWidth("30%");
+            XWPFParagraph valuePara = valueCell.getParagraphs().get(0);
+            valuePara.setAlignment(ParagraphAlignment.LEFT);
+
+            XWPFRun valueRun = valuePara.createRun();
+            valueRun.setText(resumeDataParser.fixChineseEncoding(field.value));
+            valueRun.setFontFamily(FONT_FAMILY_SIMSUN);
+            valueRun.setFontSize(DEFAULT_FONT_SIZE);
+            valueRun.setColor("000000");
+        }
+    }
+
+    /**
+     * 创建技能内容
+     */
+    @SuppressWarnings("unchecked")
+    private void createSkillsContent(XWPFDocument document, Map<String, Object> props,
+                                     Map<String, Object> styles) throws Exception {
+        List<Map<String, Object>> skills = (List<Map<String, Object>>) props.get("skills");
+        if (skills == null || skills.isEmpty()) {
+            createEmptyContent(document);
+            return;
+        }
+
+        // 获取样式设置
+        String skillNameColor = getColorFromStyle(styles, "skillNameColor", "#555555");
+        String progressColor = getColorFromStyle(styles, "progressColor", "#1890ff");
+
+        // 按类别分组技能
+        Map<String, List<Map<String, Object>>> categorizedSkills = new LinkedHashMap<>();
+        for (Map<String, Object> skill : skills) {
+            String category = (String) skill.getOrDefault("category", "其他");
+            categorizedSkills.computeIfAbsent(category, k -> new ArrayList<>()).add(skill);
+        }
+
+        // 为每个类别创建内容
+        for (Map.Entry<String, List<Map<String, Object>>> entry : categorizedSkills.entrySet()) {
+            // 类别标题
+            XWPFParagraph categoryPara = document.createParagraph();
+            categoryPara.setAlignment(ParagraphAlignment.LEFT);
+            categoryPara.setSpacingBefore(100);
+
+            XWPFRun categoryRun = categoryPara.createRun();
+            categoryRun.setText(resumeDataParser.fixChineseEncoding(entry.getKey() + "："));
+            categoryRun.setFontFamily(FONT_FAMILY_HEITI);
+            categoryRun.setFontSize(SUB_SECTION_FONT_SIZE);
+            categoryRun.setBold(true);
+            categoryRun.setColor(skillNameColor.replace("#", ""));
+
+            // 技能列表
+            for (Map<String, Object> skill : entry.getValue()) {
+                XWPFParagraph skillPara = document.createParagraph();
+                skillPara.setAlignment(ParagraphAlignment.LEFT);
+                skillPara.setIndentationLeft(200); // 缩进
+
+                XWPFRun skillRun = skillPara.createRun();
+
+                // 构建技能文本
+                StringBuilder skillText = new StringBuilder();
+                skillText.append("• ");
+                skillText.append(resumeDataParser.fixChineseEncoding(skill.get("name").toString()));
+
+                // 技能等级
+                if (skill.get("level") != null) {
+                    skillText.append("（");
+                    skillText.append(resumeDataParser.fixChineseEncoding(skill.get("level").toString()));
+                    skillText.append("）");
+                }
+
+                // 经验年限
+                if (skill.get("experienceYears") != null) {
+                    skillText.append(" - ");
+                    skillText.append(skill.get("experienceYears"));
+                    skillText.append("年经验");
+                }
+
+                skillRun.setText(skillText.toString());
+                skillRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                skillRun.setFontSize(DEFAULT_FONT_SIZE);
+
+                // 技能描述
+                if (skill.get("description") != null) {
+                    String description = resumeDataParser.fixChineseEncoding(skill.get("description").toString());
+                    if (!description.trim().isEmpty()) {
+                        XWPFParagraph descPara = document.createParagraph();
+                        descPara.setAlignment(ParagraphAlignment.LEFT);
+                        descPara.setIndentationLeft(400);
+
+                        XWPFRun descRun = descPara.createRun();
+                        descRun.setText("  " + description);
+                        descRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                        descRun.setFontSize(DEFAULT_FONT_SIZE - 1);
+                        descRun.setColor("666666");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 创建自我评价内容
+     */
+    @SuppressWarnings("unchecked")
+    private void createSelfEvaluationContent(XWPFDocument document, Map<String, Object> props,
+                                             Map<String, Object> styles) throws Exception {
+        List<Map<String, Object>> evaluations = (List<Map<String, Object>>) props.get("evaluations");
+        if (evaluations == null || evaluations.isEmpty()) {
+            createEmptyContent(document);
+            return;
+        }
+
+        // 获取样式设置
+        String contentColor = getColorFromStyle(styles, "contentColor", "#555555");
+        String backgroundColor = getColorFromStyle(styles, "backgroundColor", "#fafafa");
+
+        for (Map<String, Object> evaluation : evaluations) {
+            if (evaluation.get("content") != null) {
+                String content = resumeDataParser.fixChineseEncoding(evaluation.get("content").toString());
+                if (!content.trim().isEmpty()) {
+                    XWPFParagraph evalPara = document.createParagraph();
+                    evalPara.setAlignment(ParagraphAlignment.LEFT);
+                    evalPara.setSpacingBefore(50);
+                    evalPara.setSpacingAfter(50);
+                    evalPara.setIndentationLeft(50);
+                    evalPara.setIndentationRight(50);
+
+                    XWPFRun evalRun = evalPara.createRun();
+                    evalRun.setText(content);
+                    evalRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                    evalRun.setFontSize(DEFAULT_FONT_SIZE);
+                    evalRun.setColor(contentColor.replace("#", ""));
+                }
             }
         }
     }
@@ -354,168 +555,193 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
      * 创建工作经历内容
      */
     @SuppressWarnings("unchecked")
-    private void createWorkExperienceContent(XWPFDocument document, ResumesTemplateComponent component) throws Exception {
-        List<Map<String, Object>> experiences = (List<Map<String, Object>>)
-                component.getProps().get("experiences");
-
+    private void createWorkExperienceContent(XWPFDocument document, Map<String, Object> props,
+                                             Map<String, Object> styles) throws Exception {
+        List<Map<String, Object>> experiences = (List<Map<String, Object>>) props.get("experiences");
         if (experiences == null || experiences.isEmpty()) {
             createEmptyContent(document);
             return;
         }
 
-        for (int i = 0; i < experiences.size(); i++) {
-            Map<String, Object> exp = experiences.get(i);
+        // 获取样式设置
+        String companyColor = getColorFromStyle(styles, "companyColor", "#1890ff");
+        String periodColor = getColorFromStyle(styles, "periodColor", "#999999");
 
-            // 公司名称
+        for (Map<String, Object> exp : experiences) {
+            // 公司名称和职位
             XWPFParagraph companyPara = document.createParagraph();
             companyPara.setAlignment(ParagraphAlignment.LEFT);
+            companyPara.setSpacingBefore(80);
 
             XWPFRun companyRun = companyPara.createRun();
-            companyRun.setText(exp.get("company").toString());
-            companyRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            companyRun.setFontSize(DEFAULT_FONT_SIZE);
-            companyRun.setBold(true);
 
-            // 职位和时间
-            XWPFParagraph positionPara = document.createParagraph();
-            positionPara.setAlignment(ParagraphAlignment.LEFT);
-            positionPara.setIndentationLeft(200);
+            String company = resumeDataParser.fixChineseEncoding(exp.get("company").toString());
+            String position = resumeDataParser.fixChineseEncoding(exp.get("position").toString());
 
-            XWPFRun positionRun = positionPara.createRun();
-            String positionText = exp.get("position") + " | " +
-                    exp.get("startDate") + " - " + exp.get("endDate");
-            positionRun.setText(positionText);
-            positionRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            positionRun.setFontSize(DEFAULT_FONT_SIZE);
-            positionRun.setColor("666666");
-
-            // 部门
-            if (exp.get("department") != null) {
-                XWPFParagraph deptPara = document.createParagraph();
-                deptPara.setAlignment(ParagraphAlignment.LEFT);
-                deptPara.setIndentationLeft(200);
-
-                XWPFRun deptRun = deptPara.createRun();
-                deptRun.setText("部门: " + exp.get("department"));
-                deptRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                deptRun.setFontSize(DEFAULT_FONT_SIZE);
+            String startDate = resumeDataParser.formatDate(exp.get("startDate"));
+            String endDate;
+            if (exp.get("isCurrent") != null && Boolean.parseBoolean(exp.get("isCurrent").toString())) {
+                endDate = "至今";
+            } else {
+                endDate = resumeDataParser.formatDate(exp.get("endDate"));
             }
+
+            companyRun.setText(company + " - " + position);
+            companyRun.setFontFamily(FONT_FAMILY_HEITI);
+            companyRun.setFontSize(SUB_SECTION_FONT_SIZE);
+            companyRun.setBold(true);
+            companyRun.setColor(companyColor.replace("#", ""));
+
+            // 工作时间
+            XWPFParagraph periodPara = document.createParagraph();
+            periodPara.setAlignment(ParagraphAlignment.LEFT);
+            periodPara.setIndentationLeft(200);
+
+            XWPFRun periodRun = periodPara.createRun();
+            periodRun.setText(startDate + " - " + endDate);
+            periodRun.setFontFamily(FONT_FAMILY_SIMSUN);
+            periodRun.setFontSize(DEFAULT_FONT_SIZE);
+            periodRun.setColor(periodColor.replace("#", ""));
 
             // 工作描述
             if (exp.get("description") != null) {
-                XWPFParagraph descPara = document.createParagraph();
-                descPara.setAlignment(ParagraphAlignment.LEFT);
-                descPara.setIndentationLeft(400);
+                String description = resumeDataParser.fixChineseEncoding(exp.get("description").toString());
+                if (!description.trim().isEmpty()) {
+                    XWPFParagraph descPara = document.createParagraph();
+                    descPara.setAlignment(ParagraphAlignment.LEFT);
+                    descPara.setIndentationLeft(200);
 
-                XWPFRun descRun = descPara.createRun();
-                descRun.setText("工作描述:");
-                descRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                descRun.setFontSize(DEFAULT_FONT_SIZE);
-                descRun.setBold(true);
-
-                // 详细描述
-                XWPFParagraph detailsPara = document.createParagraph();
-                detailsPara.setAlignment(ParagraphAlignment.LEFT);
-                detailsPara.setIndentationLeft(600);
-
-                XWPFRun detailsRun = detailsPara.createRun();
-                detailsRun.setText(exp.get("description").toString());
-                detailsRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                detailsRun.setFontSize(DEFAULT_FONT_SIZE);
+                    XWPFRun descRun = descPara.createRun();
+                    descRun.setText("工作内容：" + description);
+                    descRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                    descRun.setFontSize(DEFAULT_FONT_SIZE);
+                    descRun.setColor("555555");
+                }
             }
 
             // 工作业绩
-            if (exp.get("achievements") != null) {
-                List<String> achievements = (List<String>) exp.get("achievements");
-                if (!achievements.isEmpty()) {
-                    XWPFParagraph achievePara = document.createParagraph();
-                    achievePara.setAlignment(ParagraphAlignment.LEFT);
-                    achievePara.setIndentationLeft(400);
+            List<String> achievements = (List<String>) exp.get("achievements");
+            if (achievements != null && !achievements.isEmpty()) {
+                XWPFParagraph achieveTitlePara = document.createParagraph();
+                achieveTitlePara.setAlignment(ParagraphAlignment.LEFT);
+                achieveTitlePara.setIndentationLeft(200);
 
-                    XWPFRun achieveRun = achievePara.createRun();
-                    achieveRun.setText("工作业绩:");
-                    achieveRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                    achieveRun.setFontSize(DEFAULT_FONT_SIZE);
-                    achieveRun.setBold(true);
+                XWPFRun achieveTitleRun = achieveTitlePara.createRun();
+                achieveTitleRun.setText("主要业绩：");
+                achieveTitleRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                achieveTitleRun.setFontSize(DEFAULT_FONT_SIZE);
+                achieveTitleRun.setBold(true);
 
-                    for (String achievement : achievements) {
-                        XWPFParagraph itemPara = document.createParagraph();
-                        itemPara.setAlignment(ParagraphAlignment.LEFT);
-                        itemPara.setIndentationLeft(600);
+                for (String achievement : achievements) {
+                    String achievementText = resumeDataParser.fixChineseEncoding(achievement);
+                    if (!achievementText.trim().isEmpty()) {
+                        XWPFParagraph achievePara = document.createParagraph();
+                        achievePara.setAlignment(ParagraphAlignment.LEFT);
+                        achievePara.setIndentationLeft(400);
 
-                        XWPFRun itemRun = itemPara.createRun();
-                        itemRun.setText("• " + achievement);
-                        itemRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                        itemRun.setFontSize(DEFAULT_FONT_SIZE);
+                        XWPFRun achieveRun = achievePara.createRun();
+                        achieveRun.setText("• " + achievementText);
+                        achieveRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                        achieveRun.setFontSize(DEFAULT_FONT_SIZE);
+                        achieveRun.setColor("666666");
                     }
                 }
             }
 
-            if (i < experiences.size() - 1) {
-                document.createParagraph();
+            // 添加分隔线（除了最后一个）
+            if (experiences.indexOf(exp) < experiences.size() - 1) {
+                addSeparatorLine(document);
             }
         }
     }
 
     /**
-     * 创建技能内容
+     * 创建教育背景内容
      */
     @SuppressWarnings("unchecked")
-    private void createSkillsContent(XWPFDocument document, ResumesTemplateComponent component) throws Exception {
-        List<Map<String, Object>> skills = (List<Map<String, Object>>)
-                component.getProps().get("skills");
-
-        if (skills == null || skills.isEmpty()) {
+    private void createEducationContent(XWPFDocument document, Map<String, Object> props,
+                                        Map<String, Object> styles) throws Exception {
+        List<Map<String, Object>> experiences = (List<Map<String, Object>>) props.get("experiences");
+        if (experiences == null || experiences.isEmpty()) {
             createEmptyContent(document);
             return;
         }
 
-        // 使用表格显示技能
-        XWPFTable table = document.createTable(skills.size(), 3);
-        table.setWidth("100%");
+        // 获取样式设置
+        String universityColor = getColorFromStyle(styles, "universityColor", "#52c41a");
+        String majorColor = getColorFromStyle(styles, "majorColor", "#666666");
 
-        for (int i = 0; i < skills.size(); i++) {
-            Map<String, Object> skill = skills.get(i);
-            XWPFTableRow row = table.getRow(i);
+        for (Map<String, Object> edu : experiences) {
+            // 学校名称和学位
+            XWPFParagraph schoolPara = document.createParagraph();
+            schoolPara.setAlignment(ParagraphAlignment.LEFT);
+            schoolPara.setSpacingBefore(80);
 
-            // 技能名称
-            XWPFTableCell nameCell = row.getCell(0);
-            nameCell.setWidth("30%");
-            XWPFParagraph namePara = nameCell.getParagraphs().get(0);
-            namePara.setAlignment(ParagraphAlignment.LEFT);
+            XWPFRun schoolRun = schoolPara.createRun();
 
-            XWPFRun nameRun = namePara.createRun();
-            nameRun.setText(skill.get("name").toString());
-            nameRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            nameRun.setFontSize(DEFAULT_FONT_SIZE);
-            nameRun.setBold(true);
+            String university = resumeDataParser.fixChineseEncoding(edu.get("university").toString());
+            String degree = resumeDataParser.fixChineseEncoding(edu.get("degree").toString());
+            String major = resumeDataParser.fixChineseEncoding(edu.get("major").toString());
 
-            // 技能等级
-            XWPFTableCell levelCell = row.getCell(1);
-            levelCell.setWidth("40%");
-            XWPFParagraph levelPara = levelCell.getParagraphs().get(0);
-            levelPara.setAlignment(ParagraphAlignment.LEFT);
+            String startDate = resumeDataParser.formatDate(edu.get("startDate"));
+            String endDate = resumeDataParser.formatDate(edu.get("endDate"));
 
-            XWPFRun levelRun = levelPara.createRun();
-            if (skill.get("level") != null) {
-                int level = Integer.parseInt(skill.get("level").toString());
-                levelRun.setText("熟练程度: " + level + "/5");
+            schoolRun.setText(university + " - " + degree);
+            schoolRun.setFontFamily(FONT_FAMILY_HEITI);
+            schoolRun.setFontSize(SUB_SECTION_FONT_SIZE);
+            schoolRun.setBold(true);
+            schoolRun.setColor(universityColor.replace("#", ""));
+
+            // 专业和时间
+            XWPFParagraph detailPara = document.createParagraph();
+            detailPara.setAlignment(ParagraphAlignment.LEFT);
+            detailPara.setIndentationLeft(200);
+
+            XWPFRun detailRun = detailPara.createRun();
+            detailRun.setText(major + " | " + startDate + " - " + endDate);
+            detailRun.setFontFamily(FONT_FAMILY_SIMSUN);
+            detailRun.setFontSize(DEFAULT_FONT_SIZE);
+            detailRun.setColor(majorColor.replace("#", ""));
+
+            // 描述
+            if (edu.get("description") != null) {
+                String description = resumeDataParser.fixChineseEncoding(edu.get("description").toString());
+                if (!description.trim().isEmpty()) {
+                    XWPFParagraph descPara = document.createParagraph();
+                    descPara.setAlignment(ParagraphAlignment.LEFT);
+                    descPara.setIndentationLeft(200);
+
+                    XWPFRun descRun = descPara.createRun();
+                    descRun.setText("研究方向：" + description);
+                    descRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                    descRun.setFontSize(DEFAULT_FONT_SIZE);
+                    descRun.setColor("555555");
+                }
             }
-            levelRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            levelRun.setFontSize(DEFAULT_FONT_SIZE);
 
-            // 技能描述
-            XWPFTableCell descCell = row.getCell(2);
-            descCell.setWidth("30%");
-            XWPFParagraph descPara = descCell.getParagraphs().get(0);
-            descPara.setAlignment(ParagraphAlignment.LEFT);
+            // 荣誉/成就
+            List<String> achievements = (List<String>) edu.get("achievements");
+            if (achievements != null && !achievements.isEmpty()) {
+                for (String achievement : achievements) {
+                    String achievementText = resumeDataParser.fixChineseEncoding(achievement);
+                    if (!achievementText.trim().isEmpty()) {
+                        XWPFParagraph honorPara = document.createParagraph();
+                        honorPara.setAlignment(ParagraphAlignment.LEFT);
+                        honorPara.setIndentationLeft(200);
 
-            XWPFRun descRun = descPara.createRun();
-            if (skill.get("description") != null) {
-                descRun.setText(skill.get("description").toString());
+                        XWPFRun honorRun = honorPara.createRun();
+                        honorRun.setText("• " + achievementText);
+                        honorRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                        honorRun.setFontSize(DEFAULT_FONT_SIZE);
+                        honorRun.setColor("666666");
+                    }
+                }
             }
-            descRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            descRun.setFontSize(DEFAULT_FONT_SIZE);
+
+            // 添加分隔线（除了最后一个）
+            if (experiences.indexOf(edu) < experiences.size() - 1) {
+                addSeparatorLine(document);
+            }
         }
     }
 
@@ -523,153 +749,156 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
      * 创建项目经验内容
      */
     @SuppressWarnings("unchecked")
-    private void createProjectsContent(XWPFDocument document, ResumesTemplateComponent component) throws Exception {
-        List<Map<String, Object>> projects = (List<Map<String, Object>>)
-                component.getProps().get("projects");
-
-        if (projects == null || projects.isEmpty()) {
+    private void createProjectsContent(XWPFDocument document, Map<String, Object> props,
+                                       Map<String, Object> styles) throws Exception {
+        List<Map<String, Object>> experiences = (List<Map<String, Object>>) props.get("experiences");
+        if (experiences == null || experiences.isEmpty()) {
             createEmptyContent(document);
             return;
         }
 
-        for (int i = 0; i < projects.size(); i++) {
-            Map<String, Object> project = projects.get(i);
-
+        for (Map<String, Object> project : experiences) {
             // 项目名称
             XWPFParagraph namePara = document.createParagraph();
             namePara.setAlignment(ParagraphAlignment.LEFT);
+            namePara.setSpacingBefore(80);
 
             XWPFRun nameRun = namePara.createRun();
-            nameRun.setText((i + 1) + ". " + project.get("name"));
-            nameRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            nameRun.setFontSize(DEFAULT_FONT_SIZE);
+
+            String projectName = resumeDataParser.fixChineseEncoding(
+                    project.getOrDefault("name", "未命名项目").toString()
+            );
+            String startDate = resumeDataParser.formatDate(project.get("startDate"));
+            String endDate = resumeDataParser.formatDate(project.get("endDate"));
+
+            nameRun.setText(projectName + " (" + startDate + " - " + endDate + ")");
+            nameRun.setFontFamily(FONT_FAMILY_HEITI);
+            nameRun.setFontSize(SUB_SECTION_FONT_SIZE);
             nameRun.setBold(true);
-
-            // 项目角色和时间
-            XWPFParagraph rolePara = document.createParagraph();
-            rolePara.setAlignment(ParagraphAlignment.LEFT);
-            rolePara.setIndentationLeft(200);
-
-            XWPFRun roleRun = rolePara.createRun();
-            String roleText = "担任角色: " + project.get("role") + " | " +
-                    "项目时间: " + project.get("startDate") + " - " + project.get("endDate");
-            roleRun.setText(roleText);
-            roleRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            roleRun.setFontSize(DEFAULT_FONT_SIZE);
 
             // 项目描述
             if (project.get("description") != null) {
-                XWPFParagraph descPara = document.createParagraph();
-                descPara.setAlignment(ParagraphAlignment.LEFT);
-                descPara.setIndentationLeft(200);
+                String description = resumeDataParser.fixChineseEncoding(project.get("description").toString());
+                if (!description.trim().isEmpty()) {
+                    XWPFParagraph descPara = document.createParagraph();
+                    descPara.setAlignment(ParagraphAlignment.LEFT);
+                    descPara.setIndentationLeft(200);
 
-                XWPFRun descRun = descPara.createRun();
-                descRun.setText("项目描述: " + project.get("description"));
-                descRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                descRun.setFontSize(DEFAULT_FONT_SIZE);
-            }
-
-            // 技术栈
-            if (project.get("technologies") != null) {
-                List<String> technologies = (List<String>) project.get("technologies");
-                if (!technologies.isEmpty()) {
-                    XWPFParagraph techPara = document.createParagraph();
-                    techPara.setAlignment(ParagraphAlignment.LEFT);
-                    techPara.setIndentationLeft(200);
-
-                    XWPFRun techRun = techPara.createRun();
-                    techRun.setText("技术栈: " + String.join(", ", technologies));
-                    techRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                    techRun.setFontSize(DEFAULT_FONT_SIZE);
+                    XWPFRun descRun = descPara.createRun();
+                    descRun.setText("项目描述：" + description);
+                    descRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                    descRun.setFontSize(DEFAULT_FONT_SIZE);
+                    descRun.setColor("555555");
                 }
             }
 
-            // 项目职责
-            if (project.get("responsibilities") != null) {
-                List<String> responsibilities = (List<String>) project.get("responsibilities");
-                if (!responsibilities.isEmpty()) {
-                    XWPFParagraph respPara = document.createParagraph();
-                    respPara.setAlignment(ParagraphAlignment.LEFT);
-                    respPara.setIndentationLeft(200);
+            // 项目成就
+            List<String> achievements = (List<String>) project.get("achievements");
+            if (achievements != null && !achievements.isEmpty()) {
+                XWPFParagraph achieveTitlePara = document.createParagraph();
+                achieveTitlePara.setAlignment(ParagraphAlignment.LEFT);
+                achieveTitlePara.setIndentationLeft(200);
 
-                    XWPFRun respRun = respPara.createRun();
-                    respRun.setText("项目职责:");
-                    respRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                    respRun.setFontSize(DEFAULT_FONT_SIZE);
-                    respRun.setBold(true);
+                XWPFRun achieveTitleRun = achieveTitlePara.createRun();
+                achieveTitleRun.setText("项目成果：");
+                achieveTitleRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                achieveTitleRun.setFontSize(DEFAULT_FONT_SIZE);
+                achieveTitleRun.setBold(true);
 
-                    for (String responsibility : responsibilities) {
-                        XWPFParagraph itemPara = document.createParagraph();
-                        itemPara.setAlignment(ParagraphAlignment.LEFT);
-                        itemPara.setIndentationLeft(400);
+                for (String achievement : achievements) {
+                    String achievementText = resumeDataParser.fixChineseEncoding(achievement);
+                    if (!achievementText.trim().isEmpty()) {
+                        XWPFParagraph achievePara = document.createParagraph();
+                        achievePara.setAlignment(ParagraphAlignment.LEFT);
+                        achievePara.setIndentationLeft(400);
 
-                        XWPFRun itemRun = itemPara.createRun();
-                        itemRun.setText("• " + responsibility);
-                        itemRun.setFontFamily(FONT_FAMILY_SIMSUN);
-                        itemRun.setFontSize(DEFAULT_FONT_SIZE);
+                        XWPFRun achieveRun = achievePara.createRun();
+                        achieveRun.setText("• " + achievementText);
+                        achieveRun.setFontFamily(FONT_FAMILY_SIMSUN);
+                        achieveRun.setFontSize(DEFAULT_FONT_SIZE);
+                        achieveRun.setColor("666666");
                     }
                 }
             }
 
-            if (i < projects.size() - 1) {
-                document.createParagraph();
+            // 添加分隔线（除了最后一个）
+            if (experiences.indexOf(project) < experiences.size() - 1) {
+                addSeparatorLine(document);
             }
         }
     }
 
     /**
-     * 创建证书内容
+     * 创建求职意向内容
      */
     @SuppressWarnings("unchecked")
-    private void createCertificatesContent(XWPFDocument document, ResumesTemplateComponent component) throws Exception {
-        List<Map<String, Object>> certificates = (List<Map<String, Object>>)
-                component.getProps().get("certificates");
-
-        if (certificates == null || certificates.isEmpty()) {
+    private void createJobIntentionContent(XWPFDocument document, Map<String, Object> props,
+                                           Map<String, Object> styles) throws Exception {
+        List<Map<String, Object>> intentions = (List<Map<String, Object>>) props.get("intentions");
+        if (intentions == null || intentions.isEmpty()) {
             createEmptyContent(document);
             return;
         }
 
-        for (int i = 0; i < certificates.size(); i++) {
-            Map<String, Object> cert = certificates.get(i);
+        // 获取样式设置
+        String highlightColor = getColorFromStyle(styles, "highlightColor", "#1890ff");
 
-            XWPFParagraph certPara = document.createParagraph();
-            certPara.setAlignment(ParagraphAlignment.LEFT);
+        // 使用表格显示求职意向
+        XWPFTable table = document.createTable(intentions.size() + 1, 4);
+        table.setWidth("100%");
 
-            XWPFRun certRun = certPara.createRun();
-            certRun.setText("• " + cert.get("name") + " | " +
-                    cert.get("issueDate") + " | " +
-                    cert.get("issuingAuthority"));
-            certRun.setFontFamily(FONT_FAMILY_SIMSUN);
-            certRun.setFontSize(DEFAULT_FONT_SIZE);
+        // 表头
+        XWPFTableRow headerRow = table.getRow(0);
+        String[] headers = {"期望职位", "工作类型", "期望地点", "期望薪资"};
+
+        for (int i = 0; i < headers.length; i++) {
+            XWPFTableCell cell = headerRow.getCell(i);
+            cell.setWidth("25%");
+            XWPFParagraph para = cell.getParagraphs().get(0);
+            para.setAlignment(ParagraphAlignment.CENTER);
+
+            XWPFRun run = para.createRun();
+            run.setText(resumeDataParser.fixChineseEncoding(headers[i]));
+            run.setFontFamily(FONT_FAMILY_SIMSUN);
+            run.setFontSize(DEFAULT_FONT_SIZE);
+            run.setBold(true);
+            run.setColor("FFFFFF");
+
+            // 设置表头背景色
+            CTShd shd = cell.getCTTc().addNewTcPr().addNewShd();
+            shd.setFill(highlightColor.replace("#", ""));
         }
-    }
 
-    /**
-     * 创建自我评价内容
-     */
-    private void createSelfEvaluationContent(XWPFDocument document, ResumesTemplateComponent component) throws Exception {
-        String content = (String) component.getProps().get("content");
+        // 数据行
+        for (int i = 0; i < intentions.size(); i++) {
+            Map<String, Object> intention = intentions.get(i);
+            XWPFTableRow row = table.getRow(i + 1);
 
-        if (!StringUtils.hasText(content)) {
-            createEmptyContent(document);
-            return;
+            String[] values = {
+                    resumeDataParser.fixChineseEncoding(intention.getOrDefault("position", "").toString()),
+                    resumeDataParser.fixChineseEncoding(intention.getOrDefault("jobType", "").toString()),
+                    resumeDataParser.fixChineseEncoding(intention.getOrDefault("city", "").toString()),
+                    intention.getOrDefault("salary", "").toString()
+            };
+
+            for (int j = 0; j < values.length; j++) {
+                XWPFTableCell cell = row.getCell(j);
+                XWPFParagraph para = cell.getParagraphs().get(0);
+                para.setAlignment(ParagraphAlignment.CENTER);
+
+                XWPFRun run = para.createRun();
+                run.setText(values[j]);
+                run.setFontFamily(FONT_FAMILY_SIMSUN);
+                run.setFontSize(DEFAULT_FONT_SIZE);
+            }
         }
-
-        XWPFParagraph evalPara = document.createParagraph();
-        evalPara.setAlignment(ParagraphAlignment.LEFT);
-        evalPara.setIndentationLeft(200);
-
-        XWPFRun evalRun = evalPara.createRun();
-        evalRun.setText(content);
-        evalRun.setFontFamily(FONT_FAMILY_SIMSUN);
-        evalRun.setFontSize(DEFAULT_FONT_SIZE);
     }
 
     /**
      * 创建默认内容
      */
-    private void createDefaultContent(XWPFDocument document, ResumesTemplateComponent component) throws Exception {
+    private void createDefaultContent(XWPFDocument document, Map<String, Object> props,
+                                      Map<String, Object> styles) throws Exception {
         createEmptyContent(document);
     }
 
@@ -681,11 +910,51 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         emptyPara.setAlignment(ParagraphAlignment.LEFT);
 
         XWPFRun emptyRun = emptyPara.createRun();
-        emptyRun.setText("暂无内容");
+        emptyRun.setText(resumeDataParser.fixChineseEncoding("暂无内容"));
         emptyRun.setFontFamily(FONT_FAMILY_SIMSUN);
         emptyRun.setFontSize(DEFAULT_FONT_SIZE);
         emptyRun.setColor("999999");
         emptyRun.setItalic(true);
+    }
+
+    /**
+     * 添加底部边框
+     */
+    private void addBottomBorder(XWPFParagraph paragraph, String color) {
+        try {
+            CTP ctp = paragraph.getCTP();
+            CTPPr pPr = ctp.getPPr();
+            if (pPr == null) {
+                pPr = ctp.addNewPPr();
+            }
+
+            CTBorder bottomBorder = CTBorder.Factory.newInstance();
+            bottomBorder.setVal(STBorder.SINGLE);
+            bottomBorder.setSz(BigInteger.valueOf(8));
+            bottomBorder.setColor(color != null ? color.replace("#", "") : "722ed1");
+
+            CTPBdr borders = CTPBdr.Factory.newInstance();
+            borders.setBottom(bottomBorder);
+            pPr.setPBdr(borders);
+        } catch (Exception e) {
+            log.warn("添加底部边框失败", e);
+        }
+    }
+
+    /**
+     * 添加分隔线
+     */
+    private void addSeparatorLine(XWPFDocument document) {
+        XWPFParagraph separatorPara = document.createParagraph();
+        separatorPara.setAlignment(ParagraphAlignment.CENTER);
+
+        XWPFRun separatorRun = separatorPara.createRun();
+        separatorRun.addBreak();
+        separatorRun.setText("────────────────────");
+        separatorRun.setFontFamily(FONT_FAMILY_SIMSUN);
+        separatorRun.setFontSize(8);
+        separatorRun.setColor("CCCCCC");
+        separatorRun.addBreak();
     }
 
     /**
@@ -698,36 +967,13 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
         footerPara.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun footerRun = footerPara.createRun();
-        footerRun.setText("简历编号: " + resumes.getId() + " | " +
-                "生成时间: " + LocalDateTime.now().format(DATE_FORMATTER));
+        footerRun.setText(resumeDataParser.fixChineseEncoding(
+                "简历编号: " + resumes.getId() + " | " +
+                        "生成时间: " + LocalDateTime.now().format(DATE_FORMATTER)
+        ));
         footerRun.setFontFamily(FONT_FAMILY_SIMSUN);
         footerRun.setFontSize(9);
         footerRun.setColor("666666");
-    }
-
-    /**
-     * 添加底部边框
-     */
-    private void addBottomBorder(XWPFParagraph paragraph) {
-        CTP ctp = paragraph.getCTP();
-        CTPPr pPr = ctp.getPPr();
-        if (pPr == null) {
-            pPr = ctp.addNewPPr();
-        }
-
-        CTBorder bottomBorder = CTBorder.Factory.newInstance();
-        bottomBorder.setVal(STBorder.SINGLE);
-        bottomBorder.setSz(BigInteger.valueOf(4));
-        bottomBorder.setColor("000000");
-
-        CTBorder topBorder = CTBorder.Factory.newInstance();
-        topBorder.setVal(STBorder.NIL);
-
-        CTBorder leftBorder = CTBorder.Factory.newInstance();
-        leftBorder.setVal(STBorder.NIL);
-
-        CTBorder rightBorder = CTBorder.Factory.newInstance();
-        rightBorder.setVal(STBorder.NIL);
     }
 
     /**
@@ -743,39 +989,33 @@ public class WordDocumentGeneratorStrategy extends AbstractDocumentGeneratorStra
     }
 
     /**
-     * 异步生成Word简历
+     * 从样式中获取颜色值
      */
-    public CompletableFuture<File> generateAsync(Long resumesId, String version) {
-        return CompletableFuture.supplyAsync(() -> generate(resumesId, null, version));
+    private String getColorFromStyle(Map<String, Object> styles, String key, String defaultValue) {
+        if (styles == null) return defaultValue;
+        Object value = styles.get(key);
+        return value != null ? value.toString() : defaultValue;
     }
 
     /**
-     * 验证Word文件
+     * 从样式中获取值
      */
-    public boolean validateWordFile(File wordFile) {
-        if (!validateOutputFile(wordFile)) {
-            return false;
-        }
+    private String getStyleValue(Map<String, Object> styles, String key, String defaultValue) {
+        if (styles == null) return defaultValue;
+        Object value = styles.get(key);
+        return value != null ? value.toString() : defaultValue;
+    }
 
-        try {
-            // 简单的Word文件头验证（检查是否是ZIP格式的DOCX）
-            byte[] header = new byte[4];
-            try (java.io.FileInputStream fis = new java.io.FileInputStream(wordFile)) {
-                fis.read(header);
-            }
+    /**
+     * 字段信息辅助类
+     */
+    private static class FieldInfo {
+        String label;
+        String value;
 
-            // DOCX文件是ZIP格式，前两个字节是PK
-            boolean isValidDocx = (header[0] == 0x50 && header[1] == 0x4B);
-
-            if (!isValidDocx) {
-                log.warn("文件不是有效的DOCX格式: {}", wordFile.getAbsolutePath());
-            }
-
-            return isValidDocx;
-
-        } catch (IOException e) {
-            log.error("验证Word文件失败", e);
-            return false;
+        FieldInfo(String label, String value) {
+            this.label = label;
+            this.value = value;
         }
     }
 
