@@ -11,7 +11,7 @@
             <th:block th:if="${component.props?.avatar != null and component.props.avatar != ''}">
                 <img th:src="${component.props.avatar}"
                      class="avatar"
-                     alt="头像">
+                     alt="头像"/>
             </th:block>
             <th:block th:unless="${component.props?.avatar != null and component.props.avatar != ''}">
                 <div class="avatar-placeholder">👤</div>

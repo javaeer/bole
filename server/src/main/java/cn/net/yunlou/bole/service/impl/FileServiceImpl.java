@@ -100,6 +100,7 @@ public class FileServiceImpl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<File> uploadFiles(List<MultipartFile> files) {
         if (files == null || files.isEmpty()) {
             return Collections.emptyList();
@@ -139,6 +140,7 @@ public class FileServiceImpl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteFile(String filePath, String storageType) {
         return false;
     }
@@ -160,6 +162,7 @@ public class FileServiceImpl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public File uploadLocalFile(java.io.File file, String fileName) {
 
         File uploaded = storageService.uploadFile(file, fileName);

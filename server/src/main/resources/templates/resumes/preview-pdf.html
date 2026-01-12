@@ -983,6 +983,21 @@
 </head>
 <body>
 <div th:fragment="content">
+
+    <!-- 页面头部（每页都会显示） -->
+    <div id="header" style="position: running(header);">
+        <div style="text-align: center; font-size: 10pt; color: #666;">
+            简历编号: <span th:text="${resumes.id}"></span>
+        </div>
+    </div>
+
+    <!-- 页面底部（每页都会显示） -->
+    <div id="footer" style="position: running(footer);">
+        <div style="text-align: center; font-size: 9pt; color: #999;">
+            第 <span class="pageNumber"></span> 页 / 共 <span class="totalPages"></span> 页
+        </div>
+    </div>
+
     <!-- 简历预览主容器 -->
     <div class="resume-container" th:classappend="${device}">
 
@@ -1031,6 +1046,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- 分割线（如果需要分页） -->
+        <div class="page-break" th:if="${layoutData.needPageBreak}"></div>
     </div>
 
     <!-- JavaScript交互 -->
@@ -1058,6 +1076,9 @@
                 document.querySelector('.resume-container').classList.remove('print-mode');
             });
         });
+        // 页眉页脚计数器
+        var pages = document.querySelectorAll('.page-break').length + 1;
+        document.querySelector('.totalPages').textContent = pages;
         /*]]>*/
     </script>
 </div>

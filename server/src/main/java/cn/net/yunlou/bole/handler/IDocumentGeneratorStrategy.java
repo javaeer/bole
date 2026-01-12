@@ -19,5 +19,7 @@ public interface IDocumentGeneratorStrategy {
 
     File generate(Long resumesId);
 
+    File generate(Long resumesId, String device, String version);
+
     boolean supports(DocumentType documentType);
 }

@@ -19,7 +19,7 @@ public enum DocumentType implements IEnum<String> {
     PDF("pdf", "pdf"),
     WORD("word", "word"),
     HTML("html", "html"),
-    TXT("txt", "txt");
+    TEXT("text", "txt");
 
     private final String value;
 

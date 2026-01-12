@@ -34,7 +34,7 @@ public class DocumentTask extends BaseEntity {
 
     private DocumentType documentType;
 
-    private TaskStatus status = TaskStatus.PENDING;
+    private TaskStatus status;
 
     private String fileUrl;
 
