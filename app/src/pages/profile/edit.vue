@@ -732,7 +732,7 @@
 
 	.error-message {
 		font-size: $font-size-extra-small;
-		color: $error-color;
+		color: $danger-color;
 		margin-top: $margin-mini;
 	}
 
