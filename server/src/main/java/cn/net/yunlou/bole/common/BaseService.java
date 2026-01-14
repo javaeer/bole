@@ -1,7 +1,6 @@
 package cn.net.yunlou.bole.common;
 
 import cn.net.yunlou.bole.common.utils.DateUtils;
-import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -24,11 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class BaseService<
                 M extends BaseMapper<T>,
                 T extends BaseEntity,
-                D extends BaseDTO,
+                C extends BaseCreate,
+                V extends BaseView,
+                E extends BaseEdit,
                 Q extends BaseQuery,
-                S extends BaseStructMapper<T, D, Q> // 添加具体映射器类型参数
+                S extends BaseStructMapper<T, C, V, E, Q> // 添加具体映射器类型参数
                 >
-        extends ServiceImpl<M, T> implements IBaseService<T, D, Q> {
+        extends ServiceImpl<M, T> implements IBaseService<T, C, V, E, Q> {
 
     @Autowired protected S structMapper;
 
@@ -39,29 +40,29 @@ public abstract class BaseService<
 
     @Override
     public T get(T entity) {
-        return getOne(getBaseQueryWrapper(entity));
+        return super.getOne(getBaseQueryWrapper(entity));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean remove(T entity) {
-        return remove(getBaseQueryWrapper(entity));
+        return super.remove(getBaseQueryWrapper(entity));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean update(T entity) {
-        return update(getBaseUpdateWrapper(entity));
+        return super.update(getBaseUpdateWrapper(entity));
     }
 
     @Override
     public long count(T entity) {
-        return count(getBaseQueryWrapper(entity));
+        return super.count(getBaseQueryWrapper(entity));
     }
 
     @Override
     public List<T> list(T entity) {
-        return list(getBaseQueryWrapper(entity));
+        return super.list(getBaseQueryWrapper(entity));
     }
 
     @Override
@@ -89,20 +90,17 @@ public abstract class BaseService<
             }
             queryWrapper.lt("created_at", DateUtils.truncate(date, Calendar.SECOND));
         }
-        return page(page, queryWrapper);
+        return super.page(page, queryWrapper);
     }
 
     @Override
     public QueryWrapper<T> getBaseQueryWrapper(T entity) {
-        SkipInvalidValueQueryWrapper<T> queryWrapper = SkipInvalidValueWrappers.query(entity);
-        if (ValueUtils.isValid(entity.getKeyWords())) {
-            queryWrapper = getKeyFieldQueryWrapper(queryWrapper, entity);
-        }
-        return queryWrapper;
+        return SkipInvalidValueWrappers.query(entity);
     }
 
     @Override
     public UpdateWrapper<T> getBaseUpdateWrapper(T entity) {
+        log.error("自行 实现 getBaseUpdateWrapper 方法");
         return SkipInvalidValueWrappers.update(entity);
     }
 
@@ -113,20 +111,7 @@ public abstract class BaseService<
      * @param entity 实体
      * @return 组合条件
      */
-    protected SkipInvalidValueLambdaQueryWrapper<T> getKeyFieldQueryWrapper(
-            SkipInvalidValueLambdaQueryWrapper<T> queryWrapper, T entity) {
-        return queryWrapper;
-    }
-
-    /**
-     * 如果存在 关键字 查询 请务必 重写此方法
-     *
-     * @param queryWrapper 现有 条件
-     * @param entity 实体
-     * @return 组合条件
-     */
-    protected SkipInvalidValueQueryWrapper<T> getKeyFieldQueryWrapper(
-            SkipInvalidValueQueryWrapper<T> queryWrapper, T entity) {
+    protected QueryWrapper<T> getKeyFieldQueryWrapper(QueryWrapper<T> queryWrapper, T entity) {
         return queryWrapper;
     }
 
@@ -135,38 +120,78 @@ public abstract class BaseService<
     // ==========================MS 封装开始=================================
 
     @Override
-    public D getDTOById(Serializable id) {
+    public V getViewById(Serializable id) {
         T entity = getById(id);
-        return structMapper.toDTO(entity);
+        return structMapper.toView(entity);
     }
 
     @Override
-    public boolean saveByDTO(D dto) {
-        T entity = structMapper.toEntity(dto);
+    @Transactional(rollbackFor = Exception.class)
+    public boolean saveByCreate(C create) {
+        T entity = structMapper.createToEntity(create);
         return save(entity);
     }
 
     @Override
-    public boolean updateDTO(D dto) {
-        T entity = structMapper.toEntity(dto);
-        return update(entity);
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateByEdit(E edit) {
+        T entity = structMapper.editToEntity(edit);
+        return updateById(entity);
     }
 
     @Override
-    public boolean removeDTO(D dto) {
-        T entity = structMapper.toEntity(dto);
+    @Transactional(rollbackFor = Exception.class)
+    public boolean removeByQuery(Q query) {
+        T entity = structMapper.queryToEntity(query);
         return remove(entity);
     }
 
     @Override
-    public Page<D> pageDTOByQuery(long pageNum, long pageSize, Q query) {
+    public Page<V> pageViewByQuery(long pageNum, long pageSize, Q query) {
         T entity = structMapper.queryToEntity(query);
-        return structMapper.toDTOPage(page(pageNum, pageSize, entity));
+        return structMapper.toViewPage(page(pageNum, pageSize, entity));
     }
 
     @Override
-    public List<D> listDTOByQuery(Q query) {
+    public List<V> listViewByQuery(Q query) {
         T entity = structMapper.queryToEntity(query);
-        return structMapper.toDTOList(list(entity));
+        return structMapper.toViews(list(entity));
+    }
+
+    @Override
+    public List<T> listByQuery(Q query) {
+        T entity = structMapper.queryToEntity(query);
+        return list(entity);
+    }
+
+    @Override
+    public Page<T> pageByQuery(long pageNum, long pageSize, Q query) {
+        T entity = structMapper.queryToEntity(query);
+        return page(pageNum, pageSize, entity);
+    }
+
+    @Override
+    public Page<V> pageView(long pageNum, long pageSize, T entity) {
+        return structMapper.toViewPage(page(pageNum, pageSize, entity));
+    }
+
+    @Override
+    public List<V> listView(T entity) {
+        return structMapper.toViews(list(entity));
+    }
+
+    @Override
+    public V toView(T entity) {
+        return structMapper.toView(entity);
+    }
+
+    @Override
+    public List<V> toListView(List<T> entities) {
+        return structMapper.toViews(entities);
+    }
+
+    @Override
+    public Page<V> toViewPage(Page<T> entityPage) {
+        return structMapper.toViewPage(entityPage);
     }
 }

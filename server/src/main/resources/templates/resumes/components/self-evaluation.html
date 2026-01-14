@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 自我评价组件 -->
+<div th:fragment="self-evaluation(component, globalStyle)"
+     class="self-evaluation">
+    <th:block th:if="${component.props.evaluations != null and not #lists.isEmpty(component.props.evaluations)}">
+        <div th:each="evaluation,iter : ${component.props.evaluations}" class="evaluation-item">
+            <div class="evaluation-content" th:text="${evaluation.content}">
+            </div>
+
+            <th:block th:if="${evaluation.highlights != null and not #lists.isEmpty(evaluation.highlights)}">
+                <div class="highlights-section">
+                    <span class="highlights-title">高亮内容：</span>
+                    <div class="highlights-tags">
+                        <div th:each="highlight : ${evaluation.highlights}" class="highlight-tag">
+                            <span th:text="${highlight}"></span>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </th:block>
+
+    <th:block th:unless="${component.props.evaluations != null and not #lists.isEmpty(component.props.evaluations)}">
+        <div class="empty-state">
+            <span class="empty-icon">📝</span>
+            <span class="empty-title">暂无自我评价内容</span>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

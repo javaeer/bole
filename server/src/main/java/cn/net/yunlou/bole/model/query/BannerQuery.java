@@ -1,0 +1,12 @@
+package cn.net.yunlou.bole.model.query;
+
+import cn.net.yunlou.bole.common.BaseQuery;
+import lombok.*;
+
+/**
+ * FileName: SystemBannerQuery Description: Created By laughtiger Created At 2025/11/28 13:23
+ * Modified By Modified At
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class BannerQuery extends BaseQuery {}

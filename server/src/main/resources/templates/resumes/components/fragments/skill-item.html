@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 技能项  -->
+<div th:fragment="skill-item(skill, showTags)">
+    <div class="skill-main-info">
+        <div class="skill-header">
+            <div class="skill-name-row">
+                <span class="skill-name" th:text="${skill.name}"></span>
+                <div th:if="${skill.level != null}" class="skill-level-tag">
+                    <span class="level-text" th:text="${skill.level}"></span>
+                    <div th:if="${skill.proficiencyPercent != null}" class="level-percent">
+                        <span th:text="${skill.proficiencyPercent + '%'}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${skill.description != null}" class="skill-description"
+             th:text="${skill.description}">
+        </div>
+
+        <div th:if="${showTags and skill.tags != null and not #lists.isEmpty(skill.tags)}"
+             class="skill-tags-container">
+            <div th:each="tag : ${skill.tags}" class="tag-item">
+                <span class="tag-text" th:text="${tag}"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="skill-details">
+        <div th:if="${skill.experienceYears != null}" class="detail-item experience-item">
+            <div class="detail-label">
+                <span class="detail-icon">📅</span>
+                <span class="label-text">经验</span>
+            </div>
+            <div class="detail-value">
+                <span class="years-text" th:text="${skill.experienceYears} + '年'"></span>
+            </div>
+        </div>
+
+        <div th:if="${skill.isCertified and skill.certificateName != null}"
+             class="detail-item certification-item">
+            <div class="detail-label">
+                <span class="detail-icon">🏆</span>
+                <span class="label-text">证书</span>
+            </div>
+            <div class="detail-value certification-details">
+                <span class="cert-name" th:text="${skill.certificateName}"></span>
+                <span th:if="${skill.certificateDate != null}" class="cert-date">
+                            <span th:text="${skill.certificateDate}"></span>
+                        </span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -10,6 +10,28 @@
     "build:mp-weixin": "uni build -p mp-weixin",
     "type-check": "vue-tsc --noEmit"
   },
+  "uni-app": {
+    "scripts": {
+      "dev-h5": {
+        "title": "h5 开发环境",
+        "env": {
+          "UNI_PLATFORM": "h5"
+        }
+      },
+      "test-h5": {
+        "title": "h5 测试环境",
+        "env": {
+          "UNI_PLATFORM": "h5"
+        }
+      },
+      "prod-h5": {
+        "title": "h5 正式环境",
+        "env": {
+          "UNI_PLATFORM": "h5"
+        }
+      }
+    }
+  },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4080520251106001",
     "@dcloudio/uni-app-harmony": "3.0.0-4080520251106001",
@@ -27,9 +49,12 @@
     "@dcloudio/uni-mp-weixin": "3.0.0-4080520251106001",
     "@dcloudio/uni-mp-xhs": "3.0.0-4080520251106001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-4080520251106001",
+    "@dcloudio/uni-ui": "^1.5.11",
+    "lodash-es": "^4.17.22",
     "pinia": "^2.3.1",
-    "vue": "^3.4.21",
-    "vue-i18n": "^9.14.5"
+    "vue": "^3.5.26",
+    "vue-i18n": "^9.14.5",
+    "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.8",
@@ -42,7 +67,7 @@
     "sass-loader": "^16.0.6",
     "typescript": "^4.9.5",
     "unplugin-auto-import": "^0.18.3",
-    "vite": "^5.2.8",
+    "vite": "^5.4.21",
     "vue-tsc": "^1.8.27"
   }
 }

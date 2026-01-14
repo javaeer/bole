@@ -3,12 +3,12 @@ package cn.net.yunlou.bole.controller;
 import cn.net.yunlou.bole.common.BusinessException;
 import cn.net.yunlou.bole.common.BusinessResponse;
 import cn.net.yunlou.bole.common.BusinessStatus;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
 import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
-import cn.net.yunlou.bole.entity.Resumes;
-import cn.net.yunlou.bole.model.request.ResumesAddRequest;
-import cn.net.yunlou.bole.model.request.ResumesEditRequest;
-import cn.net.yunlou.bole.model.request.ResumesSearchRequest;
+import cn.net.yunlou.bole.model.create.ResumesCreate;
+import cn.net.yunlou.bole.model.edit.ResumesEdit;
+import cn.net.yunlou.bole.model.entity.Resumes;
+import cn.net.yunlou.bole.model.query.ResumesQuery;
+import cn.net.yunlou.bole.model.view.ResumesView;
 import cn.net.yunlou.bole.service.ResumesService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,15 +32,13 @@ public class ResumesController {
 
     @PostMapping("add")
     @Operation(summary = "新增简历")
-    public BusinessResponse<Boolean> add(@RequestBody ResumesAddRequest request) {
-        Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
-        resumes.setUserId(SecurityContextUtils.getCurrentUserId());
-        return BusinessResponse.success(resumesService.save(resumes));
+    public BusinessResponse<Boolean> add(@RequestBody ResumesCreate request) {
+        return BusinessResponse.success(resumesService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除简历")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
 
         Resumes resumes = resumesService.getById(id);
         if (!Objects.equals(SecurityContextUtils.getCurrentUserId(), resumes.getUserId())) {
@@ -52,10 +50,9 @@ public class ResumesController {
 
     @PutMapping("edit")
     @Operation(summary = "编辑简历")
-    public BusinessResponse<Boolean> edit(@RequestBody @Valid ResumesEditRequest request) {
-        Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid ResumesEdit request) {
 
-        Resumes dbResumes = resumesService.getById(resumes.getId());
+        Resumes dbResumes = resumesService.getById(request.getId());
         if (dbResumes == null) {
             throw new BusinessException(BusinessStatus.NOT_FOUND_RECORD);
         }
@@ -63,13 +60,32 @@ public class ResumesController {
             throw new BusinessException(BusinessStatus.REQUEST_PARAM_ILLEGAL);
         }
 
-        return BusinessResponse.success(resumesService.updateById(resumes));
+        return BusinessResponse.success(resumesService.updateByEdit(request));
+    }
+
+    @GetMapping("preview/{templateId}")
+    @Operation(summary = "预览简历")
+    public BusinessResponse<ResumesView> preview(
+            @PathVariable(value = "templateId") Long templateId) {
+
+        return BusinessResponse.success(
+                resumesService.preview(
+                        Resumes.builder()
+                                .userId(SecurityContextUtils.getCurrentUserId())
+                                .templateId(templateId)
+                                .build()));
+    }
+
+    @PutMapping("view/{id}")
+    @Operation(summary = "查看简历")
+    public BusinessResponse<Boolean> view(@PathVariable(value = "id") Long id) {
+        return BusinessResponse.success(resumesService.viewById(id));
     }
 
     @GetMapping("{id}")
     @Operation(summary = "获取简历信息")
-    public BusinessResponse<Resumes> get(@PathVariable(value = "id") Long id) {
-        return BusinessResponse.success(resumesService.getById(id));
+    public BusinessResponse<ResumesView> get(@PathVariable(value = "id") Long id) {
+        return BusinessResponse.success(resumesService.getViewById(id));
     }
 
     @PostMapping("page")
@@ -77,8 +93,8 @@ public class ResumesController {
     public BusinessResponse<Page<Resumes>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody ResumesSearchRequest request) {
-        Resumes resumes = QueryUtils.modelToBean(request, Resumes.class);
-        return BusinessResponse.success(resumesService.page(page, size, resumes));
+            @RequestBody ResumesQuery request) {
+
+        return BusinessResponse.success(resumesService.pageByQuery(page, size, request));
     }
 }

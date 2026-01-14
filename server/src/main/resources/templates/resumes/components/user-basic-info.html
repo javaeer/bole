@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 用户基本信息组件 -->
+<div th:fragment="user-basic-info(component, globalStyle)"
+     class="user-basic-info">
+
+    <div class="basic-section">
+        <!-- 头像 -->
+        <div th:if="${component.props?.showAvatar != false}" class="avatar-section">
+            <th:block th:if="${component.props?.avatar != null and component.props.avatar != ''}">
+                <img th:src="${component.props.avatar}"
+                     class="avatar"
+                     alt="头像"/>
+            </th:block>
+            <th:block th:unless="${component.props?.avatar != null and component.props.avatar != ''}">
+                <div class="avatar-placeholder">👤</div>
+            </th:block>
+        </div>
+
+        <!-- 基本信息 -->
+        <div class="info-section">
+            <div class="name-row">
+                <span class="name" th:text="${component.props?.name} ?: '未填写'">
+                    未填写
+                </span>
+                <th:block th:if="${component.props?.title != null}">
+                    <span class="title-tag" th:text="${component.props.title}">
+                        职位
+                    </span>
+                </th:block>
+            </div>
+
+            <div class="contact-info">
+                <th:block th:if="${component.props?.phone != null and component.props?.showContact != false}">
+                    <div class="contact-item">
+                        <span class="icon">📱</span>
+                        <span class="contact-text">
+                            [[${component.props.phone}]]
+                        </span>
+                    </div>
+                </th:block>
+
+                <th:block th:if="${component.props?.email != null and component.props?.showContact != false}">
+                    <div class="contact-item">
+                        <span class="icon">📧</span>
+                        <span class="contact-text">
+                            [[${component.props.email}]]
+                        </span>
+                    </div>
+                </th:block>
+
+                <th:block th:if="${component.props?.location != null}">
+                    <div class="contact-item">
+                        <span class="icon">📍</span>
+                        <span class="contact-text">
+                            [[${component.props.location}]]
+                        </span>
+                    </div>
+                </th:block>
+
+                <th:block th:if="${component.props?.workYears != null}">
+                    <div class="contact-item">
+                        <span class="icon">👔</span>
+                        <span class="contact-text">
+                            [[${component.props.workYears}]]年工作经验
+                        </span>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </div>
+
+    <!-- 其他信息 -->
+    <div class="other-info-section" th:if="${component.props?.github != null or component.props?.wechat != null or component.props?.website != null}">
+        <th:block th:if="${component.props?.github != null}">
+            <div class="info-item">
+                <span class="label">GitHub：</span>
+                <span class="value">[[${component.props.github}]]</span>
+            </div>
+        </th:block>
+
+        <th:block th:if="${component.props?.wechat != null}">
+            <div class="info-item">
+                <span class="label">微信：</span>
+                <span class="value">[[${component.props.wechat}]]</span>
+            </div>
+        </th:block>
+
+        <th:block th:if="${component.props?.website != null}">
+            <div class="info-item">
+                <span class="label">个人网站：</span>
+                <a th:href="${component.props.website}" target="_blank" class="value">
+                    [[${component.props.website}]]
+                </a>
+            </div>
+        </th:block>
+    </div>
+</div>
+</body>
+</html>

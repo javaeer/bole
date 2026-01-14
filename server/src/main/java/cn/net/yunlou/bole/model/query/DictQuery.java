@@ -1,13 +1,12 @@
 package cn.net.yunlou.bole.model.query;
 
 import cn.net.yunlou.bole.common.BaseTreeQuery;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * FileName: DictQuery Description: Created By laughtiger Created At 2025/11/30 22:04 Modified By
  * Modified At
  */
-@Data
 @EqualsAndHashCode(callSuper = true)
+@Data
 public class DictQuery extends BaseTreeQuery {}

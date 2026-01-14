@@ -1,19 +1,27 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
+import cn.net.yunlou.bole.common.BusinessException;
+import cn.net.yunlou.bole.common.BusinessStatus;
 import cn.net.yunlou.bole.common.IEnum;
-import cn.net.yunlou.bole.common.SkipInvalidValueLambdaQueryWrapper;
-import cn.net.yunlou.bole.common.constant.UserKeyFieldEnum;
+import cn.net.yunlou.bole.common.constant.UserKeyField;
+import cn.net.yunlou.bole.common.utils.BeanUtils;
+import cn.net.yunlou.bole.common.utils.SecurityContextUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
-import cn.net.yunlou.bole.entity.User;
 import cn.net.yunlou.bole.mapper.UserMapper;
-import cn.net.yunlou.bole.model.dto.UserDTO;
+import cn.net.yunlou.bole.model.ProfileDTO;
+import cn.net.yunlou.bole.model.create.UserCreate;
+import cn.net.yunlou.bole.model.edit.UserEdit;
+import cn.net.yunlou.bole.model.entity.User;
 import cn.net.yunlou.bole.model.query.UserQuery;
+import cn.net.yunlou.bole.model.view.UserView;
 import cn.net.yunlou.bole.service.UserService;
 import cn.net.yunlou.bole.struct.UserStructMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,21 +33,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl
-        extends BaseService<UserMapper, User, UserDTO, UserQuery, UserStructMapper>
+        extends BaseService<
+                UserMapper, User, UserCreate, UserView, UserEdit, UserQuery, UserStructMapper>
         implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        User entity = new User();
-        entity.setUsername(username);
-        return get(entity);
+        return get(User.builder().username(username).build());
     }
 
     @Override
     public User findByEmail(String email) {
-        User entity = new User();
-        entity.setEmail(email);
-        return get(entity);
+        return get(User.builder().email(email).build());
+    }
+
+    @Override
+    public User findByPhone(String phone) {
+        return get(User.builder().phone(phone).build());
+    }
+
+    @Override
+    public User findByWechatOpenId(String wechatOpenid) {
+        return get(User.builder().wechatOpenId(wechatOpenid).build());
     }
 
     @Override
@@ -53,34 +68,79 @@ public class UserServiceImpl
 
     @Override
     public boolean existsByUsername(String username) {
-        User entity = new User();
-        entity.setUsername(username);
-        return exist(entity);
+        return exist(User.builder().username(username).build());
+    }
+
+    @Override
+    public boolean existsByWechatOpenId(String wechatOpenId) {
+        return exist(User.builder().wechatOpenId(wechatOpenId).build());
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        User entity = new User();
-        entity.setEmail(email);
-        return exist(entity);
+        return exist(User.builder().email(email).build());
     }
 
     @Override
-    protected SkipInvalidValueLambdaQueryWrapper<User> getKeyFieldQueryWrapper(
-            SkipInvalidValueLambdaQueryWrapper<User> queryWrapper, User entity) {
+    public boolean existsByPhone(String phone) {
+        return exist(User.builder().phone(phone).build());
+    }
 
-        UserKeyFieldEnum ukfe =
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserView updateProfile(ProfileDTO request) {
+        UserEdit userEdit = BeanUtils.copyProperties(request, UserEdit.class);
+        Long currentUserId = SecurityContextUtils.getCurrentUserId();
+        userEdit.setId(currentUserId);
+        if (!updateByEdit(userEdit)) {
+            throw new BusinessException(BusinessStatus.UPDATE_ERROR, "修改失败");
+        }
+        return getViewById(currentUserId);
+    }
+
+    @Override
+    protected QueryWrapper<User> getKeyFieldQueryWrapper(
+            QueryWrapper<User> queryWrapper, User entity) {
+
+        UserKeyField ukfe =
                 ValueUtils.isValid(entity.getKeyField())
-                        ? IEnum.getEnumByValue(entity.getKeyField(), UserKeyFieldEnum.class)
-                        : UserKeyFieldEnum.ALL;
+                        ? IEnum.valueOf(entity.getKeyField(), UserKeyField.class)
+                        : UserKeyField.ALL;
 
         if (ukfe == null) {
             log.warn("Unknown key field: {}, using default ALL search", entity.getKeyField());
-            ukfe = UserKeyFieldEnum.ALL;
+            ukfe = UserKeyField.ALL;
         }
 
         ukfe.applyQuery(queryWrapper, entity.getKeyWords());
 
         return queryWrapper;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateById(User entity) {
+
+        // 唯一性校验
+        // 手机号不为空时校验是否已被占用
+        if (ObjectUtils.isNotEmpty(entity.getPhone()) && existsByPhone(entity.getPhone())) {
+            throw new BusinessException(BusinessStatus.ALREADY_EXISTS);
+        }
+        // 邮箱不为空时校验是否已被占用
+        if (ObjectUtils.isNotEmpty(entity.getEmail()) && existsByEmail(entity.getEmail())) {
+            throw new BusinessException(BusinessStatus.ALREADY_EXISTS);
+        }
+        // 账号不为空时校验是否已被占用
+        if (ObjectUtils.isNotEmpty(entity.getUsername())
+                && existsByUsername(entity.getUsername())) {
+            throw new BusinessException(BusinessStatus.ALREADY_EXISTS);
+        }
+        // 微信openID不为空时校验是否已被占用
+        if (ObjectUtils.isNotEmpty(entity.getWechatOpenId())
+                && existsByWechatOpenId(entity.getWechatOpenId())) {
+            throw new BusinessException(BusinessStatus.ALREADY_EXISTS);
+        }
+
+        return super.updateById(entity);
     }
 }

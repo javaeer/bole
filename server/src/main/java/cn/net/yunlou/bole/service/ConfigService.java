@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.service;
 
-import cn.net.yunlou.bole.entity.Config;
+import cn.net.yunlou.bole.model.entity.Config;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

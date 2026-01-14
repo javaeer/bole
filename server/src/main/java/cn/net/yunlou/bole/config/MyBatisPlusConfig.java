@@ -1,6 +1,8 @@
 package cn.net.yunlou.bole.config;
 
+import cn.net.yunlou.bole.common.handler.*;
 import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
@@ -8,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInt
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import java.time.LocalDateTime;
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,6 +56,21 @@ public class MyBatisPlusConfig {
                 this.strictUpdateFill(
                         metaObject, "updatedAt", LocalDateTime.class, LocalDateTime.now());
             }
+        };
+    }
+
+    /**
+     * 自定义 类型处理器
+     *
+     * @return
+     */
+    @Bean
+    public ConfigurationCustomizer configurationCustomizer() {
+        return configuration -> {
+            TypeHandlerRegistry registry = configuration.getTypeHandlerRegistry();
+            registry.register(JsonbTypeHandler.class);
+            // 注册各种类型的列表处理器
+            registry.register(JsonbTypeListHandler.class);
         };
     }
 }

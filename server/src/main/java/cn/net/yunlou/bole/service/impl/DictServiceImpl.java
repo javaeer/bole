@@ -1,11 +1,14 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseTreeService;
-import cn.net.yunlou.bole.common.TreeServiceConfig;
-import cn.net.yunlou.bole.entity.Dict;
+import cn.net.yunlou.bole.common.annotation.TreeServiceConfig;
+import cn.net.yunlou.bole.common.utils.RedissonLockUtils;
 import cn.net.yunlou.bole.mapper.DictMapper;
-import cn.net.yunlou.bole.model.dto.DictDTO;
+import cn.net.yunlou.bole.model.create.DictCreate;
+import cn.net.yunlou.bole.model.edit.DictEdit;
+import cn.net.yunlou.bole.model.entity.Dict;
 import cn.net.yunlou.bole.model.query.DictQuery;
+import cn.net.yunlou.bole.model.view.DictView;
 import cn.net.yunlou.bole.service.DictService;
 import cn.net.yunlou.bole.struct.DictStructMapper;
 import org.springframework.stereotype.Service;
@@ -17,5 +20,16 @@ import org.springframework.stereotype.Service;
 @Service
 @TreeServiceConfig(cacheName = "dictTree", keyPrefix = "dict")
 public class DictServiceImpl
-        extends BaseTreeService<DictMapper, Dict, DictDTO, DictQuery, DictStructMapper>
-        implements DictService {}
+        extends BaseTreeService<
+                DictMapper, Dict, DictCreate, DictView, DictEdit, DictQuery, DictStructMapper>
+        implements DictService {
+
+    public DictServiceImpl(RedissonLockUtils redissonLockUtils) {
+        super(redissonLockUtils);
+    }
+
+    @Override
+    protected String getTableName() {
+        return "t_dict";
+    }
+}

@@ -1,16 +1,16 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
-import cn.net.yunlou.bole.entity.Dict;
-import cn.net.yunlou.bole.model.dto.DictDTO;
+import cn.net.yunlou.bole.model.create.DictCreate;
+import cn.net.yunlou.bole.model.edit.DictEdit;
+import cn.net.yunlou.bole.model.entity.Dict;
 import cn.net.yunlou.bole.model.query.DictQuery;
-import cn.net.yunlou.bole.model.request.DictAddRequest;
-import cn.net.yunlou.bole.model.request.DictEditRequest;
+import cn.net.yunlou.bole.model.view.DictView;
 import cn.net.yunlou.bole.service.DictService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,25 +31,23 @@ public class DictController {
     @PostMapping("add")
     @Operation(summary = "新增字典")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(@RequestBody DictAddRequest request) {
-        Dict dict = QueryUtils.modelToBean(request, Dict.class);
+    public BusinessResponse<Boolean> add(@RequestBody DictCreate request) {
 
-        return BusinessResponse.success(dictService.save(dict));
+        return BusinessResponse.success(dictService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除字典")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(dictService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑字典")
     @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody DictEditRequest request) {
-        Dict dict = QueryUtils.modelToBean(request, Dict.class);
-        return BusinessResponse.success(dictService.updateById(dict));
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid DictEdit request) {
+        return BusinessResponse.success(dictService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
@@ -61,37 +59,35 @@ public class DictController {
     @GetMapping("children")
     @Operation(summary = "获取字典下级信息")
     public BusinessResponse<List<Dict>> getChildren() {
-        return BusinessResponse.success(dictService.listAllChildren());
+        return BusinessResponse.success(dictService.listWholeTree());
     }
 
     @GetMapping("children/{id}")
     @Operation(summary = "获取字典下级信息")
     public BusinessResponse<Dict> getChildren(@PathVariable(value = "id") Long id) {
-        return BusinessResponse.success(dictService.getChildren(id));
+        return BusinessResponse.success(dictService.getNodeWithChildren(id));
     }
 
     @PostMapping("list")
     @Operation(summary = "获取字典列表")
-    public BusinessResponse<List<DictDTO>> list(@RequestBody(required = false) DictQuery request) {
+    public BusinessResponse<List<DictView>> list(@RequestBody(required = false) DictQuery request) {
         // Dict dict = QueryUtils.modelToBean(request, Dict.class);
-        return BusinessResponse.success(dictService.listDTOByQuery(request));
+        return BusinessResponse.success(dictService.listViewByQuery(request));
     }
 
     @PostMapping("tree")
     @Operation(summary = "获取字典树形列表")
-    public BusinessResponse<List<Dict>> tree(@RequestBody(required = false) DictQuery request) {
-        Dict dict = QueryUtils.modelToBean(request, Dict.class);
-        return BusinessResponse.success(dictService.listAllChildren(dict));
+    public BusinessResponse<List<Dict>> tree() {
+        return BusinessResponse.success(dictService.listWholeTree());
     }
 
     @PostMapping("page")
     @Operation(summary = "分页获取字典列表")
-    public BusinessResponse<Page<DictDTO>> page(
+    public BusinessResponse<Page<DictView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
             @RequestBody(required = false) DictQuery request) {
-        // Dict dict = QueryUtils.modelToBean(request, Dict.class);
 
-        return BusinessResponse.success(dictService.pageDTOByQuery(page, size, request));
+        return BusinessResponse.success(dictService.pageViewByQuery(page, size, request));
     }
 }

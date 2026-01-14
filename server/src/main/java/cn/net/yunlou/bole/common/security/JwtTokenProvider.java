@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -38,8 +37,8 @@ public class JwtTokenProvider {
      * @param token
      * @return
      */
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public Long extractUserId(String token) {
+        return Long.valueOf(extractClaim(token, Claims::getSubject));
     }
 
     /**
@@ -131,9 +130,9 @@ public class JwtTokenProvider {
      * @param userDetails
      * @return
      */
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(String token, UnifiedUserDetails userDetails) {
+        final Long userId = extractUserId(token);
+        return (userId.equals(userDetails.getUid()) && !isTokenExpired(token));
     }
 
     /**
@@ -174,41 +173,41 @@ public class JwtTokenProvider {
     }
 
     /** 生成访问令牌 */
-    public String generateAccessToken(String username) {
-        return generateToken(username, TOKEN_TYPE_ACCESS, jwtAccessExpiration);
+    public String generateAccessToken(Long userId) {
+        return generateToken(userId, TOKEN_TYPE_ACCESS, jwtAccessExpiration);
     }
 
     /** 生成刷新令牌 */
-    public String generateRefreshToken(String username) {
-        return generateToken(username, TOKEN_TYPE_REFRESH, jwtRefreshExpiration);
+    public String generateRefreshToken(Long userId) {
+        return generateToken(userId, TOKEN_TYPE_REFRESH, jwtRefreshExpiration);
     }
 
-    private String generateToken(String username, String tokenType, long expiration) {
+    private String generateToken(Long userId, String tokenType, long expiration) {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("type", tokenType);
-        return createToken(claims, username, expiration);
+        return createToken(claims, userId, expiration);
     }
 
     /**
      * 生成token
      *
-     * @param username 用户名
+     * @param userId 用户Id
      * @return string
      */
-    public String generateToken(String username) {
+    public String generateToken(Long userId) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username, jwtAccessExpiration);
+        return createToken(claims, userId, jwtAccessExpiration);
     }
 
-    private String createToken(Map<String, Object> claims, String subject, long expiration) {
+    private String createToken(Map<String, Object> claims, Long subject, long expiration) {
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject)
+                .setSubject(String.valueOf(subject))
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

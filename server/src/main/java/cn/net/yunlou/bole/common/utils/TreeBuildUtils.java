@@ -5,7 +5,6 @@ import cn.net.yunlou.bole.common.BaseTreeEntity;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -36,6 +35,17 @@ public class TreeBuildUtils {
 
     private TreeBuildUtils() {
         // 工具类，防止实例化
+    }
+
+    /**
+     * 构建完整的树形结构（从根节点开始）
+     *
+     * @param allNodes 所有节点列表
+     * @param <T> 节点类型
+     * @return 完整的树形结构
+     */
+    public static <T extends BaseTreeEntity<T>> List<T> buildTree(List<T> allNodes) {
+        return buildTree(allNodes, BaseTreeEntity.ROOT_ID);
     }
 
     /**
@@ -99,7 +109,7 @@ public class TreeBuildUtils {
 
                     // 设置父节点
                     Long parentId = node.getParentId();
-                    if (parentId != null && !parentId.equals(BaseTreeEntity.ROOT_ID)) {
+                    if (parentId != null) {
                         T parent = nodeMap.get(parentId);
                         node.setParent(parent);
                     }
@@ -107,17 +117,6 @@ public class TreeBuildUtils {
 
         // 返回根节点下的子节点
         return childrenMap.getOrDefault(rootId, new ArrayList<>());
-    }
-
-    /**
-     * 构建完整的树形结构（从根节点开始）
-     *
-     * @param allNodes 所有节点列表
-     * @param <T> 节点类型
-     * @return 完整的树形结构
-     */
-    public static <T extends BaseTreeEntity<T>> List<T> buildFullTree(List<T> allNodes) {
-        return buildTree(allNodes, BaseTreeEntity.ROOT_ID);
     }
 
     /** 检测循环引用 */

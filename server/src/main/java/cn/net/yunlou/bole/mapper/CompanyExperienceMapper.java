@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.mapper;
 
 import cn.net.yunlou.bole.common.IBaseMapper;
-import cn.net.yunlou.bole.entity.CompanyExperience;
+import cn.net.yunlou.bole.model.entity.CompanyExperience;
 
 /**
  * FileName: CompanyExperienceMapper Description: Created By MR. WANG Created At 2025/11/24 23:28

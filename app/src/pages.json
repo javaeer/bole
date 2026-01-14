@@ -1,122 +1,349 @@
 {
-	"pages": [
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "首页",
-				"enablePullDownRefresh": true
-			}
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/follow/follow",
+      "style": {
+        "navigationBarTitleText": "收藏",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/message/message",
+      "style": {
+        "navigationBarTitleText": "消息",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/profile/profile",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/profile/edit",
+      "style": {
+        "navigationBarTitleText": "设置"
+      }
+    },
+    {
+      "path": "pages/profile/bind",
+      "style": {
+        "navigationBarTitleText": ""
+      }
+    },
+    {
+      "path": "pages/auth/auth",
+      "style": {
+        "navigationBarTitleText": ""
+      }
+    },
+    {
+      "path": "pages/auth/forgot",
+      "style": {
+        "navigationBarTitleText": ""
+      }
+    },
+    {
+      "path": "pages/template/edit",
+      "style": {
+        "navigationBarTitleText": ""
+      }
+    },
+    {
+      "path": "pages/template/list",
+      "style": {
+        "navigationBarTitleText": "模板市场"
+      }
+    },
+    {
+      "path": "pages/template/detail",
+      "style": {
+        "navigationBarTitleText": "模板详情"
+      }
+    },
+    {
+      "path": "pages/template/select",
+      "style": {
+        "navigationBarTitleText": "选择模板"
+      }
+    },
+    {
+      "path": "pages/resumes/resumes",
+      "style": {
+        "navigationBarTitleText": ""
+      }
+    },
+    {
+      "path": "pages/resumes/list",
+      "style": {
+        "navigationBarTitleText": "简历列表"
+      }
+    }
+  ],
+  "tabBar": {
+    "color": "#474747",
+    "selectedColor": "#3B8DFF",
+    "backgroundColor": "#F8F8F8",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/template/list",
+        "iconPath": "static/tabbar/store.png",
+        "selectedIconPath": "static/tabbar/store-active.png",
+        "text": "模板"
+      },
+      {
+        "pagePath": "pages/resumes/list",
+        "iconPath": "static/tabbar/resumes.png",
+        "selectedIconPath": "static/tabbar/resumes-active.png",
+        "text": "简历"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "iconPath": "static/tabbar/profile.png",
+        "selectedIconPath": "static/tabbar/profile-active.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "subPackages": [
+    {
+      "root": "subpackages",
+      "pages": [
+        {
+          "path": "pages/about/about",
+          "style": {
+            "navigationBarTitleText": "关于我们"
+          }
+        },
+        {
+          "path": "pages/test/resumes",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/test/dict",
+          "style": {
+            "navigationBarTitleText": "字典测试"
+          }
+        },
+        {
+          "path": "pages/test/region",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/education/list",
+          "style": {
+            "navigationBarTitleText": "学历列表"
+          }
+        },
+        {
+          "path": "pages/education/education",
+          "style": {
+            "navigationBarTitleText": "学历详情"
+          }
+        },
+        {
+          "path": "pages/project/list",
+          "style": {
+            "navigationBarTitleText": "项目列表"
+          }
+        },
+        {
+          "path": "pages/project/project",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/intention/list",
+          "style": {
+            "navigationBarTitleText": "求职意向列表"
+          }
+        },
+        {
+          "path": "pages/intention/intention",
+          "style": {
+            "navigationBarTitleText": "意向详情"
+          }
+        },
+        {
+          "path": "pages/work/list",
+          "style": {
+            "navigationBarTitleText": "工作经历列表"
+          }
+        },
+        {
+          "path": "pages/work/work",
+          "style": {
+            "navigationBarTitleText": "工作详情"
+          }
+        },
+        {
+          "path": "pages/skill/list",
+          "style": {
+            "navigationBarTitleText": "技能列表"
+          }
+        },
+        {
+          "path": "pages/skill/skill",
+          "style": {
+            "navigationBarTitleText": "技能详情"
+          }
+        },
+        {
+          "path": "pages/evaluation/list",
+          "style": {
+            "navigationBarTitleText": "自我评价列表"
+          }
+        },
+        {
+          "path": "pages/evaluation/evaluation",
+          "style": {
+            "navigationBarTitleText": "评价详情"
+          }
+        },
+        {
+          "path": "pages/company/list",
+          "style": {
+            "navigationBarTitleText": "公司列表"
+          }
+        },
+        {
+          "path": "pages/company/company",
+          "style": {
+            "navigationBarTitleText": "公司详情"
+          }
+        },
+        {
+          "path": "pages/university/university",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/university/list",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/feedback/feedback",
+          "style": {
+            "navigationBarTitleText": "意见反馈"
+          }
+        },
+        {
+          "path": "pages/history/history",
+          "style": {
+            "navigationBarTitleText": "浏览历史"
+          }
+        },
+        {
+          "path": "pages/application/application",
+          "style": {
+            "navigationBarTitleText": "申请审核"
+          }
+        },
+        {
+          "path": "pages/application/list",
+          "style": {
+            "navigationBarTitleText": "申请列表"
+          }
+        },
+        {
+          "path": "pages/analysis/analysis",
+          "style": {
+            "navigationBarTitleText": "简历分析"
+          }
+        },
+        {
+          "path": "pages/agreement/user",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/agreement/privacy",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/search/search",
+          "style": {
+            "navigationBarTitleText": "搜索"
+          }
+        },
+        {
+          "path": "pages/guide/guide",
+          "style": {
+            "navigationBarTitleText": "求职指南"
+          }
+        },
+        {
+          "path": "pages/chat/chat",
+          "style": {
+            "navigationBarTitleText": "聊天"
+          }
+        },
+        {
+          "path": "pages/notify/notify",
+          "style": {
+            "navigationBarTitleText": "系统通知"
+          }
 		},
 		{
-			"path": "pages/follow/follow",
-			"style": {
-				"navigationBarTitleText": "关注",
-				"enablePullDownRefresh": true
-			}
-		},
-		{
-			"path": "pages/message/message",
-			"style": {
-				"navigationBarTitleText": "消息",
-				"enablePullDownRefresh": true
-			}
-		},
-		{
-			"path": "pages/profile/profile",
-			"style": {
-				"navigationBarTitleText": "我的",
-				"enablePullDownRefresh": false
-			}
-		},
-		{
-			"path": "pages/login/login",
-			"style": {
-				"navigationBarTitleText": "登录"
-			}
-		},
-		{
-			"path": "pages/agreement/user-agreement",
-			"style": {
-				"navigationBarTitleText": "用户协议"
-			}
-		},
-		{
-			"path": "pages/agreement/privacy-agreement",
-			"style": {
-				"navigationBarTitleText": "隐私协议"
-			}
-		},
-		{
-			"path": "pages/search/search",
-			"style": {
-				"navigationBarTitleText": "搜索"
-			}
-		},
-		{
-			"path": "pages/template/template",
+			"path": "pages/tasks/list",
 			"style": {
 				"navigationBarTitleText": ""
 			}
 		},
 		{
-			"path": "pages/template/list",
+			"path": "pages/webview/webview",
 			"style": {
 				"navigationBarTitleText": ""
 			}
 		},
 		{
-			"path": "pages/template/detail",
+			"path": "pages/webview/pdfview",
 			"style": {
 				"navigationBarTitleText": ""
-			}
-		},
-		{
-			"path": "pages/company/company",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		},
-		{
-			"path": "pages/test/dict",
-			"style": {
-				"navigationBarTitleText": "字典测试"
 			}
 		}
-],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "Bole",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	},
-	"tabBar": {
-		"color": "#474747",
-		"selectedColor": "#3B8DFF",
-		"backgroundColor": "#F8F8F8",
-		"list": [{
-				"pagePath": "pages/index/index",
-				"iconPath": "static/tabbar/home.png",
-				"selectedIconPath": "static/tabbar/home-active.png",
-				"text": "首页"
-			},
-			{
-				"pagePath": "pages/follow/follow",
-				"iconPath": "static/tabbar/follow.png",
-				"selectedIconPath": "static/tabbar/follow-active.png",
-				"text": "关注"
-			},
-			{
-				"pagePath": "pages/message/message",
-				"iconPath": "static/tabbar/message.png",
-				"selectedIconPath": "static/tabbar/message-active.png",
-				"text": "消息"
-			},
-			{
-				"pagePath": "pages/profile/profile",
-				"iconPath": "static/tabbar/profile.png",
-				"selectedIconPath": "static/tabbar/profile-active.png",
-				"text": "我的"
-			}
-		]
-	}
+      ]
+    }
+  ],
+  "preloadRule": {
+    // 分包预下载规则（可选但推荐）
+    "pages/index/index": {
+      "network": "all",
+      "packages": [
+        "subpackages"
+      ]
+    }
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Bole",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  }
 }

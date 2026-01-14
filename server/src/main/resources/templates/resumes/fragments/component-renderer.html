@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 通用组件渲染器 -->
+<div th:fragment="component-renderer(component, globalStyle)">
+
+    <!-- 根据组件key动态渲染不同内容 -->
+    <div th:switch="${component.key}">
+
+        <!-- 1. 用户基本信息组件 -->
+        <div th:case="'UserBasicInfo'">
+            <div th:replace="~{resumes/components/user-basic-info ::
+                    user-basic-info(${component}, ${globalStyle})}">
+            </div>
+        </div>
+
+        <!-- 2. 工作经历组件 -->
+        <div th:case="'WorkExperience'">
+            <div th:replace="~{resumes/components/work-experience ::
+                    work-experience(${component}, ${globalStyle})}">
+            </div>
+        </div>
+
+        <!-- 3. 教育经历组件 -->
+        <div th:case="'EducationExperience'">
+            <div th:replace="~{resumes/components/education-experience ::
+                    education-experience(${component}, ${globalStyle})}">
+            </div>
+        </div>
+
+        <!-- 4. 技能组件 -->
+        <div th:case="'Skills'">
+            <div th:replace="~{resumes/components/skills ::
+                    skills(${component}, ${globalStyle})}">
+            </div>
+        </div>
+
+        <!-- 5. 项目经历组件 -->
+        <div th:case="'ProjectExperience'">
+            <div th:replace="~{resumes/components/project-experience ::
+                    project-experience(${component}, ${globalStyle})}">
+            </div>
+        </div>
+
+        <!-- 6. 自我评价组件 -->
+        <div th:case="'SelfEvaluation'">
+            <div th:replace="~{resumes/components/self-evaluation ::
+                    self-evaluation(${component}, ${globalStyle})}">
+            </div>
+        </div>
+
+        <!-- 7. 求职意向组件 -->
+        <div th:case="'JobIntention'">
+            <div th:replace="~{resumes/components/job-intention ::
+                    job-intention(${component}, ${globalStyle})}">
+            </div>
+        </div>
+
+        <!-- 8. 其他组件类型 -->
+        <div th:case="*">
+            <div class="unknown-component">
+                <div class="unknown-text" th:text="${component.name != null} ?
+                      component.name + ' 组件预览' : '未知组件'">
+                    未知组件
+                </div>
+                <div th:if="${component.key != null}" class="unknown-key">
+                    ([[${component.key}]])
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

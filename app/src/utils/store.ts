@@ -1,34 +1,33 @@
-import { DictData, DictResult } from "@/types/dict";
+import { DictData } from "@/types/dict";
 import { StoreKey } from "@/constants/store-key";
 import { LoginResult, UserInfo } from "@/types/user";
 import { ConfigResult } from "@/types/config";
-
 
 /**
  * 将配置列表存入本地存储
  */
 export const setConfig = (configList: ConfigResult): void => {
   try {
-    // 方法1：将整个配置数组存储
     uni.setStorageSync(StoreKey.SYSTEM_CONFIG_LIST, JSON.stringify(configList));
-    console.log("系统配置已保存到本地存储");
   } catch (storageError) {
     console.error("保存配置到本地存储失败:", storageError);
+    throw storageError;
   }
 };
 
 /**
  * 从本地存储加载配置
  */
-export const getConfig = (): any => {
+export const getConfig = (): ConfigResult | null => {
   try {
     const storedConfig = uni.getStorageSync(StoreKey.SYSTEM_CONFIG_LIST);
     if (storedConfig) {
-      console.log("从本地存储加载配置成功");
-      return storedConfig || null;
+      return JSON.parse(storedConfig);
     }
+    return null;
   } catch (error) {
     console.error("从本地存储加载配置失败:", error);
+    return null;
   }
 };
 
@@ -147,22 +146,29 @@ export const clearToken = (): void => {
 
 /**
  * 设置用户信息
- * @param userInfo
  */
-export const setUserInfo = (userInfo: UserInfo) => {
-  // uni.setStorageSync(StoreKey.USER_INFO_KEY, userInfo);
-  uni.setStorageSync(StoreKey.USER_INFO_KEY, JSON.stringify(userInfo));
+export const setUserInfo = (userInfo: UserInfo): void => {
+  try {
+    uni.setStorageSync(StoreKey.USER_INFO_KEY, JSON.stringify(userInfo));
+  } catch (error) {
+    console.error("保存用户信息失败:", error);
+    throw error;
+  }
 };
 
 /**
  * 获取用户信息
  */
-export const getUserInfo = (): any => {
-  // return uni.getStorageSync(StoreKey.USER_INFO_KEY) || null;
-  const userInfo = uni.getStorageSync(StoreKey.USER_INFO_KEY);
-  if (userInfo){
-    console.log("本地获取用户信息成功");
-    return userInfo ? JSON.parse(userInfo) : null;
+export const getUserInfo = (): UserInfo | null => {
+  try {
+    const userInfo = uni.getStorageSync(StoreKey.USER_INFO_KEY);
+    if (userInfo) {
+      return JSON.parse(userInfo);
+    }
+    return null;
+  } catch (error) {
+    console.error("获取用户信息失败:", error);
+    return null;
   }
 };
 

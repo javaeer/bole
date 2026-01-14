@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 项目经验组件 -->
+<div th:fragment="project-experience(component, globalStyle)"
+     class="project-experience">
+    <th:block th:if="${component.props.experiences != null and not #lists.isEmpty(component.props.experiences)}">
+        <div th:each="project : ${component.props.experiences}" class="project-item">
+            <div class="project-header">
+                <div class="project-title-section">
+                    <span class="project-name" th:text="${project.name}"></span>
+                </div>
+
+                <div class="project-time">
+                                    <span>
+                                        <span th:text="${project.startDate}"></span>
+                                        -
+                                        <span th:text="${project.endDate}"></span>
+                                    </span>
+                </div>
+            </div>
+
+            <div class="project-description" th:text="${project.description}">
+            </div>
+
+            <th:block th:if="${project.achievements != null and not #lists.isEmpty(project.achievements)}">
+                <div class="project-achievements">
+                    <span class="section-title">项目成果：</span>
+                    <div class="achievements-list">
+                        <div th:each="achievement : ${project.achievements}" class="achievement-item">
+                            <span class="bullet">✓</span>
+                            <span class="item-text" th:text="${achievement}"></span>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </th:block>
+
+    <th:block th:unless="${component.props.experiences != null and not #lists.isEmpty(component.props.experiences)}">
+        <div class="empty-state">
+            <span class="empty-icon">📁</span>
+            <span class="empty-title">暂无项目经验</span>
+            <span class="empty-description">添加您的项目经验以展示您的能力</span>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

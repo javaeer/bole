@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 工作经验组件 -->
+<div th:fragment="work-experience(component, globalStyle)"
+     class="work-experience">
+  <th:block th:if="${component.props.experiences != null and not #lists.isEmpty(component.props.experiences)}">
+    <div th:each="experience : ${component.props.experiences}" class="experience-item">
+      <div class="company-header">
+        <div class="company-info">
+          <span class="company-name" th:text="${experience.company}"></span>
+          <span class="position" th:text="${experience.position}"></span>
+        </div>
+
+        <div th:if="${experience.isCurrent}" class="current-badge">
+          <span class="badge-text">在职</span>
+        </div>
+      </div>
+
+      <div class="meta-info">
+        <div class="time-period">
+          <span class="time-icon">📅</span>
+          <span class="time-text">
+                                        <span th:text="${experience.startDate}"></span>
+                                        -
+                                        <span th:if="${experience.isCurrent}">至今</span>
+                                        <span th:unless="${experience.isCurrent}"
+                                              th:text="${experience.endDate}"></span>
+                                    </span>
+        </div>
+      </div>
+
+      <div th:if="${experience.description != null}" class="description"
+           th:text="${experience.description}">
+      </div>
+
+      <th:block th:if="${experience.achievements != null and not #lists.isEmpty(experience.achievements)}">
+        <div class="achievements">
+          <span class="section-title">主要成就：</span>
+          <div class="achievements-list">
+            <div th:each="achievement : ${experience.achievements}" class="achievement-item">
+              <span class="bullet">🏆</span>
+              <span class="item-text" th:text="${achievement}"></span>
+            </div>
+          </div>
+        </div>
+      </th:block>
+    </div>
+  </th:block>
+
+  <th:block th:unless="${component.props.experiences != null and not #lists.isEmpty(component.props.experiences)}">
+    <div class="empty-state">
+      <span class="empty-icon">💼</span>
+      <span class="empty-title">暂无工作经历</span>
+      <span class="empty-description">请添加您的工作经历</span>
+    </div>
+  </th:block>
+</div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.mapper;
 
 import cn.net.yunlou.bole.common.IBaseMapper;
-import cn.net.yunlou.bole.entity.WorkExperience;
+import cn.net.yunlou.bole.model.entity.WorkExperience;
 
 /**
  * FileName: WorkExperienceMapper Description: Created By MR. WANG Created At 2025/11/25 00:06

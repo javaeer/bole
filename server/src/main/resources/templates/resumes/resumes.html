@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${resumes.name ?: '个人简历'}">个人简历</title>
+    <style th:inline="text">
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: [[${globalStyle.fontFamily}]], sans-serif;
+            font-size: [[${globalStyle.fontSizes.body}]]px;
+            line-height: [[${globalStyle.spacing.lineHeight}]];
+            color: #333;
+            background-color: [[${globalStyle.backgroundColor}]];
+            padding: [[${globalStyle.spacing.padding}]];
+        }
+
+        .resume-container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        /* 头部样式 */
+        .resume-header {
+            border-bottom: 3px solid [[${globalStyle.primaryColor}]];
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: [[${globalStyle.primaryColor}]];
+            font-size: [[${globalStyle.fontSizes.h1}]]px;
+            border-left: 4px solid [[${globalStyle.accentColor}]];
+            padding-left: 10px;
+            margin: [[${globalStyle.spacing.sectionMargin}]] 0;
+        }
+
+        /* 组件通用样式 */
+        .component {
+            margin-bottom: [[${globalStyle.spacing.sectionMargin}]];
+        }
+    </style>
+</head>
+<body>
+<div class="resume-container">
+    <!-- 基本信息组件 -->
+    <div th:if="${components.userBasicInfo}" class="component">
+        <div th:replace="~{components/userBasicInfo :: userBasicInfo(component=components.userBasicInfo, style=globalStyle)}"></div>
+    </div>
+
+    <!-- 求职意向组件 -->
+    <div th:if="${components.jobIntention}" class="component">
+        <div th:replace="~{components/jobIntention :: jobIntention(component=components.jobIntention, style=globalStyle)}"></div>
+    </div>
+
+    <!-- 工作经历组件 -->
+    <div th:if="${components.workExperience}" class="component">
+        <div th:replace="~{components/workExperience :: workExperience(component=components.workExperience, style=globalStyle)}"></div>
+    </div>
+
+    <!-- 项目经验组件 -->
+    <div th:if="${components.projectExperience}" class="component">
+        <div th:replace="~{components/projectExperience :: projectExperience(component=components.projectExperience, style=globalStyle)}"></div>
+    </div>
+
+    <!-- 技能专长组件 -->
+    <div th:if="${components.skills}" class="component">
+        <div th:replace="~{components/skills :: skills(component=components.skills, style=globalStyle)}"></div>
+    </div>
+
+    <!-- 自我评价组件 -->
+    <div th:if="${components.selfEvaluation}" class="component">
+        <div th:replace="~{components/selfEvaluation :: selfEvaluation(component=components.selfEvaluation, style=globalStyle)}"></div>
+    </div>
+</div>
+</body>
+</html>

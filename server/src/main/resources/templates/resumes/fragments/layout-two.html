@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 双栏布局 -->
+<div th:fragment="layout-two(layoutData, globalStyle)"
+     class="layout-two-column"
+     th:style="${layoutData.layoutStyle != null ? layoutData.layoutStyle : ''}">
+
+    <!-- 左侧栏 -->
+    <div class="column-left" th:style="'width:' + ${layoutData.leftWidth}">
+        <th:block th:if="${layoutData.leftColumnComponents != null and not #lists.isEmpty(layoutData.leftColumnComponents)}">
+            <th:block th:each="component,iter : ${layoutData.leftColumnComponents}" th:object="${component}">
+                <div class="resume-component"
+                     th:style="${component.stylesCss}"
+                     th:attr="data-component-id=*{componentId}">
+                    <!-- 组件渲染器（可复用单栏的组件逻辑） -->
+                    <th:block th:replace="~{resumes/fragments/component-renderer ::
+                            component-renderer(${component}, ${globalStyle})}">
+                    </th:block>
+                </div>
+            </th:block>
+        </th:block>
+
+        <!-- 左侧空状态 -->
+        <th:block th:unless="${layoutData.leftColumnComponents != null and not #lists.isEmpty(layoutData.leftColumnComponents)}">
+            <div class="empty-column">
+                <div class="empty-icon">⬅️</div>
+                <div class="empty-title">左侧栏位</div>
+                <div class="empty-desc">可放置联系信息、技能等</div>
+            </div>
+        </th:block>
+    </div>
+
+    <!-- 右侧栏 -->
+    <div class="column-right"
+         th:style="'width:' + ${layoutData.rightWidth}">
+        <th:block th:if="${layoutData.rightColumnComponents != null and not #lists.isEmpty(layoutData.rightColumnComponents)}">
+            <th:block th:each="component,iter : ${layoutData.rightColumnComponents}" th:object="${component}">
+                <div class="resume-component"
+                     th:style="${component.stylesCss}"
+                     th:attr="data-component-id=*{componentId}">
+                    <!-- 组件渲染器 -->
+                    <th:block th:replace="~{resumes/fragments/component-renderer ::
+                            component-renderer(${component}, ${globalStyle})}">
+                    </th:block>
+                </div>
+            </th:block>
+        </th:block>
+
+        <!-- 右侧空状态 -->
+        <th:block th:unless="${layoutData.rightColumnComponents != null and not #lists.isEmpty(layoutData.rightColumnComponents)}">
+            <div class="empty-column">
+                <div class="empty-icon">➡️</div>
+                <div class="empty-title">右侧栏位</div>
+            </div>
+        </th:block>
+    </div>
+</div>
+</body>
+</html>

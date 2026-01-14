@@ -1,12 +1,13 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.MultiService;
-import cn.net.yunlou.bole.entity.Role;
-import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.entity.UserRole;
 import cn.net.yunlou.bole.mapper.UserRoleMapper;
+import cn.net.yunlou.bole.model.entity.Role;
+import cn.net.yunlou.bole.model.entity.User;
+import cn.net.yunlou.bole.model.entity.UserRole;
 import cn.net.yunlou.bole.service.UserRoleService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * FileName: UserRoleServiceImpl Description: Created By MR. WANG Created At 2025/11/19 16:50
@@ -17,7 +18,7 @@ public class UserRoleServiceImpl extends MultiService<UserRoleMapper, UserRole, 
         implements UserRoleService {
 
     @Override
-    protected UserRole createEntity(User left, Role right) {
+    public UserRole createEntity(User left, Role right) {
 
         UserRole userRole = new UserRole();
         if (left != null && left.getId() != null && left.getId() > 0) {
@@ -28,5 +29,11 @@ public class UserRoleServiceImpl extends MultiService<UserRoleMapper, UserRole, 
         }
 
         return userRole;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void initRole(User user) {
+        save(UserRole.builder().userId(user.getId()).roleId(2L).build());
     }
 }

@@ -26,51 +26,68 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-
 
 @Slf4j
 @Component
 public class JsonUtils {
 
-    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static char INT_SPACE = 0x0020;
+
+    private JsonUtils() {
+        // 拒绝外部实例
+    }
 
     public static ObjectMapper getInstance() {
 
-        //忽略null对象和空字符串
-        OBJECT_MAPPER.setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_EMPTY));
+        // 忽略null对象和空字符串
+        OBJECT_MAPPER.setDefaultPropertyInclusion(
+                JsonInclude.Value.construct(
+                        JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_EMPTY));
 
-        //允许将空字符串（""）反序列化为null对象。
+        // 允许将空字符串（""）反序列化为null对象。
         OBJECT_MAPPER.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-        //允许将空数组（[]）反序列化为null对象。
+        // 允许将空数组（[]）反序列化为null对象。
         OBJECT_MAPPER.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
 
-        //允许未知字段
+        // 允许未知字段
         OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        //允许未加引号的字段名
+        // 允许未加引号的字段名
         OBJECT_MAPPER.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-        //允许单引号
+        // 允许单引号
         OBJECT_MAPPER.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-        //允许反斜杠转义任何字符
-        OBJECT_MAPPER.enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER.mappedFeature());
+        // 允许反斜杠转义任何字符
+        OBJECT_MAPPER.enable(
+                JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER.mappedFeature());
+
+        OBJECT_MAPPER.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        // 使用JSR310提供的序列化类,里面包含了大量的JDK8时间序列化类
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+
+        // 配置LocalDateTime序列化和反序列化格式
+        javaTimeModule.addSerializer(
+                LocalDateTime.class,
+                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        javaTimeModule.addDeserializer(
+                LocalDateTime.class,
+                new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        OBJECT_MAPPER.registerModule(javaTimeModule);
 
         return OBJECT_MAPPER;
-    }
-
-    private JsonUtils() {
-        //拒绝外部实例
     }
 
     /**
@@ -118,10 +135,11 @@ public class JsonUtils {
 
     /**
      * 处理泛型类型的JSON反序列化
+     *
      * @param json
      * @param typeReference new TypeReference<List<T>>>(){} 或 new TypeReference<T>(){}
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> T fromJson(String json, TypeReference<T> typeReference) {
         try {
@@ -130,14 +148,18 @@ public class JsonUtils {
             }
             return getInstance().readValue(json, typeReference);
         } catch (Exception e) {
-            log.error("TypeReference JSON解析失败，输入JSON：【{}】，类型：【{}】，异常：{}",
-                    json, typeReference.getType(), e.getMessage());
+            log.error(
+                    "TypeReference JSON解析失败，输入JSON：【{}】，类型：【{}】，异常：{}",
+                    json,
+                    typeReference.getType(),
+                    e.getMessage());
             throw new RuntimeException("TypeReference JSON解析失败", e);
         }
     }
 
     /**
      * 处理泛型类型的JSON反序列化
+     *
      * @param json JSON字符串
      * @param parametrized 泛型类型的原始类（如 CustomerResponse.class）
      * @param parameterClasses 泛型参数类型（如 String.class, User.class 等）
@@ -145,11 +167,17 @@ public class JsonUtils {
      */
     public static <T> T fromJson(String json, Class<?> parametrized, Class<?>... parameterClasses) {
         try {
-            JavaType type = getInstance().getTypeFactory().constructParametricType(parametrized, parameterClasses);
+            JavaType type =
+                    getInstance()
+                            .getTypeFactory()
+                            .constructParametricType(parametrized, parameterClasses);
             return getInstance().readValue(json, type);
         } catch (Exception e) {
-            log.error("泛型JSON解析失败，输入JSON：【{}】，目标类：【{}】，异常：{}",
-                    json, parametrized.getName(), e.getMessage());
+            log.error(
+                    "泛型JSON解析失败，输入JSON：【{}】，目标类：【{}】，异常：{}",
+                    json,
+                    parametrized.getName(),
+                    e.getMessage());
             throw new RuntimeException("泛型JSON解析失败", e);
         }
     }
@@ -179,7 +207,6 @@ public class JsonUtils {
         }
     }
 
-
     public static <T> T fromJson(String json, Type type) {
         try {
             JavaType javaType = getInstance().constructType(type);
@@ -196,9 +223,10 @@ public class JsonUtils {
         }
     }
 
-
     private static JavaType getCollectionType(Class<?> collectionClass, Class<?> elementClasses) {
-        return getInstance().getTypeFactory().constructParametricType(collectionClass, elementClasses);
+        return getInstance()
+                .getTypeFactory()
+                .constructParametricType(collectionClass, elementClasses);
     }
 
     public static boolean isJson(String values) {
@@ -212,7 +240,6 @@ public class JsonUtils {
             return false;
         }
     }
-
 
     /**
      * 丢弃值小于32的ASCII字符，包括制表符和换行符等 <br>
@@ -242,8 +269,10 @@ public class JsonUtils {
         list.add("2");
         list.add("");
 
-        System.out.println(JsonUtils.toJson(JsonUtils.toJson(list)));
+        /*String json = JsonUtils.toJson(list);
+                System.out.println(json);
+        */
+
+        System.out.println(BeanUtils.toMap(list));
     }
-
-
 }

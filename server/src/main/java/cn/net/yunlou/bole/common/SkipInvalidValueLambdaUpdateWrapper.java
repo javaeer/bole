@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.common;
 
-import cn.net.yunlou.bole.common.utils.EntityUtils;
+import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
@@ -47,7 +47,7 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     public SkipInvalidValueLambdaUpdateWrapper(T entity) {
         super();
-        T filteredEntity = EntityUtils.filterInvalidValues(entity);
+        T filteredEntity = BeanUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
     }
 
@@ -103,7 +103,7 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     @Override
     public LambdaUpdateWrapper<T> setEntity(T entity) {
-        T filteredEntity = EntityUtils.filterInvalidValues(entity);
+        T filteredEntity = BeanUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
         return this;
     }
@@ -112,10 +112,7 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     @Override
     public LambdaUpdateWrapper<T> set(boolean condition, SFunction<T, ?> column, Object value) {
-        boolean isValid =
-                allowNullValue
-                        ? (value != null || ValueUtils.isValid(value))
-                        : ValueUtils.isValid(value);
+        boolean isValid = allowNullValue ? value != null : ValueUtils.isValid(value);
         if (condition && isValid) {
             return super.set(true, column, value);
         } else if (strictMode && condition) {
@@ -126,10 +123,7 @@ public class SkipInvalidValueLambdaUpdateWrapper<T> extends LambdaUpdateWrapper<
 
     @Override
     public LambdaUpdateWrapper<T> set(SFunction<T, ?> column, Object value) {
-        boolean isValid =
-                allowNullValue
-                        ? (value != null || ValueUtils.isValid(value))
-                        : ValueUtils.isValid(value);
+        boolean isValid = allowNullValue ? value != null : ValueUtils.isValid(value);
         if (isValid) {
             return super.set(column, value);
         } else if (strictMode) {

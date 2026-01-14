@@ -1,0 +1,30 @@
+package cn.net.yunlou.bole.model.entity;
+
+import cn.net.yunlou.bole.common.MultiEntity;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
+
+/**
+ * FileName: UserRole Description: Created By MR. WANG Created At 2025/11/19 13:32
+ *
+ * <p>Modified By Modified At
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@TableName("t_user_role")
+public class UserRole extends MultiEntity {
+
+    private Long userId;
+
+    private Long roleId;
+
+    @TableField(exist = false)
+    private User user;
+
+    @TableField(exist = false)
+    private Role role;
+}

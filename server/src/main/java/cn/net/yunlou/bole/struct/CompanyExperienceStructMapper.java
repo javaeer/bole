@@ -1,15 +1,23 @@
 package cn.net.yunlou.bole.struct;
 
 import cn.net.yunlou.bole.common.BaseStructMapper;
-import cn.net.yunlou.bole.entity.CompanyExperience;
-import cn.net.yunlou.bole.model.dto.CompanyExperienceDTO;
+import cn.net.yunlou.bole.model.create.CompanyExperienceCreate;
+import cn.net.yunlou.bole.model.edit.CompanyExperienceEdit;
+import cn.net.yunlou.bole.model.entity.CompanyExperience;
 import cn.net.yunlou.bole.model.query.CompanyExperienceQuery;
+import cn.net.yunlou.bole.model.view.CompanyExperienceView;
+import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 
 /**
  * FileName: CompanyExperienceStructMapper Description: Created By MR. WANG Created At 2025/11/26
  * 19:14 Modified By Modified At
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface CompanyExperienceStructMapper
-        extends BaseStructMapper<CompanyExperience, CompanyExperienceDTO, CompanyExperienceQuery> {}
+        extends BaseStructMapper<
+                CompanyExperience,
+                CompanyExperienceCreate,
+                CompanyExperienceView,
+                CompanyExperienceEdit,
+                CompanyExperienceQuery> {}

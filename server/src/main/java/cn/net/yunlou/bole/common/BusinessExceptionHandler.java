@@ -23,6 +23,7 @@ package cn.net.yunlou.bole.common;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.ObjectError;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+@SuppressWarnings("rawtypes")
 @Slf4j
 @ControllerAdvice
 public class BusinessExceptionHandler {
@@ -60,11 +62,11 @@ public class BusinessExceptionHandler {
     public BusinessResponse handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e) {
 
-        String errorMsg = "";
-
+        StringBuilder errorMsgBuilder = new StringBuilder();
         for (ObjectError error : e.getBindingResult().getAllErrors()) {
-            errorMsg += error.getDefaultMessage() + "  ";
+            errorMsgBuilder.append(error.getDefaultMessage()).append("  ");
         }
+        String errorMsg = errorMsgBuilder.toString();
         log.error(errorMsg, e);
         return BusinessResponse.error(BusinessStatus.REQUEST_PARAM_BLANK.getValue(), errorMsg);
     }
@@ -74,13 +76,22 @@ public class BusinessExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BusinessResponse handleConstraintViolationException(ConstraintViolationException e) {
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
 
         for (ConstraintViolation constraintViolation : e.getConstraintViolations()) {
-            errorMsg += constraintViolation.getMessage() + "  ";
+            errorMsg.append(constraintViolation.getMessage()).append("  ");
         }
-        log.error(errorMsg, e);
-        return BusinessResponse.error(BusinessStatus.REQUEST_PARAM_BLANK.getValue(), errorMsg);
+        log.error(errorMsg.toString(), e);
+        return BusinessResponse.error(
+                BusinessStatus.REQUEST_PARAM_BLANK.getValue(), errorMsg.toString());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(value = DuplicateKeyException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BusinessResponse handleDuplicateKeyException(DuplicateKeyException e) {
+        log.error(e.getMessage(), e);
+        return BusinessResponse.error(BusinessStatus.ALREADY_EXISTS);
     }
 
     /** 方法不被允许 @Param @Return @Author javaeer(javaeer @ aliyun.com) @Date 2019/7/4 17:35 */

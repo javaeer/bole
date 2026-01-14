@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.common;
 
-import cn.net.yunlou.bole.common.utils.EntityUtils;
+import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.util.Collection;
@@ -34,7 +34,7 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
 
     public SkipInvalidValueQueryWrapper(T entity) {
         super();
-        T filteredEntity = EntityUtils.filterInvalidValues(entity);
+        T filteredEntity = BeanUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
     }
 
@@ -83,7 +83,7 @@ public class SkipInvalidValueQueryWrapper<T> extends QueryWrapper<T> {
 
     @Override
     public QueryWrapper<T> setEntity(T entity) {
-        T filteredEntity = EntityUtils.filterInvalidValues(entity);
+        T filteredEntity = BeanUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
         return this;
     }

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 技能组件 -->
+<div th:fragment="skills(component, globalStyle)"
+     class="skills-component">
+
+    <th:block th:if="${component.props.skills != null and not #lists.isEmpty(component.props.skills)}">
+        <div th:each="skill,iter : ${component.props.skills}" class="skill-item">
+            <th:block th:replace="~{resumes/components/fragments/skill-item
+                        ::skill-item(${skill},${component.props.showTags})}"/>
+        </div>
+    </th:block>
+
+    <th:block th:unless="${component.props.skills != null and not #lists.isEmpty(component.props.skills)}">
+        <div class="empty-state">
+            <span class="empty-icon">💡</span>
+            <span class="empty-title">暂无技能信息</span>
+            <span class="empty-description">请添加您的技能专长</span>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

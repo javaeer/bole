@@ -1,392 +1,628 @@
 <template>
-	<view class="page-container">
-		<!-- 用户信息头部 -->
-		<view class="user-header">
-			<view class="user-avatar-section">
-				<image :src="userInfo.avatar" class="user-avatar" mode="aspectFit" @click="handleEditAvatar" />
-				<view class="user-info">
-					<text class="user-name">{{ userInfo.name }}</text>
-					<text class="user-title">{{ userInfo.title }}</text>
-					<view class="user-stats">
-						<view class="stat-item">
-							<text class="stat-number">{{ userInfo.followers }}</text>
-							<text class="stat-label">关注</text>
-						</view>
-						<view class="stat-item">
-							<text class="stat-number">{{ userInfo.fans }}</text>
-							<text class="stat-label">粉丝</text>
-						</view>
-						<view class="stat-item">
-							<text class="stat-number">{{ userInfo.likes }}</text>
-							<text class="stat-label">获赞</text>
-						</view>
-					</view>
-				</view>
-			</view>
-			<button class="btn-edit" @click="handleEditProfile">编辑资料</button>
-		</view>
+  <view class="page-container">
+    <!-- 用户信息头部 -->
+    <view class="user-header">
+      <!-- 背景装饰元素 -->
+      <view class="background-decoration"></view>
 
-		<!-- 简历管理 -->
-		<view class="section">
-			<view class="section-header">
-				<text class="section-title">简历管理</text>
-				<text class="section-more" @click="handleViewAllResumes">查看全部</text>
-			</view>
-			<view class="resume-stats">
-				<view class="stat-card" @click="handleCreateResume">
-					<text class="stat-icon">📝</text>
-					<text class="stat-title">创建简历</text>
-				</view>
-				<view class="stat-card" @click="handleMyResumes">
-					<text class="stat-number">{{ resumeStats.total }}</text>
-					<text class="stat-title">我的简历</text>
-				</view>
-				<view class="stat-card" @click="handleViewedResumes">
-					<text class="stat-number">{{ resumeStats.viewed }}</text>
-					<text class="stat-title">被查看</text>
-				</view>
-				<view class="stat-card" @click="handleDownloadResumes">
-					<text class="stat-number">{{ resumeStats.downloaded }}</text>
-					<text class="stat-title">已下载</text>
-				</view>
-			</view>
-		</view>
+      <view class="user-avatar-section">
+        <view class="avatar-wrapper">
+          <image
+            :src="userInfo.avatar || '/static/logo.png'"
+            class="user-avatar"
+            mode="aspectFit"
+          />
+        </view>
 
-		<!-- 功能菜单 -->
-		<view class="section">
-			<view class="menu-list">
-				<view class="menu-item" v-for="item in menuList" :key="item.id" @click="handleMenuClick(item)">
-					<view class="menu-left">
-						<text class="menu-icon">{{ item.icon }}</text>
-						<text class="menu-text">{{ item.name }}</text>
-					</view>
-					<text class="menu-arrow">›</text>
-				</view>
-			</view>
-		</view>
+        <view class="user-info-wrapper">
+          <view class="user-info">
+            <text class="user-name">{{ userInfo.name || "未设置" }}</text>
+            <text class="user-title">{{ userInfo.title || "未设置" }}</text>
+          </view>
 
-		<!-- 设置入口 -->
-		<view class="section">
-			<view class="menu-list">
-				<view class="menu-item" @click="handleSettings">
-					<view class="menu-left">
-						<text class="menu-icon">⚙️</text>
-						<text class="menu-text">设置</text>
-					</view>
-					<text class="menu-arrow">›</text>
-				</view>
-				<view class="menu-item" @click="handleFeedback">
-					<view class="menu-left">
-						<text class="menu-icon">💬</text>
-						<text class="menu-text">意见反馈</text>
-					</view>
-					<text class="menu-arrow">›</text>
-				</view>
-				<view class="menu-item" @click="handleAbout">
-					<view class="menu-left">
-						<text class="menu-icon">ℹ️</text>
-						<text class="menu-text">关于我们</text>
-					</view>
-					<text class="menu-arrow">›</text>
-				</view>
-			</view>
-		</view>
-	</view>
+          <!-- 编辑按钮 -->
+          <view class="edit-icon-wrapper" @click="handleEditProfile">
+            <view class="btn-content">
+              <text class="btn-icon">✏️</text>
+              <text class="btn-text">编辑资料</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 管理卡片区域 -->
+    <view class="section management-section">
+      <view class="section-header">
+        <text class="section-title">信息管理</text>
+        <text class="section-subtitle">完善信息，可提升简历质量</text>
+      </view>
+
+      <view class="stats">
+        <!-- 导出管理 -->
+        <view class="stat-card" @click="handleTasks">
+          <view class="stat-card-inner">
+            <text class="stat-icon">📝</text>
+            <text class="stat-title">导出管理</text>
+          </view>
+        </view>
+
+        <!-- 学历管理 -->
+        <view class="stat-card" @click="handleEducationExperiences">
+          <view class="stat-card-inner">
+            <text class="stat-icon">🎓</text>
+            <text class="stat-title">学习经历</text>
+          </view>
+        </view>
+
+        <!-- 求职意向 -->
+        <view class="stat-card" @click="handleJobIntentions">
+          <view class="stat-card-inner">
+            <text class="stat-icon">🎯</text>
+            <text class="stat-title">求职意向</text>
+          </view>
+        </view>
+
+        <!-- 工作经历 -->
+        <view class="stat-card" @click="handleWorkExperiences">
+          <view class="stat-card-inner">
+            <text class="stat-icon">💼</text>
+            <text class="stat-title">工作经历</text>
+          </view>
+        </view>
+
+        <!-- 项目经验 -->
+        <view class="stat-card" @click="handleProjectExperiences">
+          <view class="stat-card-inner">
+            <text class="stat-icon">📂</text>
+            <text class="stat-title">项目经验</text>
+          </view>
+        </view>
+
+        <!-- 技能专长 -->
+        <view class="stat-card" @click="handleSkills">
+          <view class="stat-card-inner">
+            <text class="stat-icon">🛠️</text>
+            <text class="stat-title">技能专长</text>
+          </view>
+        </view>
+
+        <!-- 自我评价 -->
+        <view class="stat-card" @click="handleSelfEvaluations">
+          <view class="stat-card-inner">
+            <text class="stat-icon">👤</text>
+            <text class="stat-title">自我评价</text>
+          </view>
+        </view>
+
+        <!-- 收藏管理 -->
+        <view class="stat-card" @click="handleFollow">
+          <view class="stat-card-inner">
+            <text class="stat-icon">🏢</text>
+            <text class="stat-title">收藏管理</text>
+          </view>
+        </view>
+
+      </view>
+    </view>
+
+    <!-- 设置入口 -->
+    <view class="section settings-section">
+      <view class="section-header">
+        <text class="section-title">设置</text>
+      </view>
+
+      <view class="menu-list">
+        <view class="menu-item" @click="handleFeedback">
+          <view class="menu-left">
+            <view class="menu-icon-wrapper" style="background: rgba(33, 150, 243, 0.1);">
+              <text class="menu-icon" style="color: #2196F3;">💬</text>
+            </view>
+            <text class="menu-text">意见反馈</text>
+          </view>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="handleAbout">
+          <view class="menu-left">
+            <view class="menu-icon-wrapper" style="background: rgba(76, 175, 80, 0.1);">
+              <text class="menu-icon" style="color: #4CAF50;">ℹ️</text>
+            </view>
+            <text class="menu-text">关于我们</text>
+          </view>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="handleLogout">
+          <view class="menu-left">
+            <view class="menu-icon-wrapper" style="background: rgba(244, 67, 54, 0.1);">
+              <text class="menu-icon" style="color: #F44336;">🚪</text>
+            </view>
+            <text class="menu-text">退出登录</text>
+          </view>
+          <text class="menu-arrow">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref } from "vue";
+import { useUserStore } from "@/stores/user";
+import { onUnload } from "@dcloudio/uni-app";
+import { EventKey } from "@/constants/event-key";
 
-	// 用户信息
-	const userInfo = ref({
-		name: '伯乐用户',
-		title: '前端开发工程师',
-		avatar: '/static/avatar/default-avatar.jpg',
-		followers: 24,
-		fans: 18,
-		likes: 156
-	})
+const userStore = useUserStore();
 
-	// 简历统计
-	const resumeStats = ref({
-		total: 3,
-		viewed: 12,
-		downloaded: 5
-	})
+// 使用计算属性获取用户信息，确保响应式
+const userInfo = computed(() => {
+  const storeInfo = userStore.userInfo || {};
+  return {
+    name: storeInfo.name || "未设置",
+    title: storeInfo.title || "未设置",
+    avatar: storeInfo.avatar || "/static/logo.png",
+    followers: storeInfo.followers || 0,
+    fans: storeInfo.fans || 0,
+    likes: storeInfo.likes || 0,
+  };
+});
 
-	// 菜单列表
-	const menuList = ref([
-		{ id: 1, name: '我的收藏', icon: '❤️', path: '/pages/favorite/list' },
-		{ id: 2, name: '浏览记录', icon: '👀', path: '/pages/history/list' },
-		{ id: 3, name: '我的投递', icon: '📤', path: '/pages/application/list' },
-		{ id: 4, name: '面试邀请', icon: '📅', path: '/pages/interview/list' },
-		{ id: 5, name: '会员中心', icon: '👑', path: '/pages/vip/index' },
-		{ id: 6, name: '我的钱包', icon: '💰', path: '/pages/wallet/index' }
-	])
+// 简历统计
+const resumeStats = ref({
+  total: 3,
+  viewed: 12,
+  downloaded: 5,
+});
 
-	// 事件处理
-	const handleEditAvatar = () => {
-		uni.chooseImage({
-			count: 1,
-			sizeType: ['compressed'],
-			sourceType: ['album', 'camera'],
-			success: (res) => {
-				const tempFilePaths = res.tempFilePaths
-				userInfo.value.avatar = tempFilePaths[0]
-				uni.showToast({
-					title: '头像更新成功',
-					icon: 'success'
-				})
-			}
-		})
-	}
+// 页面状态
+const pageState = reactive({
+  lastRefreshTime: 0,
+  refreshFlag: false,
+  lastUpdateTimestamp: 0,
+});
 
-	const handleEditProfile = () => {
-		uni.navigateTo({
-			url: '/pages/profile/edit'
-		})
-	}
+// 处理用户信息更新事件
+const handleUserInfoUpdated = (data: any) => {
+  if (data && data.success) {
+    console.log("收到用户信息更新事件，准备刷新数据");
+    // 设置刷新标志
+    pageState.refreshFlag = true;
+    pageState.lastUpdateTimestamp = data.timestamp || Date.now();
 
-	const handleCreateResume = () => {
-		uni.navigateTo({
-			url: '/pages/resume/create'
-		})
-	}
+    // 可以在这里立即刷新
+    loadUserInfo();
+  }
+};
 
-	const handleMyResumes = () => {
-		uni.navigateTo({
-			url: '/pages/resume/list'
-		})
-	}
+// 加载用户信息
+const loadUserInfo = async () => {
+  try {
+    console.log("开始加载用户信息...");
+    await userStore.userInfo;
+    pageState.lastRefreshTime = Date.now();
+    pageState.refreshFlag = false;
+    console.log("用户信息加载完成");
+  } catch (error) {
+    console.error("刷新用户信息失败:", error);
+    uni.showToast({
+      title: "获取用户信息失败",
+      icon: "error",
+    });
+  }
+};
 
-	const handleViewedResumes = () => {
-		uni.navigateTo({
-			url: '/pages/resume/viewed'
-		})
-	}
+// 事件处理函数
+const handleEditProfile = () => {
+  uni.navigateTo({
+    url: "/pages/profile/edit",
+  });
+};
 
-	const handleDownloadResumes = () => {
-		uni.navigateTo({
-			url: '/pages/resume/downloaded'
-		})
-	}
+const handleResumes = () => {
+  uni.navigateTo({
+    url: "/pages/resumes/list",
+  });
+};
 
-	const handleViewAllResumes = () => {
-		uni.navigateTo({
-			url: '/pages/resume/list'
-		})
-	}
+const handleEducationExperiences = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/education/list",
+  });
+};
 
-	const handleMenuClick = (item : any) => {
-		uni.navigateTo({
-			url: item.path
-		})
-	}
+const handleJobIntentions = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/intention/list",
+  });
+};
 
-	const handleSettings = () => {
-		uni.navigateTo({
-			url: '/pages/settings/index'
-		})
-	}
+const handleWorkExperiences = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/work/list",
+  });
+};
 
-	const handleFeedback = () => {
-		uni.navigateTo({
-			url: '/pages/feedback/index'
-		})
-	}
+const handleCompanyExperiences = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/company/list",
+  });
+};
 
-	const handleAbout = () => {
-		uni.navigateTo({
-			url: '/pages/about/index'
-		})
-	}
+const handleProjectExperiences = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/project/list",
+  });
+};
 
-	onMounted(() => {
-		console.log('我的页面加载完成')
-	})
+const handleSkills = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/skill/list",
+  });
+};
+
+const handleSelfEvaluations = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/evaluation/list",
+  });
+};
+
+const handleFeedback = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/feedback/feedback",
+  });
+};
+
+const handleFollow = () => {
+  uni.navigateTo({
+    url: "/pages/follow/follow",
+  });
+};
+
+const handleTasks = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/tasks/list",
+  });
+};
+
+const handleAbout = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/about/about",
+  });
+};
+
+// 退出登录
+const handleLogout = () => {
+  uni.showModal({
+    title: "确认退出",
+    content: "确定要退出当前账号吗？",
+    success: (res) => {
+      if (res.confirm) {
+        uni.showLoading({
+          title: "退出中...",
+        });
+        userStore.logout({ callApi: true });
+        setTimeout(() => {
+          uni.hideLoading();
+          uni.showToast({
+            title: "退出成功",
+            icon: "success",
+          });
+          setTimeout(() => {
+            uni.reLaunch({
+              url: "/pages/index/index",
+            });
+          }, 1500);
+        }, 1000);
+      }
+    },
+  });
+};
+
+// 页面生命周期
+onMounted(() => {
+  console.log("我的页面加载完成");
+
+  // 初始加载用户信息
+  loadUserInfo();
+
+  // 监听全局事件
+  uni.$on(EventKey.USER_INFO_UPDATED_EVENT, handleUserInfoUpdated);
+});
+
+// 页面显示时刷新
+const onShow = () => {
+  // 页面显示时检查是否需要刷新
+  const now = Date.now();
+  // 如果上次刷新时间超过10秒，或者有刷新标志，则刷新
+  if (pageState.refreshFlag || now - pageState.lastRefreshTime > 10000) {
+    console.log("页面显示，触发刷新检查");
+    loadUserInfo();
+  }
+};
+
+// 页面卸载时清理事件监听
+onUnload(() => {
+  // 移除事件监听
+  uni.$off(EventKey.USER_INFO_UPDATED_EVENT, handleUserInfoUpdated);
+});
+
+// 暴露生命周期方法给uni-app框架
+defineExpose({
+  onShow,
+});
 </script>
 
-<style scoped>
-	.page-container {
-		background-color: #f8f8f8;
-		min-height: 100vh;
-		padding-bottom: 50rpx;
-	}
+<style scoped lang="scss">
+.page-container {
+  background: linear-gradient(to bottom, #f5f7fa 0%, #f5f7fa 60%, #ffffff 100%);
+  min-height: 100vh;
+  padding-bottom: 80rpx;
+}
 
-	.user-header {
-		background: linear-gradient(135deg, #d4af37 0%, #f7ef8a 100%);
-		padding: 60rpx 30rpx 40rpx;
-		color: white;
-		position: relative;
-	}
+// 用户头部样式
+.user-header {
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  padding: 80rpx $padding-base 40rpx;
+  color: $background-color-white;
+  position: relative;
+  overflow: hidden;
 
-	.user-avatar-section {
-		display: flex;
-		align-items: center;
-		margin-bottom: 30rpx;
-	}
+  .background-decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200rpx;
+    height: 200rpx;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+    z-index: 0;
+  }
+}
 
-	.user-avatar {
-		width: 120rpx;
-		height: 120rpx;
-		border-radius: 50%;
-		border: 4rpx solid white;
-		margin-right: 30rpx;
-	}
+.user-avatar-section {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
 
-	.user-info {
-		flex: 1;
-	}
+.avatar-wrapper {
+  position: relative;
+  margin-right: 30rpx;
+  flex-shrink: 0;
 
-	.user-name {
-		display: block;
-		font-size: 36rpx;
-		font-weight: bold;
-		margin-bottom: 10rpx;
-	}
+  .user-avatar {
+    width: 140rpx;
+    height: 140rpx;
+    border-radius: $border-radius-round;
+    border: 4rpx solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
 
-	.user-title {
-		display: block;
-		font-size: 26rpx;
-		opacity: 0.9;
-		margin-bottom: 20rpx;
-	}
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
 
-	.user-stats {
-		display: flex;
-		gap: 40rpx;
-	}
+.user-info-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
 
-	.stat-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
 
-	.stat-number {
-		font-size: 28rpx;
-		font-weight: bold;
-		margin-bottom: 5rpx;
-	}
+.user-name {
+  font-size: 44rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
 
-	.stat-label {
-		font-size: 22rpx;
-		opacity: 0.8;
-	}
+.user-title {
+  font-size: 28rpx;
+  opacity: 0.9;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+}
 
-	.btn-edit {
-		position: absolute;
-		top: 60rpx;
-		right: 30rpx;
-		background: rgba(255, 255, 255, 0.2);
-		color: white;
-		border: 2rpx solid white;
-		border-radius: 25rpx;
-		padding: 12rpx 30rpx;
-		font-size: 24rpx;
-	}
+// 编辑按钮
+.edit-icon-wrapper {
+  .btn-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 12rpx;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 16rpx 28rpx;
+    border-radius: 50rpx;
+    border: 1rpx solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
 
-	.section {
-		background: white;
-		margin: 30rpx;
-		border-radius: 15rpx;
-		padding: 30rpx;
-		box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
-	}
+    &:active {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(0.96);
+    }
 
-	.section-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 30rpx;
-	}
+    .btn-icon {
+      font-size: 28rpx;
+    }
 
-	.section-title {
-		font-size: 32rpx;
-		font-weight: bold;
-		color: #333;
-	}
+    .btn-text {
+      font-size: 26rpx;
+      font-weight: 500;
+      color: white;
+    }
+  }
+}
 
-	.section-more {
-		font-size: 26rpx;
-		color: #d4af37;
-	}
+// 管理卡片区域
+.management-section {
+  margin: -20rpx $margin-base $margin-base;
+  padding: 40rpx 30rpx;
+  border-radius: 24rpx;
+  background: $background-color-white;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.08);
 
-	.resume-stats {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 20rpx;
-	}
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40rpx;
+  }
 
-	.stat-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 30rpx 20rpx;
-		background: #f8f8f8;
-		border-radius: 15rpx;
-		transition: all 0.3s;
-	}
+  .section-title {
+    font-size: 36rpx;
+    font-weight: 700;
+    color: $text-primary;
+  }
 
-	.stat-card:active {
-		background: #e8e8e8;
-		transform: scale(0.95);
-	}
+  .section-subtitle {
+    font-size: 24rpx;
+    color: $text-secondary;
+    opacity: 0.8;
+  }
+}
 
-	.stat-icon,
-	.stat-number {
-		font-size: 36rpx;
-		font-weight: bold;
-		margin-bottom: 15rpx;
-		color: #d4af37;
-	}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24rpx;
+}
 
-	.stat-title {
-		font-size: 24rpx;
-		color: #666;
-	}
+.stat-card {
+  .stat-card-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30rpx 0;
+    background: $background-color;
+    border-radius: 16rpx;
+    transition: all 0.2s ease;
+    border: 1rpx solid rgba(0, 0, 0, 0.05);
 
-	.menu-list {
-		display: flex;
-		flex-direction: column;
-	}
+    &:active {
+      background: color.adjust($background-color, $lightness: -5%);
+      transform: translateY(-2rpx);
+    }
+  }
 
-	.menu-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 30rpx 0;
-		border-bottom: 1rpx solid #f0f0f0;
-		transition: all 0.3s;
-	}
+  .stat-icon {
+    font-size: 48rpx;
+    margin-bottom: 16rpx;
+    display: block;
+  }
 
-	.menu-item:active {
-		background: #f8f8f8;
-	}
+  .stat-title {
+    font-size: 24rpx;
+    color: $text-primary;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.3;
+  }
+}
 
-	.menu-item:last-child {
-		border-bottom: none;
-	}
+// 设置区域
+.settings-section {
+  margin: 0 $margin-base;
+  padding: 40rpx 30rpx;
+  border-radius: 24rpx;
+  background: $background-color-white;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.08);
 
-	.menu-left {
-		display: flex;
-		align-items: center;
-	}
+  .section-header {
+    margin-bottom: 30rpx;
+  }
 
-	.menu-icon {
-		font-size: 36rpx;
-		margin-right: 25rpx;
-		width: 40rpx;
-		text-align: center;
-	}
+  .section-title {
+    font-size: 36rpx;
+    font-weight: 700;
+    color: $text-primary;
+  }
+}
 
-	.menu-text {
-		font-size: 28rpx;
-		color: #333;
-	}
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 16rpx;
+  overflow: hidden;
+}
 
-	.menu-arrow {
-		font-size: 36rpx;
-		color: #999;
-	}
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  background: $background-color-white;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease;
+
+  &:active {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.menu-icon-wrapper {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-icon {
+  font-size: 32rpx;
+}
+
+.menu-text {
+  font-size: 30rpx;
+  color: $text-primary;
+  font-weight: 500;
+}
+
+.menu-arrow {
+  font-size: 40rpx;
+  color: rgba(0, 0, 0, 0.3);
+  font-weight: 300;
+}
+
+// 响应式调整
+@media (max-width: 400rpx) {
+  .user-avatar-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .avatar-wrapper {
+    margin-right: 0;
+    margin-bottom: 20rpx;
+  }
+
+  .user-info-wrapper {
+    align-items: center;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20rpx;
+  }
+}
 </style>

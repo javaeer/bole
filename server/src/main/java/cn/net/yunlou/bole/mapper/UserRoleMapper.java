@@ -1,9 +1,9 @@
 package cn.net.yunlou.bole.mapper;
 
 import cn.net.yunlou.bole.common.IMultiMapper;
-import cn.net.yunlou.bole.entity.Role;
-import cn.net.yunlou.bole.entity.User;
-import cn.net.yunlou.bole.entity.UserRole;
+import cn.net.yunlou.bole.model.entity.Role;
+import cn.net.yunlou.bole.model.entity.User;
+import cn.net.yunlou.bole.model.entity.UserRole;
 
 /**
  * FileName: UserRoleMapper Description: Created By MR. WANG Created At 2025/11/19 16:51 Modified By

@@ -1,0 +1,31 @@
+package cn.net.yunlou.bole.model.view;
+
+import cn.net.yunlou.bole.common.BaseView;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+import java.util.List;
+import lombok.*;
+
+/**
+ * FileName: ProjectExperienceDTO Description: Created By MR. WANG Created At 2025/11/26 17:44
+ * Modified By Modified At
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class ProjectExperienceView extends BaseView {
+    private String name;
+
+    private Integer status;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
+
+    private String description;
+
+    private List<String> achievements;
+
+    private Integer sort;
+}

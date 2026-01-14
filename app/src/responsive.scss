@@ -1,0 +1,359 @@
+@use "sass:math";
+
+/* ==================== 容器类 ==================== */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+
+  @media (min-width: #{$screen-md}) {
+    max-width: map-get((
+            'sm': $container-sm,
+            'md': $container-md,
+            'lg': $container-lg,
+            'xl': $container-xl,
+            'xxl': $container-xxl
+    ), 'md');
+  }
+
+  @media (min-width: #{$screen-lg}) {
+    max-width: map-get((
+            'sm': $container-sm,
+            'md': $container-md,
+            'lg': $container-lg,
+            'xl': $container-xl,
+            'xxl': $container-xxl
+    ), 'lg');
+  }
+
+  @media (min-width: #{$screen-xl}) {
+    max-width: map-get((
+            'sm': $container-sm,
+            'md': $container-md,
+            'lg': $container-lg,
+            'xl': $container-xl,
+            'xxl': $container-xxl
+    ), 'xl');
+  }
+}
+
+/* 固定宽度容器 */
+.container-sm { max-width: $container-sm; }
+.container-md { max-width: $container-md; }
+.container-lg { max-width: $container-lg; }
+.container-xl { max-width: $container-xl; }
+.container-xxl { max-width: $container-xxl; }
+
+/* 流体容器 */
+.container-fluid {
+  width: 100%;
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+}
+
+/* ==================== 响应式断点 ==================== */
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: #{$screen-sm - 1}) { @content; }
+  } @else if $breakpoint == sm {
+    @media (min-width: $screen-sm) { @content; }
+  } @else if $breakpoint == md {
+    @media (min-width: $screen-md) { @content; }
+  } @else if $breakpoint == lg {
+    @media (min-width: $screen-lg) { @content; }
+  } @else if $breakpoint == xl {
+    @media (min-width: $screen-xl) { @content; }
+  } @else {
+    @warn "Unknown breakpoint: #{$breakpoint}";
+  }
+}
+
+/* ==================== 网格系统 ==================== */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -10rpx;
+  margin-right: -10rpx;
+}
+
+.col {
+  flex: 1 0 0%;
+  padding-left: 10rpx;
+  padding-right: 10rpx;
+}
+
+/* 生成列类 */
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    flex: 0 0 auto;
+    width: percentage(math.div($i, 12));
+    padding-left: 10rpx;
+    padding-right: 10rpx;
+  }
+
+  @include respond-to(sm) {
+    .col-sm-#{$i} {
+      flex: 0 0 auto;
+      width: percentage(math.div($i, 12));
+    }
+  }
+
+  @include respond-to(md) {
+    .col-md-#{$i} {
+      flex: 0 0 auto;
+      width: percentage(math.div($i, 12));
+    }
+  }
+
+  @include respond-to(lg) {
+    .col-lg-#{$i} {
+      flex: 0 0 auto;
+      width: percentage(math.div($i, 12));
+    }
+  }
+
+  @include respond-to(xl) {
+    .col-xl-#{$i} {
+      flex: 0 0 auto;
+      width: percentage(math.div($i, 12));
+    }
+  }
+}
+
+/* ==================== 间距工具类 ==================== */
+@each $name, $size in (
+        '0': $spacing-0,
+        '1': $spacing-1,
+        '2': $spacing-2,
+        '3': $spacing-3,
+        '4': $spacing-4,
+        '5': $spacing-5,
+        '6': $spacing-6,
+        '7': $spacing-7,
+        '8': $spacing-8,
+        '9': $spacing-9,
+        '10': $spacing-10
+) {
+  /* Margin */
+  .m-#{$name} { margin: #{$size} !important; }
+  .mt-#{$name} { margin-top: #{$size} !important; }
+  .mr-#{$name} { margin-right: #{$size} !important; }
+  .mb-#{$name} { margin-bottom: #{$size} !important; }
+  .ml-#{$name} { margin-left: #{$size} !important; }
+  .mx-#{$name} { margin-left: #{$size} !important; margin-right: #{$size} !important; }
+  .my-#{$name} { margin-top: #{$size} !important; margin-bottom: #{$size} !important; }
+
+  /* Padding */
+  .p-#{$name} { padding: #{$size} !important; }
+  .pt-#{$name} { padding-top: #{$size} !important; }
+  .pr-#{$name} { padding-right: #{$size} !important; }
+  .pb-#{$name} { padding-bottom: #{$size} !important; }
+  .pl-#{$name} { padding-left: #{$size} !important; }
+  .px-#{$name} { padding-left: #{$size} !important; padding-right: #{$size} !important; }
+  .py-#{$name} { padding-top: #{$size} !important; padding-bottom: #{$size} !important; }
+}
+
+/* 响应式间距 */
+@each $breakpoint in (sm, md, lg, xl) {
+  @include respond-to($breakpoint) {
+    @each $name, $size in (
+            '0': $spacing-0,
+            '1': $spacing-1,
+            '2': $spacing-2,
+            '3': $spacing-3,
+            '4': $spacing-4,
+            '5': $spacing-5,
+            '6': $spacing-6,
+            '7': $spacing-7,
+            '8': $spacing-8,
+            '9': $spacing-9,
+            '10': $spacing-10
+    ) {
+      .#{$breakpoint}\:m-#{$name} { margin: #{$size} !important; }
+      .#{$breakpoint}\:mt-#{$name} { margin-top: #{$size} !important; }
+      .#{$breakpoint}\:mr-#{$name} { margin-right: #{$size} !important; }
+      .#{$breakpoint}\:mb-#{$name} { margin-bottom: #{$size} !important; }
+      .#{$breakpoint}\:ml-#{$name} { margin-left: #{$size} !important; }
+      .#{$breakpoint}\:mx-#{$name} { margin-left: #{$size} !important; margin-right: #{$size} !important; }
+      .#{$breakpoint}\:my-#{$name} { margin-top: #{$size} !important; margin-bottom: #{$size} !important; }
+
+      .#{$breakpoint}\:p-#{$name} { padding: #{$size} !important; }
+      .#{$breakpoint}\:pt-#{$name} { padding-top: #{$size} !important; }
+      .#{$breakpoint}\:pr-#{$name} { padding-right: #{$size} !important; }
+      .#{$breakpoint}\:pb-#{$name} { padding-bottom: #{$size} !important; }
+      .#{$breakpoint}\:pl-#{$name} { padding-left: #{$size} !important; }
+      .#{$breakpoint}\:px-#{$name} { padding-left: #{$size} !important; padding-right: #{$size} !important; }
+      .#{$breakpoint}\:py-#{$name} { padding-top: #{$size} !important; padding-bottom: #{$size} !important; }
+    }
+  }
+}
+
+/* ==================== 显示/隐藏工具类 ==================== */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-inline { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
+.d-grid { display: grid !important; }
+
+/* 响应式显示/隐藏 */
+@each $breakpoint in (sm, md, lg, xl) {
+  @include respond-to($breakpoint) {
+    .#{$breakpoint}\:d-none { display: none !important; }
+    .#{$breakpoint}\:d-block { display: block !important; }
+    .#{$breakpoint}\:d-inline { display: inline !important; }
+    .#{$breakpoint}\:d-inline-block { display: inline-block !important; }
+    .#{$breakpoint}\:d-flex { display: flex !important; }
+    .#{$breakpoint}\:d-inline-flex { display: inline-flex !important; }
+    .#{$breakpoint}\:d-grid { display: grid !important; }
+  }
+}
+
+/* 小于某断点隐藏 */
+.hidden-xs { @include respond-to(xs) { display: none !important; } }
+.hidden-sm { @include respond-to(sm) { display: none !important; } }
+.hidden-md { @include respond-to(md) { display: none !important; } }
+.hidden-lg { @include respond-to(lg) { display: none !important; } }
+.hidden-xl { @include respond-to(xl) { display: none !important; } }
+
+/* ==================== 布局工具类 ==================== */
+/* Flexbox */
+.flex-row { flex-direction: row !important; }
+.flex-col { flex-direction: column !important; }
+.flex-row-reverse { flex-direction: row-reverse !important; }
+.flex-col-reverse { flex-direction: column-reverse !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+.flex-wrap-reverse { flex-wrap: wrap-reverse !important; }
+.flex-1 { flex: 1 1 0% !important; }
+.flex-auto { flex: 1 1 auto !important; }
+.flex-initial { flex: 0 1 auto !important; }
+.flex-none { flex: none !important; }
+
+/* 对齐 */
+.items-start { align-items: flex-start !important; }
+.items-end { align-items: flex-end !important; }
+.items-center { align-items: center !important; }
+.items-baseline { align-items: baseline !important; }
+.items-stretch { align-items: stretch !important; }
+.justify-start { justify-content: flex-start !important; }
+.justify-end { justify-content: flex-end !important; }
+.justify-center { justify-content: center !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-around { justify-content: space-around !important; }
+.justify-evenly { justify-content: space-evenly !important; }
+
+/* Grid */
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+
+/* 响应式布局 */
+@each $breakpoint in (sm, md, lg, xl) {
+  @include respond-to($breakpoint) {
+    .#{$breakpoint}\:flex-row { flex-direction: row !important; }
+    .#{$breakpoint}\:flex-col { flex-direction: column !important; }
+    .#{$breakpoint}\:items-center { align-items: center !important; }
+    .#{$breakpoint}\:justify-center { justify-content: center !important; }
+    .#{$breakpoint}\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .#{$breakpoint}\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  }
+}
+
+/* ==================== 宽度工具类 ==================== */
+.w-full { width: 100% !important; }
+.w-screen { width: 100vw !important; }
+.w-auto { width: auto !important; }
+
+@for $i from 1 through 20 {
+  .w-#{$i * 5} { width: #{$i * 5%} !important; }
+}
+
+/* 响应式宽度 */
+@each $breakpoint in (sm, md, lg, xl) {
+  @include respond-to($breakpoint) {
+    .#{$breakpoint}\:w-full { width: 100% !important; }
+    .#{$breakpoint}\:w-auto { width: auto !important; }
+    @for $i from 1 through 20 {
+      .#{$breakpoint}\:w-#{$i * 5} { width: #{$i * 5%} !important; }
+    }
+  }
+}
+
+/* ==================== 其他工具类 ==================== */
+/* 圆角 */
+.rounded-none { border-radius: $rounded-none !important; }
+.rounded-sm { border-radius: $rounded-sm !important; }
+.rounded { border-radius: $rounded !important; }
+.rounded-md { border-radius: $rounded-md !important; }
+.rounded-lg { border-radius: $rounded-lg !important; }
+.rounded-xl { border-radius: $rounded-xl !important; }
+.rounded-2xl { border-radius: $rounded-2xl !important; }
+.rounded-3xl { border-radius: $rounded-3xl !important; }
+.rounded-full { border-radius: $rounded-full !important; }
+
+/* 阴影 */
+.shadow-xs { box-shadow: $shadow-xs !important; }
+.shadow-sm { box-shadow: $shadow-sm !important; }
+.shadow { box-shadow: $shadow !important; }
+.shadow-md { box-shadow: $shadow-md !important; }
+.shadow-lg { box-shadow: $shadow-lg !important; }
+.shadow-xl { box-shadow: $shadow-xl !important; }
+.shadow-none { box-shadow: none !important; }
+
+/* 文本对齐 */
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+.text-justify { text-align: justify !important; }
+
+/* 响应式文本对齐 */
+@each $breakpoint in (sm, md, lg, xl) {
+  @include respond-to($breakpoint) {
+    .#{$breakpoint}\:text-left { text-align: left !important; }
+    .#{$breakpoint}\:text-center { text-align: center !important; }
+    .#{$breakpoint}\:text-right { text-align: right !important; }
+  }
+}
+
+/* 文本截断 */
+.text-truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.text-multi-truncate {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.line-clamp-1 { -webkit-line-clamp: 1 !important; }
+.line-clamp-2 { -webkit-line-clamp: 2 !important; }
+.line-clamp-3 { -webkit-line-clamp: 3 !important; }
+
+/* 位置 */
+.position-static { position: static !important; }
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed { position: fixed !important; }
+.position-sticky { position: sticky !important; }
+
+/* 层级 */
+@for $i from 0 through 50 {
+  .z-#{$i} { z-index: #{$i} !important; }
+}
+
+/* 响应式z-index */
+@each $breakpoint in (sm, md, lg, xl) {
+  @include respond-to($breakpoint) {
+    @for $i from 0 through 50 {
+      .#{$breakpoint}\:z-#{$i} { z-index: #{$i} !important; }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 package cn.net.yunlou.bole.mapper;
 
 import cn.net.yunlou.bole.common.IBaseMapper;
-import cn.net.yunlou.bole.entity.User;
+import cn.net.yunlou.bole.model.entity.User;
 
 /**
  * FileName: UserMapper Description: Created By MR. WANG Created At 2025/11/19 14:04

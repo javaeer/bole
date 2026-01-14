@@ -8,23 +8,42 @@ import java.util.List;
  * FileName: IStructService Description: MapStruct 映射服务接口 Created By MR. WANG Created At 2025/11/25
  * 23:08 Modified By Modified At
  */
-public interface IStructService<D, Q> {
+public interface IStructService<
+        T extends BaseEntity,
+        C extends BaseCreate,
+        V extends BaseView,
+        E extends BaseEdit,
+        Q extends BaseQuery> {
 
     /** 根据ID获取DTO */
-    D getDTOById(Serializable id);
+    V getViewById(Serializable id);
 
     /** 保存DTO */
-    boolean saveByDTO(D dto);
+    boolean saveByCreate(C create);
 
     /** 更新DTO */
-    boolean updateDTO(D dto);
+    boolean updateByEdit(E edit);
 
     /** 删除DTO */
-    boolean removeDTO(D dto);
+    boolean removeByQuery(Q query);
 
     /** 条件分页查询 */
-    Page<D> pageDTOByQuery(long pageNum, long pageSize, Q query);
+    Page<V> pageView(long pageNum, long pageSize, T entity);
+
+    Page<T> pageByQuery(long pageNum, long pageSize, Q query);
+
+    Page<V> pageViewByQuery(long pageNum, long pageSize, Q query);
 
     /** 条件列表查询 */
-    List<D> listDTOByQuery(Q query);
+    List<V> listView(T entity);
+
+    List<T> listByQuery(Q query);
+
+    List<V> listViewByQuery(Q query);
+
+    V toView(T entity);
+
+    List<V> toListView(List<T> entities);
+
+    Page<V> toViewPage(Page<T> entityPage);
 }

@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
+import { computed, ref } from "vue";
 import DictAPI from "@/api/dict";
 import { clearDict, getDict, setDict } from "@/utils/store";
-import { DictData, DictNode, DictResult } from "@/types/dict";
+import { DictData, DictItem, DictNode, DictResult, DictType } from "@/types/dict";
 
 export const useDictStore = defineStore("dict", () => {
   // 字典数据（转换后的扁平结构）
@@ -37,8 +38,7 @@ export const useDictStore = defineStore("dict", () => {
       const transformedData = transformDictData(response);
       console.log("🔄 转换后的字典数据:", transformedData);
 
-      // 清空并设置新字典
-      clearDict();
+      // 更新 store 和本地存储
       dict.value = transformedData;
       setDict(transformedData);
 
@@ -60,14 +60,12 @@ export const useDictStore = defineStore("dict", () => {
     await fetchDict();
   };
 
-
   /**
    * 获取特定类型的字典项
    */
-  const getDictByType = (type: string): DictResult => {
-    const dict = getDict();
-    console.log("获取完成，执行转换");
-    return dict[type]?.items || [];
+  const getDictByType = (type: string): DictItem[] => {
+    // 修复：使用 store 中的 dict.value 而不是工具函数
+    return dict.value[type]?.items || [];
   };
 
   /**
@@ -77,6 +75,23 @@ export const useDictStore = defineStore("dict", () => {
     const items = getDictByType(type);
     const item = items.find(item => item.value === value);
     return item?.label || value;
+  };
+
+  /**
+   * 获取字典项的标签（支持多值）
+   */
+  const getDictLabels = (type: string, values: string | string[]): string | string[] => {
+    const items = getDictByType(type);
+
+    if (Array.isArray(values)) {
+      return values.map(value => {
+        const item = items.find(item => item.value === value);
+        return item?.label || value;
+      });
+    } else {
+      const item = items.find(item => item.value === values);
+      return item?.label || values;
+    }
   };
 
   /**
@@ -93,14 +108,12 @@ export const useDictStore = defineStore("dict", () => {
   /**
    * 获取所有字典类型
    */
-  const getAllDictTypes = (): Array<{ type: string; name: string }> => {
-    const dict = getDict();
-    return Object.values(dict).map(item => ({
+  const getAllDictTypes = computed(() => {
+    return Object.values(dict.value).map(item => ({
       type: item.type,
       name: item.name,
     }));
-  };
-
+  });
 
   /**
    * 获取字典类型信息
@@ -115,15 +128,33 @@ export const useDictStore = defineStore("dict", () => {
     };
   };
 
-
   /**
    * 检查字典是否已加载
    */
   const isDictLoaded = (type?: string): boolean => {
-    if (type) {
-      return !!dict.value[type];
+    try {
+      // 安全地获取字典值
+      const dictValue = dict.value;
+
+      // 如果 dictValue 不存在或不是对象
+      if (!dictValue || typeof dictValue !== 'object') {
+        console.warn('字典数据未初始化或无效，返回 false');
+        return false;
+      }
+
+      // 如果指定了类型，检查该类型是否存在
+      if (type) {
+        // 确保安全访问，避免 undefined 错误
+        return dictValue[type] !== undefined && dictValue[type] !== null;
+      }
+
+      // 安全地获取键的数量
+      const keys = Object.keys(dictValue);
+      return keys.length > 0;
+    } catch (error) {
+      console.error('检查字典加载状态时出错:', error);
+      return false;
     }
-    return Object.keys(dict.value).length > 0;
   };
 
   /**
@@ -134,10 +165,49 @@ export const useDictStore = defineStore("dict", () => {
   };
 
   /**
+   * 获取树形结构中的某个节点
+   */
+  const getTreeNode = (type: string): DictNode | null => {
+    const rootNode = rawDictTree.value.find(node => node.type === type);
+    return rootNode || null;
+  };
+
+  /**
+   * 根据 code 获取字典项
+   */
+  const getDictByCode = (type: string, code: string): DictItem | null => {
+    const items = getDictByType(type);
+    const item = items.find(item => item.code === code);
+    return item || null;
+  };
+
+  /**
+   * 清除字典数据（用于退出登录等场景）
+   */
+  const clearDictData = (): void => {
+    dict.value = {};
+    rawDictTree.value = [];
+    clearDict();
+  };
+
+  /**
+   * 初始化字典（应用启动时调用）
+   */
+  const initDict = async (forceRefresh: boolean = false): Promise<void> => {
+    // 如果已经有数据且不强制刷新，直接返回
+    if (!forceRefresh && isDictLoaded()) {
+      console.log("📚 使用缓存的字典数据");
+      return;
+    }
+
+    // 否则加载字典
+    await fetchDict();
+  };
+
+  /**
    * 将API的树形结构转换为前端使用的扁平结构
    */
   const transformDictData = (nodes: DictResult): DictData => {
-    console.log("树形结构转换为前端使用的扁平结构");
     const dictData: DictData = {};
 
     nodes.forEach(node => {
@@ -157,7 +227,7 @@ export const useDictStore = defineStore("dict", () => {
               dictType.items.push({
                 value: child.value,
                 label: child.label,
-                code: child.code,
+                key: child.code,
                 state: child.state,
                 sort: child.sort,
               });
@@ -184,7 +254,6 @@ export const useDictStore = defineStore("dict", () => {
     return dictData;
   };
 
-
   return {
     // 状态
     dict,
@@ -192,15 +261,22 @@ export const useDictStore = defineStore("dict", () => {
     loading,
     error,
 
+    // 计算属性
+    allDictTypes: getAllDictTypes,
+
     // 方法
     fetchDict,
     updateDict,
+    initDict,
     getDictByType,
     getDictLabel,
+    getDictLabels,
     getDictOptions,
-    getAllDictTypes,
+    getDictByCode,
     getDictTypeInfo,
+    getTreeNode,
     isDictLoaded,
     getRawDictTree,
+    clearDictData,
   };
 });

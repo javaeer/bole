@@ -1,17 +1,17 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
-import cn.net.yunlou.bole.entity.ProjectExperience;
-import cn.net.yunlou.bole.model.request.ProjectExperienceAddRequest;
-import cn.net.yunlou.bole.model.request.ProjectExperienceEditRequest;
-import cn.net.yunlou.bole.model.request.ProjectExperienceSearchRequest;
+import cn.net.yunlou.bole.model.create.ProjectExperienceCreate;
+import cn.net.yunlou.bole.model.edit.ProjectExperienceEdit;
+import cn.net.yunlou.bole.model.entity.ProjectExperience;
+import cn.net.yunlou.bole.model.query.ProjectExperienceQuery;
+import cn.net.yunlou.bole.model.view.ProjectExperienceView;
 import cn.net.yunlou.bole.service.ProjectExperienceService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * 21:27 Modified By Modified At
  */
 @RestController
-@RequestMapping("project-experience")
+@RequestMapping("project/experience")
 @Tag(name = "10.项目经历管理", description = "项目经历相关接口")
 @RequiredArgsConstructor
 public class ProjectExperienceController {
@@ -28,27 +28,20 @@ public class ProjectExperienceController {
 
     @PostMapping("add")
     @Operation(summary = "新增项目经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(@RequestBody ProjectExperienceAddRequest request) {
-        ProjectExperience projectExperience =
-                QueryUtils.modelToBean(request, ProjectExperience.class);
-        return BusinessResponse.success(projectExperienceService.save(projectExperience));
+    public BusinessResponse<Boolean> add(@RequestBody ProjectExperienceCreate create) {
+        return BusinessResponse.success(projectExperienceService.saveByCreate(create));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除项目经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(projectExperienceService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑项目经历")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody ProjectExperienceEditRequest request) {
-        ProjectExperience projectExperience =
-                QueryUtils.modelToBean(request, ProjectExperience.class);
-        return BusinessResponse.success(projectExperienceService.updateById(projectExperience));
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid ProjectExperienceEdit edit) {
+        return BusinessResponse.success(projectExperienceService.updateByEdit(edit));
     }
 
     @GetMapping("{id}")
@@ -59,13 +52,11 @@ public class ProjectExperienceController {
 
     @PostMapping("page")
     @Operation(summary = "获取项目经历列表")
-    public BusinessResponse<Page<ProjectExperience>> page(
+    public BusinessResponse<Page<ProjectExperienceView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody ProjectExperienceSearchRequest request) {
-        ProjectExperience projectExperience =
-                QueryUtils.modelToBean(request, ProjectExperience.class);
+            @RequestBody ProjectExperienceQuery request) {
         return BusinessResponse.success(
-                projectExperienceService.page(page, size, projectExperience));
+                projectExperienceService.pageViewByQuery(page, size, request));
     }
 }

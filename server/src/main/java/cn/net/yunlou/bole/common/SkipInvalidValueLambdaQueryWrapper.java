@@ -1,6 +1,6 @@
 package cn.net.yunlou.bole.common;
 
-import cn.net.yunlou.bole.common.utils.EntityUtils;
+import cn.net.yunlou.bole.common.utils.BeanUtils;
 import cn.net.yunlou.bole.common.utils.ValueUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
@@ -36,7 +36,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
 
     public SkipInvalidValueLambdaQueryWrapper(T entity) {
         super();
-        T filteredEntity = EntityUtils.filterInvalidValues(entity);
+        T filteredEntity = BeanUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
     }
 
@@ -85,7 +85,7 @@ public class SkipInvalidValueLambdaQueryWrapper<T> extends LambdaQueryWrapper<T>
 
     @Override
     public LambdaQueryWrapper<T> setEntity(T entity) {
-        T filteredEntity = EntityUtils.filterInvalidValues(entity);
+        T filteredEntity = BeanUtils.filterInvalidValues(entity);
         super.setEntity(filteredEntity);
         return this;
     }

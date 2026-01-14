@@ -11,14 +11,14 @@ import lombok.EqualsAndHashCode;
  * FileName: BaseTreeEntity Description: 树形结构基础实体类 Created By MR. WANG Created At 2025/11/25 17:00
  * Modified By Modified At
  */
-@Data
 @EqualsAndHashCode(callSuper = true)
+@Data
 public class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEntity {
 
     public static final Long ROOT_ID = 0L;
 
     /** 父节点ID */
-    private Long parentId = ROOT_ID;
+    private Long parentId;
 
     /** 节点路径 */
     private String path;

@@ -1,17 +1,17 @@
 package cn.net.yunlou.bole.controller;
 
 import cn.net.yunlou.bole.common.BusinessResponse;
-import cn.net.yunlou.bole.common.utils.QueryUtils;
-import cn.net.yunlou.bole.entity.Skill;
-import cn.net.yunlou.bole.model.request.SkillAddRequest;
-import cn.net.yunlou.bole.model.request.SkillEditRequest;
-import cn.net.yunlou.bole.model.request.SkillSearchRequest;
+import cn.net.yunlou.bole.model.create.SkillCreate;
+import cn.net.yunlou.bole.model.edit.SkillEdit;
+import cn.net.yunlou.bole.model.entity.Skill;
+import cn.net.yunlou.bole.model.query.SkillQuery;
+import cn.net.yunlou.bole.model.view.SkillView;
 import cn.net.yunlou.bole.service.SkillService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -28,25 +28,20 @@ public class SkillController {
 
     @PostMapping("add")
     @Operation(summary = "新增职业技能")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> add(@RequestBody SkillAddRequest request) {
-        Skill skill = QueryUtils.modelToBean(request, Skill.class);
-        return BusinessResponse.success(skillService.save(skill));
+    public BusinessResponse<Boolean> add(@RequestBody SkillCreate request) {
+        return BusinessResponse.success(skillService.saveByCreate(request));
     }
 
     @DeleteMapping("del")
     @Operation(summary = "删除职业技能")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> del(@RequestParam(value = "主键") Long id) {
+    public BusinessResponse<Boolean> del(@RequestParam(value = "id") Long id) {
         return BusinessResponse.success(skillService.removeById(id));
     }
 
     @PutMapping("edit")
     @Operation(summary = "编辑职业技能")
-    @PreAuthorize("hasAnyRole('SUPER','ADMIN')")
-    public BusinessResponse<Boolean> edit(@RequestBody SkillEditRequest request) {
-        Skill skill = QueryUtils.modelToBean(request, Skill.class);
-        return BusinessResponse.success(skillService.updateById(skill));
+    public BusinessResponse<Boolean> edit(@RequestBody @Valid SkillEdit request) {
+        return BusinessResponse.success(skillService.updateByEdit(request));
     }
 
     @GetMapping("{id}")
@@ -57,11 +52,10 @@ public class SkillController {
 
     @PostMapping("page")
     @Operation(summary = "获取职业技能列表")
-    public BusinessResponse<Page<Skill>> page(
+    public BusinessResponse<Page<SkillView>> page(
             @RequestParam(defaultValue = "1") long page,
             @RequestParam(defaultValue = "10") long size,
-            @RequestBody SkillSearchRequest request) {
-        Skill skill = QueryUtils.modelToBean(request, Skill.class);
-        return BusinessResponse.success(skillService.page(page, size, skill));
+            @RequestBody SkillQuery request) {
+        return BusinessResponse.success(skillService.pageViewByQuery(page, size, request));
     }
 }

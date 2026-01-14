@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome Email</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #4CAF50; color: white; padding: 10px; text-align: center; }
+        .content { padding: 20px; background-color: #f9f9f9; }
+        .footer { margin-top: 20px; font-size: 12px; color: #666; }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>欢迎加入我们！</h1>
+    </div>
+
+    <div class="content">
+        <p>尊敬的 <span th:text="${username}">用户</span>，您好！</p>
+
+        <p>感谢您注册我们的平台。您的账户已经创建成功。</p>
+
+        <p th:if="${verificationCode != null}">
+            您的验证码是：<strong th:text="${verificationCode}"></strong>
+        </p>
+
+        <p>请点击以下按钮激活您的账户：</p>
+
+        <p>
+            <a th:href="${activationLink}" class="button">激活账户</a>
+        </p>
+
+        <p>如果按钮无法点击，请复制以下链接到浏览器：</p>
+        <p><small th:text="${activationLink}"></small></p>
+
+        <p>如果您没有注册我们的服务，请忽略此邮件。</p>
+    </div>
+
+    <div class="footer">
+        <p>此邮件由系统自动发送，请勿回复。</p>
+        <p>© 2024 您的公司. 保留所有权利.</p>
+    </div>
+</div>
+</body>
+</html>

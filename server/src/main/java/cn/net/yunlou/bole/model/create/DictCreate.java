@@ -1,0 +1,25 @@
+package cn.net.yunlou.bole.model.create;
+
+import cn.net.yunlou.bole.common.BaseTreeCreate;
+import lombok.*;
+
+/**
+ * FileName: DictAddRequest Description: Created By laughtiger Created At 2025/11/30 22:12 Modified
+ * By Modified At
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class DictCreate extends BaseTreeCreate {
+
+    private String name;
+
+    private String type;
+
+    private String code;
+
+    private String value;
+
+    private String label;
+
+    private Integer state;
+}

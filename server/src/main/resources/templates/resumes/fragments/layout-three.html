@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- 三栏布局 -->
+<div th:fragment="layout-three(layoutData, globalStyle)"
+     class="layout-three-column"
+     th:style="${layoutData.layoutStyle != null ? layoutData.layoutStyle : ''}">
+
+    <th:block th:if="${layoutData.columns}" th:each="column, colIter : ${layoutData.columns}">
+        <div class="column" th:attr="data-column-index=${colIter.index}">
+            <th:block th:if="${column != null and not #lists.isEmpty(column)}">
+                <th:block th:each="component, compIter : ${column}" th:object="${component}">
+                    <div class="resume-component"
+                         th:style="${component.stylesCss}"
+                         th:attr="data-component-id=*{componentId},
+                                  data-component-order=${compIter.index}">
+
+                        <!-- 使用通用组件渲染器 -->
+                        <th:block th:replace="~{resumes/fragments/component-renderer ::
+                                component-renderer(${component}, ${globalStyle})}">
+                        </th:block>
+                    </div>
+                </th:block>
+            </th:block>
+
+            <!-- 空状态 -->
+            <th:block th:unless="${column != null and not #lists.isEmpty(column)}">
+                <div class="empty-column">
+                    <div th:switch="${colIter.index}">
+                        <div th:case="0">
+                            <div class="empty-icon">1️⃣</div>
+                            <div class="empty-title">栏位 1</div>
+                        </div>
+                        <div th:case="1">
+                            <div class="empty-icon">2️⃣</div>
+                            <div class="empty-title">栏位 2</div>
+                        </div>
+                        <div th:case="2">
+                            <div class="empty-icon">3️⃣</div>
+                            <div class="empty-title">栏位 3</div>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </th:block>
+
+    <!-- 如果没有columns数据（异常情况处理） -->
+    <th:block th:unless="${layoutData.columns}">
+        <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <div class="empty-title">布局数据异常</div>
+            <div class="empty-desc">无法显示三栏布局</div>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

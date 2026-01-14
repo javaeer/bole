@@ -1,15 +1,12 @@
-import request from "@/utils/request";
+import { request } from "@/utils/request";
+import { NoticeDetailVO, NoticeForm, NoticePageQuery, NoticePageVO } from "@/types/notice";
 
 const NOTICE_BASE_URL = "/notices";
 
 const NoticeAPI = {
   /** 获取通知公告分页数据 */
   getPage(queryParams?: NoticePageQuery) {
-    return request<PageResult<NoticePageVO[]>>({
-      url: `${NOTICE_BASE_URL}/page`,
-      method: "GET",
-      data: queryParams,
-    });
+    return request.post<PageResult<NoticePageVO[]>>(`${NOTICE_BASE_URL}/page`, queryParams);
   },
 
   /**
@@ -19,10 +16,7 @@ const NoticeAPI = {
    * @returns Notice表单数据
    */
   getFormData(id: number) {
-    return request<NoticeForm>({
-      url: `${NOTICE_BASE_URL}/${id}/form`,
-      method: "GET",
-    });
+    return request.get<NoticeForm>( `${NOTICE_BASE_URL}/${id}/form`);
   },
 
   /**
@@ -32,11 +26,7 @@ const NoticeAPI = {
    * @returns
    */
   add(data: NoticeForm) {
-    return request({
-      url: `${NOTICE_BASE_URL}`,
-      method: "POST",
-      data: data,
-    });
+    return request.post(`${NOTICE_BASE_URL}`, data);
   },
 
   /**
@@ -46,11 +36,7 @@ const NoticeAPI = {
    * @param data Notice表单数据
    */
   update(id: number, data: NoticeForm) {
-    return request({
-      url: `${NOTICE_BASE_URL}/${id}`,
-      method: "PUT",
-      data: data,
-    });
+    return request.put(`${NOTICE_BASE_URL}/${id}`, data);
   },
 
   /**
@@ -59,10 +45,7 @@ const NoticeAPI = {
    * @param ids 通知公告ID字符串，多个以英文逗号(,)分割
    */
   deleteByIds(ids: string) {
-    return request({
-      url: `${NOTICE_BASE_URL}/${ids}`,
-      method: "DELETE",
-    });
+    return request.delete(`${NOTICE_BASE_URL}/${ids}`);
   },
 
   /**
@@ -72,10 +55,7 @@ const NoticeAPI = {
    * @returns
    */
   publish(id: number) {
-    return request({
-      url: `${NOTICE_BASE_URL}/${id}/publish`,
-      method: "PUT",
-    });
+    return request.put( `${NOTICE_BASE_URL}/${id}/publish`);
   },
 
   /**
@@ -85,10 +65,7 @@ const NoticeAPI = {
    * @returns
    */
   revoke(id: number) {
-    return request({
-      url: `${NOTICE_BASE_URL}/${id}/revoke`,
-      method: "PUT",
-    });
+    return request.put( `${NOTICE_BASE_URL}/${id}/revoke`);
   },
   /**
    * 查看通知
@@ -96,106 +73,18 @@ const NoticeAPI = {
    * @param id
    */
   getDetail(id: string) {
-    return request<NoticeDetailVO>({
-      url: `${NOTICE_BASE_URL}/${id}/detail`,
-      method: "GET",
-    });
+    return request.get<NoticeDetailVO>( `${NOTICE_BASE_URL}/${id}/detail`);
   },
 
   /* 全部已读 */
   readAll() {
-    return request({
-      url: `${NOTICE_BASE_URL}/read-all`,
-      method: "PUT",
-    });
+    return request.put( `${NOTICE_BASE_URL}/read/all`);
   },
 
   /** 获取我的通知分页列表 */
-  getMyNoticePage(queryParams?: NoticePageQuery) {
-    return request<PageResult<NoticePageVO[]>>({
-      url: `${NOTICE_BASE_URL}/my-page`,
-      method: "GET",
-      data: queryParams,
-    });
+  getMyNoticePage(queryParams?: PageParam, queryData?: any) {
+    return request.page<PageResult<NoticePageVO[]>>( `${NOTICE_BASE_URL}/my/page`, queryData, queryParams);
   },
 };
 
 export default NoticeAPI;
-
-/** 通知公告分页查询参数 */
-export interface NoticePageQuery extends PageQuery {
-  /** 标题 */
-  title?: string;
-  /** 发布状态(0：未发布，1：已发布，-1：已撤回) */
-  publishStatus?: number;
-
-  isRead?: number;
-}
-
-/** 通知公告表单对象 */
-export interface NoticeForm {
-  id?: number;
-  /** 通知标题 */
-  title?: string;
-  /** 通知内容 */
-  content?: string;
-  /** 通知类型 */
-  type?: number;
-  /** 优先级(L：低，M：中，H：高) */
-  level?: string;
-  /** 目标类型(1-全体 2-指定) */
-  targetType?: number;
-  /** 目标ID合集，以,分割 */
-  targetUserIds?: string;
-}
-
-/** 通知公告分页对象 */
-export interface NoticePageVO {
-  id: string;
-  /** 通知标题 */
-  title?: string;
-  /** 通知内容 */
-  content?: string;
-  /** 通知类型 */
-  type?: number;
-  /** 发布人 */
-  publisherName?: string;
-  /** 优先级(0-低 1-中 2-高) */
-  priority?: number;
-  /** 目标类型(0-全体 1-指定) */
-  targetType?: number;
-  /** 发布状态(0-未发布 1已发布 2已撤回) */
-  publishStatus?: number;
-  /** 发布时间 */
-  publishTime?: Date;
-  /** 撤回时间 */
-  revokeTime?: Date;
-  /** 优先级(L-低 M-中 H-高) */
-  level?: string | number;
-}
-
-export interface NoticeDetailVO {
-  /** 通知ID */
-  id?: string;
-
-  /** 通知标题 */
-  title?: string;
-
-  /** 通知内容 */
-  content?: string;
-
-  /** 通知类型 */
-  type?: number;
-
-  /** 发布人 */
-  publisherName?: string;
-
-  /** 优先级(L-低 M-中 H-高) */
-  level?: string;
-
-  /** 发布时间 */
-  publishTime?: Date;
-
-  /** 发布状态 */
-  publishStatus?: number;
-}

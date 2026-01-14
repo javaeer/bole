@@ -1,13 +1,14 @@
 package cn.net.yunlou.bole.model.query;
 
 import cn.net.yunlou.bole.common.BaseQuery;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
 /**
- * FileName: ProjectExperienceQuery Description: Created By MR. WANG Created At 2025/11/26 17:44
- * Modified By Modified At
+ * FileName: ProjectExperienceSearchRequest Description: Created By MR. WANG Created At 2025/11/24
+ * 23:54 Modified By Modified At
  */
-@Data
 @EqualsAndHashCode(callSuper = true)
+@Data
+@Schema(description = "查询项目经历请求")
 public class ProjectExperienceQuery extends BaseQuery {}

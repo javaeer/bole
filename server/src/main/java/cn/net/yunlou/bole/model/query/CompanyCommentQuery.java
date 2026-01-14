@@ -1,13 +1,16 @@
 package cn.net.yunlou.bole.model.query;
 
 import cn.net.yunlou.bole.common.BaseQuery;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
 /**
- * FileName: CompanyCommentQuery Description: Created By MR. WANG Created At 2025/11/26 00:57
- * Modified By Modified At
+ * FileName: CompanyCommentSearchRequest Description: Created By MR. WANG Created At 2025/11/24
+ * 23:22 Modified By Modified At
  */
-@Data
 @EqualsAndHashCode(callSuper = true)
-public class CompanyCommentQuery extends BaseQuery {}
+@Data
+@Schema(description = "查询企业评论请求")
+public class CompanyCommentQuery extends BaseQuery {
+    private Long companyId;
+}

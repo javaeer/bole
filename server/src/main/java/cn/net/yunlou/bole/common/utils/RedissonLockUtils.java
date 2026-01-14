@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RedissonLockUtils {
 
-    private static final String LOCK_PREFIX = "LOCK:YL";
+    private static final String LOCK_PREFIX = "RLOCK:";
 
     private static final Duration LOCK_EXPIRE_AFTER = Duration.ofSeconds(30);
 

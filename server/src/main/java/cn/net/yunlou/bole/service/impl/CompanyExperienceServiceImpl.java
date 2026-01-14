@@ -1,12 +1,15 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
-import cn.net.yunlou.bole.entity.CompanyExperience;
 import cn.net.yunlou.bole.mapper.CompanyExperienceMapper;
-import cn.net.yunlou.bole.model.dto.CompanyExperienceDTO;
+import cn.net.yunlou.bole.model.create.CompanyExperienceCreate;
+import cn.net.yunlou.bole.model.edit.CompanyExperienceEdit;
+import cn.net.yunlou.bole.model.entity.CompanyExperience;
 import cn.net.yunlou.bole.model.query.CompanyExperienceQuery;
+import cn.net.yunlou.bole.model.view.CompanyExperienceView;
 import cn.net.yunlou.bole.service.CompanyExperienceService;
 import cn.net.yunlou.bole.struct.CompanyExperienceStructMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,7 +21,17 @@ public class CompanyExperienceServiceImpl
         extends BaseService<
                 CompanyExperienceMapper,
                 CompanyExperience,
-                CompanyExperienceDTO,
+                CompanyExperienceCreate,
+                CompanyExperienceView,
+                CompanyExperienceEdit,
                 CompanyExperienceQuery,
                 CompanyExperienceStructMapper>
-        implements CompanyExperienceService {}
+        implements CompanyExperienceService {
+
+    @Override
+    public QueryWrapper<CompanyExperience> getBaseQueryWrapper(CompanyExperience entity) {
+        QueryWrapper<CompanyExperience> queryWrapper = super.getBaseQueryWrapper(entity);
+        queryWrapper.lambda().orderByDesc(CompanyExperience::getStartDate);
+        return queryWrapper;
+    }
+}

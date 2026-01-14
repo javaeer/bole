@@ -138,14 +138,20 @@ public enum BusinessStatus implements IEnum<Integer> {
     LOCKED(42300, "Locked"),
 
     // 500错误衍生
-    INTERNAL_SERVER_UPDATE_ERROR(50004, "Internal Server Error,Can't Update a Record"),
 
-    INTERNAL_SERVER_DELETE_ERROR(50003, "Internal Server Error,Can't Delete a Record"),
+    FILE_DOWNLOAD_FAILED(50007, "文件下载失败"),
 
-    INTERNAL_SERVER_CREATE_ERROR(50002, "Internal Server Error,Can't Create a Record"),
+    FILE_READ_ERROR(50006, "文件上传失败"),
 
-    INTERNAL_SERVER_UNDEFINED_ERROR(
-            50001, "Internal Server Undefined Error,Send massage for javaeer@aliyun.com"),
+    FILE_UPLOAD_FAILED(50005, "文件上传失败"),
+
+    UPDATE_ERROR(50004, "Internal Server Error,Can't Update a Record"),
+
+    DELETE_ERROR(50003, "Internal Server Error,Can't Delete a Record"),
+
+    CREATE_ERROR(50002, "Internal Server Error,Can't Create a Record"),
+
+    UNDEFINED_ERROR(50001, "Internal Server Undefined Error,Send massage for javaeer@aliyun.com"),
 
     INTERNAL_SERVER_ERROR(
             50000,

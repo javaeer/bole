@@ -1,10 +1,12 @@
 package cn.net.yunlou.bole.service.impl;
 
 import cn.net.yunlou.bole.common.BaseService;
-import cn.net.yunlou.bole.entity.Role;
 import cn.net.yunlou.bole.mapper.RoleMapper;
-import cn.net.yunlou.bole.model.dto.RoleDTO;
+import cn.net.yunlou.bole.model.create.RoleCreate;
+import cn.net.yunlou.bole.model.edit.RoleEdit;
+import cn.net.yunlou.bole.model.entity.Role;
 import cn.net.yunlou.bole.model.query.RoleQuery;
+import cn.net.yunlou.bole.model.view.RoleView;
 import cn.net.yunlou.bole.service.RoleService;
 import cn.net.yunlou.bole.struct.RoleStructMapper;
 import org.springframework.stereotype.Service;
@@ -15,5 +17,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RoleServiceImpl
-        extends BaseService<RoleMapper, Role, RoleDTO, RoleQuery, RoleStructMapper>
+        extends BaseService<
+                RoleMapper, Role, RoleCreate, RoleView, RoleEdit, RoleQuery, RoleStructMapper>
         implements RoleService {}
