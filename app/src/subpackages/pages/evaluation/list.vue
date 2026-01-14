@@ -183,7 +183,7 @@
 import { onMounted, ref } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import type { SelfEvaluationResult } from "@/types/self-evaluation";
-import SelfEvaluationAPI from "@/api/self-evaluation";
+import SelfEvaluationAPI from "@/subpackages/api/self-evaluation";
 import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
@@ -350,19 +350,19 @@ const loadMore = () => {
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/evaluation/evaluation?id=${id}`,
+    url: `/subpackages/subpackages/pages/evaluation/evaluation?id=${id}`,
   });
 };
 
 const editEvaluation = (id: number) => {
   uni.navigateTo({
-    url: `/pages/evaluation/evaluation?id=${id}&edit=true`,
+    url: `/subpackages/pages/evaluation/evaluation?id=${id}&edit=true`,
   });
 };
 
 const addNewEvaluation = () => {
   uni.navigateTo({
-    url: "/pages/evaluation/evaluation",
+    url: "/subpackages/pages/evaluation/evaluation",
   });
 };
 

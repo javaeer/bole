@@ -39,13 +39,13 @@
       </view>
 
       <view class="stats">
-        <!-- 简历管理 -->
-<!--        <view class="stat-card" @click="handleResumes">-->
-<!--          <view class="stat-card-inner">-->
-<!--            <text class="stat-icon">📝</text>-->
-<!--            <text class="stat-title">简历管理</text>-->
-<!--          </view>-->
-<!--        </view>-->
+        <!-- 导出管理 -->
+        <view class="stat-card" @click="handleTasks">
+          <view class="stat-card-inner">
+            <text class="stat-icon">📝</text>
+            <text class="stat-title">导出管理</text>
+          </view>
+        </view>
 
         <!-- 学历管理 -->
         <view class="stat-card" @click="handleEducationExperiences">
@@ -71,14 +71,6 @@
           </view>
         </view>
 
-<!--        &lt;!&ndash; 公司里程 &ndash;&gt;-->
-<!--        <view class="stat-card" @click="handleCompanyExperiences">-->
-<!--          <view class="stat-card-inner">-->
-<!--            <text class="stat-icon">🏢</text>-->
-<!--            <text class="stat-title">公司里程</text>-->
-<!--          </view>-->
-<!--        </view>-->
-
         <!-- 项目经验 -->
         <view class="stat-card" @click="handleProjectExperiences">
           <view class="stat-card-inner">
@@ -102,6 +94,15 @@
             <text class="stat-title">自我评价</text>
           </view>
         </view>
+
+        <!-- 收藏管理 -->
+        <view class="stat-card" @click="handleFollow">
+          <view class="stat-card-inner">
+            <text class="stat-icon">🏢</text>
+            <text class="stat-title">收藏管理</text>
+          </view>
+        </view>
+
       </view>
     </view>
 
@@ -112,16 +113,6 @@
       </view>
 
       <view class="menu-list">
-
-        <view class="menu-item" @click="handleFollow">
-          <view class="menu-left">
-            <view class="menu-icon-wrapper" style="background: rgba(236,226,32,0.65);">
-              <text class="menu-icon" style="color: #ECE220FF;">✨</text>
-            </view>
-            <text class="menu-text">收藏管理</text>
-          </view>
-          <text class="menu-arrow">›</text>
-        </view>
         <view class="menu-item" @click="handleFeedback">
           <view class="menu-left">
             <view class="menu-icon-wrapper" style="background: rgba(33, 150, 243, 0.1);">
@@ -206,7 +197,7 @@ const handleUserInfoUpdated = (data: any) => {
 const loadUserInfo = async () => {
   try {
     console.log("开始加载用户信息...");
-    await userStore.userInfo
+    await userStore.userInfo;
     pageState.lastRefreshTime = Date.now();
     pageState.refreshFlag = false;
     console.log("用户信息加载完成");
@@ -234,19 +225,19 @@ const handleResumes = () => {
 
 const handleEducationExperiences = () => {
   uni.navigateTo({
-    url: "/pages/education/list",
+    url: "/subpackages/pages/education/list",
   });
 };
 
 const handleJobIntentions = () => {
   uni.navigateTo({
-    url: "/pages/intention/list",
+    url: "/subpackages/pages/intention/list",
   });
 };
 
 const handleWorkExperiences = () => {
   uni.navigateTo({
-    url: "/pages/work/list",
+    url: "/subpackages/pages/work/list",
   });
 };
 
@@ -258,19 +249,19 @@ const handleCompanyExperiences = () => {
 
 const handleProjectExperiences = () => {
   uni.navigateTo({
-url: "/pages/project/list",
+    url: "/subpackages/pages/project/list",
   });
 };
 
 const handleSkills = () => {
   uni.navigateTo({
-    url: "/pages/skill/list",
+    url: "/subpackages/pages/skill/list",
   });
 };
 
 const handleSelfEvaluations = () => {
   uni.navigateTo({
-    url: "/pages/evaluation/list",
+    url: "/subpackages/pages/evaluation/list",
   });
 };
 
@@ -283,6 +274,12 @@ const handleFeedback = () => {
 const handleFollow = () => {
   uni.navigateTo({
     url: "/pages/follow/follow",
+  });
+};
+
+const handleTasks = () => {
+  uni.navigateTo({
+    url: "/subpackages/pages/tasks/list",
   });
 };
 

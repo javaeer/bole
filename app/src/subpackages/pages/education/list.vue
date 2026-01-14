@@ -1,4 +1,4 @@
-<!-- pages/education/list.vue -->
+<!-- subpackages/pages/education/list.vue -->
 <template>
   <view class="page-container">
     <!-- 搜索栏 -->
@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
-import EducationExperienceAPI from "@/api/education-experience";
+import EducationExperienceAPI from "@/subpackages/api/education-experience";
 import type { EducationExperienceResult } from "@/types/education-experience";
 import { usePageRefresh } from "@/composables/usePageRefresh";
 
@@ -318,19 +318,19 @@ const loadMore = () => {
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/education/education?id=${id}`,
+    url: `/subpackages/pages/education/education?id=${id}`,
   });
 };
 
 const editItem = (id: number) => {
   uni.navigateTo({
-    url: `/pages/education/education?id=${id}&edit=true`,
+    url: `/subpackages/pages/education/education?id=${id}&edit=true`,
   });
 };
 
 const addNewItem = () => {
   uni.navigateTo({
-    url: "/pages/education/education",
+    url: "/subpackages/pages/education/education",
   });
 };
 

@@ -134,5 +134,8 @@ declare global {
       this.data = data;
     }
   }
+
+  // 平台类型
+  export type PlatformType = "h5" | "android" | "ios" | "mp-weixin" | "mp-alipay" | "mp-baidu" | "mp-toutiao" | "mp-qq";
 }
 export {};

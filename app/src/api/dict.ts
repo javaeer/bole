@@ -1,5 +1,5 @@
 import { request } from "@/utils/request";
-import { DictForm, DictPageResult, DictQuery, DictResult } from "@/types/dict";
+import { DictForm, DictQuery, DictResult } from "@/types/dict";
 
 const DICT_BASE_URL = "/dict";
 
@@ -11,7 +11,7 @@ const DictAPI = {
    * @returns 字典分页结果
    */
   getPage(pageQuery: PageParam, queryParams: DictQuery) {
-    return request.page<DictPageResult>(`${DICT_BASE_URL}/page`, pageQuery, queryParams);
+    return request.page<PageResult<DictResult>>(`${DICT_BASE_URL}/page`, pageQuery, queryParams);
   },
 
   /**

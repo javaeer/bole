@@ -77,18 +77,6 @@
       }
     },
     {
-      "path": "pages/project/list",
-      "style": {
-        "navigationBarTitleText": "项目列表"
-      }
-    },
-    {
-      "path": "pages/project/project",
-      "style": {
-        "navigationBarTitleText": ""
-      }
-    },
-    {
       "path": "pages/resumes/resumes",
       "style": {
         "navigationBarTitleText": ""
@@ -98,66 +86,6 @@
       "path": "pages/resumes/list",
       "style": {
         "navigationBarTitleText": "简历列表"
-      }
-    },
-    {
-      "path": "pages/education/list",
-      "style": {
-        "navigationBarTitleText": "学历列表"
-      }
-    },
-    {
-      "path": "pages/education/education",
-      "style": {
-        "navigationBarTitleText": "学历详情"
-      }
-    },
-    {
-      "path": "pages/intention/list",
-      "style": {
-        "navigationBarTitleText": "求职意向列表"
-      }
-    },
-    {
-      "path": "pages/intention/intention",
-      "style": {
-        "navigationBarTitleText": "意向详情"
-      }
-    },
-    {
-      "path": "pages/work/list",
-      "style": {
-        "navigationBarTitleText": "工作经历列表"
-      }
-    },
-    {
-      "path": "pages/work/work",
-      "style": {
-        "navigationBarTitleText": "工作详情"
-      }
-    },
-    {
-      "path": "pages/skill/list",
-      "style": {
-        "navigationBarTitleText": "技能列表"
-      }
-    },
-    {
-      "path": "pages/skill/skill",
-      "style": {
-        "navigationBarTitleText": "技能详情"
-      }
-    },
-    {
-      "path": "pages/evaluation/list",
-      "style": {
-        "navigationBarTitleText": "自我评价列表"
-      }
-    },
-    {
-      "path": "pages/evaluation/evaluation",
-      "style": {
-        "navigationBarTitleText": "评价详情"
       }
     }
   ],
@@ -218,6 +146,78 @@
           "path": "pages/test/region",
           "style": {
             "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/education/list",
+          "style": {
+            "navigationBarTitleText": "学历列表"
+          }
+        },
+        {
+          "path": "pages/education/education",
+          "style": {
+            "navigationBarTitleText": "学历详情"
+          }
+        },
+        {
+          "path": "pages/project/list",
+          "style": {
+            "navigationBarTitleText": "项目列表"
+          }
+        },
+        {
+          "path": "pages/project/project",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/intention/list",
+          "style": {
+            "navigationBarTitleText": "求职意向列表"
+          }
+        },
+        {
+          "path": "pages/intention/intention",
+          "style": {
+            "navigationBarTitleText": "意向详情"
+          }
+        },
+        {
+          "path": "pages/work/list",
+          "style": {
+            "navigationBarTitleText": "工作经历列表"
+          }
+        },
+        {
+          "path": "pages/work/work",
+          "style": {
+            "navigationBarTitleText": "工作详情"
+          }
+        },
+        {
+          "path": "pages/skill/list",
+          "style": {
+            "navigationBarTitleText": "技能列表"
+          }
+        },
+        {
+          "path": "pages/skill/skill",
+          "style": {
+            "navigationBarTitleText": "技能详情"
+          }
+        },
+        {
+          "path": "pages/evaluation/list",
+          "style": {
+            "navigationBarTitleText": "自我评价列表"
+          }
+        },
+        {
+          "path": "pages/evaluation/evaluation",
+          "style": {
+            "navigationBarTitleText": "评价详情"
           }
         },
         {
@@ -309,7 +309,25 @@
           "style": {
             "navigationBarTitleText": "系统通知"
           }
-        }
+		},
+		{
+			"path": "pages/tasks/list",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/webview/webview",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/webview/pdfview",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		}
       ]
     }
   ],

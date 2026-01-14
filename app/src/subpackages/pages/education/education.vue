@@ -1,4 +1,4 @@
-<!-- pages/education/education.vue -->
+<!-- subpackages/pages/education/education.vue -->
 <template>
   <view class="page-container">
     <!-- 头部 -->
@@ -237,7 +237,7 @@
 import { computed, reactive, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import type { EducationExperienceForm, EducationExperienceResult } from "@/types/education-experience";
-import EducationExperienceAPI from "@/api/education-experience";
+import EducationExperienceAPI from "@/subpackages/api/education-experience";
 import { useSaveAndBack } from "@/composables/useSaveAndBack";
 import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 

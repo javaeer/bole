@@ -199,7 +199,7 @@ import { computed, reactive, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import type { JobIntentionForm, JobIntentionResult } from "@/types/job-intention";
 import type { SelectedRegion, Province, City } from "@/types/region";
-import JobIntentionAPI from "@/api/job-intention";
+import JobIntentionAPI from "@/subpackages/api/job-intention";
 import RegionPicker from "@/components/region-picker/RegionPicker.vue";
 import { useRegionStore } from "@/stores/region";
 import { useSaveAndBack } from "@/composables/useSaveAndBack";

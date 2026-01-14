@@ -160,7 +160,7 @@
 import { ref, onMounted } from 'vue'
 import { onLoad, onReachBottom } from '@dcloudio/uni-app'
 import type { JobIntentionResult } from "@/types/job-intention";
-import JobIntentionAPI from "@/api/job-intention";
+import JobIntentionAPI from "@/subpackages/api/job-intention";
 import { usePageRefresh } from '@/composables/usePageRefresh'
 
 // 响应式数据
@@ -348,19 +348,19 @@ const loadMore = () => {
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/intention/intention?id=${id}`
+    url: `/subpackages/pages/intention/intention?id=${id}`
   })
 }
 
 const editIntention = (id: number) => {
   uni.navigateTo({
-    url: `/pages/intention/intention?id=${id}&edit=true`
+    url: `/subpackages/pages/intention/intention?id=${id}&edit=true`
   })
 }
 
 const addNewIntention = () => {
   uni.navigateTo({
-    url: '/pages/intention/intention'
+    url: '/subpackages/pages/intention/intention'
   })
 }
 

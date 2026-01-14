@@ -211,7 +211,7 @@
 import { ref, onMounted } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import type { ProjectExperienceQuery, ProjectExperienceResult } from "@/types/project-experience";
-import ProjectExperienceAPI from "@/api/project-experience";
+import ProjectExperienceAPI from "@/subpackages/api/project-experience";
 import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
@@ -471,19 +471,19 @@ const loadMore = () => {
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/project/project?id=${id}`,
+    url: `/subpackages/pages/project/project?id=${id}`,
   });
 };
 
 const editProject = (id: number) => {
   uni.navigateTo({
-    url: `/pages/project/project?id=${id}&edit=true`,
+    url: `/subpackages/pages/project/project?id=${id}&edit=true`,
   });
 };
 
 const addNewProject = () => {
   uni.navigateTo({
-    url: "/pages/project/project",
+    url: "/subpackages/pages/project/project",
   });
 };
 

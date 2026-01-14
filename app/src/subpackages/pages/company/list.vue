@@ -32,17 +32,17 @@
             :key="option.value"
             class="sort-tag"
             :class="{
-              active: listParams.sortField === option.value,
-              desc: listParams.sortOrder === 'desc'
+              active: pageParams.sortField === option.value,
+              desc: pageParams.sortOrder === 'desc'
             }"
             @click="toggleSort(option.value as SortField)"
           >
             <text>{{ option.label }}</text>
             <text
-              v-if="listParams.sortField === option.value"
+              v-if="pageParams.sortField === option.value"
               class="icon"
             >
-              {{ listParams.sortOrder === 'asc' ? '▲' : '▼' }}
+              {{ pageParams.sortOrder === 'asc' ? '▲' : '▼' }}
             </text>
           </view>
         </view>
@@ -169,7 +169,7 @@ const searchKeywords = ref("");
 const showSearch = ref(false);
 
 // 列表参数
-const listParams = reactive<PageParam>({
+const pageParams = reactive<PageParam>({
   page: 1,
   size: 10
 });
@@ -212,7 +212,7 @@ const { refreshKey } = usePageRefresh({
 const handleSearch = () => {
   bodyParams.value.keyField = "name";
   bodyParams.value.keyWords = searchKeywords.value.trim();
-  listParams.page = 1;
+  pageParams.page = 1;
   companyList.value = [];
   loadCompanyList();
 };
@@ -221,7 +221,7 @@ const handleSearch = () => {
 const resetSearch = () => {
   searchKeywords.value = "";
   bodyParams.value.keyWords = "";
-  listParams.page = 1;
+  pageParams.page = 1;
   companyList.value = [];
   loadCompanyList();
 };
@@ -234,7 +234,7 @@ const toggleSort = (field: any) => {
     bodyParams.value.sortBy = field;
     bodyParams.value.sortOrder = "desc";
   }
-  listParams.page = 1;
+  pageParams.page = 1;
   companyList.value = [];
   loadCompanyList();
 };
@@ -245,7 +245,7 @@ const loadCompanyList = async (isRefresh = false) => {
 
   loading.value = true;
   try {
-    const { records, total } = await CompanyAPI.page(listParams, bodyParams.value);
+    const { records, total } = await CompanyAPI.page(pageParams, bodyParams.value);
 
     if (isRefresh) {
       companyList.value = records;
@@ -256,7 +256,7 @@ const loadCompanyList = async (isRefresh = false) => {
     // 判断是否还有更多数据
     hasMore.value = companyList.value.length < total;
     if (hasMore.value) {
-      listParams.page++;
+      pageParams.page++;
     }
   } catch (error) {
     uni.showToast({
@@ -282,7 +282,7 @@ const loadMore = () => {
 // 下拉刷新
 const handleRefresh = () => {
   refreshing.value = true;
-  listParams.page = 1;
+  pageParams.page = 1;
   loadCompanyList(true);
 };
 

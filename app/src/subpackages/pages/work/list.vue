@@ -217,7 +217,7 @@
 import { ref, onMounted } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import type { WorkExperienceQuery, WorkExperienceResult } from "@/types/work-experience";
-import WorkExperienceAPI from "@/api/work-experience";
+import WorkExperienceAPI from "@/subpackages/api/work-experience";
 import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
@@ -442,19 +442,19 @@ const loadMore = () => {
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/work/work?id=${id}`,
+    url: `/subpackages/pages/work/work?id=${id}`,
   });
 };
 
 const editWork = (id: number) => {
   uni.navigateTo({
-    url: `/pages/work/work?id=${id}&edit=true`,
+    url: `/subpackages/pages/work/work?id=${id}&edit=true`,
   });
 };
 
 const addNewWork = () => {
   uni.navigateTo({
-    url: "/pages/work/work",
+    url: "/subpackages/pages/work/work",
   });
 };
 

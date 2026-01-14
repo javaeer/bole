@@ -20,12 +20,12 @@
         <text class="footer-icon">🗑️</text>
         <text class="footer-text">删除</text>
       </button>
-      <button class="footer-btn download-btn" @click="handleDownload">
-        <text class="footer-icon">⬇️</text>
-        <text class="footer-text">下载</text>
+      <button class="footer-btn export-btn" @click="showExportOptions">
+        <text class="footer-icon">📤</text>
+        <text class="footer-text">导出</text>
       </button>
       <button class="footer-btn share-btn" @click="showShareOptions">
-        <text class="footer-icon">📤</text>
+        <text class="footer-icon">🔗</text>
         <text class="footer-text">分享</text>
       </button>
     </view>
@@ -64,6 +64,39 @@
         </view>
       </view>
     </view>
+
+    <view v-if="showExportModal" class="custom-modal-overlay" @click="hideExportOptions">
+      <view class="custom-modal" @click.stop>
+        <view class="modal-header">
+          <text class="modal-title">选择导出格式</text>
+          <button class="modal-close" @click="hideExportOptions">✕</button>
+        </view>
+        <view class="modal-content">
+          <view class="export-options">
+            <button
+              v-for="format in exportFormats"
+              :key="format.value"
+              class="export-option"
+              @click="handleExportFormatSelect(format.value)"
+              :disabled="exportingRef"
+            >
+              <view class="option-icon" :class="format.value.toLowerCase()">
+                {{ format.icon }}
+              </view>
+              <text class="option-text">{{ format.label }}</text>
+              <text class="option-desc">{{ format.description }}</text>
+            </button>
+          </view>
+
+          <!-- 导出进度提示 -->
+          <view v-if="exportingRef" class="export-progress">
+            <view class="progress-spinner"></view>
+            <text class="progress-text">正在生成{{ currentExportFormat }}文件...</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
   </view>
 
   <!-- 编辑模式 -->
@@ -503,12 +536,17 @@ import DynamicRenderer from "@/components/resumes/DynamicRenderer.vue";
 import ResumesAPI from "@/api/resumes";
 import { useSaveAndBack } from "@/composables/useSaveAndBack";
 import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
+import TaskAPI from "@/api/task";
+
 
 // 当前模式：view（查看模式）、edit（编辑模式）
 const currentMode = ref("view");
 const loadingRef = ref(false);
 const resumeId = ref(null);
 const templateId = ref(null);
+const showExportModal = ref(false);
+const exportingRef = ref(false);
+const currentExportFormat = ref('');
 const showShareModal = ref(false);
 const qrcodeUrl = ref("");
 const dynamicRenderer = ref(null);
@@ -746,6 +784,80 @@ const loadResumeData = async () => {
   }
 };
 
+// 导出格式配置
+const exportFormats = [
+  { value: 'PDF', label: 'PDF格式', icon: '📄', description: '高质量打印文档' },
+  { value: 'WORD', label: 'Word格式', icon: '📝', description: '可编辑的Word文档' },
+  { value: 'HTML', label: 'HTML格式', icon: '🌐', description: '网页格式' },
+  { value: 'TEXT', label: '文本格式', icon: '📃', description: '纯文本格式' }
+];
+
+// 显示导出选项
+const showExportOptions = () => {
+  showExportModal.value = true;
+  exportingRef.value = false;
+  currentExportFormat.value = '';
+};
+
+// 隐藏导出选项
+const hideExportOptions = () => {
+  showExportModal.value = false;
+  exportingRef.value = false;
+};
+
+// 处理导出格式选择
+const handleExportFormatSelect = async (format) => {
+  if (!resumeId.value) {
+    uni.showToast({
+      title: '请先保存简历',
+      icon: 'none'
+    });
+    return;
+  }
+
+  exportingRef.value = true;
+  currentExportFormat.value = format;
+
+  try {
+    // 调用任务生成接口
+    const form = {
+      resumesId: resumeId.value,
+      documentType: format
+    };
+
+    console.log('开始生成导出任务:', form);
+
+    const result = await TaskAPI.addTask(form);
+
+    if (result) {
+      uni.showToast({
+        title: `已开始生成${format}文件`,
+        icon: 'success',
+        duration: 2000
+      });
+
+      // 跳转到待下载列表页面
+      setTimeout(() => {
+        uni.navigateTo({
+          url: `/subpackages/pages/tasks/list`
+        });
+      }, 1500);
+    } else {
+      throw new Error(result.message || '任务创建失败');
+    }
+  } catch (error) {
+    console.error('创建导出任务失败:', error);
+    uni.showToast({
+      title: `导出失败: ${error.message || '未知错误'}`,
+      icon: 'error',
+      duration: 3000
+    });
+  } finally {
+    exportingRef.value = false;
+    hideExportOptions();
+  }
+};
+
 const showShareOptions = () => {
   showShareModal.value = true;
 };
@@ -769,51 +881,6 @@ const handleDelete = async () => {
   });
 };
 
-const handleDownload = async () => {
-  loadingRef.value = true;
-  try {
-    // 增加下载数
-    await ResumesAPI.incrementDownloadCount(resumeId.value);
-
-    uni.showToast({
-      title: "开始下载",
-      icon: "success",
-    });
-
-    // 模拟下载过程
-    setTimeout(() => {
-      uni.showModal({
-        title: "下载提示",
-        content: "简历已准备好下载，请选择格式",
-        showCancel: true,
-        cancelText: "PDF",
-        confirmText: "图片",
-        success: (res) => {
-          if (res.confirm) {
-            uni.showToast({
-              title: "图片格式下载中",
-              icon: "success",
-            });
-          } else if (res.cancel) {
-            uni.showToast({
-              title: "PDF格式下载中",
-              icon: "success",
-            });
-          }
-        },
-      });
-    }, 1000);
-
-  } catch (error) {
-    console.error("下载失败:", error);
-    uni.showToast({
-      title: "下载失败",
-      icon: "error",
-    });
-  } finally {
-    loadingRef.value = false;
-  }
-};
 
 const shareToWeChat = () => {
   uni.share({
@@ -1107,13 +1174,6 @@ onShow(() => {
     /* 确保 DynamicRenderer 在 scroll-view 中居中 */
     display: flex;
     justify-content: center;
-    
-    /* 添加样式以支持居中 */
-    > * {
-      width: 100%;
-      max-width: 100%; /* A4 宽度 */
-      margin: 0 auto;
-    }
   }
 }
 

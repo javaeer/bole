@@ -1,4 +1,4 @@
-<!-- pages/evaluation/evaluation.vue -->
+<!-- subpackages/pages/evaluation/evaluation.vue -->
 <template>
   <view class="page-container">
     <!-- 头部 -->
@@ -212,7 +212,7 @@
 import { computed, onUnmounted, reactive, ref } from "vue";
 import { onLoad, onShow } from "@dcloudio/uni-app";
 import type { SelfEvaluationForm, SelfEvaluationResult } from "@/types/self-evaluation";
-import SelfEvaluationAPI from "@/api/self-evaluation";
+import SelfEvaluationAPI from "@/subpackages/api/self-evaluation";
 import { useSaveAndBack } from "@/composables/useSaveAndBack";
 import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 

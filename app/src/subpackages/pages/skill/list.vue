@@ -1,4 +1,4 @@
-<!-- pages/skill/list.vue -->
+<!-- subpackages/pages/skill/list.vue -->
 <template>
   <view class="page-container">
     <!-- 搜索和筛选栏 -->
@@ -219,7 +219,7 @@
 import { computed, onMounted, ref } from "vue";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import type { SkillResult } from "@/types/skill";
-import SkillAPI from "@/api/skill";
+import SkillAPI from "@/subpackages/api/skill";
 import { usePageRefresh } from "@/composables/usePageRefresh";
 
 // 响应式数据
@@ -479,19 +479,19 @@ const loadMore = () => {
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/pages/skill/skill?id=${id}`,
+    url: `/subpackages/pages/skill/skill?id=${id}`,
   });
 };
 
 const editSkill = (id: number) => {
   uni.navigateTo({
-    url: `/pages/skill/skill?id=${id}&edit=true`,
+    url: `/subpackages/pages/skill/skill?id=${id}&edit=true`,
   });
 };
 
 const addNewSkill = () => {
   uni.navigateTo({
-    url: "/pages/skill/skill",
+    url: "/subpackages/pages/skill/skill",
   });
 };
 

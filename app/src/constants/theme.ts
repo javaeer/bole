@@ -1,5 +1,3 @@
-import { ResponsiveConfig } from "@/types/theme";
-
 export const THEME_CONFIG = {
   primaryColor: '#d4af37',
   secondaryColor: '#f7ef8a',

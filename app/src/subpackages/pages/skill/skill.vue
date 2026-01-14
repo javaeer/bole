@@ -295,7 +295,7 @@
 import { computed, reactive, ref } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
 import type { SkillForm, SkillResult } from "@/types/skill";
-import SkillAPI from "@/api/skill";
+import SkillAPI from "@/subpackages/api/skill";
 import { useSaveAndBack } from "@/composables/useSaveAndBack";
 import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 

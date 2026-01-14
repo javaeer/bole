@@ -734,7 +734,6 @@ const getCardContentStyle = (component: any) => {
   }
 
   .card-layout {
-    grid-templateColumns: repeat(2, 1fr) !important;
     gap: 16px !important;
     max-width: 100% !important;
   }

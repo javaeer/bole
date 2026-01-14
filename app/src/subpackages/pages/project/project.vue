@@ -1,13 +1,10 @@
-<!-- pages/work/work.vue -->
 <template>
   <view class="page-container">
     <!-- 头部 -->
     <view class="detail-header card-container">
       <view class="header-left">
-        <text class="header-title">
-          {{ isEditMode ? (detailData.id ? "编辑工作经历" : "添加工作经历") : "工作经历详情" }}
-        </text>
       </view>
+
       <view v-if="!isEditMode && detailData.id" class="header-actions">
         <button class="btn btn-secondary" @click="toggleEditMode">
           编辑
@@ -18,8 +15,8 @@
         <button class="btn btn-secondary" @click="cancelEdit">
           取消
         </button>
-        <button class="btn btn-primary" :disabled="saving" @click="handleSave">
-          {{ saving ? "保存中..." : "保存" }}
+        <button class="btn btn-primary" :disabled="savingRef" @click="handleSave">
+          {{ savingRef ? "保存中..." : "保存" }}
         </button>
       </view>
     </view>
@@ -32,39 +29,41 @@
           <view class="card-header">
             <text class="card-title">基本信息</text>
             <view v-if="!isEditMode" class="status-badge">
-              <view :class="['work-status', detailData.isCurrent ? 'status-current' : 'status-past']">
-                {{ detailData.isCurrent ? "在职" : "离职" }}
+              <view :class="['project-status', getStatusClass(detailData.status)]">
+                {{ getStatusText(detailData.status) }}
               </view>
             </view>
           </view>
 
           <view class="form-container">
-            <!-- 公司名称 -->
+            <!-- 项目名称 -->
             <view class="form-group">
-              <text class="form-label required">公司名称</text>
+              <text class="form-label required">项目名称</text>
               <input
-                v-model.number="formData.company"
+                v-model="formData.name"
                 class="form-input"
-                :class="{ 'error': errors.company }"
+                :class="{ 'error': errors.name }"
                 :disabled="!isEditMode"
-                placeholder="请输入公司名称"
-                @blur="validateField('company')"
+                placeholder="请输入项目名称"
+                @blur="validateField('name')"
               />
-              <text v-if="errors.company" class="error-text">{{ errors.company }}</text>
+              <text v-if="errors.name" class="error-text">{{ errors.name }}</text>
             </view>
 
-            <!-- 职位 -->
+            <!-- 项目状态 -->
             <view class="form-group">
-              <text class="form-label required">职位</text>
-              <input
-                v-model="formData.position"
-                class="form-input"
-                :class="{ 'error': errors.position }"
+              <text class="form-label required">项目状态</text>
+              <picker
+                :value="formData.status"
+                :range="statusOptions"
                 :disabled="!isEditMode"
-                placeholder="请输入职位名称"
-                @blur="validateField('position')"
-              />
-              <text v-if="errors.position" class="error-text">{{ errors.position }}</text>
+                @change="onStatusChange"
+              >
+                <view class="form-input" :class="{ 'error': errors.status }">
+                  {{ getStatusText(formData.status) || "请选择项目状态" }}
+                </view>
+              </picker>
+              <text v-if="errors.status" class="error-text">{{ errors.status }}</text>
             </view>
 
             <!-- 开始时间 -->
@@ -85,121 +84,108 @@
 
             <!-- 结束时间 -->
             <view class="form-group">
-              <text class="form-label" :class="{ 'required': !formData.isCurrent }">结束时间</text>
-              <view class="date-input-group">
-                <picker
-                  v-if="!formData.isCurrent"
-                  mode="date"
-                  :value="formData.endDate"
-                  :disabled="!isEditMode"
-                  @change="onEndDateChange"
-                >
-                  <view class="form-input" :class="{ 'error': errors.endDate }">
-                    {{ formData.endDate || "请选择结束时间" }}
-                  </view>
-                </picker>
-                <view v-else class="form-input disabled-input">
-                  至今
+              <text class="form-label required">结束时间</text>
+              <picker
+                mode="date"
+                :value="formData.endDate"
+                :disabled="!isEditMode"
+                @change="onEndDateChange"
+              >
+                <view class="form-input" :class="{ 'error': errors.endDate }">
+                  {{ formData.endDate || "请选择结束时间" }}
                 </view>
-                <view class="checkbox-container">
-                  <label class="checkbox-label">
-                    <checkbox
-                      :checked="formData.isCurrent"
-                      @change="onCurrentChange"
-                      :disabled="!isEditMode"
-                      style="transform: scale(0.8); margin-right: 10rpx;"
-                    />
-                    <text>至今在职</text>
-                  </label>
-                </view>
-              </view>
+              </picker>
               <text v-if="errors.endDate" class="error-text">{{ errors.endDate }}</text>
             </view>
 
-            <!-- 工作时长 -->
-            <view v-if="formData.startDate && (formData.endDate || formData.isCurrent)"
-                  class="form-group duration-display">
-              <text class="duration-label">工作时长</text>
-              <text class="duration-value">{{ calculateDurationDisplay() }}</text>
+            <!-- 项目进度 -->
+            <view v-if="formData.startDate && formData.endDate" class="form-group progress-display">
+              <text class="progress-label">项目进度</text>
+              <view class="progress-info">
+                <text class="progress-value">{{ calculateProgress() }}%</text>
+                <view class="progress-bar">
+                  <view
+                    class="progress-fill"
+                    :class="getProgressClass()"
+                    :style="{ width: `${calculateProgress()}%` }"
+                  ></view>
+                </view>
+              </view>
             </view>
           </view>
         </view>
 
-        <!-- 工作描述卡片 -->
+        <!-- 项目描述卡片 -->
         <view class="info-card card-container">
           <view class="card-header">
-            <text class="card-title">工作描述</text>
+            <text class="card-title">项目描述</text>
           </view>
 
           <view class="form-group">
-            <text class="form-label">工作职责描述</text>
+            <text class="form-label">项目描述</text>
             <textarea
               v-model="formData.description"
               class="form-textarea"
               :disabled="!isEditMode"
-              placeholder="请输入工作职责描述"
-              maxlength="1000"
+              placeholder="请输入项目描述，包括项目背景、目标、技术栈等"
+              maxlength="2000"
             />
             <view class="textarea-count">
-              {{ formData.description.length }}/1000
+              {{ formData.description.length }}/2000
             </view>
           </view>
         </view>
 
-        <!-- 工作成就卡片 -->
+        <!-- 项目成就卡片 -->
         <view class="info-card card-container">
           <view class="card-header">
-            <text class="card-title">工作成就</text>
+            <text class="card-title">项目成就</text>
           </view>
 
-          <view class="form-group">
-            <text class="form-label">主要成就</text>
-
-            <!-- 编辑模式下的成就列表 -->
-            <view v-if="isEditMode" class="achievements-edit-container">
-              <view
-                v-for="(achievement, index) in formData.achievements"
-                :key="index"
-                class="achievement-item-edit"
+          <!-- 编辑模式下的成就列表 -->
+          <view v-if="isEditMode" class="form-group achievements-edit-container">
+            <view
+              v-for="(achievement, index) in formData.achievements"
+              :key="index"
+              class="achievement-item-edit"
+            >
+              <input
+                v-model="formData.achievements[index]"
+                class="achievement-input"
+                :placeholder="`成就 ${index + 1}`"
+                maxlength="200"
+              />
+              <button
+                v-if="formData.achievements.length > 1"
+                class="btn-remove-achievement"
+                @click="removeAchievement(index)"
               >
-                <input
-                  v-model="formData.achievements[index]"
-                  class="achievement-input"
-                  :placeholder="`成就 ${index + 1}`"
-                  maxlength="200"
-                />
-                <button
-                  v-if="formData.achievements.length > 1"
-                  class="btn-remove-achievement"
-                  @click="removeAchievement(index)"
-                >
-                  ×
-                </button>
-              </view>
-
-              <button class="btn-add-achievement" @click="addAchievement">
-                + 添加成就
+                ×
               </button>
-
-              <view class="achievements-count">
-                共 {{ formData.achievements.length }} 项成就
-              </view>
             </view>
 
-            <!-- 只读模式下的成就列表 -->
-            <view v-else class="achievements-readonly-container">
-              <view
-                v-for="(achievement, index) in detailData.achievements"
-                :key="index"
-                class="achievement-item-readonly"
-              >
-                <view class="achievement-index">{{ index + 1 }}.</view>
-                <view class="achievement-content">{{ achievement }}</view>
-              </view>
+            <button class="btn-add-achievement" @click="addAchievement">
+              + 添加成就项
+            </button>
 
-              <view v-if="!detailData.achievements || detailData.achievements.length === 0" class="no-achievements">
-                暂无成就信息
-              </view>
+            <view class="achievements-count">
+              共 {{ formData.achievements.length }} 项成就
+            </view>
+          </view>
+
+          <!-- 只读模式下的成就列表 -->
+          <view v-else class="achievements-readonly-container">
+            <view
+              v-for="(achievement, index) in detailData.achievements"
+              :key="index"
+              class="achievement-item-readonly"
+            >
+              <view class="achievement-index">{{ index + 1 }}.</view>
+              <view class="achievement-content">{{ achievement }}</view>
+            </view>
+
+            <view v-if="!detailData.achievements || detailData.achievements.length === 0" class="no-achievements">
+              暂无成就信息
             </view>
           </view>
         </view>
@@ -232,8 +218,8 @@
 
     <!-- 底部操作栏（编辑模式下） -->
     <view v-if="isEditMode && detailData.id" class="detail-footer">
-      <button class="btn btn-danger btn-block" @click="handleDelete" :disabled="deleting">
-        {{ deleting ? "删除中..." : "删除" }}
+      <button class="btn btn-danger btn-block" @click="handleDelete" :disabled="deletingRef">
+        {{ deletingRef ? "删除中..." : "删除" }}
       </button>
     </view>
   </view>
@@ -242,14 +228,14 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
-import type { WorkExperienceForm, WorkExperienceResult } from "@/types/work-experience";
-import WorkExperienceAPI from "@/api/work-experience";
+import type { ProjectExperienceForm, ProjectExperienceResult } from "@/types/project-experience";
+import ProjectExperienceAPI from "@/subpackages/api/project-experience";
 import { useSaveAndBack } from "@/composables/useSaveAndBack";
 import { useDeleteAndBack } from "@/composables/useDeleteAndBack";
 
 interface FormErrors {
-  company?: string;
-  position?: string;
+  name?: string;
+  status?: string;
   startDate?: string;
   endDate?: string;
 }
@@ -258,47 +244,73 @@ interface FormErrors {
 const routeParams = ref<any>({});
 
 // 响应式数据
-const detailData = ref<WorkExperienceResult & { achievements?: string[] }>({
-  id: null,
+const detailData = ref<ProjectExperienceResult>({
+  id: 0,
   createdAt: "",
   updatedAt: "",
   deleted: 0,
   userId: 1,
-  company: "",
-  position: "",
+  name: "",
+  status: 0,
   startDate: "",
   endDate: "",
-  isCurrent: false,
   description: "",
   achievements: [],
   sort: 0,
 });
 
-const formData = reactive<WorkExperienceForm>({
+// 表单数据，achievements改为string[]类型
+const formData = reactive<ProjectExperienceForm>({
   id: null,
-  company: "",
-  position: "",
+  name: "",
+  status: 0,
   startDate: "",
   endDate: "",
-  isCurrent: false,
   description: "",
-  achievements: [],
+  achievements: [] as string[], // 改为数组类型
 });
 
 const errors = reactive<FormErrors>({});
 const isEditMode = ref(false);
 
-// 使用 composable
-const { saving, saveAndBack } = useSaveAndBack()
-const { deleting, deleteAndBack } = useDeleteAndBack()
+// 使用 composable - 重命名变量避免冲突
+const { saving: savingRef, saveAndBack } = useSaveAndBack()
+const { deleting: deletingRef, deleteAndBack } = useDeleteAndBack()
 
-// 监听当前状态变化
-watch(() => formData.isCurrent, (newVal) => {
-  if (newVal) {
-    formData.endDate = "";
-    delete errors.endDate;
+// 状态选项
+const statusOptions = ["未开始", "进行中", "已完成", "已暂停"];
+
+// 获取状态文本
+const getStatusText = (status: number): string => {
+  switch (status) {
+    case 0:
+      return "未开始";
+    case 1:
+      return "进行中";
+    case 2:
+      return "已完成";
+    case 3:
+      return "已暂停";
+    default:
+      return "未知";
   }
-});
+};
+
+// 获取状态样式类
+const getStatusClass = (status: number): string => {
+  switch (status) {
+    case 0:
+      return "status-pending";
+    case 1:
+      return "status-in-progress";
+    case 2:
+      return "status-completed";
+    case 3:
+      return "status-paused";
+    default:
+      return "status-default";
+  }
+};
 
 // 格式化日期时间
 const formatDateTime = (dateStr: string) => {
@@ -309,6 +321,31 @@ const formatDateTime = (dateStr: string) => {
   } catch {
     return dateStr;
   }
+};
+
+// 计算项目进度
+const calculateProgress = (): number => {
+  if (!formData.startDate || !formData.endDate) return 0;
+
+  const start = new Date(formData.startDate).getTime();
+  const end = new Date(formData.endDate).getTime();
+  const now = new Date().getTime();
+
+  if (now <= start) return 0;
+  if (now >= end) return 100;
+
+  const total = end - start;
+  const passed = now - start;
+  return Math.round((passed / total) * 100);
+};
+
+// 获取进度条样式类
+const getProgressClass = (): string => {
+  const progress = calculateProgress();
+  if (progress >= 100) return "progress-completed";
+  if (progress >= 70) return "progress-late";
+  if (progress >= 30) return "progress-middle";
+  return "progress-early";
 };
 
 // 添加成就
@@ -323,72 +360,42 @@ const removeAchievement = (index: number) => {
   }
 };
 
-// 计算工作时长显示
-const calculateDurationDisplay = () => {
-  if (!formData.startDate || (!formData.endDate && !formData.isCurrent)) return "";
-
-  const start = new Date(formData.startDate);
-const end = formData.isCurrent ? new Date() : new Date(formData.endDate || new Date());
-
-  const years = end.getFullYear() - start.getFullYear();
-  const months = end.getMonth() - start.getMonth();
-
-  let totalMonths = years * 12 + months;
-  if (end.getDate() < start.getDate()) {
-    totalMonths--;
-  }
-
-  if (totalMonths < 0) totalMonths = 0;
-
-  const yearsPart = totalMonths >= 12 ? Math.floor(totalMonths / 12) + "年" : "";
-  const monthsPart = totalMonths % 12 > 0 ? (totalMonths % 12) + "个月" : "";
-
-  return `${yearsPart}${monthsPart}`.trim() || "0个月";
-};
+// 监听日期变化，更新进度
+watch(() => [formData.startDate, formData.endDate], () => {
+  // 进度显示会自动更新
+}, { deep: true });
 
 // 加载数据
 const loadDetailData = async (id?: number) => {
   try {
     if (id) {
-      // API请求
-      const result = await WorkExperienceAPI.getById(id);
+      const result = await ProjectExperienceAPI.getById(id);
 
       if (result) {
-        // 处理achievements数据：如果是字符串，转换为数组
+        detailData.value = result;
+
+        // 处理achievements数据：确保是数组格式
         let achievementsArray: string[] = [];
         if (result.achievements) {
-          if (typeof result.achievements === "string") {
-            // 按换行符分割并过滤空行
-            achievementsArray = result.achievements
-              .split("\n")
-              .filter(item => item.trim() !== "")
-              .map(item => item.trim());
-          } else if (Array.isArray(result.achievements)) {
-            // 已经是数组
+          if (Array.isArray(result.achievements)) {
             achievementsArray = result.achievements;
+          } else if (typeof result.achievements === "string") {
+            achievementsArray = result.achievements
+              .split(",")
+              .map(k => k.trim())
+              .filter(k => k);
           }
         }
 
-        // 更新detailData
-        detailData.value = {
-          ...result,
+        Object.assign(formData, {
+          id: result.id,
+          name: result.name || "",
+          status: result.status || 0,
+          startDate: result.startDate || "",
+          endDate: result.endDate || "",
+          description: result.description || "",
           achievements: achievementsArray,
-        };
-
-        // 填充表单数据
-        formData.id = result.id;
-        formData.company = result.company || 0;
-        formData.position = result.position || "";
-        formData.startDate = result.startDate || "";
-        formData.endDate = result.endDate || "";
-        formData.isCurrent = result.isCurrent || false;
-        formData.description = result.description || "";
-        formData.achievements = achievementsArray;
-
-        // 确保至少有一个成就输入框
-        if (formData.achievements.length === 0 && isEditMode.value) {
-          formData.achievements.push("");
-        }
+        });
       }
     } else {
       // 新增模式
@@ -398,11 +405,10 @@ const loadDetailData = async (id?: number) => {
         updatedAt: "",
         deleted: 0,
         userId: 1,
-        company: "",
-        position: "",
+        name: "",
+        status: 0,
         startDate: "",
         endDate: "",
-        isCurrent: false,
         description: "",
         achievements: [],
         sort: 0,
@@ -424,22 +430,22 @@ const loadDetailData = async (id?: number) => {
 
 // 表单验证
 const validateField = (field: keyof FormErrors) => {
-  const value = formData[field as keyof WorkExperienceForm];
+  const value = formData[field as keyof typeof formData];
 
-  switch (field) {
-    case "company":
+switch (field) {
+    case "name":
       if (!value?.toString().trim()) {
-        errors.company = "请输入有效的公司名称";
+        errors.name = "请输入项目名称";
       } else {
-        delete errors.company;
+        delete errors.name;
       }
       break;
 
-    case "position":
-      if (!value?.toString().trim()) {
-        errors.position = "请输入职位名称";
+    case "status":
+      if (value === undefined || value === null) {
+        errors.status = "请选择项目状态";
       } else {
-        delete errors.position;
+        delete errors.status;
       }
       break;
 
@@ -452,37 +458,36 @@ const validateField = (field: keyof FormErrors) => {
       break;
 
     case "endDate":
-      if (!formData.isCurrent) {
-        if (!value) {
-          errors.endDate = "请选择结束时间";
-        } else if (formData.startDate && new Date(value) < new Date(formData.startDate)) {
-          errors.endDate = "结束时间不能早于开始时间";
-        } else {
-          delete errors.endDate;
-        }
+      if (!value) {
+        errors.endDate = "请选择结束时间";
+      } else if (formData.startDate && new Date(value) < new Date(formData.startDate)) {
+        errors.endDate = "结束时间不能早于开始时间";
+      } else {
+        delete errors.endDate;
       }
       break;
   }
 };
 
 const validateForm = (): boolean => {
-  validateField("company");
-  validateField("position");
+  validateField("name");
+  validateField("status");
   validateField("startDate");
-  if (!formData.isCurrent) {
-    validateField("endDate");
-  }
+  validateField("endDate");
 
   return Object.keys(errors).length === 0;
 };
 
 // 表单事件处理
+const onStatusChange = (e: any) => {
+  formData.status = e.detail.value;
+  validateField("status");
+};
+
 const onStartDateChange = (e: any) => {
   formData.startDate = e.detail.value;
   validateField("startDate");
-  if (formData.endDate) {
-    validateField("endDate");
-}
+  validateField("endDate");
 };
 
 const onEndDateChange = (e: any) => {
@@ -490,23 +495,12 @@ const onEndDateChange = (e: any) => {
   validateField("endDate");
 };
 
-const onCurrentChange = (e: any) => {
-  formData.isCurrent = e.detail.value;
-  if (e.detail.value) {
-    formData.endDate = "";
-    delete errors.endDate;
-  } else {
-    // 如果从"至今"切换到"离职"，需要重新验证结束时间
-    validateField("endDate");
-  }
-};
-
 // 保存数据
 const handleSave = async () => {
   if (!validateForm()) {
     uni.showToast({
       title: "请填写完整信息",
-      icon: "none",
+      icon: "error",
     });
     return;
   }
@@ -514,29 +508,44 @@ const handleSave = async () => {
   // 准备提交数据：过滤空白的成就项
   const submitData = {
     ...formData,
+    id: detailData.value.id || null,
     achievements: formData.achievements.filter(item => item.trim() !== ""),
   };
 
   const saveFunction = detailData.value.id
-    ? () => WorkExperienceAPI.update(submitData)
-    : () => WorkExperienceAPI.add(submitData);
+    ? () => ProjectExperienceAPI.update(submitData)
+    : () => ProjectExperienceAPI.add(submitData);
 
-  await saveAndBack({
-    saveFn: saveFunction,
-    successMessage: "保存成功",
-    successCallback: () => {
-      isEditMode.value = false;
-    }
-  });
+  try {
+    await saveAndBack({
+      saveFn: saveFunction,
+      successMessage: "保存成功",
+      successCallback: (result: any) => {
+        // 更新本地数据
+        if (result?.id && !detailData.value.id) {
+          detailData.value.id = result.id;
+        }
+        isEditMode.value = false;
+      }
+    });
+  } catch (error) {
+// 错误已经在 saveAndBack 中处理了
+    console.error("保存失败:", error);
+  }
 };
 
 // 删除项目
 const handleDelete = async () => {
-  await deleteAndBack({
-    deleteFn: () => WorkExperienceAPI.delete(detailData.value.id!),
-    confirmMessage: "确定要删除这份工作经历吗？删除后不可恢复！",
-    successMessage: "删除成功",
-  });
+  try {
+    await deleteAndBack({
+      deleteFn: () => ProjectExperienceAPI.delete(detailData.value.id),
+      confirmMessage: "确定要删除这个项目吗？删除后不可恢复！",
+      successMessage: "删除成功",
+    });
+  } catch (error) {
+    // 错误已经在 deleteAndBack 中处理了
+    console.error("删除失败:", error);
+  }
 };
 
 // 切换编辑模式
@@ -552,11 +561,10 @@ const toggleEditMode = () => {
 const cancelEdit = () => {
   if (detailData.value.id) {
     // 恢复原始数据
-    formData.company = detailData.value.company || 0;
-    formData.position = detailData.value.position || "";
+    formData.name = detailData.value.name || "";
+    formData.status = detailData.value.status || 0;
     formData.startDate = detailData.value.startDate || "";
     formData.endDate = detailData.value.endDate || "";
-    formData.isCurrent = detailData.value.isCurrent || false;
     formData.description = detailData.value.description || "";
     formData.achievements = detailData.value.achievements ? [...detailData.value.achievements] : [];
 
@@ -567,11 +575,6 @@ const cancelEdit = () => {
     // 如果是新增，返回列表页
     uni.navigateBack();
   }
-};
-
-// 返回上一页
-const goBack = () => {
-  uni.navigateBack();
 };
 
 // 生命周期
@@ -590,8 +593,8 @@ onLoad((options: any) => {
 </script>
 
 <style lang="scss">
+
 .detail-header {
-  @extend .card-container;
   position: sticky;
   top: 0;
   z-index: $z-index-base;
@@ -599,45 +602,56 @@ onLoad((options: any) => {
   justify-content: space-between;
   align-items: center;
   padding: 20rpx $padding-base;
+  background: $background-color-white;
   border-radius: 0 0 $border-radius $border-radius;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 20rpx;
-
-    .header-title {
-      font-size: $font-size-medium;
-      font-weight: $font-weight-medium;
-      color: $text-primary;
-    }
-  }
+  box-shadow: $box-shadow;
 
   .header-actions {
     display: flex;
     gap: $margin-mini;
 
     .btn {
-      @extend .btn;
-      @extend .btn-small;
+      padding: 12rpx 24rpx;
+      font-size: $font-size-small;
       min-width: 80rpx;
     }
   }
 
   .status-badge {
-    .work-status {
-      @extend .status-badge;
+    .project-status {
       padding: 4rpx 12rpx;
       border-radius: $border-radius-small;
       font-size: $font-size-extra-small;
       font-weight: $font-weight-medium;
 
-      &.status-current {
-        @extend .status-current;
+      &.status-pending {
+        background: $info-bg;
+        color: $info-color;
+        border: 1rpx solid $info-border;
       }
 
-      &.status-past {
-        @extend .status-past;
+      &.status-in-progress {
+        background: $primary-color-light;
+        color: $primary-color;
+        border: 1rpx solid $primary-border;
+      }
+
+      &.status-completed {
+        background: $success-bg;
+        color: $success-color;
+        border: 1rpx solid $success-border;
+      }
+
+      &.status-paused {
+        background: $warning-bg;
+        color: $warning-color;
+        border: 1rpx solid $warning-border;
+      }
+
+      &.status-default {
+        background: $background-color;
+        color: $text-secondary;
+        border: 1rpx solid $border-color-light;
       }
     }
   }
@@ -652,11 +666,16 @@ onLoad((options: any) => {
 }
 
 .info-card {
-  @extend .card-container;
+  background: $background-color-white;
+  border-radius: $border-radius;
+  padding: $padding-base;
+  box-shadow: $box-shadow;
   margin-bottom: $margin-base;
 
   .card-header {
-    @extend .flex-between;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: $margin-base;
     padding-bottom: $margin-mini;
     border-bottom: 1rpx solid $border-color-extra-light;
@@ -671,11 +690,15 @@ onLoad((options: any) => {
 
 .form-container {
   .form-group {
-    @extend .form-group;
     margin-bottom: $margin-base;
 
     .form-label {
-      @extend .form-label;
+      display: block;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      color: $text-primary;
+      margin-bottom: $margin-mini;
+
       &.required::after {
         content: '*';
         color: $danger-color;
@@ -684,13 +707,26 @@ onLoad((options: any) => {
     }
 
     .form-input {
-      @extend .form-input;
       width: 100%;
+      padding: 20rpx 24rpx;
+      border: 2rpx solid $border-color-lighter;
+      border-radius: $border-radius;
+      font-size: $font-size-base;
+      color: $text-primary;
+      background: $background-color-white;
+      transition: all $transition-fast $ease-in-out;
       min-height: 80rpx;
       box-sizing: border-box;
 
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: $input-focus-shadow;
+        outline: none;
+      }
+
       &.error {
-        @extend .error;
+        border-color: $danger-color;
+        box-shadow: $input-error-shadow;
       }
 
       &[disabled] {
@@ -698,65 +734,74 @@ onLoad((options: any) => {
         color: $text-secondary;
         cursor: not-allowed;
       }
-
-      &.disabled-input {
-        background: $background-color;
-        color: $text-secondary;
-        cursor: not-allowed;
-      }
     }
 
-    .date-input-group {
-      display: flex;
-      gap: $margin-mini;
-
-      .form-input {
-        flex: 1;
-      }
-
-      .checkbox-container {
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-
-        .checkbox-label {
-          display: flex;
-          align-items: center;
-          gap: 8rpx;
-          font-size: $font-size-small;
-          color: $text-primary;
-          white-space: nowrap;
-        }
-      }
-    }
-
-    .duration-display {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .progress-display {
       padding: 16rpx;
       background: $background-color;
       border-radius: $border-radius;
 
-      .duration-label {
+      .progress-label {
+        display: block;
         font-size: $font-size-small;
         color: $text-secondary;
+        margin-bottom: 12rpx;
       }
 
-      .duration-value {
-        font-size: $font-size-base;
-        font-weight: $font-weight-medium;
-        color: $primary-color;
+      .progress-info {
+        display: flex;
+        align-items: center;
+        gap: 20rpx;
+
+        .progress-value {
+          font-size: $font-size-base;
+          font-weight: $font-weight-medium;
+          color: $primary-color;
+          min-width: 60rpx;
+        }
+
+        .progress-bar {
+          flex: 1;
+          height: 12rpx;
+          background: $background-color-white;
+          border-radius: 6rpx;
+          overflow: hidden;
+
+          .progress-fill {
+            height: 100%;
+            border-radius: 6rpx;
+
+            &.progress-early {
+              background: linear-gradient(90deg, $success-color, color.adjust($success-color, $lightness: 20%));
+            }
+
+            &.progress-middle {
+              background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+            }
+
+            &.progress-late {
+              background: linear-gradient(90deg, $warning-color, color.adjust($warning-color, $lightness: 20%));
+            }
+
+            &.progress-completed {
+              background: linear-gradient(90deg, $info-color, color.adjust($info-color, $lightness: 20%));
+            }
+          }
+        }
       }
     }
 
     .form-textarea {
-      @extend .form-textarea;
       width: 100%;
-      min-height: 160rpx;
+      padding: 20rpx 24rpx;
+      border: 2rpx solid $border-color-lighter;
+      border-radius: $border-radius;
+      font-size: $font-size-base;
+      color: $text-primary;
+      background: $background-color-white;
+      min-height: 200rpx;
       line-height: 1.5;
       box-sizing: border-box;
-      resize: vertical;
 
       &[disabled] {
         background: $background-color;
@@ -879,7 +924,9 @@ onLoad((options: any) => {
 
 .system-info {
   .info-row {
-    @extend .flex-between;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 16rpx 0;
     border-bottom: 1rpx solid $border-color-extra-light;
 
@@ -926,9 +973,16 @@ onLoad((options: any) => {
 
   .form-container {
     .form-group {
-      .date-input-group {
-        flex-direction: column;
-        gap: 12rpx;
+      .progress-display {
+        .progress-info {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12rpx;
+
+          .progress-bar {
+            width: 100%;
+          }
+        }
       }
     }
   }
