@@ -21,7 +21,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <spring-boot.version>3.1.5</spring-boot.version>
-        <lombok.version>1.18.30</lombok.version>
+        <lombok.version>1.18.48</lombok.version>
 
         <!-- 依赖版本管理 -->
         <mybatis-plus.version>3.5.6</mybatis-plus.version>
