@@ -38,7 +38,7 @@
         <minio.version>8.5.2</minio.version>
         <fastdfs-client.version>1.27.2</fastdfs-client.version>
         <velocity.version>2.3</velocity.version>
-        <h2.version>2.2.224</h2.version>
+        <h2.version>2.5.250</h2.version>
         <knife4j.version>4.4.0</knife4j.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
 
