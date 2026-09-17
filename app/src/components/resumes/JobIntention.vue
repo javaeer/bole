@@ -276,9 +276,9 @@ const handleItemClick = (intention: JobIntentionResult) => {
 
 .intention-item {
   padding: 16px;
-  background-color: #ffffff;
+  bg-color: #ffffff;
   border-radius: 8px;
-  border: 1px solid var(--base-secondary-color, #e8e8e8);
+  border: 1px solid var(--base-color-secondary, #e8e8e8);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   cursor: pointer;
@@ -289,7 +289,7 @@ const handleItemClick = (intention: JobIntentionResult) => {
 .intention-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border-color: var(--base-primary-color, #5ac8fa);
+  color-border: var(--base-color-primary, #5ac8fa);
 }
 
 .position-row {
@@ -311,14 +311,14 @@ const handleItemClick = (intention: JobIntentionResult) => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--base-primary-color, #1890ff);
+  color: var(--base-color-primary, #1890ff);
   font-size: 18px;
   font-weight: bold;
   margin-left: 8px;
 }
 
 .primary-badge {
-  background-color: var(--base-primary-color, #1890ff);
+  bg-color: var(--base-color-primary, #1890ff);
   color: #ffffff;
   font-size: 12px;
   padding: 2px 8px;
@@ -361,25 +361,25 @@ const handleItemClick = (intention: JobIntentionResult) => {
 
 // 标签类型样式
 .tag-salary {
-  background-color: rgba(255, 107, 107, 0.1);
+  bg-color: rgba(255, 107, 107, 0.1);
   color: #ff6b6b;
   border: 1px solid rgba(255, 107, 107, 0.2);
 }
 
 .tag-location {
-  background-color: rgba(var(--base-primary-rgb, 90, 200, 250), 0.1);
-  color: var(--base-primary-color, #5ac8fa);
+  bg-color: rgba(var(--base-primary-rgb, 90, 200, 250), 0.1);
+  color: var(--base-color-primary, #5ac8fa);
   border: 1px solid rgba(var(--base-primary-rgb, 90, 200, 250), 0.2);
 }
 
 .tag-type {
-  background-color: rgba(82, 196, 26, 0.1);
+  bg-color: rgba(82, 196, 26, 0.1);
   color: #52c41a;
   border: 1px solid rgba(82, 196, 26, 0.2);
 }
 
 .tag-time {
-  background-color: rgba(255, 193, 7, 0.1);
+  bg-color: rgba(255, 193, 7, 0.1);
   color: #ffc107;
   border: 1px solid rgba(255, 193, 7, 0.2);
 }
@@ -400,7 +400,7 @@ const handleItemClick = (intention: JobIntentionResult) => {
 }
 
 .detail-label {
-  color: var(--base-secondary-color, #666);
+  color: var(--base-color-secondary, #666);
   font-size: 13px;
   min-width: 80px;
   flex-shrink: 0;
@@ -417,7 +417,7 @@ const handleItemClick = (intention: JobIntentionResult) => {
 .intention-details {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px dashed var(--base-secondary-color, #eee);
+  border-top: 1px dashed var(--base-color-secondary, #eee);
   animation: slideDown 0.3s ease-out;
 }
 
@@ -428,11 +428,11 @@ const handleItemClick = (intention: JobIntentionResult) => {
   gap: 6px;
   margin-top: 16px;
   padding: 8px;
-  color: var(--base-primary-color, #5ac8fa);
+  color: var(--base-color-primary, #5ac8fa);
   font-size: 13px;
   cursor: pointer;
   user-select: none;
-  border-top: 1px solid var(--base-secondary-color, #f0f0f0);
+  border-top: 1px solid var(--base-color-secondary, #f0f0f0);
 }
 
 .expand-toggle:hover {
@@ -447,7 +447,7 @@ const handleItemClick = (intention: JobIntentionResult) => {
 .empty-placeholder {
   text-align: center;
   padding: 40px 20px;
-  color: var(--base-secondary-color, #999);
+  color: var(--base-color-secondary, #999);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -464,14 +464,14 @@ const handleItemClick = (intention: JobIntentionResult) => {
 
 .placeholder-text {
   font-size: 14px;
-  color: var(--base-secondary-color, #666);
+  color: var(--base-color-secondary, #666);
   margin-bottom: 4px;
   text-align: center;
 }
 
 .placeholder-hint {
   font-size: 12px;
-  color: var(--base-secondary-color, #999);
+  color: var(--base-color-secondary, #999);
   text-align: center;
 }
 
@@ -622,8 +622,8 @@ const handleItemClick = (intention: JobIntentionResult) => {
 /* 暗色主题适配 */
 @media (prefers-color-scheme: dark) {
   .intention-item {
-    background-color: #1e1e1e;
-    border-color: #333;
+    bg-color: #1e1e1e;
+    color-border: #333;
   }
 
   .detail-label {
@@ -645,7 +645,7 @@ const handleItemClick = (intention: JobIntentionResult) => {
     break-inside: avoid;
     border: 1px solid #ddd !important;
     box-shadow: none !important;
-    background-color: white !important;
+    bg-color: white !important;
     color: black !important;
   }
 

@@ -547,7 +547,7 @@ const containerStyle = computed(() => ({
 // 分类样式
 const getCategoryStyle = (category: string) => {
   const config = categoryConfig.value[category];
-  const borderColor = config?.color || 'var(--base-primary-color, #1890ff)';
+  const borderColor = config?.color || 'var(--base-color-primary, #1890ff)';
   
   return {
     borderLeft: `4px solid ${borderColor}`,
@@ -602,7 +602,7 @@ const getSkillItemStyle = (skill: any) => {
     const color = getProgressColor(skill.proficiencyPercent);
     style.borderLeft = `3px solid ${color}`;
   } else {
-    style.borderLeft = `3px solid var(--base-primary-color, #1890ff)`;
+    style.borderLeft = `3px solid var(--base-color-primary, #1890ff)`;
   }
 
   // 证书技能特殊样式
@@ -643,7 +643,7 @@ const levelTextStyle = computed(() => ({
 // 分类徽章样式
 const categoryBadgeStyle = computed(() => ({
   background: 'rgba(24, 144, 255, 0.1)',
-  color: 'var(--base-primary-color, #1890ff)',
+  color: 'var(--base-color-primary, #1890ff)',
   border: '1px solid rgba(24, 144, 255, 0.2)',
   display: 'inline-block',
   whiteSpace: 'nowrap'
@@ -708,7 +708,7 @@ const getExperienceFillStyle = (years: number) => {
   
   return {
     width: `${width}%`,
-    background: 'linear-gradient(90deg, var(--base-primary-color, #1890ff), var(--base-accent-color, #52c41a))',
+    background: 'linear-gradient(90deg, var(--base-color-primary, #1890ff), var(--base-accent-color, #52c41a))',
     minWidth: '20px'
   };
 };
@@ -823,7 +823,7 @@ const certDateStyle = computed(() => ({
 
 .level-percent {
   font-size: 12px;
-  color: var(--base-primary-color, #1890ff);
+  color: var(--base-color-primary, #1890ff);
   font-weight: 600;
 }
 
@@ -844,7 +844,7 @@ const certDateStyle = computed(() => ({
 
 .category-badge {
   background: rgba(24, 144, 255, 0.1);
-  color: var(--base-primary-color, #1890ff);
+  color: var(--base-color-primary, #1890ff);
   border: 1px solid rgba(24, 144, 255, 0.2);
 }
 
@@ -874,7 +874,7 @@ const certDateStyle = computed(() => ({
   border-radius: 12px;
   transition: all 0.2s ease;
   display: inline-block;
-  background-color: var(--base-tag-bg, #e6f7ff);
+  bg-color: var(--base-tag-bg, #e6f7ff);
   border: 1px solid rgba(24, 144, 255, 0.2);
 
   &:hover {
@@ -895,7 +895,7 @@ const certDateStyle = computed(() => ({
   flex-direction: column;
   gap: 12px;
   padding-top: 12px;
-  border-top: 1px dashed var(--base-secondary-color, #e8e8e8);
+  border-top: 1px dashed var(--base-color-secondary, #e8e8e8);
   width: 100%;
 }
 

@@ -729,7 +729,7 @@ onLoad((options: any) => {
   justify-content: space-between;
   align-items: center;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: 0 0 $border-radius $border-radius;
   box-shadow: $box-shadow;
 
@@ -739,45 +739,45 @@ onLoad((options: any) => {
 
     .btn {
       padding: 12rpx 24rpx;
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
       min-width: 80rpx;
     }
   }
 
   .type-tag {
     padding: 4rpx 12rpx;
-    border-radius: $border-radius-small;
-    font-size: $font-size-extra-small;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-2xs;
     font-weight: $font-weight-medium;
 
     &.type-fulltime {
-      background: $success-bg;
-      color: $success-color;
-      border: 1rpx solid $success-border;
+      background: $bg-color-success;
+      color: $color-success;
+      border: 1rpx solid $color-success-border;
     }
 
     &.type-parttime {
-      background: $warning-bg;
-      color: $warning-color;
-      border: 1rpx solid $warning-border;
+      background: $bg-color-warning;
+      color: $color-warning;
+      border: 1rpx solid $color-warning-border;
     }
 
     &.type-intern {
-      background: $info-bg;
-      color: $info-color;
-      border: 1rpx solid $info-border;
+      background: $bg-color-info;
+      color: $color-info;
+      border: 1rpx solid $color-info-border;
     }
 
     &.type-remote {
-      background: $primary-color-light;
-      color: $primary-color;
-      border: 1rpx solid $primary-border;
+      background: $color-primary-light;
+      color: $color-primary;
+      border: 1rpx solid $color-primary-border;
     }
 
     &.type-default {
-      background: $background-color;
-      color: $text-secondary;
-      border: 1rpx solid $border-color-light;
+      background: $bg-color;
+      color: $color-text-secondary;
+      border: 1rpx solid $color-border-light;
     }
   }
 }
@@ -787,7 +787,7 @@ onLoad((options: any) => {
 }
 
 .detail-content {
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .info-card {
@@ -799,12 +799,12 @@ onLoad((options: any) => {
     align-items: center;
     margin-bottom: $margin-base;
     padding-bottom: $margin-mini;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     .card-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
     }
   }
 }
@@ -817,12 +817,12 @@ onLoad((options: any) => {
       display: block;
       font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
       margin-bottom: $margin-mini;
 
       &.required::after {
         content: '*';
-        color: $danger-color;
+        color: $color-danger;
         margin-left: 4rpx;
       }
     }
@@ -830,28 +830,28 @@ onLoad((options: any) => {
     .form-input {
       width: 100%;
       padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
-      transition: border-color $transition-fast $ease-in-out;
+      color: $color-text-primary;
+      background: $bg-color-white;
+      transition: color-border $transition-fast $ease-in-out;
       min-height: 80rpx;
       box-sizing: border-box;
       display: flex;
       align-items: center;
 
       &:focus {
-        border-color: $primary-color;
+        color-border: $color-primary;
         outline: none;
       }
 
       &.error {
-        border-color: $danger-color;
+        color-border: $color-danger;
       }
 
       &.form-input-text {
-        background: $background-color;
+        background: $bg-color;
       }
 
       &.picker-input {
@@ -859,8 +859,8 @@ onLoad((options: any) => {
       }
 
       &[disabled] {
-        background: $background-color;
-        color: $text-secondary;
+        background: $bg-color;
+        color: $color-text-secondary;
         cursor: not-allowed;
       }
     }
@@ -873,22 +873,22 @@ onLoad((options: any) => {
         }
 
         :deep(.picker-view) {
-          border: 2rpx solid $border-color-lighter;
+          border: 2rpx solid $color-border-light;
           border-radius: $border-radius;
           font-size: $font-size-base;
-          color: $text-primary;
-          background: $background-color-white;
-          transition: border-color $transition-fast $ease-in-out;
+          color: $color-text-primary;
+          background: $bg-color-white;
+          transition: color-border $transition-fast $ease-in-out;
           min-height: 80rpx;
           padding: 0 24rpx;
 
           &:focus, &:active {
-            border-color: $primary-color;
+            color-border: $color-primary;
           }
 
           &.disabled {
-            background: $background-color;
-            color: $text-secondary;
+            background: $bg-color;
+            color: $color-text-secondary;
             cursor: not-allowed;
           }
         }
@@ -896,17 +896,17 @@ onLoad((options: any) => {
         :deep(.selected-region) {
           margin-top: 12rpx;
           padding: 12rpx;
-          background: $background-color;
-          border-radius: $border-radius-small;
-          border: 1rpx solid $border-color-lighter;
-          font-size: $font-size-small;
-          color: $text-secondary;
+          background: $bg-color;
+          border-radius: $border-radius-sm;
+          border: 1rpx solid $color-border-light;
+          font-size: $font-size-sm;
+          color: $color-text-secondary;
         }
 
         :deep(.error-message) {
           margin-top: 8rpx;
-          font-size: $font-size-extra-small;
-          color: $danger-color;
+          font-size: $font-size-2xs;
+          color: $color-danger;
         }
       }
     }
@@ -914,21 +914,21 @@ onLoad((options: any) => {
     .selected-city-preview {
       margin-top: 12rpx;
       padding: 16rpx;
-      background: $primary-color-light;
-      border-radius: $border-radius-small;
-      border: 1rpx solid $primary-border;
+      background: $color-primary-light;
+      border-radius: $border-radius-sm;
+      border: 1rpx solid $color-primary-border;
       display: flex;
       align-items: center;
 
       .preview-label {
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
         margin-right: 8rpx;
       }
 
       .preview-value {
         font-size: $font-size-base;
-        color: $primary-color;
+        color: $color-primary;
         font-weight: $font-weight-medium;
       }
     }
@@ -943,22 +943,22 @@ onLoad((options: any) => {
         width: 100%;
         padding: 20rpx 24rpx;
         padding-right: 120rpx;
-        border: 2rpx solid $border-color-lighter;
+        border: 2rpx solid $color-border-light;
         border-radius: $border-radius;
         font-size: $font-size-base;
-        color: $text-primary;
-        background: $background-color-white;
-        transition: border-color $transition-fast $ease-in-out;
+        color: $color-text-primary;
+        background: $bg-color-white;
+        transition: color-border $transition-fast $ease-in-out;
         box-sizing: border-box;
         min-height: 80rpx;
 
         &:focus {
-          border-color: $primary-color;
+          color-border: $color-primary;
           outline: none;
         }
 
         &.error {
-          border-color: $danger-color;
+          color-border: $color-danger;
         }
       }
 
@@ -967,7 +967,7 @@ onLoad((options: any) => {
         right: 24rpx;
         top: 50%;
         transform: translateY(-50%);
-        color: $text-secondary;
+        color: $color-text-secondary;
         font-size: $font-size-base;
       }
     }
@@ -975,28 +975,28 @@ onLoad((options: any) => {
     .salary-preview {
       margin-top: 12rpx;
       padding: 16rpx;
-      background: $primary-color-light;
-      border-radius: $border-radius-small;
-      border: 1rpx solid $primary-border;
+      background: $color-primary-light;
+      border-radius: $border-radius-sm;
+      border: 1rpx solid $color-primary-border;
 
       .preview-text {
         display: block;
-        font-size: $font-size-medium;
+        font-size: $font-size-base;
         font-weight: $font-weight-bold;
-        color: $primary-color;
+        color: $color-primary;
         margin-bottom: 4rpx;
       }
 
       .preview-analysis {
-        font-size: $font-size-extra-small;
-        color: $text-secondary;
+        font-size: $font-size-2xs;
+        color: $color-text-secondary;
       }
     }
 
     .error-text {
       display: block;
-      font-size: $font-size-extra-small;
-      color: $danger-color;
+      font-size: $font-size-2xs;
+      color: $color-danger;
       margin-top: 8rpx;
     }
   }
@@ -1006,9 +1006,9 @@ onLoad((options: any) => {
   .analysis-item {
     display: flex;
     align-items: center;
-    gap: $margin-small;
+    gap: $margin-sm;
     padding: 20rpx 0;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     &:last-child {
       border-bottom: none;
@@ -1018,8 +1018,8 @@ onLoad((options: any) => {
       width: 40rpx;
       height: 40rpx;
       font-size: 24rpx;
-      background: $background-color;
-      border-radius: $border-radius-round;
+      background: $bg-color;
+      border-radius: $border-radius-circle;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1030,28 +1030,28 @@ onLoad((options: any) => {
 
       .analysis-label {
         display: block;
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
         margin-bottom: 4rpx;
       }
 
       .analysis-value {
         font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
       }
     }
 
     .analysis-progress {
       width: 100rpx;
       height: 8rpx;
-      background: $background-color;
+      background: $bg-color;
       border-radius: 4rpx;
       overflow: hidden;
 
       .progress-bar {
         height: 100%;
-        background: $primary-color;
+        background: $color-primary;
         border-radius: 4rpx;
         transition: width $transition-normal $ease-in-out;
       }
@@ -1065,7 +1065,7 @@ onLoad((options: any) => {
     justify-content: space-between;
     align-items: center;
     padding: 16rpx 0;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     &:last-child {
       border-bottom: none;
@@ -1073,12 +1073,12 @@ onLoad((options: any) => {
 
     .info-label {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: $color-text-secondary;
     }
 
     .info-value {
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
       font-weight: $font-weight-medium;
     }
   }
@@ -1090,8 +1090,8 @@ onLoad((options: any) => {
   left: 0;
   right: 0;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
-  border-top: 1rpx solid $border-color-light;
+  background: $bg-color-white;
+  border-top: 1rpx solid $color-border-light;
   z-index: $z-index-base;
 
   .btn-block {
@@ -1102,7 +1102,7 @@ onLoad((options: any) => {
 @media (max-width: $screen-md) {
   .detail-header,
   .detail-footer {
-    padding: 16rpx $padding-small;
+    padding: 16rpx $padding-sm;
   }
 
   .detail-content {

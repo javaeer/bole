@@ -107,7 +107,7 @@ const componentName = computed(() => props.componentData.name || '未命名组�
 .unknown-component {
   padding: 40px;
   text-align: center;
-  background-color: #f9f9f9;
+  bg-color: #f9f9f9;
   border: 2px dashed #ddd;
   border-radius: 8px;
   margin: 20px 0;

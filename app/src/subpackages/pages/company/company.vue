@@ -171,11 +171,11 @@
         <view class="section-title">时间信息</view>
         <view class="time-info">
           <view class="time-item">
-            <uni-icons type="calendar" size="18" color="$text-secondary" />
+            <uni-icons type="calendar" size="18" color="$color-text-secondary" />
             <text>创建时间：{{ formatDateTime(companyDetail?.createdAt || "") }}</text>
           </view>
           <view class="time-item">
-            <uni-icons type="calendar" size="18" color="$text-secondary" />
+            <uni-icons type="calendar" size="18" color="$color-text-secondary" />
             <text>更新时间：{{ formatDateTime(companyDetail?.updatedAt || "") }}</text>
           </view>
         </view>
@@ -247,7 +247,7 @@
                 class="comment-delete"
                 @click="handleDeleteComment(comment.id)"
               >
-                <uni-icons type="trash" size="18" color="$text-secondary" />
+                <uni-icons type="trash" size="18" color="$color-text-secondary" />
               </view>
             </view>
             <view class="comment-content">
@@ -289,13 +289,13 @@
         <uni-icons
           :type="companyDetail?.followed ? 'heart-filled' : 'heart'"
           size="20"
-          :color="companyDetail?.followed ? 'white' : '$primary-color'"
+          :color="companyDetail?.followed ? 'white' : '$color-primary'"
         />
         <text>{{ followingRef ? "处理中..." : (companyDetail?.followed ? "已关注" : "关注") }}</text>
       </view>
       <view class="action-divider"></view>
       <view class="like-btn">
-        <uni-icons type="hand-up" size="20" color="$warning-color" />
+        <uni-icons type="hand-up" size="20" color="$color-warning" />
         <text>点赞</text>
       </view>
     </view>
@@ -552,19 +552,19 @@ onLoad((options) => {
   left: 0;
   right: 0;
   height: $navigation-bar-height;
-  background: $background-color-white;
+  background: $bg-color-white;
   display: flex;
   align-items: center;
   padding: 0 $padding-base;
-  border-bottom: 1rpx solid $border-color-lighter;
+  border-bottom: 1rpx solid $color-border-light;
   z-index: $z-index-base;
 
   .header-title {
     flex: 1;
     text-align: center;
-    font-size: $font-size-medium;
-    font-weight: $font-weight-semibold;
-    color: $text-primary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
     @extend .text-truncate;
     margin: 0 20rpx;
   }
@@ -574,7 +574,7 @@ onLoad((options) => {
     @extend .flex-center;
 
     .header-btn {
-      color: $primary-color;
+      color: $color-primary;
       font-size: $font-size-base;
       font-weight: $font-weight-medium;
     }
@@ -587,7 +587,7 @@ onLoad((options) => {
   padding-top: calc(#{$navigation-bar-height} + #{$padding-base});
 
   .section-container {
-    background: $background-color-white;
+    background: $bg-color-white;
     border-radius: $border-radius;
     padding: $padding-base;
     margin-bottom: $margin-base;
@@ -602,8 +602,8 @@ onLoad((options) => {
       .add-comment-btn {
         display: flex;
         align-items: center;
-        color: $primary-color;
-        font-size: $font-size-small;
+        color: $color-primary;
+        font-size: $font-size-sm;
 
         .uni-icons {
           margin-right: 4rpx;
@@ -612,9 +612,9 @@ onLoad((options) => {
     }
 
     .section-title {
-      font-size: $font-size-medium;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
       margin-bottom: $margin-base;
     }
   }
@@ -626,7 +626,7 @@ onLoad((options) => {
     display: flex;
     align-items: center;
     padding: 16rpx 0;
-    border-bottom: 1rpx solid $border-color-lighter;
+    border-bottom: 1rpx solid $color-border-light;
 
     &:last-child {
       border-bottom: none;
@@ -635,16 +635,16 @@ onLoad((options) => {
     .info-label {
       width: 120rpx;
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: $color-text-secondary;
     }
 
     .info-value {
       flex: 1;
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
 
       &.link {
-        color: $primary-color;
+        color: $color-primary;
         text-decoration: underline;
         cursor: pointer;
       }
@@ -655,7 +655,7 @@ onLoad((options) => {
 // 表单样式
 .form-group {
   .form-item {
-    margin-bottom: $margin-small;
+    margin-bottom: $margin-sm;
 
     &:last-child {
       margin-bottom: 0;
@@ -663,7 +663,7 @@ onLoad((options) => {
 
     .form-label {
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
       margin-bottom: $margin-mini;
       font-weight: $font-weight-medium;
     }
@@ -671,15 +671,15 @@ onLoad((options) => {
     .form-input {
       width: 100%;
       padding: 20rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color;
+      color: $color-text-primary;
+      background: $bg-color;
       transition: all $transition-fast;
 
       &:focus {
-        border-color: $primary-color;
+        color-border: $color-primary;
         box-shadow: $input-focus-shadow;
       }
     }
@@ -688,11 +688,11 @@ onLoad((options) => {
       width: 100%;
       min-height: 120rpx;
       padding: 20rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color;
+      color: $color-text-primary;
+      background: $bg-color;
     }
   }
 }
@@ -700,8 +700,8 @@ onLoad((options) => {
 .form-textarea {
   .textarea-count {
     text-align: right;
-    font-size: $font-size-extra-small;
-    color: $text-secondary;
+    font-size: $font-size-2xs;
+    color: $color-text-secondary;
     margin-top: 8rpx;
   }
 }
@@ -715,10 +715,10 @@ onLoad((options) => {
     display: flex;
     align-items: center;
     padding: 12rpx 20rpx;
-    background: $background-color;
+    background: $bg-color;
     border-radius: $border-radius;
-    color: $text-primary;
-    font-size: $font-size-small;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
     cursor: pointer;
 
     .uni-icons {
@@ -737,19 +737,19 @@ onLoad((options) => {
     @extend .flex-center;
     flex-direction: column;
     padding: 20rpx;
-    background: $background-color;
+    background: $bg-color;
     border-radius: $border-radius;
 
     .stat-number {
-      font-size: $font-size-large;
+      font-size: $font-size-lg;
       font-weight: $font-weight-bold;
-      color: $primary-color;
+      color: $color-primary;
       margin-bottom: 4rpx;
     }
 
     .stat-label {
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
     }
   }
 }
@@ -770,8 +770,8 @@ onLoad((options) => {
     }
 
     text {
-      font-size: $font-size-small;
-      color: $text-regular;
+      font-size: $font-size-sm;
+      color: $color-text-regular;
     }
   }
 }
@@ -780,14 +780,14 @@ onLoad((options) => {
 .comment-input-container {
   margin-bottom: $margin-base;
   padding: $padding-base;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
 
   .comment-textarea {
     width: 100%;
     min-height: 80rpx;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
   }
 
   .comment-actions {
@@ -797,8 +797,8 @@ onLoad((options) => {
     margin-top: $margin-mini;
 
     .textarea-count {
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
     }
 
     .action-buttons {
@@ -807,18 +807,18 @@ onLoad((options) => {
 
       .action-btn {
         padding: 8rpx 20rpx;
-        border-radius: $border-radius-small;
-        font-size: $font-size-small;
+        border-radius: $border-radius-sm;
+        font-size: $font-size-sm;
         font-weight: $font-weight-medium;
 
         &.cancel {
-          background: $background-color-white;
-          color: $text-secondary;
-          border: 1rpx solid $border-color-light;
+          background: $bg-color-white;
+          color: $color-text-secondary;
+          border: 1rpx solid $color-border-light;
         }
 
         &.submit {
-          background: $primary-color;
+          background: $color-primary;
           color: white;
 
           &.disabled {
@@ -834,7 +834,7 @@ onLoad((options) => {
 .comment-list {
   .comment-item {
     padding: $padding-base 0;
-    border-bottom: 1rpx solid $border-color-lighter;
+    border-bottom: 1rpx solid $color-border-light;
 
     &:last-child {
       border-bottom: none;
@@ -854,11 +854,11 @@ onLoad((options) => {
           width: 60rpx;
           height: 60rpx;
           @extend .flex-center;
-          background: $primary-color;
+          background: $color-primary;
           color: white;
-          border-radius: $border-radius-round;
-          font-size: $font-size-medium;
-          font-weight: $font-weight-semibold;
+          border-radius: $border-radius-circle;
+          font-size: $font-size-base;
+          font-weight: $font-weight-medium;
           margin-right: 12rpx;
         }
 
@@ -866,13 +866,13 @@ onLoad((options) => {
           .user-name {
             font-size: $font-size-base;
             font-weight: $font-weight-medium;
-            color: $text-primary;
+            color: $color-text-primary;
             margin-bottom: 2rpx;
           }
 
           .comment-time {
-            font-size: $font-size-extra-small;
-            color: $text-secondary;
+            font-size: $font-size-2xs;
+            color: $color-text-secondary;
           }
         }
       }
@@ -881,15 +881,15 @@ onLoad((options) => {
         @extend .flex-center;
         width: 40rpx;
         height: 40rpx;
-        border-radius: $border-radius-round;
-        background: $background-color;
+        border-radius: $border-radius-circle;
+        background: $bg-color;
         cursor: pointer;
       }
     }
 
     .comment-content {
       font-size: $font-size-base;
-      color: $text-regular;
+      color: $color-text-regular;
       line-height: 1.5;
     }
   }
@@ -904,8 +904,8 @@ onLoad((options) => {
     .loading-text {
       display: flex;
       align-items: center;
-      color: $text-secondary;
-      font-size: $font-size-small;
+      color: $color-text-secondary;
+      font-size: $font-size-sm;
 
       .uni-icons {
         margin-right: 8rpx;
@@ -915,10 +915,10 @@ onLoad((options) => {
 
     .load-more-btn {
       padding: 16rpx 40rpx;
-      background: $background-color;
+      background: $bg-color;
       border-radius: $border-radius;
-      color: $text-primary;
-      font-size: $font-size-small;
+      color: $color-text-primary;
+      font-size: $font-size-sm;
       cursor: pointer;
     }
   }
@@ -926,8 +926,8 @@ onLoad((options) => {
   .no-more {
     text-align: center;
     padding: 40rpx 0;
-    color: $text-secondary;
-    font-size: $font-size-small;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
   }
 }
 
@@ -959,11 +959,11 @@ onLoad((options) => {
   left: 0;
   right: 0;
   height: 120rpx;
-  background: $background-color-white;
+  background: $bg-color-white;
   display: flex;
   align-items: center;
   padding: 0 $padding-base;
-  border-top: 1rpx solid $border-color-lighter;
+  border-top: 1rpx solid $color-border-light;
   z-index: $z-index-base;
 
   .follow-btn, .like-btn {
@@ -979,7 +979,7 @@ onLoad((options) => {
     }
 
     &.followed {
-      background: $danger-color;
+      background: $color-danger;
       border-radius: $border-radius;
       color: white;
     }
@@ -989,13 +989,13 @@ onLoad((options) => {
     }
 
     text {
-      font-size: $font-size-extra-small;
+      font-size: $font-size-2xs;
     }
   }
 
   .follow-btn {
     text {
-      color: $primary-color;
+      color: $color-primary;
     }
 
     &.followed text {
@@ -1004,13 +1004,13 @@ onLoad((options) => {
   }
 
   .like-btn text {
-    color: $warning-color;
+    color: $color-warning;
   }
 
   .action-divider {
     width: 1rpx;
     height: 40rpx;
-    background: $border-color-lighter;
+    background: $color-border-light;
   }
 }
 
@@ -1021,11 +1021,11 @@ onLoad((options) => {
   left: 0;
   right: 0;
   height: 120rpx;
-  background: $background-color-white;
+  background: $bg-color-white;
   display: flex;
   align-items: center;
   padding: $padding-base;
-  border-top: 1rpx solid $border-color-lighter;
+  border-top: 1rpx solid $color-border-light;
 
   .save-btn {
     flex: 1;
@@ -1034,8 +1034,8 @@ onLoad((options) => {
     background: $button-primary-bg;
     color: white;
     border-radius: $border-radius;
-    font-size: $font-size-medium;
-    font-weight: $font-weight-semibold;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
     cursor: pointer;
 
     &[disabled] {
@@ -1048,7 +1048,7 @@ onLoad((options) => {
 // 响应式调整
 @media (max-width: $screen-md) {
   .stats-grid {
-    gap: $padding-small;
+    gap: $padding-sm;
   }
 
   .action-bar, .edit-actions {

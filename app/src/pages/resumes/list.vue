@@ -519,9 +519,9 @@ onReachBottom(() => {
 
 .btn {
   border: none;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
   padding: 0 24rpx;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   line-height: 1;
   transition: all $transition-fast $ease-in-out;
@@ -536,14 +536,14 @@ onReachBottom(() => {
   }
 
   &.btn-primary {
-    background: $primary-color;
+    background: $color-primary;
     color: white;
   }
 
   &.btn-secondary {
-    background: $background-color;
-    color: $text-primary;
-    border: 1rpx solid $border-color-light;
+    background: $bg-color;
+    color: $color-text-primary;
+    border: 1rpx solid $color-border-light;
   }
 
   &[disabled] {
@@ -552,7 +552,7 @@ onReachBottom(() => {
   }
 
   &[size="mini"] {
-    font-size: $font-size-extra-small;
+    font-size: $font-size-2xs;
     padding: 8rpx 16rpx;
     height: 50rpx;
   }
@@ -560,7 +560,7 @@ onReachBottom(() => {
 
 .resume-list-page {
   padding: 0;
-  background: $background-color;
+  background: $bg-color;
   min-height: 100vh;
 }
 
@@ -568,12 +568,12 @@ onReachBottom(() => {
   position: sticky;
   top: 0;
   z-index: $z-index-base + 100;
-  background: $background-color-white;
+  background: $bg-color-white;
   padding: 16rpx $padding-base;
   display: flex;
   align-items: center;
   gap: 16rpx;
-  border-bottom: 1rpx solid $border-color-light;
+  border-bottom: 1rpx solid $color-border-light;
 
   .status-bar {
     height: var(--status-bar-height);
@@ -583,34 +583,34 @@ onReachBottom(() => {
     flex: 1;
     display: flex;
     align-items: center;
-    background: $background-color;
+    background: $bg-color;
     border-radius: $border-radius;
     padding: 16rpx 20rpx;
-    border: 1rpx solid $border-color-light;
+    border: 1rpx solid $color-border-light;
     transition: all $transition-fast $ease-in-out;
 
     &:focus-within {
-      border-color: $primary-color;
+      color-border: $color-primary;
       box-shadow: $input-focus-shadow;
     }
 
     .icon {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: $color-text-secondary;
       margin-right: 12rpx;
     }
 
     .search-input {
       flex: 1;
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
       background: transparent;
       height: 40rpx;
       line-height: 40rpx;
     }
 
     .placeholder {
-      color: $text-placeholder;
+      color: $color-text-placeholder;
       font-size: $font-size-base;
     }
 
@@ -622,7 +622,7 @@ onReachBottom(() => {
 
       .clear-icon {
         font-size: 24rpx;
-        color: $text-secondary;
+        color: $color-text-secondary;
         font-weight: bold;
         line-height: 1;
       }
@@ -630,7 +630,7 @@ onReachBottom(() => {
   }
 
   .search-btn {
-    background: $primary-color;
+    background: $color-primary;
     color: white;
     border: none;
     border-radius: $border-radius;
@@ -642,13 +642,13 @@ onReachBottom(() => {
     transition: all $transition-fast $ease-in-out;
 
     &:disabled {
-      background: $background-color;
-      color: $text-placeholder;
+      background: $bg-color;
+      color: $color-text-placeholder;
       cursor: not-allowed;
     }
 
     &:active:not(:disabled) {
-      background: color.adjust($primary-color, $lightness: -10%);
+      background: color.adjust($color-primary, $lightness: -10%);
       transform: scale(0.98);
     }
   }
@@ -658,8 +658,8 @@ onReachBottom(() => {
   display: flex;
   align-items: center;
   padding: 16rpx $padding-base;
-  background: $background-color-white;
-  border-bottom: 1rpx solid $border-color-light;
+  background: $bg-color-white;
+  border-bottom: 1rpx solid $color-border-light;
 
   .filter-tabs {
     flex: 1;
@@ -676,13 +676,13 @@ onReachBottom(() => {
         .tab-item {
           position: relative;
           font-size: $font-size-base;
-          color: $text-secondary;
+          color: $color-text-secondary;
           padding: 8rpx 4rpx;
           white-space: nowrap;
           transition: all $transition-fast $ease-in-out;
 
           &.active {
-            color: $primary-color;
+            color: $color-primary;
 font-weight: $font-weight-medium;
 
             &::after {
@@ -692,7 +692,7 @@ font-weight: $font-weight-medium;
               left: 0;
               right: 0;
               height: 4rpx;
-              background: $primary-color;
+              background: $color-primary;
               border-radius: 2rpx;
             }
           }
@@ -701,9 +701,9 @@ font-weight: $font-weight-medium;
             position: absolute;
             top: -8rpx;
             right: -8rpx;
-            background: $danger-color;
+            background: $color-danger;
             color: white;
-            font-size: $font-size-extra-small;
+            font-size: $font-size-2xs;
             padding: 2rpx 6rpx;
             border-radius: 10rpx;
             min-width: 20rpx;
@@ -719,10 +719,10 @@ font-weight: $font-weight-medium;
     align-items: center;
     gap: 8rpx;
     padding: 8rpx 16rpx;
-    background: $background-color;
-    border-radius: $border-radius-small;
-    font-size: $font-size-small;
-    color: $text-regular;
+    background: $bg-color;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    color: $color-text-regular;
     white-space: nowrap;
   }
 }
@@ -736,13 +736,13 @@ font-weight: $font-weight-medium;
   padding: $padding-base;
   box-shadow: $box-shadow-dark;
   border-radius: $border-radius;
-  background: $background-color-white;
+  background: $bg-color-white;
 
   .panel-title {
     display: block;
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-bottom: $margin-base;
   }
 
@@ -752,7 +752,7 @@ font-weight: $font-weight-medium;
       justify-content: space-between;
       align-items: center;
       padding: 20rpx 0;
-      border-bottom: 1rpx solid $border-color-lighter;
+      border-bottom: 1rpx solid $color-border-light;
 
       &:last-child {
         border-bottom: none;
@@ -760,14 +760,14 @@ font-weight: $font-weight-medium;
 
       &.active {
         .option-text {
-          color: $primary-color;
+          color: $color-primary;
           font-weight: $font-weight-medium;
         }
       }
 
       .option-text {
         font-size: $font-size-base;
-        color: $text-regular;
+        color: $color-text-regular;
       }
     }
   }
@@ -785,13 +785,13 @@ font-weight: $font-weight-medium;
   align-items: center;
   justify-content: center;
   padding: $margin-base * 2;
-  color: $text-placeholder;
+  color: $color-text-placeholder;
 
   .loading-spinner {
     width: 40rpx;
     height: 40rpx;
-    border: 4rpx solid rgba($primary-color, 0.2);
-    border-top-color: $primary-color;
+    border: 4rpx solid rgba($color-primary, 0.2);
+    border-top-color: $color-primary;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: $margin-base;
@@ -805,7 +805,7 @@ font-weight: $font-weight-medium;
   align-items: center;
   justify-content: center;
   padding: $margin-base * 3;
-  color: $text-placeholder;
+  color: $color-text-placeholder;
 
   .icon {
     font-size: 80rpx;
@@ -818,8 +818,8 @@ font-weight: $font-weight-medium;
   }
 
   .empty-hint {
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 }
 
@@ -838,9 +838,9 @@ font-weight: $font-weight-medium;
     .resume-title-section {
       .resume-name {
         display: block;
-        font-size: $font-size-large;
+        font-size: $font-size-lg;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
         margin-bottom: $margin-mini;
         @extend .text-truncate;
         max-width: 400rpx;
@@ -854,8 +854,8 @@ font-weight: $font-weight-medium;
           display: flex;
           align-items: center;
           gap: 4rpx;
-          font-size: $font-size-small;
-          color: $text-secondary;
+          font-size: $font-size-sm;
+          color: $color-text-secondary;
         }
       }
     }
@@ -863,25 +863,25 @@ font-weight: $font-weight-medium;
     .resume-status {
       .status-badge {
         padding: 4rpx 12rpx;
-        font-size: $font-size-extra-small;
-        border-radius: $border-radius-small;
+        font-size: $font-size-2xs;
+        border-radius: $border-radius-sm;
 
         &.status-draft {
-          background: $warning-bg;
-          color: $warning-color;
-          border: 1rpx solid $warning-border;
+          background: $bg-color-warning;
+          color: $color-warning;
+          border: 1rpx solid $color-warning-border;
         }
 
         &.status-published {
-          background: $success-bg;
-          color: $success-color;
-          border: 1rpx solid $success-border;
+          background: $bg-color-success;
+          color: $color-success;
+          border: 1rpx solid $color-success-border;
         }
 
         &.status-archived {
-          background: $info-bg;
-          color: $info-color;
-          border: 1rpx solid $info-border;
+          background: $bg-color-info;
+          color: $color-info;
+          border: 1rpx solid $color-info-border;
         }
       }
     }
@@ -894,14 +894,14 @@ font-weight: $font-weight-medium;
       display: block;
       font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
       margin-bottom: $margin-mini;
     }
 
     .section-count {
       display: block;
-      font-size: $font-size-small;
-      color: $text-secondary;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
       margin-bottom: $margin-mini;
     }
 
@@ -913,11 +913,11 @@ font-weight: $font-weight-medium;
       .component-tag,
       .more-tag {
         padding: 4rpx 12rpx;
-        font-size: $font-size-extra-small;
-        color: $text-regular;
-        background: $background-color;
-        border-radius: $border-radius-small;
-        border: 1rpx solid $border-color-light;
+        font-size: $font-size-2xs;
+        color: $color-text-regular;
+        background: $bg-color;
+        border-radius: $border-radius-sm;
+        border: 1rpx solid $color-border-light;
       }
     }
   }
@@ -931,8 +931,8 @@ font-weight: $font-weight-medium;
         display: flex;
         align-items: center;
         gap: 4rpx;
-        font-size: $font-size-extra-small;
-        color: $text-secondary;
+        font-size: $font-size-2xs;
+        color: $color-text-secondary;
       }
     }
 
@@ -945,9 +945,9 @@ font-weight: $font-weight-medium;
         height: 50rpx;
         line-height: 50rpx;
         padding: 0 16rpx;
-        font-size: $font-size-small;
+        font-size: $font-size-sm;
         @extend .btn;
-        @extend .btn-small;
+        @extend .btn-sm;
       }
     }
   }
@@ -957,8 +957,8 @@ font-weight: $font-weight-medium;
 .no-more {
   text-align: center;
   padding: $margin-base;
-  color: $text-secondary;
-  font-size: $font-size-small;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
 }
 
 .fab-container {
@@ -973,7 +973,7 @@ font-weight: $font-weight-medium;
     padding: 16rpx 24rpx;
     border-radius: 50rpx;
     box-shadow: $box-shadow-dark;
-    background: $primary-color;
+    background: $color-primary;
     color: white;
     border: none;
     font-size: $font-size-base;
@@ -994,20 +994,20 @@ font-weight: $font-weight-medium;
 // 响应式调整
 @media (max-width: $screen-md) {
   .search-header {
-    padding: 16rpx $margin-small;
+    padding: 16rpx $margin-sm;
   }
 
   .filter-bar {
-    padding: 16rpx $margin-small;
+    padding: 16rpx $margin-sm;
   }
 
   .sort-panel {
-    left: $margin-small;
-    right: $margin-small;
+    left: $margin-sm;
+    right: $margin-sm;
   }
 
   .resume-list {
-    padding: $margin-small;
+    padding: $margin-sm;
   }
 }
 </style>

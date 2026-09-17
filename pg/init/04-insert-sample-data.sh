@@ -96,7 +96,7 @@ psql -v ON_ERROR_STOP=1 -U bole -d bole <<-'EOSQL'
 
     -- 插入用户数据
     INSERT INTO bole_app.t_user (id, company_id, username, password, email, phone, name, avatar, title, location, website, github, wechat, bio, followers, fans, likes, status, work_years, last_login_at) VALUES
-    (1, 1, 'admin', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'zhangsan@tencent.com', '18610880038', '王彦博', 'https://example.com/avatar1.jpg', '高级工程师', '深圳', 'https://zhangsan.dev', 'zhangsan', 'zhangsan_wx', '专注于后端开发和系统架构', 150, 80, 300, 1, 5, '2024-01-15 10:30:00');
+    (1, 1, 'admin', '$2a$10$US6aouREA4bdMT.V5Pv.POu6iQWzousSsM.RRdTZ0omK3ivjLb7US', 'wangyb@yunlou.net.cn', '18610880038', '王彦博', 'https://yunlou.net.cn/avatar1.jpg', '高级工程师', '深圳', 'https://yunlou.net.cn', 'wangyb', 'wangyb_wx', '专注于后端开发和系统架构', 150, 80, 300, 1, 5, '2024-01-15 10:30:00');
  
     -- 插入角色数据
     INSERT INTO bole_app.t_role (id, name, code, description) VALUES

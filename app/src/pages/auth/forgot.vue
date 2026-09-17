@@ -735,7 +735,7 @@ onBeforeUnmount(() => {
 .auth-container {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(135deg, $primary-color-lighter 0%, $background-color 100%);
+  background: linear-gradient(135deg, $color-primary-light 0%, $bg-color 100%);
   padding: $padding-base;
   overflow: hidden;
 }
@@ -752,8 +752,8 @@ onBeforeUnmount(() => {
 
 .decoration-circle {
   position: absolute;
-  border-radius: $border-radius-round;
-  background: radial-gradient(circle, rgba($primary-color, 0.1) 0%, transparent 70%);
+  border-radius: $border-radius-circle;
+  background: radial-gradient(circle, rgba($color-primary, 0.1) 0%, transparent 70%);
 
   &.circle-1 {
     width: 400rpx;
@@ -783,7 +783,7 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($background-color-white, 0.8);
+  background: rgba($bg-color-white, 0.8);
 }
 
 /* 品牌头部 */
@@ -807,9 +807,9 @@ onBeforeUnmount(() => {
 }
 
 .brand-name {
-  font-size: $font-size-large;
+  font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   letter-spacing: 2rpx;
   display: block;
   text-align: center;
@@ -830,11 +830,11 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 6rpx;
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   cursor: pointer;
 
   .back-icon {
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
   }
 
   .back-text {
@@ -850,7 +850,7 @@ onBeforeUnmount(() => {
 .form-card {
   position: relative;
   z-index: $z-index-base + 1;
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius * 2;
   padding: $padding-base * 1.5;
   box-shadow: $box-shadow-dark;
@@ -866,17 +866,17 @@ onBeforeUnmount(() => {
 
 .page-title {
   display: block;
-  font-size: $font-size-extra-large;
+  font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
   text-align: center;
 }
 
 .page-subtitle {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   text-align: center;
   line-height: 1.5;
 }
@@ -899,26 +899,26 @@ onBeforeUnmount(() => {
 
   &.active {
     .step-number {
-      background: $primary-color;
-      color: $background-color-white;
-      border-color: $primary-color;
+      background: $color-primary;
+      color: $bg-color-white;
+      color-border: $color-primary;
     }
 
     .step-text {
-      color: $primary-color;
+      color: $color-primary;
       font-weight: $font-weight-medium;
     }
   }
 
   &.completed {
     .step-number {
-      background: $success-color;
-      color: $background-color-white;
-      border-color: $success-color;
+      background: $color-success;
+      color: $bg-color-white;
+      color-border: $color-success;
     }
 
     .step-text {
-      color: $success-color;
+      color: $color-success;
     }
   }
 }
@@ -926,21 +926,21 @@ onBeforeUnmount(() => {
 .step-number {
   width: 40rpx;
   height: 40rpx;
-  border-radius: $border-radius-round;
-  border: 2rpx solid $border-color;
+  border-radius: $border-radius-circle;
+  border: 2rpx solid $color-border;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: $text-secondary;
+  color: $color-text-secondary;
   margin-bottom: 8rpx;
   transition: all $transition-fast;
 }
 
 .step-text {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   white-space: nowrap;
   transition: color $transition-fast;
 }
@@ -948,12 +948,12 @@ onBeforeUnmount(() => {
 .step-line {
   flex: 1;
   height: 2rpx;
-  background: $border-color;
-  margin: 0 $margin-small;
+  background: $color-border;
+  margin: 0 $margin-sm;
   min-width: 40rpx;
 
   .step-item.completed + & {
-    background: $success-color;
+    background: $color-success;
   }
 }
 
@@ -971,8 +971,8 @@ onBeforeUnmount(() => {
 
 .verify-type-item {
   flex: 1;
-  background: $background-color;
-  border: 2rpx solid $border-color-light;
+  background: $bg-color;
+  border: 2rpx solid $color-border-light;
   border-radius: $border-radius;
   padding: $padding-base;
   display: flex;
@@ -983,17 +983,17 @@ onBeforeUnmount(() => {
   transition: all $transition-fast;
 
   &.active {
-    background: rgba($primary-color, 0.05);
-    border-color: $primary-color;
+    background: rgba($color-primary, 0.05);
+    color-border: $color-primary;
 
     .verify-type-text {
-      color: $primary-color;
+      color: $color-primary;
       font-weight: $font-weight-medium;
     }
   }
 
   &:active:not(.active) {
-    background: rgba($text-secondary, 0.05);
+    background: rgba($color-text-secondary, 0.05);
   }
 }
 
@@ -1005,7 +1005,7 @@ onBeforeUnmount(() => {
 
 .verify-type-text {
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
   text-align: center;
   transition: color $transition-fast;
 }
@@ -1023,7 +1023,7 @@ onBeforeUnmount(() => {
   .form-label {
     display: block;
     font-size: $font-size-base;
-    color: $text-regular;
+    color: $color-text-regular;
     margin-bottom: $margin-mini;
     font-weight: $font-weight-medium;
     text-align: left;
@@ -1032,15 +1032,15 @@ onBeforeUnmount(() => {
 
 .input-wrapper {
   position: relative;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $input-border-radius;
-  border: 2rpx solid $border-color-light;
+  border: 2rpx solid $color-border-light;
   transition: all $transition-fast;
 
   &:focus-within {
-    border-color: $focus-border-color;
+    color-border: $color-focus-border;
     box-shadow: $input-focus-shadow;
-    background: $background-color-white;
+    background: $bg-color-white;
   }
 }
 
@@ -1049,7 +1049,7 @@ onBeforeUnmount(() => {
   height: $input-height;
   padding: 0 $padding-base;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   background: transparent;
   border: none;
   outline: none;
@@ -1058,12 +1058,12 @@ onBeforeUnmount(() => {
   align-items: center;
 
   &::placeholder {
-    color: $text-placeholder;
+    color: $color-text-placeholder;
   }
 }
 
 .placeholder {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 
@@ -1080,11 +1080,11 @@ onBeforeUnmount(() => {
   min-width: 0;
   border-radius: $input-border-radius;
   overflow: hidden;
-  border: 2rpx solid $border-color-light;
+  border: 2rpx solid $color-border-light;
   transition: all $transition-fast;
 
   &:focus-within {
-    border-color: $focus-border-color;
+    color-border: $color-focus-border;
     box-shadow: $input-focus-shadow;
   }
 }
@@ -1103,11 +1103,11 @@ onBeforeUnmount(() => {
   height: 100%;
   min-height: $input-height;
   padding: 0 24rpx;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -8%) 100%);
-  color: $background-color-white;
+  background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness: -8%) 100%);
+  color: $bg-color-white;
   border: none;
   border-radius: $input-border-radius;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   white-space: nowrap;
   transition: all $transition-fast;
@@ -1115,7 +1115,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.2);
+  box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.2);
   position: relative;
   overflow: hidden;
   line-height: normal;
@@ -1153,7 +1153,7 @@ onBeforeUnmount(() => {
   }
 
   .code-unit {
-    font-size: $font-size-extra-small;
+    font-size: $font-size-2xs;
     color: inherit;
     opacity: 0.9;
   }
@@ -1163,7 +1163,7 @@ onBeforeUnmount(() => {
 .btn-code:active,
 .btn-code.btn-code--hover {
   transform: translateY(2rpx);
-  box-shadow: 0 2rpx 8rpx rgba($primary-color, 0.15);
+  box-shadow: 0 2rpx 8rpx rgba($color-primary, 0.15);
 
   &::before {
     opacity: 1;
@@ -1173,8 +1173,8 @@ onBeforeUnmount(() => {
 /* 禁用状态 */
 .btn-code:disabled,
 .btn-code.btn-code--disabled {
-  background: linear-gradient(135deg, $border-color-light 0%, color.adjust($border-color-light, $lightness: -5%) 100%);
-  color: $text-placeholder;
+  background: linear-gradient(135deg, $color-border-light 0%, color.adjust($color-border-light, $lightness: -5%) 100%);
+  color: $color-text-placeholder;
   box-shadow: none;
   cursor: not-allowed;
 
@@ -1196,19 +1196,19 @@ onBeforeUnmount(() => {
 
 /* 倒计时状态 */
 .btn-code.btn-code--counting {
-  background: linear-gradient(135deg, $warning-color 0%, color.adjust($warning-color, $lightness: -8%) 100%);
-  box-shadow: 0 4rpx 12rpx rgba($warning-color, 0.2);
+  background: linear-gradient(135deg, $color-warning 0%, color.adjust($color-warning, $lightness: -8%) 100%);
+  box-shadow: 0 4rpx 12rpx rgba($color-warning, 0.2);
 
   &:active,
   &.btn-code--hover {
-    box-shadow: 0 2rpx 8rpx rgba($warning-color, 0.15);
+    box-shadow: 0 2rpx 8rpx rgba($color-warning, 0.15);
   }
 }
 
 /* 错误消息 */
 .error-message {
-  color: $danger-color;
-  font-size: $font-size-small;
+  color: $color-danger;
+  font-size: $font-size-sm;
   margin-top: 8rpx;
   min-height: 30rpx;
   line-height: 1.4;
@@ -1222,7 +1222,7 @@ onBeforeUnmount(() => {
 .password-strength {
   margin-top: $margin-mini;
   height: 6rpx;
-  background: $border-color-lighter;
+  background: $color-border-light;
   border-radius: 3rpx;
   overflow: hidden;
   position: relative;
@@ -1240,22 +1240,22 @@ onBeforeUnmount(() => {
     position: absolute;
     top: 8rpx;
     right: 0;
-    font-size: $font-size-extra-small;
-    color: $text-secondary;
+    font-size: $font-size-2xs;
+    color: $color-text-secondary;
   }
 }
 
 /* 密码强度颜色 */
 .strength-weak .strength-bar {
-  background: $danger-color;
+  background: $color-danger;
 }
 
 .strength-medium .strength-bar {
-  background: $warning-color;
+  background: $color-warning;
 }
 
 .strength-strong .strength-bar {
-  background: $success-color;
+  background: $color-success;
 }
 
 /* 密码切换按钮 */
@@ -1277,12 +1277,12 @@ onBeforeUnmount(() => {
   transition: all $transition-fast;
 
   &:active {
-    background: rgba($text-secondary, 0.1);
+    background: rgba($color-text-secondary, 0.1);
   }
 
   .toggle-icon {
     font-size: 32rpx;
-    color: $text-secondary;
+    color: $color-text-secondary;
     opacity: 0.6;
     transition: opacity $transition-fast;
     display: block;
@@ -1295,18 +1295,18 @@ onBeforeUnmount(() => {
 
 /* 密码安全提示 */
 .password-tips {
-  background: rgba($primary-color, 0.05);
+  background: rgba($color-primary, 0.05);
   border-radius: $border-radius;
   padding: $padding-base;
   margin-bottom: $margin-base;
-  border-left: 4rpx solid $primary-color;
+  border-left: 4rpx solid $color-primary;
 }
 
 .tips-title {
   display: block;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: $primary-color;
+  color: $color-primary;
   margin-bottom: $margin-mini;
 }
 
@@ -1317,8 +1317,8 @@ onBeforeUnmount(() => {
 }
 
 .tip-item {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   line-height: 1.5;
 }
 
@@ -1326,11 +1326,11 @@ onBeforeUnmount(() => {
 .btn-auth {
   width: 100%;
   height: $button-height;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
-  color: $background-color-white;
+  background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness: -10%) 100%);
+  color: $bg-color-white;
   border: none;
   border-radius: $border-radius;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
   margin-top: $margin-base;
   transition: all $transition-normal;
@@ -1345,7 +1345,7 @@ onBeforeUnmount(() => {
   }
 
   &:disabled {
-    background: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness: -10%) 100%);
+    background: linear-gradient(135deg, $color-text-placeholder 0%, color.adjust($color-text-placeholder, $lightness: -10%) 100%);
     opacity: $button-disabled-opacity;
     transform: none;
     box-shadow: none;
@@ -1359,8 +1359,8 @@ onBeforeUnmount(() => {
 .loading-spinner {
   width: 40rpx;
   height: 40rpx;
-  border: 4rpx solid rgba($background-color-white, 0.3);
-  border-top-color: $background-color-white;
+  border: 4rpx solid rgba($bg-color-white, 0.3);
+  border-top-color: $bg-color-white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   display: flex;
@@ -1378,33 +1378,33 @@ onBeforeUnmount(() => {
 .success-icon {
   width: 80rpx;
   height: 80rpx;
-  background: $success-color;
-  border-radius: $border-radius-round;
+  background: $color-success;
+  border-radius: $border-radius-circle;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto $margin-base;
-  box-shadow: 0 8rpx 20rpx rgba($success-color, 0.2);
+  box-shadow: 0 8rpx 20rpx rgba($color-success, 0.2);
 }
 
 .icon-text {
-  color: $background-color-white;
-  font-size: $font-size-extra-large;
+  color: $bg-color-white;
+  font-size: $font-size-xl;
   font-weight: $font-weight-bold;
 }
 
 .success-title {
   display: block;
-  font-size: $font-size-large;
+  font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
 }
 
 .success-message {
   display: block;
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   line-height: 1.5;
   margin-bottom: $margin-base * 1.5;
 }
@@ -1414,8 +1414,8 @@ onBeforeUnmount(() => {
 }
 
 .timer-text {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   opacity: 0.8;
 }
 
@@ -1423,10 +1423,10 @@ onBeforeUnmount(() => {
   width: 100%;
   height: $button-height;
   background: transparent;
-  color: $primary-color;
-  border: 2rpx solid $primary-color;
+  color: $color-primary;
+  border: 2rpx solid $color-primary;
   border-radius: $border-radius;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-medium;
   margin-top: $margin-base;
   transition: all $transition-normal;
@@ -1436,7 +1436,7 @@ onBeforeUnmount(() => {
   text-align: center;
 
   &:active {
-    background: rgba($primary-color, 0.1);
+    background: rgba($color-primary, 0.1);
     transform: translateY(2rpx);
   }
 }
@@ -1446,17 +1446,17 @@ onBeforeUnmount(() => {
   text-align: center;
   margin-top: $margin-base;
   padding-top: $margin-base;
-  border-top: 1rpx solid $border-color-extra-light;
+  border-top: 1rpx solid $color-border-extra-light;
 
   .footer-text {
     font-size: $font-size-base;
-    color: $text-secondary;
+    color: $color-text-secondary;
     display: block;
     text-align: center;
   }
 
   .footer-link {
-    color: $primary-color;
+    color: $color-primary;
     font-weight: $font-weight-medium;
     margin-left: 6rpx;
     padding: 4rpx 8rpx;
@@ -1465,7 +1465,7 @@ onBeforeUnmount(() => {
     cursor: pointer;
 
     &:active {
-      background: rgba($primary-color, 0.1);
+      background: rgba($color-primary, 0.1);
       transform: translateY(1rpx);
     }
   }
@@ -1503,13 +1503,13 @@ onBeforeUnmount(() => {
 /* 验证码按钮加载动画 */
 @keyframes codeBtnPulse {
   0% {
-    box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.2);
+    box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.2);
   }
   50% {
-    box-shadow: 0 4rpx 20rpx rgba($primary-color, 0.3);
+    box-shadow: 0 4rpx 20rpx rgba($color-primary, 0.3);
   }
   100% {
-    box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.2);
+    box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.2);
   }
 }
 
@@ -1524,21 +1524,21 @@ onBeforeUnmount(() => {
   }
 
   .verify-type-selector {
-    gap: $margin-small;
+    gap: $margin-sm;
   }
 
   .btn-code {
     min-width: 180rpx;
     padding: 0 16rpx;
-    font-size: $font-size-extra-small;
+    font-size: $font-size-2xs;
 
     .code-count {
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
     }
   }
 
   .code-text {
-    font-size: $font-size-extra-small;
+    font-size: $font-size-2xs;
   }
 
   .code-input-wrapper {
@@ -1551,7 +1551,7 @@ onBeforeUnmount(() => {
   }
 
   .step-text {
-    font-size: $font-size-extra-small;
+    font-size: $font-size-2xs;
   }
 }
 

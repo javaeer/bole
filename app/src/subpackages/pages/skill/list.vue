@@ -195,7 +195,7 @@
         <!-- 加载更多 -->
         <view v-if="hasMore" class="load-more">
           <view v-if="loading" class="loading-more">
-            <view class="loading-spinner-small"></view>
+            <view class="loading-spinner-sm"></view>
             <text>加载中...</text>
           </view>
           <view v-else class="load-more-btn" @click="loadMore">
@@ -522,27 +522,27 @@ onReachBottom(() => {
   z-index: $z-index-base;
   border-radius: 0 0 $border-radius $border-radius;
   box-shadow: $box-shadow;
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .search-box {
   display: flex;
   align-items: center;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: 20rpx 24rpx;
-  margin-bottom: $margin-small;
-  border: 1rpx solid $border-color-light;
+  margin-bottom: $margin-sm;
+  border: 1rpx solid $color-border-light;
 
   .icon {
     font-size: 32rpx;
-    color: $text-secondary;
+    color: $color-text-secondary;
   }
 
   .search-input {
     flex: 1;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-left: 16rpx;
     background: transparent;
   }
@@ -569,7 +569,7 @@ onReachBottom(() => {
 
 .filter-row {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
   justify-content: space-between;
 
   .filter-group {
@@ -577,18 +577,18 @@ onReachBottom(() => {
 
     .filter-label {
       display: block;
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
       margin-bottom: 8rpx;
     }
 
     .filter-select {
       padding: 16rpx;
-      background: $background-color;
-      border-radius: $border-radius-small;
-      font-size: $font-size-small;
-      color: $text-primary;
-      border: 1rpx solid $border-color-light;
+      background: $bg-color;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-sm;
+      color: $color-text-primary;
+      border: 1rpx solid $color-border-light;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -599,9 +599,9 @@ onReachBottom(() => {
 .tags-scroll {
   width: 100%;
   white-space: nowrap;
-  padding: $padding-mini $padding-small;
-  background: $background-color-white;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding: $padding-mini $padding-sm;
+  background: $bg-color-white;
+  border-bottom: 1rpx solid $color-border-extra-light;
 
   .tags-container {
     display: flex;
@@ -612,11 +612,11 @@ onReachBottom(() => {
       align-items: center;
       gap: 8rpx;
       padding: 8rpx 16rpx;
-      background: $primary-color-light;
-      border-radius: $border-radius-round;
-      font-size: $font-size-extra-small;
-      color: $primary-color;
-      border: 1rpx solid $primary-border;
+      background: $color-primary-light;
+      border-radius: $border-radius-circle;
+      font-size: $font-size-2xs;
+      color: $color-primary;
+      border: 1rpx solid $color-primary-border;
 
       .icon {
         font-size: 24rpx;
@@ -625,11 +625,11 @@ onReachBottom(() => {
 
     .tag-clear {
       padding: 8rpx 16rpx;
-      background: $background-color;
-      border-radius: $border-radius-small;
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
-      border: 1rpx solid $border-color-light;
+      background: $bg-color;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
+      border: 1rpx solid $color-border-light;
       display: flex;
       align-items: center;
     }
@@ -662,7 +662,7 @@ onReachBottom(() => {
         flex: 1;
         font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
         margin-bottom: 8rpx;
         display: block;
         @extend .text-truncate;
@@ -674,8 +674,8 @@ onReachBottom(() => {
 
         .badge {
           padding: 4rpx 12rpx;
-          border-radius: $border-radius-small;
-          font-size: $font-size-extra-small;
+          border-radius: $border-radius-sm;
+          font-size: $font-size-2xs;
           font-weight: $font-weight-medium;
 
           &-public {
@@ -683,9 +683,9 @@ onReachBottom(() => {
           }
 
           &-certified {
-            background: $primary-color-light;
-            color: $primary-color;
-            border: 1rpx solid $primary-border;
+            background: $color-primary-light;
+            color: $color-primary;
+            border: 1rpx solid $color-primary-border;
           }
         }
       }
@@ -694,8 +694,8 @@ onReachBottom(() => {
     .skill-level {
       .level-tag {
         padding: 4rpx 16rpx;
-        border-radius: $border-radius-small;
-        font-size: $font-size-extra-small;
+        border-radius: $border-radius-sm;
+        font-size: $font-size-2xs;
         font-weight: $font-weight-medium;
 
         &.level-beginner {
@@ -715,9 +715,9 @@ onReachBottom(() => {
         }
 
         &.level-default {
-          background: $background-color;
-          color: $text-secondary;
-          border: 1rpx solid $border-color-light;
+          background: $bg-color;
+          color: $color-text-secondary;
+          border: 1rpx solid $color-border-light;
         }
       }
     }
@@ -737,12 +737,12 @@ onReachBottom(() => {
       }
 
       .info-text {
-        font-size: $font-size-small;
-        color: $text-regular;
+        font-size: $font-size-sm;
+        color: $color-text-regular;
       }
 
       .info-separator {
-        color: $border-color;
+        color: $color-border;
         margin: 0 8rpx;
       }
     }
@@ -768,20 +768,20 @@ onReachBottom(() => {
       margin-bottom: 12rpx;
 
       .proficiency-label {
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
       }
 
       .proficiency-value {
         font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
       }
     }
 
     .progress-bar {
       height: 16rpx;
-      background: $background-color;
+      background: $bg-color;
       border-radius: 8rpx;
       overflow: hidden;
       margin-bottom: 8rpx;
@@ -792,19 +792,19 @@ onReachBottom(() => {
         transition: width $transition-normal $ease-in-out;
 
         &.proficiency-beginner {
-          background: linear-gradient(90deg, $info-color, color.adjust($info-color, $lightness: 20%));
+          background: linear-gradient(90deg, $color-info, color.adjust($color-info, $lightness: 20%));
         }
 
         &.proficiency-intermediate {
-          background: linear-gradient(90deg, $success-color, color.adjust($success-color, $lightness: 20%));
+          background: linear-gradient(90deg, $color-success, color.adjust($color-success, $lightness: 20%));
         }
 
         &.proficiency-advanced {
-          background: linear-gradient(90deg, $warning-color, color.adjust($warning-color, $lightness: 20%));
+          background: linear-gradient(90deg, $color-warning, color.adjust($color-warning, $lightness: 20%));
         }
 
         &.proficiency-expert {
-          background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+          background: linear-gradient(90deg, $color-primary, color.adjust($color-primary, $lightness: 20%));
         }
       }
     }
@@ -812,19 +812,19 @@ onReachBottom(() => {
     .progress-labels {
       display: flex;
       justify-content: space-between;
-      font-size: $font-size-extra-small;
-      color: $text-placeholder;
+      font-size: $font-size-2xs;
+      color: $color-text-placeholder;
     }
   }
 
   .skill-desc {
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
     line-height: 1.5;
     margin-bottom: $margin-base;
     padding: 16rpx;
-    background: $background-color;
-    border-radius: $border-radius-small;
+    background: $bg-color;
+    border-radius: $border-radius-sm;
     @extend .text-multi-truncate;
   }
 
@@ -836,7 +836,7 @@ onReachBottom(() => {
     .action-btn {
       flex: 1;
       padding: 16rpx;
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
     }
   }
 
@@ -844,11 +844,11 @@ onReachBottom(() => {
     display: flex;
     justify-content: space-between;
     padding-top: $margin-mini;
-    border-top: 1rpx solid $border-color-extra-light;
+    border-top: 1rpx solid $color-border-extra-light;
 
     .time-text {
-      font-size: $font-size-extra-small;
-      color: $text-placeholder;
+      font-size: $font-size-2xs;
+      color: $color-text-placeholder;
     }
   }
 }
@@ -863,8 +863,8 @@ onReachBottom(() => {
   .loading-spinner {
     width: 60rpx;
     height: 60rpx;
-    border: 4rpx solid rgba($primary-color, 0.2);
-    border-top-color: $primary-color;
+    border: 4rpx solid rgba($color-primary, 0.2);
+    border-top-color: $color-primary;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 20rpx;
@@ -872,7 +872,7 @@ onReachBottom(() => {
 
   .loading-text {
     font-size: $font-size-base;
-    color: $text-secondary;
+    color: $color-text-secondary;
   }
 
   .icon {
@@ -902,14 +902,14 @@ onReachBottom(() => {
     display: flex;
     align-items: center;
     gap: 10rpx;
-    color: $text-secondary;
-    font-size: $font-size-small;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
 
-    .loading-spinner-small {
+    .loading-spinner-sm {
       width: 24rpx;
       height: 24rpx;
-      border: 2rpx solid rgba($primary-color, 0.2);
-      border-top-color: $primary-color;
+      border: 2rpx solid rgba($color-primary, 0.2);
+      border-top-color: $color-primary;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -917,18 +917,18 @@ onReachBottom(() => {
 
   .load-more-btn {
     padding: 16rpx 32rpx;
-    background: $background-color;
+    background: $bg-color;
     border-radius: $border-radius;
-    color: $text-primary;
-    font-size: $font-size-small;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
   }
 }
 
 .no-more {
   text-align: center;
   padding: 40rpx 0;
-  color: $text-secondary;
-  font-size: $font-size-small;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
 }
 
 .add-btn {
@@ -953,7 +953,7 @@ onReachBottom(() => {
 }
 
 .placeholder-text {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 

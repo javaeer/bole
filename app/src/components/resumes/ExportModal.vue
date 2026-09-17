@@ -368,11 +368,11 @@ export default {
       &:active {
         transform: translateY(-2rpx);
         box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.1);
-        border-color: #667eea;
+        color-border: #667eea;
       }
 
       &.recommended {
-        border-color: #667eea;
+        color-border: #667eea;
         background: linear-gradient(to right, rgba(102, 126, 234, 0.05), transparent);
 
         &::before {
@@ -550,7 +550,7 @@ export default {
 
           &.active {
             background: #667eea;
-            border-color: #667eea;
+            color-border: #667eea;
             transform: scale(1.2);
           }
         }

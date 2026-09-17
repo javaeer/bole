@@ -418,12 +418,12 @@ defineExpose({
 
 /* 搜索区域 */
 .search-section {
-  background: $background-color-white;
+  background: $bg-color-white;
   padding: $padding-base;
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 1rpx solid $border-color-light;
+  border-bottom: 1rpx solid $color-border-light;
 }
 
 .search-bar {
@@ -432,23 +432,23 @@ defineExpose({
 
 .search-input-wrapper {
   position: relative;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius * 2;
   padding: 0 $padding-base;
   display: flex;
   align-items: center;
-  border: 2rpx solid $border-color-light;
-  transition: border-color $transition-fast;
+  border: 2rpx solid $color-border-light;
+  transition: color-border $transition-fast;
 
   &:focus-within {
-    border-color: $primary-color;
+    color-border: $color-primary;
     box-shadow: $input-focus-shadow;
   }
 }
 
 .search-icon {
   font-size: $font-size-base;
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   margin-right: $padding-mini;
 }
 
@@ -456,20 +456,20 @@ defineExpose({
   flex: 1;
   height: 80rpx;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   background: transparent;
   border: none;
   outline: none;
 }
 
 .search-placeholder {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 
 .search-clear {
-  font-size: $font-size-small;
-  color: $text-placeholder;
+  font-size: $font-size-sm;
+  color: $color-text-placeholder;
   padding: $padding-mini;
   cursor: pointer;
 
@@ -481,7 +481,7 @@ defineExpose({
 /* 筛选标签 */
 .filter-tabs {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
   overflow-x: auto;
   padding-bottom: 5rpx;
 
@@ -493,39 +493,39 @@ defineExpose({
 .filter-tab {
   flex-shrink: 0;
   padding: $padding-mini $padding-base;
-  border-radius: $border-radius-small;
-  background: $background-color;
-  border: 1rpx solid $border-color-light;
+  border-radius: $border-radius-sm;
+  background: $bg-color;
+  border: 1rpx solid $color-border-light;
   display: flex;
   align-items: center;
   gap: $margin-mini;
   transition: all $transition-fast;
 
   &.active {
-    background: $primary-color;
-    border-color: $primary-color;
+    background: $color-primary;
+    color-border: $color-primary;
 
     .filter-tab-text {
-      color: $background-color-white;
+      color: $bg-color-white;
       font-weight: $font-weight-medium;
     }
 
     .filter-tab-count {
-      background: rgba($background-color-white, 0.2);
-      color: $background-color-white;
+      background: rgba($bg-color-white, 0.2);
+      color: $bg-color-white;
     }
   }
 }
 
 .filter-tab-text {
-  font-size: $font-size-small;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
 }
 
 .filter-tab-count {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
-  background: $border-color-lighter;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
+  background: $color-border-light;
   border-radius: 10rpx;
   padding: 2rpx 8rpx;
   min-width: 30rpx;
@@ -543,7 +543,7 @@ defineExpose({
 
 /* 申请卡片 */
 .application-card {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   margin-bottom: $margin-base;
   padding: $padding-base;
@@ -561,21 +561,21 @@ defineExpose({
   justify-content: space-between;
   align-items: center;
   margin-bottom: $margin-base;
-  padding-bottom: $padding-small;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding-bottom: $padding-sm;
+  border-bottom: 1rpx solid $color-border-extra-light;
 }
 
 .applicant-info {
   display: flex;
   align-items: center;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .applicant-avatar {
   width: 80rpx;
   height: 80rpx;
-  border-radius: $border-radius-round;
-  border: 2rpx solid $border-color-light;
+  border-radius: $border-radius-circle;
+  border: 2rpx solid $color-border-light;
 }
 
 .applicant-details {
@@ -586,39 +586,39 @@ defineExpose({
 .applicant-name {
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: 5rpx;
 }
 
 .applicant-time {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 .application-status {
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  padding: $padding-mini $padding-small;
-  border-radius: $border-radius-small;
+  padding: $padding-mini $padding-sm;
+  border-radius: $border-radius-sm;
 
   &.status-pending {
-    background: $warning-light;
-    color: $warning-color;
+    background: $color-warning-light;
+    color: $color-warning;
   }
 
   &.status-approved {
-    background: rgba($success-color, 0.1);
-    color: $success-color;
+    background: rgba($color-success, 0.1);
+    color: $color-success;
   }
 
   &.status-rejected {
-    background: $danger-light;
-    color: $danger-color;
+    background: $color-danger-light;
+    color: $color-danger;
   }
 
   &.status-exported {
-    background: rgba($info-color, 0.1);
-    color: $info-color;
+    background: rgba($color-info, 0.1);
+    color: $color-info;
   }
 }
 
@@ -633,18 +633,18 @@ defineExpose({
 
 .resumes-title {
   display: block;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
 }
 
 .resumes-position {
-  font-size: $font-size-small;
-  color: $text-secondary;
-  background: $background-color;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: $bg-color;
   padding: 4rpx 12rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
   display: inline-block;
 }
 
@@ -654,34 +654,34 @@ defineExpose({
 }
 
 .reason-label {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   flex-shrink: 0;
   margin-right: $margin-mini;
 }
 
 .reason-content {
   flex: 1;
-  font-size: $font-size-small;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
   line-height: 1.4;
 }
 
 /* 卡片底部 */
 .card-footer {
-  border-top: 1rpx solid $border-color-extra-light;
-  padding-top: $padding-small;
+  border-top: 1rpx solid $color-border-extra-light;
+  padding-top: $padding-sm;
 }
 
 .action-buttons {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
 
   .btn-action {
     flex: 1;
     height: 70rpx;
-    border-radius: $border-radius-small;
-    font-size: $font-size-small;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
     font-weight: $font-weight-medium;
     border: none;
     transition: all $transition-fast;
@@ -692,30 +692,30 @@ defineExpose({
   }
 
   .btn-review {
-    background: $primary-color;
-    color: $background-color-white;
+    background: $color-primary;
+    color: $bg-color-white;
 
     &:active {
-      background: color.adjust($primary-color, $lightness:  -10%);
+      background: color.adjust($color-primary, $lightness:  -10%);
     }
   }
 
   .btn-view {
-    background: $background-color;
-    color: $text-regular;
-    border: 1rpx solid $border-color-light;
+    background: $bg-color;
+    color: $color-text-regular;
+    border: 1rpx solid $color-border-light;
 
     &:active {
-      background: color.adjust($background-color, $lightness:  - 5%);
+      background: color.adjust($bg-color, $lightness:  - 5%);
     }
   }
 
   .btn-export {
-    background: $success-color;
-    color: $background-color-white;
+    background: $color-success;
+    color: $bg-color-white;
 
     &:active {
-      background: color.adjust($success-color, $lightness:  -10%);
+      background: color.adjust($color-success, $lightness:  -10%);
     }
   }
 }
@@ -731,18 +731,18 @@ defineExpose({
 .loading-spinner {
   width: 40rpx;
   height: 40rpx;
-  border: 4rpx solid $border-color-light;
-  border-top-color: $primary-color;
+  border: 4rpx solid $color-border-light;
+  border-top-color: $color-primary;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 }
 
 .no-more {
   text-align: center;
   padding: $padding-base;
-  font-size: $font-size-small;
-  color: $text-placeholder;
+  font-size: $font-size-sm;
+  color: $color-text-placeholder;
 }
 
 /* 空状态 */
@@ -762,14 +762,14 @@ defineExpose({
 }
 
 .empty-text {
-  font-size: $font-size-medium;
-  color: $text-secondary;
-  margin-bottom: $margin-small;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
+  margin-bottom: $margin-sm;
 }
 
 .empty-subtext {
-  font-size: $font-size-small;
-  color: $text-placeholder;
+  font-size: $font-size-sm;
+  color: $color-text-placeholder;
 }
 
 @keyframes spin {

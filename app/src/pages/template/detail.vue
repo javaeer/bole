@@ -421,36 +421,36 @@ onLoad((options) => {
 
 <style scoped lang="scss">
 .template-detail-container {
-  background-color: $uni-bg-color-grey;
+  bg-color: $bg-color-grey;
   min-height: 100vh;
   padding-bottom: 140rpx;
 }
 
 /* 模板头部 */
 .template-header {
-  background: $uni-bg-color;
-  padding: $uni-spacing-row-base;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  background: $bg-color;
+  padding: $spacing-2;
+  border-bottom: 1rpx solid $color-border-extra-light;
 }
 
 .header-main {
   display: flex;
   align-items: center;
-  gap: $uni-spacing-col-base;
+  gap: $spacing-2;
 }
 
 .template-badge {
   width: 100rpx;
   height: 100rpx;
-  border-radius: $uni-border-radius-lg;
+  border-radius: $border-radius-lg;
   @extend .flex-center;
   flex-shrink: 0;
   box-shadow: $box-shadow;
 }
 
 .badge-text {
-  font-size: $font-size-extra-large;
-  color: $uni-text-color-inverse;
+  font-size: $font-size-xl;
+  color: $color-text-inverse;
   font-weight: $font-weight-bold;
 }
 
@@ -458,62 +458,62 @@ onLoad((options) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: $uni-spacing-col-sm;
+  gap: $spacing-1;
 }
 
 .template-name {
-  font-size: $uni-font-size-lg;
-  color: $text-primary;
+  font-size: $font-size-lg;
+  color: $color-text-primary;
   font-weight: $font-weight-bold;
   line-height: 1.4;
 }
 
 .template-description {
-  font-size: $uni-font-size-base;
-  color: $text-regular;
+  font-size: $font-size-base;
+  color: $color-text-regular;
   line-height: 1.5;
 }
 
 .template-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: $uni-spacing-col-base;
+  gap: $spacing-2;
   align-items: center;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  gap: math.div($uni-spacing-col-sm, 2);
+  gap: math.div($spacing-1, 2);
 }
 
 .meta-label {
-  font-size: $uni-font-size-sm;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .meta-value {
-  font-size: $uni-font-size-sm;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
   font-weight: $font-weight-medium;
 }
 
 .status-tag {
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  border-radius: $uni-border-radius-sm;
-  font-size: $uni-font-size-sm;
+  padding: math.div($spacing-1, 2) $spacing-1;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
 
   &.active {
-    background: $success-bg;
-    color: $success-color;
-    border: 1rpx solid $success-border;
+    background: $bg-color-success;
+    color: $color-success;
+    border: 1rpx solid $color-success-border;
   }
 
   &.inactive {
-    background: $background-color;
-    color: $uni-text-color-grey;
-    border: 1rpx solid $border-color-light;
+    background: $bg-color;
+    color: $color-text-grey;
+    border: 1rpx solid $color-border-light;
   }
 }
 
@@ -523,11 +523,11 @@ onLoad((options) => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: $uni-bg-color;
-  padding: $uni-spacing-col-sm $uni-spacing-row-base;
+  background: $bg-color;
+  padding: $spacing-1 $spacing-2;
   display: flex;
-  gap: $uni-spacing-col-base;
-  border-top: 1rpx solid $border-color-light;
+  gap: $spacing-2;
+  border-top: 1rpx solid $color-border-light;
   box-shadow: $box-shadow-dark;
   z-index: $z-index-dropdown;
 }
@@ -535,8 +535,8 @@ onLoad((options) => {
 .action-btn {
   flex: 1;
   height: $button-height;
-  border-radius: $uni-border-radius-lg;
-  font-size: $uni-font-size-base;
+  border-radius: $border-radius-lg;
+  font-size: $font-size-base;
   font-weight: $font-weight-medium;
   display: flex;
   align-items: center;
@@ -544,52 +544,52 @@ onLoad((options) => {
   transition: all $transition-fast;
 
   &.btn-secondary {
-    background: $uni-bg-color;
-    color: $text-regular;
-    border: 1rpx solid $border-color-light;
+    background: $bg-color;
+    color: $color-text-regular;
+    border: 1rpx solid $color-border-light;
 
     &:active {
-      background: $background-color;
-      border-color: $border-color;
+      background: $bg-color;
+      color-border: $color-border;
     }
   }
 
   &.btn-danger {
-    background: $danger-bg;
-    color: $danger-color;
-    border: 1rpx solid $danger-border;
+    background: $bg-color-danger;
+    color: $color-danger;
+    border: 1rpx solid $color-danger-border;
 
     &:active {
-      background: color.adjust($danger-bg, $lightness: -10%);
+      background: color.adjust($bg-color-danger, $lightness: -10%);
     }
   }
 
   &.btn-primary {
-    background: $primary-color;
-    color: $uni-bg-color;
+    background: $color-primary;
+    color: $bg-color;
     border: none;
 
     &:active {
-      background: color.adjust($primary-color, $lightness: -10%);
+      background: color.adjust($color-primary, $lightness: -10%);
     }
   }
 }
 
 /* 模板预览 */
 .preview-section {
-  padding: $uni-spacing-row-base;
+  padding: $spacing-2;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $uni-spacing-col-base;
+  margin-bottom: $spacing-2;
 }
 
 .section-title {
-  font-size: $uni-font-size-lg;
-  color: $text-primary;
+  font-size: $font-size-lg;
+  color: $color-text-primary;
   font-weight: $font-weight-bold;
 }
 
@@ -600,31 +600,31 @@ onLoad((options) => {
 
     .device-btn {
       padding: $device-btn-padding;
-      border: 1rpx solid $border-color;
-      border-radius: $uni-border-radius-sm;
-      background: $uni-bg-color;
-      font-size: $uni-font-size-sm;
+      border: 1rpx solid $color-border;
+      border-radius: $border-radius-sm;
+      background: $bg-color;
+      font-size: $font-size-sm;
       display: flex;
       align-items: center;
       gap: 4rpx;
 
       &.active {
-        background: $primary-color;
-        color: $uni-bg-color;
-        border-color: $primary-color;
+        background: $color-primary;
+        color: $bg-color;
+        color-border: $color-primary;
 }
 
       .device-icon {
-        font-size: $uni-font-size-base;
+        font-size: $font-size-base;
       }
     }
   }
 }
 
 .preview-card {
-  background: $uni-bg-color;
-  border-radius: $border-radius-large;
-  padding: $uni-spacing-row-base;
+  background: $bg-color;
+  border-radius: $border-radius-lg;
+  padding: $spacing-2;
   box-shadow: $card-shadow;
 }
 
@@ -638,14 +638,14 @@ onLoad((options) => {
     max-width: 768rpx;
     height: 800rpx;
     margin: 0 auto;
-    border-radius: $border-radius-large;
+    border-radius: $border-radius-lg;
   }
 
   &.mobile .template-preview-container {
     max-width: 375rpx;
     height: 800rpx;
     margin: 0 auto;
-    border-radius: $border-radius-large;
+    border-radius: $border-radius-lg;
     box-shadow: $box-shadow-dark;
   }
 }
@@ -654,19 +654,19 @@ onLoad((options) => {
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  background: $uni-bg-color;
-  border: 1rpx solid $border-color-lighter;
-  border-radius: $uni-border-radius-lg;
+  background: $bg-color;
+  border: 1rpx solid $color-border-light;
+  border-radius: $border-radius-lg;
 }
 
 .preview-info {
   margin-top: $margin-base;
   padding: $padding-base;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   display: flex;
   flex-direction: column;
-  gap: $uni-spacing-col-sm;
+  gap: $spacing-1;
 }
 
 .info-item {
@@ -676,36 +676,36 @@ onLoad((options) => {
 }
 
 .info-label {
-  font-size: $uni-font-size-base;
-  color: $text-secondary;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
 }
 
 .info-value {
-  font-size: $uni-font-size-base;
-  color: $text-primary;
+  font-size: $font-size-base;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
 }
 
 .color-theme-preview {
   display: flex;
-  gap: $uni-spacing-col-sm;
+  gap: $spacing-1;
 
   .color-dot {
     width: 32rpx;
     height: 32rpx;
-    border-radius: $uni-border-radius-circle;
+    border-radius: $border-radius-circle;
     border: 1rpx solid rgba(0, 0, 0, 0.1);
   }
 }
 
 /* 配置详情 */
 .config-section {
-  padding: 0 $uni-spacing-row-base $uni-spacing-row-base;
+  padding: 0 $spacing-2 $spacing-2;
 }
 
 .config-card {
-  background: $uni-bg-color;
-  border-radius: $border-radius-large;
+  background: $bg-color;
+  border-radius: $border-radius-lg;
   padding: $padding-base;
   margin-bottom: $margin-base;
   box-shadow: $card-shadow;
@@ -716,58 +716,58 @@ onLoad((options) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: $margin-base;
-  padding-bottom: $padding-small;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding-bottom: $padding-sm;
+  border-bottom: 1rpx solid $color-border-extra-light;
 }
 
 .config-title {
-  font-size: $uni-font-size-lg;
-  color: $text-primary;
+  font-size: $font-size-lg;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
 }
 
 .config-count {
-  font-size: $uni-font-size-sm;
-  color: $text-secondary;
-  background: $background-color;
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  border-radius: $uni-border-radius-sm;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: $bg-color;
+  padding: math.div($spacing-1, 2) $spacing-1;
+  border-radius: $border-radius-sm;
 }
 
 .config-content {
   display: flex;
   flex-direction: column;
-  gap: $uni-spacing-col-sm;
+  gap: $spacing-1;
 }
 
 .config-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: math.div($uni-spacing-col-sm, 2) 0;
+  padding: math.div($spacing-1, 2) 0;
 }
 
 .config-label {
-  font-size: $uni-font-size-base;
-  color: $text-secondary;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
   flex-shrink: 0;
 }
 
 .config-value {
-  font-size: $uni-font-size-base;
-  color: $text-primary;
+  font-size: $font-size-base;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
   text-align: right;
-  margin-left: $uni-spacing-col-sm;
+  margin-left: $spacing-1;
 }
 
 .color-value {
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  border-radius: $uni-border-radius-sm;
-  color: $uni-text-color-inverse;
+  padding: math.div($spacing-1, 2) $spacing-1;
+  border-radius: $border-radius-sm;
+  color: $color-text-inverse;
   text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);
   font-family: monospace;
-  font-size: $uni-font-size-sm;
+  font-size: $font-size-sm;
   min-width: 120rpx;
   text-align: center;
 }
@@ -775,20 +775,20 @@ onLoad((options) => {
 .components-list {
   display: flex;
   flex-direction: column;
-  gap: $uni-spacing-col-sm;
+  gap: $spacing-1;
 }
 
 .component-item {
   display: flex;
   align-items: center;
-  padding: $padding-small;
-  background: $background-color;
-  border-radius: $uni-border-radius-lg;
-  border: 1rpx solid $border-color-light;
+  padding: $padding-sm;
+  background: $bg-color;
+  border-radius: $border-radius-lg;
+  border: 1rpx solid $color-border-light;
   transition: all $transition-fast;
 
   &:active {
-    background: color.adjust($background-color, $lightness: -5%);
+    background: color.adjust($bg-color, $lightness: -5%);
   }
 }
 
@@ -799,13 +799,13 @@ onLoad((options) => {
   align-items: center;
   justify-content: center;
   background: $avatar-bg-color;
-  border-radius: $uni-border-radius-circle;
-  margin-right: $uni-spacing-col-base;
+  border-radius: $border-radius-circle;
+  margin-right: $spacing-2;
   flex-shrink: 0;
 
   .index-text {
-    font-size: $uni-font-size-base;
-    color: $text-secondary;
+    font-size: $font-size-base;
+    color: $color-text-secondary;
     font-weight: $font-weight-medium;
   }
 }
@@ -814,18 +814,18 @@ onLoad((options) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: math.div($uni-spacing-col-sm, 2);
+  gap: math.div($spacing-1, 2);
 }
 
 .component-name {
-  font-size: $uni-font-size-base;
-  color: $text-primary;
+  font-size: $font-size-base;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
 }
 
 .component-type {
-  font-size: $uni-font-size-sm;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .component-actions {
@@ -833,16 +833,16 @@ onLoad((options) => {
 }
 
 .component-action {
-  font-size: $uni-font-size-sm;
-  color: $primary-color;
+  font-size: $font-size-sm;
+  color: $color-primary;
   font-weight: $font-weight-medium;
   cursor: pointer;
-  padding: math.div($uni-spacing-col-sm, 2) $uni-spacing-col-sm;
-  background: $primary-color-light;
-  border-radius: $uni-border-radius-sm;
+  padding: math.div($spacing-1, 2) $spacing-1;
+  background: $color-primary-light;
+  border-radius: $border-radius-sm;
 
   &:active {
-    background: color.adjust($primary-color-light, $lightness: -5%);
+    background: color.adjust($color-primary-light, $lightness: -5%);
   }
 }
 
@@ -851,8 +851,8 @@ onLoad((options) => {
   text-align: center;
 
   .empty-text {
-    font-size: $uni-font-size-base;
-    color: $text-placeholder;
+    font-size: $font-size-base;
+    color: $color-text-placeholder;
   }
 }
 
@@ -863,28 +863,28 @@ onLoad((options) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($uni-bg-color, 0.8);
+  background: rgba($bg-color, 0.8);
   @extend .flex-center;
   z-index: $z-index-modal;
 }
 
 .loading-content {
-  background: $uni-bg-color;
-  border-radius: $border-radius-large;
-  padding: $uni-spacing-row-base;
+  background: $bg-color;
+  border-radius: $border-radius-lg;
+  padding: $spacing-2;
   box-shadow: $box-shadow-dark;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $uni-spacing-col-sm;
+  gap: $spacing-1;
 }
 
 .loading-spinner {
   width: 60rpx;
   height: 60rpx;
-  border: 4rpx solid $border-color-light;
-  border-top-color: $primary-color;
-  border-radius: $uni-border-radius-circle;
+  border: 4rpx solid $color-border-light;
+  border-top-color: $color-primary;
+  border-radius: $border-radius-circle;
   animation: spin 1s linear infinite;
 }
 
@@ -895,8 +895,8 @@ onLoad((options) => {
 }
 
 .loading-text {
-  font-size: $uni-font-size-base;
-  color: $text-regular;
+  font-size: $font-size-base;
+  color: $color-text-regular;
 }
 
 /* 响应式调整 */

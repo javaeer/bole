@@ -784,12 +784,12 @@ onMounted(() => {
 <style scoped lang="scss">
 .page-container {
   min-height: 100vh;
-  background-color: $background-color;
+  bg-color: $bg-color;
 }
 
 /* 标签页容器 */
 .tab-container {
-  background: $background-color-white;
+  background: $bg-color-white;
   padding: 0 $padding-base;
 }
 
@@ -804,11 +804,11 @@ onMounted(() => {
 
 .tab-item {
   position: relative;
-  padding: $padding-small 0;
+  padding: $padding-sm 0;
   min-width: 80rpx;
 
   &--active .tab-text {
-    color: $primary-color;
+    color: $color-primary;
     font-weight: $font-weight-bold;
   }
 
@@ -819,14 +819,14 @@ onMounted(() => {
     transform: translateX(-50%);
     width: 40rpx;
     height: 4rpx;
-    background: $primary-color;
+    background: $color-primary;
     border-radius: 2rpx;
   }
 }
 
 .tab-text {
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   transition: color $transition-fast;
 }
 
@@ -843,8 +843,8 @@ onMounted(() => {
 /* 绑定状态 */
 .bind-status {
   text-align: center;
-  padding: $padding-large 0;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding: $padding-lg 0;
+  border-bottom: 1rpx solid $color-border-extra-light;
   margin-bottom: $margin-base;
 }
 
@@ -855,42 +855,42 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto $margin-small;
-  font-size: $font-size-extra-large;
+  margin: 0 auto $margin-sm;
+  font-size: $font-size-xl;
   border: 2rpx solid;
 
   &.success {
-    background: $success-bg;
-    color: $success-color;
-    border-color: $success-border;
+    background: $bg-color-success;
+    color: $color-success;
+    color-border: $color-success-border;
   }
 
   &.warning {
-    background: $warning-bg;
-    color: $warning-color;
-    border-color: $warning-border;
+    background: $bg-color-warning;
+    color: $color-warning;
+    color-border: $color-warning-border;
   }
 }
 
 .status-title {
   display: block;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
 }
 
 .status-text {
   display: block;
   font-size: $font-size-base;
-  color: $text-secondary;
-  margin-bottom: $margin-small;
+  color: $color-text-secondary;
+  margin-bottom: $margin-sm;
 }
 
 .status-tips {
   display: block;
-  font-size: $font-size-small;
-  color: $text-placeholder;
+  font-size: $font-size-sm;
+  color: $color-text-placeholder;
   line-height: 1.5;
 }
 
@@ -906,7 +906,7 @@ onMounted(() => {
 .form-label {
   display: block;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
   margin-bottom: $margin-mini;
 }
@@ -914,16 +914,16 @@ onMounted(() => {
 .form-input {
   width: 100%;
   height: $input-height;
-  padding: 0 $padding-small;
+  padding: 0 $padding-sm;
   font-size: $font-size-base;
-  color: $text-primary;
-  background: $background-color-white;
-  border: 2rpx solid $border-color-light;
+  color: $color-text-primary;
+  background: $bg-color-white;
+  border: 2rpx solid $color-border-light;
   border-radius: $border-radius;
-  transition: border-color $transition-fast;
+  transition: color-border $transition-fast;
 
   &:focus {
-    border-color: $primary-color;
+    color-border: $color-primary;
     outline: none;
   }
 
@@ -939,30 +939,30 @@ onMounted(() => {
 }
 
 .code-btn {
-  padding: 0 $padding-small;
+  padding: 0 $padding-sm;
   height: $input-height;
-  background: $primary-color-light;
-  border: 2rpx solid $primary-border;
+  background: $color-primary-light;
+  border: 2rpx solid $color-primary-border;
   border-radius: $border-radius;
-  font-size: $font-size-small;
-  color: $primary-color;
+  font-size: $font-size-sm;
+  color: $color-primary;
   font-weight: $font-weight-medium;
   white-space: nowrap;
 
   &:active {
-    background: color.adjust($primary-color-light, $lightness: -5%);
+    background: color.adjust($color-primary-light, $lightness: -5%);
   }
 
   &--disabled {
-    background: $background-color;
-    border-color: $border-color-light;
-    color: $text-placeholder;
+    background: $bg-color;
+    color-border: $color-border-light;
+    color: $color-text-placeholder;
   }
 }
 
 .error-message {
-  color: $danger-color;
-  font-size: $font-size-small;
+  color: $color-danger;
+  font-size: $font-size-sm;
   margin-top: calc($margin-mini / 2);
   min-height: 40rpx;
 }
@@ -974,7 +974,7 @@ onMounted(() => {
   background: $button-primary-bg;
   border: none;
   border-radius: $button-border-radius;
-  color: $background-color-white;
+  color: $bg-color-white;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
   margin-top: $margin-base;
@@ -992,10 +992,10 @@ onMounted(() => {
 .btn-unbind {
   width: 100%;
   height: $button-height;
-  background: $danger-light;
-  border: 2rpx solid $danger-border;
+  background: $color-danger-light;
+  border: 2rpx solid $color-danger-border;
   border-radius: $button-border-radius;
-  color: $danger-color;
+  color: $color-danger;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
   margin-top: $margin-base;
@@ -1012,13 +1012,13 @@ onMounted(() => {
 .btn-change {
   width: 100%;
   height: $button-height;
-  background: $background-color-white;
-  border: 2rpx solid $border-color-light;
+  background: $bg-color-white;
+  border: 2rpx solid $color-border-light;
   border-radius: $button-border-radius;
-  color: $text-primary;
+  color: $color-text-primary;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 }
 
 .btn-group {
@@ -1028,8 +1028,8 @@ onMounted(() => {
 /* 解绑通知 */
 .unbind-notice {
   padding: $padding-base;
-  background: $warning-bg;
-  border: 2rpx solid $warning-border;
+  background: $bg-color-warning;
+  border: 2rpx solid $color-warning-border;
   border-radius: $border-radius;
   margin-bottom: $margin-base;
 }
@@ -1038,14 +1038,14 @@ onMounted(() => {
   display: block;
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $warning-color;
+  color: $color-warning;
   margin-bottom: $margin-mini;
 }
 
 .unbind-desc {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   line-height: 1.6;
 }
 
@@ -1058,12 +1058,12 @@ onMounted(() => {
 .wechat-desc {
   display: block;
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   margin-bottom: $margin-base;
 }
 
 .btn-wechat {
-  background: $success-color;
+  background: $color-success;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1071,7 +1071,7 @@ onMounted(() => {
 }
 
 .wechat-icon {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
 }
 
@@ -1084,9 +1084,9 @@ onMounted(() => {
 .loading-spinner {
   width: 30rpx;
   height: 30rpx;
-  border: 3rpx solid rgba($background-color-white, 0.3);
-  border-top-color: $background-color-white;
-  border-radius: $border-radius-round;
+  border: 3rpx solid rgba($bg-color-white, 0.3);
+  border-top-color: $bg-color-white;
+  border-radius: $border-radius-circle;
   margin: 0 auto;
   animation: spin 0.8s linear infinite;
 }
