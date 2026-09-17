@@ -1,3 +1,4 @@
 /app/node_modules/
-/server/data/
-/server/tmp/
+/server/data/**
+/server/tmp/**
+/app/unpackage/
