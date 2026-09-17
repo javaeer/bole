@@ -58,7 +58,7 @@ const containerStyle = computed(() => {
 
 .page-container {
   min-height: 100vh;
-  background-color: $background-color;
+  bg-color: $bg-color;
   transition: all $transition-fast $ease-in-out;
 
   &.centered:not(.full-width) {
@@ -88,8 +88,8 @@ const containerStyle = computed(() => {
 @media (min-width: #{$screen-lg}) {
   .page-container {
     &.centered:not(.full-width) {
-      margin-top: $margin-large;
-      margin-bottom: $margin-large;
+      margin-top: $margin-lg;
+      margin-bottom: $margin-lg;
     }
   }
 }

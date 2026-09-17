@@ -444,7 +444,7 @@ export default {
 
         &.active {
           .theme-preview {
-            border-color: #d4af37;
+            color-border: #d4af37;
             box-shadow: 0 0 0 2rpx rgba(212, 175, 55, 0.3);
           }
 
@@ -538,7 +538,7 @@ export default {
 
         &.active {
           .layout-preview {
-            border-color: #d4af37;
+            color-border: #d4af37;
           }
 
           .layout-name {

@@ -479,7 +479,7 @@
 		uni.showModal({
 			title: "危险操作",
 			content: "账号注销后将无法恢复，所有数据将被永久删除，确定继续吗？",
-			confirmColor: "$danger-color",
+			confirmColor: "$color-danger",
 			success: (res) => {
 				if (res.confirm) {
 					uni.showLoading({
@@ -519,12 +519,12 @@
 <style scoped lang="scss">
 	.page-container {
 		min-height: 100vh;
-		background-color: $background-color;
+		bg-color: $bg-color;
 	}
 
 	/* 顶部导航 */
 	.edit-header {
-		background: $primary-color;
+		background: $color-primary;
 		padding-top: var(--status-bar-height, 44px);
 		padding-bottom: $padding-mini;
 	}
@@ -538,15 +538,15 @@
 	}
 
 	.header-title {
-		font-size: $font-size-large;
+		font-size: $font-size-lg;
 		font-weight: $font-weight-bold;
-		color: $background-color-white;
+		color: $bg-color-white;
 	}
 
 	.btn-save {
 		background: transparent;
 		border: none;
-		color: $background-color-white;
+		color: $bg-color-white;
 		font-size: $font-size-base;
 		font-weight: $font-weight-medium;
 		padding: 0;
@@ -561,8 +561,8 @@
 	.loading-spinner {
 		width: 40rpx;
 		height: 40rpx;
-		border: 4rpx solid rgba($background-color-white, 0.3);
-		border-top-color: $background-color-white;
+		border: 4rpx solid rgba($bg-color-white, 0.3);
+		border-top-color: $bg-color-white;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -581,9 +581,9 @@
 	/* 头像区域 */
 	.avatar-section {
 		text-align: center;
-		padding: $padding-large $padding-base;
-		background: $background-color-white;
-		margin: $margin-small 0;
+		padding: $padding-lg $padding-base;
+		background: $bg-color-white;
+		margin: $margin-sm 0;
 	}
 
 	.avatar-container {
@@ -591,8 +591,8 @@
 		width: 160rpx;
 		height: 160rpx;
 		border-radius: 50%;
-		background: $background-color-white;
-		border: 4rpx solid $border-color-light;
+		background: $bg-color-white;
+		border: 4rpx solid $color-border-light;
 		margin: 0 auto $margin-mini;
 		overflow: hidden;
 		display: flex;
@@ -614,18 +614,18 @@
 
 	.avatar-icon {
 		font-size: 48rpx;
-		color: $primary-color;
+		color: $color-primary;
 		margin-bottom: 8rpx;
 	}
 
 	.avatar-text {
-		font-size: $font-size-extra-small;
-		color: $text-placeholder;
+		font-size: $font-size-2xs;
+		color: $color-text-placeholder;
 	}
 
 	.avatar-tips {
-		font-size: $font-size-extra-small;
-		color: $text-placeholder;
+		font-size: $font-size-2xs;
+		color: $color-text-placeholder;
 	}
 
 	/* 上传遮罩层 */
@@ -666,21 +666,21 @@
 		position: absolute;
 		width: 100%;
 		height: 100%;
-		border: 4rpx solid $background-color-white;
+		border: 4rpx solid $bg-color-white;
 		border-radius: 50%;
 		clip: rect(0, 30rpx, 60rpx, 0);
 	}
 
 	.progress-text {
-		font-size: $font-size-small;
-		color: $background-color-white;
+		font-size: $font-size-sm;
+		color: $bg-color-white;
 		font-weight: $font-weight-medium;
 	}
 
 	/* 表单区块 */
 	.form-section {
-		background: $background-color-white;
-		margin: $margin-small 0;
+		background: $bg-color-white;
+		margin: $margin-sm 0;
 		padding: 0 $padding-base;
 		border-radius: $border-radius;
 	}
@@ -688,15 +688,15 @@
 	.section-label {
 		display: block;
 		font-size: $font-size-base;
-		color: $text-secondary;
-		padding: $padding-base 0 $padding-small;
-		border-bottom: 1rpx solid $border-color-extra-light;
+		color: $color-text-secondary;
+		padding: $padding-base 0 $padding-sm;
+		border-bottom: 1rpx solid $color-border-extra-light;
 	}
 
 	/* 表单项目 */
 	.form-item {
 		padding: $padding-base 0;
-		border-bottom: 1rpx solid $border-color-extra-light;
+		border-bottom: 1rpx solid $color-border-extra-light;
 
 		&:last-child {
 			border-bottom: none;
@@ -706,7 +706,7 @@
 	.item-label {
 		display: block;
 		font-size: $font-size-base;
-		color: $text-primary;
+		color: $color-text-primary;
 		margin-bottom: $margin-mini;
 		font-weight: $font-weight-medium;
 	}
@@ -715,7 +715,7 @@
 	.form-textarea {
 		width: 100%;
 		font-size: $font-size-base;
-		color: $text-primary;
+		color: $color-text-primary;
 		background: transparent;
 		border: none;
 		outline: none;
@@ -727,12 +727,12 @@
 	}
 
 	.placeholder {
-		color: $text-placeholder;
+		color: $color-text-placeholder;
 	}
 
 	.error-message {
-		font-size: $font-size-extra-small;
-		color: $danger-color;
+		font-size: $font-size-2xs;
+		color: $color-danger;
 		margin-top: $margin-mini;
 	}
 
@@ -742,11 +742,11 @@
 	}
 
 	.count-text {
-		font-size: $font-size-extra-small;
-		color: $text-placeholder;
+		font-size: $font-size-2xs;
+		color: $color-text-placeholder;
 
 		&.count-warning {
-			color: $warning-color;
+			color: $color-warning;
 		}
 	}
 
@@ -760,22 +760,22 @@
 
 		.bind-text {
 			font-size: $font-size-base;
-			color: $text-primary;
+			color: $color-text-primary;
 		}
 
 		.bind-action {
 			display: flex;
 			align-items: center;
-			color: $primary-color;
+			color: $color-primary;
 		}
 
 		.bind-btn {
-			font-size: $font-size-small;
+			font-size: $font-size-sm;
 		}
 
 		.bind-arrow {
 			margin-left: 8rpx;
-			font-size: $font-size-large;
+			font-size: $font-size-lg;
 		}
 	}
 
@@ -789,22 +789,22 @@
 
 	.picker-text {
 		font-size: $font-size-base;
-		color: $text-primary;
+		color: $color-text-primary;
 
 		&.placeholder {
-			color: $text-placeholder;
+			color: $color-text-placeholder;
 		}
 	}
 
 	.picker-arrow {
-		color: $text-placeholder;
-		font-size: $font-size-large;
+		color: $color-text-placeholder;
+		font-size: $font-size-lg;
 	}
 
 	/* 危险操作区 */
 	.danger-section {
 		.danger-label {
-			color: $danger-color;
+			color: $color-danger;
 		}
 
 		.danger-item {
@@ -816,13 +816,13 @@
 
 		.danger-text {
 			font-size: $font-size-base;
-			color: $danger-color;
+			color: $color-danger;
 			font-weight: $font-weight-medium;
 		}
 
 		.danger-arrow {
-			color: $text-placeholder;
-			font-size: $font-size-large;
+			color: $color-text-placeholder;
+			font-size: $font-size-lg;
 		}
 	}
 
@@ -834,11 +834,11 @@
 	/* 响应式调整 */
 	@media (max-width: $screen-sm) {
 		.form-section {
-			padding: 0 $padding-small;
+			padding: 0 $padding-sm;
 		}
 
 		.header-content {
-			padding: 0 $padding-small;
+			padding: 0 $padding-sm;
 		}
 	}
 </style>

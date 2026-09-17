@@ -361,16 +361,16 @@ onReachBottom(() => {
 .search-box {
   display: flex;
   align-items: center;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: 20rpx 24rpx;
-  margin-bottom: $margin-small;
-  border: 1rpx solid $border-color-light;
+  margin-bottom: $margin-sm;
+  border: 1rpx solid $color-border-light;
 
   .search-input {
     flex: 1;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-left: 16rpx;
     background: transparent;
   }
@@ -388,25 +388,25 @@ onReachBottom(() => {
 
 .sort-options {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
   overflow-x: auto;
 
   .sort-item {
     padding: 12rpx 24rpx;
-    background: $background-color;
-    border-radius: $border-radius-small;
-    font-size: $font-size-small;
-    color: $text-secondary;
+    background: $bg-color;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
     white-space: nowrap;
     display: flex;
     align-items: center;
     gap: 8rpx;
-    border: 1rpx solid $border-color-light;
+    border: 1rpx solid $color-border-light;
 
     &.active {
-      background: $primary-color-light;
-      color: $primary-color;
-      border-color: $primary-color;
+      background: $color-primary-light;
+      color: $color-primary;
+      color-border: $color-primary;
       font-weight: $font-weight-medium;
     }
   }
@@ -414,7 +414,7 @@ onReachBottom(() => {
 
 .list-scroll {
   height: calc(100vh - 200rpx);
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .list-item {
@@ -434,9 +434,9 @@ onReachBottom(() => {
       margin-bottom: $margin-mini;
 
       .item-title {
-        font-size: $font-size-medium;
+        font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
         max-width: 60%;
       }
 
@@ -455,19 +455,19 @@ onReachBottom(() => {
         margin-bottom: 12rpx;
 
         .info-text {
-          font-size: $font-size-small;
-          color: $text-regular;
+          font-size: $font-size-sm;
+          color: $color-text-regular;
         }
       }
 
       .item-desc {
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
         line-height: 1.5;
         margin-top: $margin-mini;
         padding: 12rpx;
-        background: $background-color;
-        border-radius: $border-radius-small;
+        background: $bg-color;
+        border-radius: $border-radius-sm;
       }
     }
   }
@@ -480,7 +480,7 @@ onReachBottom(() => {
     .action-btn {
       flex: 1;
       padding: 16rpx;
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
     }
   }
 
@@ -488,11 +488,11 @@ onReachBottom(() => {
     display: flex;
     justify-content: space-between;
     padding-top: $margin-mini;
-    border-top: 1rpx solid $border-color-extra-light;
+    border-top: 1rpx solid $color-border-extra-light;
 
     .time-text {
-      font-size: $font-size-extra-small;
-      color: $text-placeholder;
+      font-size: $font-size-2xs;
+      color: $color-text-placeholder;
     }
   }
 }
@@ -542,24 +542,24 @@ onReachBottom(() => {
 }
 
 .placeholder-text {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 
 // 状态标签样式
 .status-success {
-  background-color: $success-bg;
-  color: $success-color;
+  bg-color: $bg-color-success;
+  color: $color-success;
 }
 
 .status-warning {
-  background-color: $warning-bg;
-  color: $warning-color;
+  bg-color: $bg-color-warning;
+  color: $color-warning;
 }
 
 .status-info {
-  background-color: $info-bg;
-  color: $info-color;
+  bg-color: $bg-color-info;
+  color: $color-info;
 }
 
 // 工具类

@@ -694,7 +694,7 @@ onLoad((options: any) => {
 
     .btn {
       padding: 12rpx 24rpx;
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
       min-width: 80rpx;
     }
   }
@@ -719,7 +719,7 @@ onLoad((options: any) => {
 }
 
 .detail-content {
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .info-card {
@@ -732,12 +732,12 @@ onLoad((options: any) => {
     align-items: center;
     margin-bottom: $margin-base;
     padding-bottom: $margin-mini;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     .card-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
     }
   }
 }
@@ -750,12 +750,12 @@ onLoad((options: any) => {
       display: block;
       font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
       margin-bottom: $margin-mini;
 
       &.required::after {
         content: '*';
-        color: $danger-color;
+        color: $color-danger;
         margin-left: 4rpx;
       }
     }
@@ -763,29 +763,29 @@ onLoad((options: any) => {
     .form-input {
       width: 100%;
       padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
+      color: $color-text-primary;
+      background: $bg-color-white;
       transition: all $transition-fast $ease-in-out;
       min-height: 80rpx;
       box-sizing: border-box;
 
       &:focus {
-        border-color: $primary-color;
+        color-border: $color-primary;
         box-shadow: $input-focus-shadow;
         outline: none;
       }
 
       &.error {
-        border-color: $danger-color;
+        color-border: $color-danger;
         box-shadow: $input-error-shadow;
       }
 
       &[disabled] {
-        background: $background-color;
-        color: $text-secondary;
+        background: $bg-color;
+        color: $color-text-secondary;
         cursor: not-allowed;
       }
     }
@@ -798,7 +798,7 @@ onLoad((options: any) => {
         right: 24rpx;
         top: 50%;
         transform: translateY(-50%);
-        color: $text-secondary;
+        color: $color-text-secondary;
         font-size: $font-size-base;
       }
     }
@@ -810,7 +810,7 @@ onLoad((options: any) => {
         position: absolute;
         right: 24rpx;
         top: 20rpx;
-        color: $text-secondary;
+        color: $color-text-secondary;
         font-size: $font-size-base;
         z-index: 1;
       }
@@ -821,13 +821,13 @@ onLoad((options: any) => {
         right: 0;
         bottom: 0;
         height: 4rpx;
-        background: $background-color;
+        background: $bg-color;
         border-radius: 2rpx;
         overflow: hidden;
 
         .proficiency-bar {
           height: 100%;
-          background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+          background: linear-gradient(90deg, $color-primary, color.adjust($color-primary, $lightness: 20%));
           border-radius: 2rpx;
           transition: width $transition-normal $ease-in-out;
         }
@@ -837,26 +837,26 @@ onLoad((options: any) => {
     .form-textarea {
       width: 100%;
       padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
+      color: $color-text-primary;
+      background: $bg-color-white;
       min-height: 160rpx;
       line-height: 1.5;
       box-sizing: border-box;
 
       &[disabled] {
-        background: $background-color;
-        color: $text-secondary;
+        background: $bg-color;
+        color: $color-text-secondary;
         cursor: not-allowed;
       }
     }
 
     .textarea-count {
       text-align: right;
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
       margin-top: 8rpx;
     }
 
@@ -874,17 +874,17 @@ onLoad((options: any) => {
         right: 8rpx;
         width: 60rpx;
         height: 60rpx;
-        background: $primary-color;
+        background: $color-primary;
         color: white;
         border: none;
-        border-radius: $border-radius-small;
+        border-radius: $border-radius-sm;
         font-size: 24rpx;
         display: flex;
         align-items: center;
         justify-content: center;
 
         &:disabled {
-          background: $text-placeholder;
+          background: $color-text-placeholder;
           cursor: not-allowed;
         }
 
@@ -910,7 +910,7 @@ onLoad((options: any) => {
           background: transparent;
           border: none;
           font-size: 20rpx;
-          color: $text-secondary;
+          color: $color-text-secondary;
           width: 24rpx;
           height: 24rpx;
           display: flex;
@@ -923,8 +923,8 @@ onLoad((options: any) => {
 
     .form-hint {
       display: block;
-      font-size: $font-size-extra-small;
-      color: $text-placeholder;
+      font-size: $font-size-2xs;
+      color: $color-text-placeholder;
       margin-top: 8rpx;
     }
 
@@ -934,20 +934,20 @@ onLoad((options: any) => {
         align-items: center;
         gap: 12rpx;
         font-size: $font-size-base;
-        color: $text-primary;
+        color: $color-text-primary;
       }
     }
 
     .certificate-fields {
       padding: $margin-mini 0;
-      border-top: 1rpx solid $border-color-extra-light;
+      border-top: 1rpx solid $color-border-extra-light;
       margin-top: $margin-mini;
     }
 
     .error-text {
       display: block;
-      font-size: $font-size-extra-small;
-      color: $danger-color;
+      font-size: $font-size-2xs;
+      color: $color-danger;
       margin-top: 8rpx;
     }
   }
@@ -959,7 +959,7 @@ onLoad((options: any) => {
     justify-content: space-between;
     align-items: center;
     padding: 16rpx 0;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     &:last-child {
       border-bottom: none;
@@ -967,12 +967,12 @@ onLoad((options: any) => {
 
     .info-label {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: $color-text-secondary;
     }
 
     .info-value {
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
       font-weight: $font-weight-medium;
     }
   }
@@ -984,8 +984,8 @@ onLoad((options: any) => {
   left: 0;
   right: 0;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
-  border-top: 1rpx solid $border-color-light;
+  background: $bg-color-white;
+  border-top: 1rpx solid $color-border-light;
   z-index: $z-index-base;
 
   .btn-block {
@@ -995,7 +995,7 @@ onLoad((options: any) => {
 
 @media (max-width: $screen-md) {
   .detail-header {
-    padding: 16rpx $padding-small;
+    padding: 16rpx $padding-sm;
   }
 
   .detail-content {
@@ -1003,7 +1003,7 @@ onLoad((options: any) => {
   }
 
   .detail-footer {
-    padding: 16rpx $padding-small;
+    padding: 16rpx $padding-sm;
   }
 }
 </style>

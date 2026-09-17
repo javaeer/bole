@@ -187,12 +187,12 @@ const otherInfoStyle = computed(() => ({
   flexWrap: 'wrap',
   gap: '16px 24px',
   paddingTop: '16px',
-  borderTop: `1px dashed var(--base-secondary-color, #eee)`
+  borderTop: `1px dashed var(--base-color-secondary, #eee)`
 }));
 
 // 头像样式
 const avatarStyle = computed(() => {
-  const border = configProps.value.avatarBorder || `2px solid var(--base-secondary-color, #f0f0f0)`;
+  const border = configProps.value.avatarBorder || `2px solid var(--base-color-secondary, #f0f0f0)`;
   return {
     width: avatarSize.value,
     height: avatarSize.value,
@@ -212,9 +212,9 @@ const nameStyle = computed(() => ({
 
 // 职称标签样式
 const titleTagStyle = computed(() => ({
-  color: 'var(--base-primary-color, #5ac8fa)',
+  color: 'var(--base-color-primary, #5ac8fa)',
   fontSize: '12px',
-  backgroundColor: `color-mix(in srgb, var(--base-primary-color, #5ac8fa) 15%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--base-color-primary, #5ac8fa) 15%, transparent)`,
   padding: '2px 10px',
   borderRadius: '10px',
   fontWeight: '500'
@@ -341,7 +341,7 @@ const getGenderText = (gender: number) => {
   flex-wrap: wrap;
   gap: 16px 24px;
   padding-top: 16px;
-  border-top: 1px dashed var(--base-secondary-color, #eee);
+  border-top: 1px dashed var(--base-color-secondary, #eee);
   
   @media (max-width: 768px) {
     justify-content: center;
@@ -362,7 +362,7 @@ const getGenderText = (gender: number) => {
 }
 
 .label {
-  color: var(--base-secondary-color, #999);
+  color: var(--base-color-secondary, #999);
   font-size: 13px;
   flex-shrink: 0;
 }
@@ -377,7 +377,7 @@ const getGenderText = (gender: number) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--base-secondary-color, #f5f5f5);
+  bg-color: var(--base-color-secondary, #f5f5f5);
   font-size: 32px;
   color: var(--base-text-color, #999);
 }
@@ -413,7 +413,7 @@ const getGenderText = (gender: number) => {
   }
   
   .avatar-placeholder {
-    background-color: #f0f0f0 !important;
+    bg-color: #f0f0f0 !important;
   }
   
   .contact-text,

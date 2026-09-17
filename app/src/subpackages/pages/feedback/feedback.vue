@@ -483,7 +483,7 @@ const resetForm = () => {
 
 <style lang="scss" scoped>
 .feedback-container {
-  background-color: $background-color;
+  bg-color: $bg-color;
   min-height: 100vh;
   padding: 0 $padding-base $padding-base * 2;
 }
@@ -496,21 +496,21 @@ const resetForm = () => {
 
 .page-title {
   display: block;
-  font-size: $font-size-extra-large;
+  font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
 }
 
 .page-subtitle {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 /* 表单卡片 */
 .form-card {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius * 2;
   padding: $padding-base;
   box-shadow: $box-shadow;
@@ -525,14 +525,14 @@ const resetForm = () => {
   display: block;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
 }
 
 .section-hint {
   display: block;
-  font-size: $font-size-small;
-  color: $text-placeholder;
+  font-size: $font-size-sm;
+  color: $color-text-placeholder;
   margin-bottom: $margin-mini;
 }
 
@@ -540,7 +540,7 @@ const resetForm = () => {
 .type-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $margin-small;
+  gap: $margin-sm;
   margin-top: $margin-mini;
 }
 
@@ -549,19 +549,19 @@ const resetForm = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: $padding-small;
-  background: $background-color;
+  padding: $padding-sm;
+  background: $bg-color;
   border-radius: $border-radius;
-  border: 2rpx solid $border-color-light;
+  border: 2rpx solid $color-border-light;
   transition: all $transition-fast;
 
   &.active {
-    border-color: $primary-color;
-    background: rgba($primary-color, 0.1);
-    box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.1);
+    color-border: $color-primary;
+    background: rgba($color-primary, 0.1);
+    box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.1);
 
     .type-text {
-      color: $primary-color;
+      color: $color-primary;
       font-weight: $font-weight-medium;
     }
 
@@ -571,33 +571,33 @@ const resetForm = () => {
   }
 
   &:active:not(.active) {
-    background: color.adjust($background-color, $lightness: -5%);
+    background: color.adjust($bg-color, $lightness: -5%);
     transform: translateY(2rpx);
   }
 }
 
 .type-icon {
-  font-size: $font-size-extra-large;
+  font-size: $font-size-xl;
   margin-bottom: $margin-mini;
   transition: transform $transition-fast;
 }
 
 .type-text {
-  font-size: $font-size-small;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
 }
 
 /* 反馈内容输入 */
 .input-wrapper {
   position: relative;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
-  border: 2rpx solid $border-color-light;
+  border: 2rpx solid $color-border-light;
   transition: all $transition-fast;
 
   &:focus-within {
-    border-color: $primary-color;
-    box-shadow: 0 0 0 2rpx rgba($primary-color, 0.1);
+    color-border: $color-primary;
+    box-shadow: 0 0 0 2rpx rgba($color-primary, 0.1);
   }
 }
 
@@ -606,19 +606,19 @@ const resetForm = () => {
   min-height: 200rpx;
   padding: $padding-base;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   background: transparent;
   border: none;
   outline: none;
   resize: none;
 
   &::placeholder {
-    color: $text-placeholder;
+    color: $color-text-placeholder;
   }
 }
 
 .placeholder {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 
@@ -626,17 +626,17 @@ const resetForm = () => {
   position: absolute;
   bottom: $padding-mini;
   right: $padding-mini;
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
-  background: rgba($background-color-white, 0.9);
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
+  background: rgba($bg-color-white, 0.9);
   padding: 2rpx 8rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 }
 
 /* 错误信息 */
 .error-message {
-  color: $danger-color;
-  font-size: $font-size-small;
+  color: $color-danger;
+  font-size: $font-size-sm;
   margin-top: calc($margin-mini / 2);
   min-height: 40rpx;
 }
@@ -645,7 +645,7 @@ const resetForm = () => {
 .upload-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: $margin-small;
+  gap: $margin-sm;
   margin-top: $margin-mini;
 }
 
@@ -669,13 +669,13 @@ const resetForm = () => {
   right: -8rpx;
   width: 36rpx;
   height: 36rpx;
-  background: $danger-color;
-  color: $background-color-white;
+  background: $color-danger;
+  color: $bg-color-white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: $font-size-large;
+  font-size: $font-size-lg;
   font-weight: $font-weight-bold;
   cursor: pointer;
   transition: transform $transition-fast;
@@ -703,8 +703,8 @@ const resetForm = () => {
 .loading-spinner {
   width: 40rpx;
   height: 40rpx;
-  border: 4rpx solid rgba($background-color-white, 0.3);
-  border-top-color: $background-color-white;
+  border: 4rpx solid rgba($bg-color-white, 0.3);
+  border-top-color: $bg-color-white;
   border-radius: 50%;
   margin: 0 auto;
   animation: spin 0.8s linear infinite;
@@ -724,8 +724,8 @@ const resetForm = () => {
 }
 
 .uploading-text {
-  font-size: $font-size-extra-small;
-  color: $background-color-white;
+  font-size: $font-size-2xs;
+  color: $bg-color-white;
 }
 
 .upload-button {
@@ -735,16 +735,16 @@ const resetForm = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: $background-color;
-  border: 2rpx dashed $border-color;
+  background: $bg-color;
+  border: 2rpx dashed $color-border;
   border-radius: $border-radius;
-  color: $text-secondary;
+  color: $color-text-secondary;
   transition: all $transition-fast;
 
   &:active:not(:disabled) {
-    background: color.adjust($background-color, $lightness: -5%);
-    border-color: $primary-color;
-    color: $primary-color;
+    background: color.adjust($bg-color, $lightness: -5%);
+    color-border: $color-primary;
+    color: $color-primary;
   }
 
   &:disabled {
@@ -753,20 +753,20 @@ const resetForm = () => {
 }
 
 .upload-icon {
-  font-size: $font-size-extra-large;
+  font-size: $font-size-xl;
   margin-bottom: $margin-mini;
   font-weight: $font-weight-bold;
 }
 
 .upload-text {
-  font-size: $font-size-extra-small;
+  font-size: $font-size-2xs;
 }
 
 /* 联系方式输入 */
 .contact-inputs {
   display: flex;
   flex-direction: column;
-  gap: $margin-small;
+  gap: $margin-sm;
   margin-top: $margin-mini;
 
   .input-wrapper {
@@ -779,13 +779,13 @@ const resetForm = () => {
   height: $input-height;
   padding: 0 $padding-base;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   background: transparent;
   border: none;
   outline: none;
 
   &::placeholder {
-    color: $text-placeholder;
+    color: $color-text-placeholder;
   }
 }
 
@@ -793,18 +793,18 @@ const resetForm = () => {
 .submit-button {
   width: 100%;
   height: $button-height;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
-  color: $background-color-white;
+  background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness: -10%) 100%);
+  color: $bg-color-white;
   border: none;
   border-radius: $border-radius;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
   margin-top: $margin-base * 1.5;
   transition: all $transition-normal;
 
   &:active:not(:disabled) {
     transform: translateY(2rpx);
-    box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.3);
+    box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.3);
   }
 
   &:disabled {
@@ -812,7 +812,7 @@ const resetForm = () => {
   }
 
   &--disabled {
-    background: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness: -10%) 100%);
+    background: linear-gradient(135deg, $color-text-placeholder 0%, color.adjust($color-text-placeholder, $lightness: -10%) 100%);
   }
 }
 
@@ -821,15 +821,15 @@ const resetForm = () => {
   text-align: center;
   padding: $padding-base;
   margin-top: $margin-base;
-  background: rgba($success-color, 0.1);
+  background: rgba($color-success, 0.1);
   border-radius: $border-radius;
-  border: 2rpx solid rgba($success-color, 0.3);
+  border: 2rpx solid rgba($color-success, 0.3);
 }
 
 .success-icon {
   display: block;
   font-size: 60rpx;
-  color: $success-color;
+  color: $color-success;
   margin-bottom: $margin-mini;
   font-weight: $font-weight-bold;
 }
@@ -837,15 +837,15 @@ const resetForm = () => {
 .success-text {
   display: block;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
   font-weight: $font-weight-medium;
 }
 
 .success-hint {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 /* 底部提示 */
@@ -857,8 +857,8 @@ const resetForm = () => {
 
 .tips-text {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   line-height: 1.6;
 
   &:first-child {

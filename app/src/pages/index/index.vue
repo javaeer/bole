@@ -241,8 +241,8 @@ onMounted(() => {
 <style lang="scss" scoped>
 /* 顶部区域样式 */
 .brand-header {
-  padding: $padding-small $padding-base;
-  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  padding: $padding-sm $padding-base;
+  background: linear-gradient(135deg, $color-primary 0%, $color-secondary 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -256,20 +256,20 @@ onMounted(() => {
 .logo {
   width: 60rpx;
   height: 60rpx;
-  margin-right: $margin-small;
-  border-radius: $border-radius-small;
+  margin-right: $margin-sm;
+  border-radius: $border-radius-sm;
 }
 
 .brand-name {
-  font-size: $font-size-large;
+  font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $background-color-white;
+  color: $bg-color-white;
 }
 
 .search-btn {
   .icon-search {
     font-size: $font-size-base;
-    color: $background-color-white;
+    color: $bg-color-white;
   }
 }
 
@@ -277,14 +277,14 @@ onMounted(() => {
 .loading {
   text-align: center;
   padding: $padding-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   font-size: $font-size-base;
 }
 
 /* 轮播图 */
 .banner-swiper {
   height: 300rpx;
-  margin: $margin-small $margin-base;
+  margin: $margin-sm $margin-base;
   border-radius: $border-radius * 1.5;
   overflow: hidden;
   box-shadow: $box-shadow;
@@ -297,7 +297,7 @@ onMounted(() => {
 
 /* 通用区块样式 */
 .section {
-  background: $background-color-white;
+  background: $bg-color-white;
   margin: $margin-base;
   border-radius: $border-radius * 1.5;
   padding: $padding-base;
@@ -312,9 +312,9 @@ onMounted(() => {
 }
 
 .section-title {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 /* 模板列表 */
@@ -328,8 +328,8 @@ onMounted(() => {
 
 .template-item {
   width: 300rpx;
-  margin-right: $margin-small;
-  background: $background-color;
+  margin-right: $margin-sm;
+  background: $bg-color;
   border-radius: $border-radius;
   overflow: hidden;
   flex-shrink: 0;
@@ -341,7 +341,7 @@ onMounted(() => {
 }
 
 .template-info {
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .template-name {
@@ -349,7 +349,7 @@ onMounted(() => {
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
   margin-bottom: 5rpx;
-  color: $text-primary;
+  color: $color-text-primary;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -357,14 +357,14 @@ onMounted(() => {
 
 .template-desc {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   margin-bottom: $margin-mini;
 }
 
 .template-users {
-  font-size: $font-size-extra-small;
-  color: $text-placeholder;
+  font-size: $font-size-2xs;
+  color: $color-text-placeholder;
 }
 
 /* 使用指南 */
@@ -376,8 +376,8 @@ onMounted(() => {
 .guide-item {
   display: flex;
   align-items: flex-start;
-  padding: $padding-small 0;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding: $padding-sm 0;
+  border-bottom: 1rpx solid $color-border-extra-light;
 
   &:last-child {
     border-bottom: none;
@@ -387,14 +387,14 @@ onMounted(() => {
 .guide-number {
   width: 50rpx;
   height: 50rpx;
-  background: $primary-color;
-  color: $background-color-white;
-  border-radius: $border-radius-round;
+  background: $color-primary;
+  color: $bg-color-white;
+  border-radius: $border-radius-circle;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: $font-size-small;
-  margin-right: $padding-small;
+  font-size: $font-size-sm;
+  margin-right: $padding-sm;
   flex-shrink: 0;
 }
 
@@ -407,13 +407,13 @@ onMounted(() => {
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
   margin-bottom: 5rpx;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .guide-desc {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 /* 悬浮按钮 */
@@ -428,9 +428,9 @@ onMounted(() => {
   width: 80rpx;
   height: 80rpx;
   border-radius: 50%;
-  background-color: $primary-color;
+  bg-color: $color-primary;
   color: white;
-  font-size: $font-size-extra-large;
+  font-size: $font-size-xl;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -439,7 +439,7 @@ onMounted(() => {
 
   &:active {
     transform: scale(0.95);
-    background-color: color.adjust($primary-color, $lightness: -10%);
+    bg-color: color.adjust($color-primary, $lightness: -10%);
   }
 }
 </style>

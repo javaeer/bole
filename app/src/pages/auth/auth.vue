@@ -1188,7 +1188,7 @@ onBeforeUnmount(() => {
 .auth-container {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(135deg, $primary-color-lighter 0%, $background-color 100%);
+  background: linear-gradient(135deg, $color-primary-light 0%, $bg-color 100%);
   padding: $padding-base;
   overflow: hidden;
 }
@@ -1205,8 +1205,8 @@ onBeforeUnmount(() => {
 
 .decoration-circle {
   position: absolute;
-  border-radius: $border-radius-round;
-  background: radial-gradient(circle, rgba($primary-color, 0.1) 0%, transparent 70%);
+  border-radius: $border-radius-circle;
+  background: radial-gradient(circle, rgba($color-primary, 0.1) 0%, transparent 70%);
 
   &.circle-1 {
     width: 400rpx;
@@ -1236,7 +1236,7 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($background-color-white, 0.8);
+  background: rgba($bg-color-white, 0.8);
 }
 
 /* 品牌头部 */
@@ -1260,9 +1260,9 @@ onBeforeUnmount(() => {
 }
 
 .brand-name {
-  font-size: $font-size-extra-large;
+  font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   letter-spacing: 2rpx;
   display: block;
   text-align: center;
@@ -1290,25 +1290,25 @@ onBeforeUnmount(() => {
 
 .welcome-title {
   display: block;
-  font-size: $font-size-extra-large + 4rpx;
+  font-size: $font-size-xl + 4rpx;
   font-weight: $font-weight-bold;
-  color: $text-primary;
-  margin-bottom: $margin-small;
+  color: $color-text-primary;
+  margin-bottom: $margin-sm;
   letter-spacing: 1rpx;
   text-align: center;
 }
 
 .welcome-subtitle {
   display: block;
-  font-size: $font-size-medium;
-  color: $text-secondary;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
   opacity: 0.8;
   text-align: center;
 }
 
 /* 微信登录卡片 */
 .wechat-login-card {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius * 2;
   padding: $padding-base * 2;
   width: 100%;
@@ -1327,7 +1327,7 @@ onBeforeUnmount(() => {
   width: 120rpx;
   height: 120rpx;
   background: linear-gradient(135deg, #09bb07 0%, #07c160 100%);
-  border-radius: $border-radius-round;
+  border-radius: $border-radius-circle;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1335,7 +1335,7 @@ onBeforeUnmount(() => {
 }
 
 .icon-text {
-  color: $background-color-white;
+  color: $bg-color-white;
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
   letter-spacing: 1rpx;
@@ -1349,8 +1349,8 @@ onBeforeUnmount(() => {
 
 .prompt-text {
   display: block;
-  font-size: $font-size-medium;
-  color: $text-regular;
+  font-size: $font-size-base;
+  color: $color-text-regular;
   font-weight: $font-weight-medium;
   margin-bottom: $margin-mini;
   text-align: center;
@@ -1358,8 +1358,8 @@ onBeforeUnmount(() => {
 
 .prompt-desc {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   opacity: 0.7;
   text-align: center;
 }
@@ -1369,10 +1369,10 @@ onBeforeUnmount(() => {
   width: 100%;
   height: $button-height;
   background: linear-gradient(135deg, #09bb07 0%, #07c160 100%);
-  color: $background-color-white;
+  color: $bg-color-white;
   border: none;
   border-radius: $border-radius * 1.5;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
   margin-top: $margin-base;
   transition: all $transition-normal;
@@ -1402,8 +1402,8 @@ onBeforeUnmount(() => {
 .loading-spinner-white {
   width: 40rpx;
   height: 40rpx;
-  border: 4rpx solid rgba($background-color-white, 0.3);
-  border-top-color: $background-color-white;
+  border: 4rpx solid rgba($bg-color-white, 0.3);
+  border-top-color: $bg-color-white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   display: flex;
@@ -1420,14 +1420,14 @@ onBeforeUnmount(() => {
 }
 
 .agreement-prompt {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   line-height: 1.6;
   text-align: center;
 }
 
 .agreement-link {
-  color: $primary-color;
+  color: $color-primary;
   text-decoration: none;
   cursor: pointer;
 
@@ -1440,7 +1440,7 @@ onBeforeUnmount(() => {
 .form-card {
   position: relative;
   z-index: $z-index-base + 1;
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius * 2;
   padding: $padding-base;
   box-shadow: $box-shadow-dark;
@@ -1452,20 +1452,20 @@ onBeforeUnmount(() => {
 .auth-tabs {
   display: flex;
   margin-bottom: $margin-base * 1.5;
-  border-bottom: 2rpx solid $border-color-light;
+  border-bottom: 2rpx solid $color-border-light;
 }
 
 .tab-item {
   flex: 1;
   text-align: center;
-  padding: $padding-small 0;
+  padding: $padding-sm 0;
   position: relative;
   cursor: pointer;
 }
 
 .tab-text {
-  font-size: $font-size-medium;
-  color: $text-secondary;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
   transition: color $transition-fast;
   display: block;
   text-align: center;
@@ -1478,7 +1478,7 @@ onBeforeUnmount(() => {
   transform: translateX(-50%);
   width: 80rpx;
   height: 4rpx;
-  background: $primary-color;
+  background: $color-primary;
   border-radius: 2rpx;
 }
 
@@ -1487,7 +1487,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   margin-bottom: $margin-base;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: 6rpx;
   box-shadow: inset 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
@@ -1496,8 +1496,8 @@ onBeforeUnmount(() => {
 .login-type-item {
   flex: 1;
   text-align: center;
-  padding: $padding-small;
-  border-radius: $border-radius-small;
+  padding: $padding-sm;
+  border-radius: $border-radius-sm;
   cursor: pointer;
   transition: all $transition-fast;
   position: relative;
@@ -1507,12 +1507,12 @@ onBeforeUnmount(() => {
   justify-content: center;
 
   &.active {
-    background: $background-color-white;
+    background: $bg-color-white;
     box-shadow: $box-shadow-light;
     animation: slideInRight 0.3s ease-out;
 
     .login-type-text {
-      color: $primary-color;
+      color: $color-primary;
       font-weight: $font-weight-bold;
     }
 
@@ -1524,7 +1524,7 @@ onBeforeUnmount(() => {
       transform: translateX(-50%);
       width: 60%;
       height: 3rpx;
-      background: $primary-color;
+      background: $color-primary;
       border-radius: 2rpx;
       animation: underlineSlide 0.3s ease-out;
     }
@@ -1533,7 +1533,7 @@ onBeforeUnmount(() => {
 
 .login-type-text {
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   transition: color $transition-fast;
   position: relative;
   z-index: 1;
@@ -1550,7 +1550,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   margin-bottom: $margin-base;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: 6rpx;
   box-shadow: inset 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
@@ -1559,8 +1559,8 @@ onBeforeUnmount(() => {
 .register-type-item {
   flex: 1;
   text-align: center;
-  padding: $padding-small;
-  border-radius: $border-radius-small;
+  padding: $padding-sm;
+  border-radius: $border-radius-sm;
   cursor: pointer;
   transition: all $transition-fast;
   position: relative;
@@ -1570,12 +1570,12 @@ onBeforeUnmount(() => {
   justify-content: center;
 
   &.active {
-    background: $background-color-white;
+    background: $bg-color-white;
     box-shadow: $box-shadow-light;
     animation: slideInRight 0.3s ease-out;
 
     .register-type-text {
-      color: $primary-color;
+      color: $color-primary;
       font-weight: $font-weight-bold;
     }
 
@@ -1587,7 +1587,7 @@ onBeforeUnmount(() => {
       transform: translateX(-50%);
       width: 60%;
       height: 3rpx;
-      background: $primary-color;
+      background: $color-primary;
       border-radius: 2rpx;
       animation: underlineSlide 0.3s ease-out;
     }
@@ -1596,7 +1596,7 @@ onBeforeUnmount(() => {
 
 .register-type-text {
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   transition: color $transition-fast;
   position: relative;
   z-index: 1;
@@ -1606,7 +1606,7 @@ onBeforeUnmount(() => {
 .register-form-section {
   margin-bottom: $margin-base;
   padding-bottom: $margin-base;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  border-bottom: 1rpx solid $color-border-extra-light;
   animation: fadeIn $transition-normal;
 }
 
@@ -1623,11 +1623,11 @@ onBeforeUnmount(() => {
   min-width: 0;
   border-radius: $input-border-radius;
   overflow: hidden;
-  border: 2rpx solid $border-color-light;
+  border: 2rpx solid $color-border-light;
   transition: all $transition-fast;
 
   &:focus-within {
-    border-color: $focus-border-color;
+    color-border: $color-focus-border;
     box-shadow: $input-focus-shadow;
   }
 }
@@ -1646,11 +1646,11 @@ onBeforeUnmount(() => {
   height: 100%;
   min-height: $input-height;
   padding: 0 24rpx;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -8%) 100%);
-  color: $background-color-white;
+  background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness: -8%) 100%);
+  color: $bg-color-white;
   border: none;
   border-radius: $input-border-radius;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   white-space: nowrap;
   transition: all $transition-fast;
@@ -1658,7 +1658,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.2);
+  box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.2);
   position: relative;
   overflow: hidden;
   line-height: normal;
@@ -1696,7 +1696,7 @@ onBeforeUnmount(() => {
   }
 
   .code-unit {
-    font-size: $font-size-extra-small;
+    font-size: $font-size-2xs;
     color: inherit;
     opacity: 0.9;
   }
@@ -1706,7 +1706,7 @@ onBeforeUnmount(() => {
 .btn-code:active,
 .btn-code.btn-code--hover {
   transform: translateY(2rpx);
-  box-shadow: 0 2rpx 8rpx rgba($primary-color, 0.15);
+  box-shadow: 0 2rpx 8rpx rgba($color-primary, 0.15);
 
   &::before {
     opacity: 1;
@@ -1716,8 +1716,8 @@ onBeforeUnmount(() => {
 /* 禁用状态 */
 .btn-code:disabled,
 .btn-code.btn-code--disabled {
-  background: linear-gradient(135deg, $border-color-light 0%, color.adjust($border-color-light, $lightness: -5%) 100%);
-  color: $text-placeholder;
+  background: linear-gradient(135deg, $color-border-light 0%, color.adjust($color-border-light, $lightness: -5%) 100%);
+  color: $color-text-placeholder;
   box-shadow: none;
   cursor: not-allowed;
 
@@ -1739,12 +1739,12 @@ onBeforeUnmount(() => {
 
 /* 倒计时状态 */
 .btn-code.btn-code--counting {
-  background: linear-gradient(135deg, $warning-color 0%, color.adjust($warning-color, $lightness: -8%) 100%);
-  box-shadow: 0 4rpx 12rpx rgba($warning-color, 0.2);
+  background: linear-gradient(135deg, $color-warning 0%, color.adjust($color-warning, $lightness: -8%) 100%);
+  box-shadow: 0 4rpx 12rpx rgba($color-warning, 0.2);
 
   &:active,
   &.btn-code--hover {
-    box-shadow: 0 2rpx 8rpx rgba($warning-color, 0.15);
+    box-shadow: 0 2rpx 8rpx rgba($color-warning, 0.15);
   }
 }
 
@@ -1757,7 +1757,7 @@ onBeforeUnmount(() => {
   .form-label {
     display: block;
     font-size: $font-size-base;
-    color: $text-regular;
+    color: $color-text-regular;
     margin-bottom: $margin-mini;
     font-weight: $font-weight-medium;
     text-align: left;
@@ -1771,23 +1771,23 @@ onBeforeUnmount(() => {
   }
 
   .forgot-password {
-    font-size: $font-size-small;
-    color: $primary-color;
+    font-size: $font-size-sm;
+    color: $color-primary;
     text-decoration: none;
   }
 }
 
 .input-wrapper {
   position: relative;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $input-border-radius;
-  border: 2rpx solid $border-color-light;
+  border: 2rpx solid $color-border-light;
   transition: all $transition-fast;
 
   &:focus-within {
-    border-color: $focus-border-color;
+    color-border: $color-focus-border;
     box-shadow: $input-focus-shadow;
-    background: $background-color-white;
+    background: $bg-color-white;
   }
 }
 
@@ -1796,7 +1796,7 @@ onBeforeUnmount(() => {
   height: $input-height;
   padding: 0 $padding-base;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   background: transparent;
   border: none;
   outline: none;
@@ -1805,12 +1805,12 @@ onBeforeUnmount(() => {
   align-items: center;
 
   &::placeholder {
-    color: $text-placeholder;
+    color: $color-text-placeholder;
   }
 }
 
 .placeholder {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 
@@ -1818,7 +1818,7 @@ onBeforeUnmount(() => {
 .password-strength {
   margin-top: $margin-mini;
   height: 6rpx;
-  background: $border-color-lighter;
+  background: $color-border-light;
   border-radius: 3rpx;
   overflow: hidden;
   position: relative;
@@ -1836,22 +1836,22 @@ onBeforeUnmount(() => {
     position: absolute;
     top: 8rpx;
     right: 0;
-    font-size: $font-size-extra-small;
-    color: $text-secondary;
+    font-size: $font-size-2xs;
+    color: $color-text-secondary;
   }
 }
 
 /* 密码强度颜色 */
 .strength-weak .strength-bar {
-  background: $danger-color;
+  background: $color-danger;
 }
 
 .strength-medium .strength-bar {
-  background: $warning-color;
+  background: $color-warning;
 }
 
 .strength-strong .strength-bar {
-  background: $success-color;
+  background: $color-success;
 }
 
 /* 密码切换按钮 */
@@ -1873,12 +1873,12 @@ onBeforeUnmount(() => {
   transition: all $transition-fast;
 
   &:active {
-    background: rgba($text-secondary, 0.1);
+    background: rgba($color-text-secondary, 0.1);
   }
 
   .toggle-icon {
     font-size: 32rpx;
-    color: $text-secondary;
+    color: $color-text-secondary;
     opacity: 0.6;
     transition: opacity $transition-fast;
     display: block;
@@ -1891,8 +1891,8 @@ onBeforeUnmount(() => {
 
 /* 错误消息 */
 .error-message {
-  color: $danger-color;
-  font-size: $font-size-small;
+  color: $color-danger;
+  font-size: $font-size-sm;
   margin-top: 8rpx;
   min-height: 30rpx;
   line-height: 1.4;
@@ -1906,11 +1906,11 @@ onBeforeUnmount(() => {
 .btn-auth {
   width: 100%;
   height: $button-height;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
-  color: $background-color-white;
+  background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness: -10%) 100%);
+  color: $bg-color-white;
   border: none;
   border-radius: $border-radius;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
   margin-top: $margin-base;
   transition: all $transition-normal;
@@ -1925,7 +1925,7 @@ onBeforeUnmount(() => {
   }
 
   &:disabled {
-    background: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness: -10%) 100%);
+    background: linear-gradient(135deg, $color-text-placeholder 0%, color.adjust($color-text-placeholder, $lightness: -10%) 100%);
     opacity: $button-disabled-opacity;
     transform: none;
     box-shadow: none;
@@ -1939,8 +1939,8 @@ onBeforeUnmount(() => {
 .loading-spinner {
   width: 40rpx;
   height: 40rpx;
-  border: 4rpx solid rgba($background-color-white, 0.3);
-  border-top-color: $background-color-white;
+  border: 4rpx solid rgba($bg-color-white, 0.3);
+  border-top-color: $bg-color-white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   display: flex;
@@ -1970,22 +1970,22 @@ onBeforeUnmount(() => {
 .checkbox {
   width: 36rpx;
   height: 36rpx;
-  border: 2rpx solid $border-color;
-  border-radius: $border-radius-small;
+  border: 2rpx solid $color-border;
+  border-radius: $border-radius-sm;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all $transition-fast;
-  background: $background-color-white;
+  background: $bg-color-white;
   flex-shrink: 0;
 
   &.checked {
-    background: $primary-color;
-    border-color: $primary-color;
+    background: $color-primary;
+    color-border: $color-primary;
     animation: checkmarkPop 0.2s ease-out;
 
     .checkbox-icon {
-      color: $background-color-white;
+      color: $bg-color-white;
       font-weight: $font-weight-bold;
       opacity: 1;
       transform: scale(1);
@@ -1994,7 +1994,7 @@ onBeforeUnmount(() => {
 }
 
 .checkbox-icon {
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   color: transparent;
   opacity: 0;
   transform: scale(0.5);
@@ -2002,14 +2002,14 @@ onBeforeUnmount(() => {
 }
 
 .agreement-text {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   line-height: 1.5;
   flex: 1;
 }
 
 .agreement-link {
-  color: $primary-color;
+  color: $color-primary;
   text-decoration: none;
   cursor: pointer;
 
@@ -2022,7 +2022,7 @@ onBeforeUnmount(() => {
 .other-login {
   margin-top: $margin-base * 1.5;
   padding-top: $margin-base;
-  border-top: 2rpx solid $border-color-lighter;
+  border-top: 2rpx solid $color-border-light;
 }
 
 .divider {
@@ -2033,13 +2033,13 @@ onBeforeUnmount(() => {
   .divider-line {
     flex: 1;
     height: 1rpx;
-    background: $border-color;
+    background: $color-border;
   }
 
   .divider-text {
-    padding: 0 $padding-small;
-    font-size: $font-size-small;
-    color: $text-secondary;
+    padding: 0 $padding-sm;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 }
 
@@ -2066,8 +2066,8 @@ onBeforeUnmount(() => {
   }
 
   .method-text {
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
     margin-top: 6rpx;
   }
 }
@@ -2077,17 +2077,17 @@ onBeforeUnmount(() => {
   text-align: center;
   margin-top: $margin-base;
   padding-top: $margin-base;
-  border-top: 1rpx solid $border-color-extra-light;
+  border-top: 1rpx solid $color-border-extra-light;
 
   .footer-text {
     font-size: $font-size-base;
-    color: $text-secondary;
+    color: $color-text-secondary;
     display: block;
     text-align: center;
   }
 
   .footer-link {
-    color: $primary-color;
+    color: $color-primary;
     font-weight: $font-weight-medium;
     margin-left: 6rpx;
     padding: 4rpx 8rpx;
@@ -2096,7 +2096,7 @@ onBeforeUnmount(() => {
     cursor: pointer;
 
     &:active {
-      background: rgba($primary-color, 0.1);
+      background: rgba($color-primary, 0.1);
       transform: translateY(1rpx);
     }
   }
@@ -2166,13 +2166,13 @@ onBeforeUnmount(() => {
 /* 验证码按钮加载动画 */
 @keyframes codeBtnPulse {
   0% {
-    box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.2);
+    box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.2);
   }
   50% {
-    box-shadow: 0 4rpx 20rpx rgba($primary-color, 0.3);
+    box-shadow: 0 4rpx 20rpx rgba($color-primary, 0.3);
   }
   100% {
-    box-shadow: 0 4rpx 12rpx rgba($primary-color, 0.2);
+    box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.2);
   }
 }
 
@@ -2183,7 +2183,7 @@ onBeforeUnmount(() => {
 /* 响应式调整 */
 @media (max-width: 375px) {
   .form-card {
-    padding: $padding-small;
+    padding: $padding-sm;
   }
 
   .login-methods {
@@ -2196,7 +2196,7 @@ onBeforeUnmount(() => {
   }
 
   .welcome-title {
-    font-size: $font-size-extra-large;
+    font-size: $font-size-xl;
   }
 
   .welcome-subtitle {
@@ -2205,21 +2205,21 @@ onBeforeUnmount(() => {
 
   .login-type-text,
   .register-type-text {
-    font-size: $font-size-small;
+    font-size: $font-size-sm;
   }
 
   .btn-code {
     min-width: 180rpx;
     padding: 0 16rpx;
-    font-size: $font-size-extra-small;
+    font-size: $font-size-2xs;
 
     .code-count {
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
     }
   }
 
   .code-text {
-    font-size: $font-size-extra-small;
+    font-size: $font-size-2xs;
   }
 
   .code-input-wrapper {

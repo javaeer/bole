@@ -309,25 +309,25 @@
           "style": {
             "navigationBarTitleText": "系统通知"
           }
-		},
-		{
-			"path": "pages/tasks/list",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		},
-		{
-			"path": "pages/webview/webview",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		},
-		{
-			"path": "pages/webview/pdfview",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		}
+        },
+        {
+          "path": "pages/tasks/list",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/webview/webview",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        },
+        {
+          "path": "pages/webview/pdfview",
+          "style": {
+            "navigationBarTitleText": ""
+          }
+        }
       ]
     }
   ],

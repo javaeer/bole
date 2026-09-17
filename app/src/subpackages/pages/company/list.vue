@@ -79,7 +79,7 @@
             >
               <text
                 class="icon"
-                :style="{ color: company.isFollowed ? '$danger-color' : '$text-secondary' }"
+                :style="{ color: company.isFollowed ? '$color-danger' : '$color-text-secondary' }"
               >
                 {{ company.isFollowed ? '❤️' : '♡' }}
               </text>
@@ -327,7 +327,7 @@ const formatDate = (dateStr: string) => {
 
 // 状态颜色
 const getStatusColor = (deleted: number) => {
-  return deleted === 0 ? "$success-color" : "$danger-color";
+  return deleted === 0 ? "$color-success" : "$color-danger";
 };
 
 // 状态文本
@@ -356,22 +356,22 @@ onPullDownRefresh(() => {
   display: flex;
   align-items: center;
   padding: $padding-base;
-  background: $background-color-white;
-  border-bottom: 1rpx solid $border-color-lighter;
+  background: $bg-color-white;
+  border-bottom: 1rpx solid $color-border-light;
 
   .search-bar {
     flex: 1;
     display: flex;
     align-items: center;
-    background: $background-color;
+    background: $bg-color;
     border-radius: $border-radius;
     padding: 12rpx 20rpx;
     border: 2rpx solid transparent;
     transition: all $transition-fast;
 
     &.active {
-      border-color: $primary-color;
-      background: $background-color-white;
+      color-border: $color-primary;
+      background: $bg-color-white;
     }
 
     .icon {
@@ -383,10 +383,10 @@ onPullDownRefresh(() => {
       flex: 1;
       height: 40rpx;
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
 
       .placeholder {
-        color: $text-placeholder;
+        color: $color-text-placeholder;
         font-size: $font-size-base;
       }
     }
@@ -397,7 +397,7 @@ onPullDownRefresh(() => {
 
       .icon {
         font-size: 18rpx;
-        color: $text-placeholder;
+        color: $color-text-placeholder;
       }
     }
   }
@@ -405,18 +405,18 @@ onPullDownRefresh(() => {
   .search-btn {
     margin-left: 20rpx;
     padding: 12rpx 24rpx;
-    background: $primary-color;
+    background: $color-primary;
     color: white;
-    border-radius: $border-radius-small;
+    border-radius: $border-radius-sm;
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
   }
 }
 
 .sort-container {
-  background: $background-color-white;
-  border-bottom: 1rpx solid $border-color-lighter;
-  padding: $padding-small $padding-base;
+  background: $bg-color-white;
+  border-bottom: 1rpx solid $color-border-light;
+  padding: $padding-sm $padding-base;
 
   .sort-scroll {
     width: 100%;
@@ -430,17 +430,17 @@ onPullDownRefresh(() => {
         display: inline-flex;
         align-items: center;
         padding: 8rpx 20rpx;
-        background: $background-color;
-        border-radius: $border-radius-small;
-        font-size: $font-size-small;
-        color: $text-secondary;
-        border: 1rpx solid $border-color-light;
+        background: $bg-color;
+        border-radius: $border-radius-sm;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+        border: 1rpx solid $color-border-light;
         transition: all $transition-fast;
 
         &.active {
-          background: $primary-color-light;
-          color: $primary-color;
-          border-color: $primary-color;
+          background: $color-primary-light;
+          color: $color-primary;
+          color-border: $color-primary;
 
           &.desc {
             .icon {
@@ -464,7 +464,7 @@ onPullDownRefresh(() => {
   padding: $padding-base;
 
   .company-card {
-    background: $background-color-white;
+    background: $bg-color-white;
     border-radius: $card-border-radius;
     margin-bottom: $margin-base;
     box-shadow: $card-shadow;
@@ -475,20 +475,20 @@ onPullDownRefresh(() => {
       justify-content: space-between;
       align-items: center;
       padding: $padding-base;
-      border-bottom: 1rpx solid $border-color-lighter;
+      border-bottom: 1rpx solid $color-border-light;
 
       .company-info {
         flex: 1;
 
         .company-name {
-          font-size: $font-size-medium;
-          font-weight: $font-weight-semibold;
-          color: $text-primary;
+          font-size: $font-size-base;
+          font-weight: $font-weight-medium;
+          color: $color-text-primary;
           margin-bottom: 8rpx;
         }
 
         .company-status {
-          font-size: $font-size-small;
+          font-size: $font-size-sm;
         }
       }
 
@@ -497,8 +497,8 @@ onPullDownRefresh(() => {
           width: 60rpx;
           height: 60rpx;
           @extend .flex-center;
-          border-radius: $border-radius-round;
-          background: $background-color;
+          border-radius: $border-radius-circle;
+          background: $bg-color;
 
           &[disabled] {
             opacity: 0.6;
@@ -528,12 +528,12 @@ onPullDownRefresh(() => {
           .icon {
             margin-right: 12rpx;
             font-size: 16rpx;
-            color: $text-secondary;
+            color: $color-text-secondary;
           }
 
           .info-text {
-            font-size: $font-size-small;
-            color: $text-regular;
+            font-size: $font-size-sm;
+            color: $color-text-regular;
           }
         }
       }
@@ -541,31 +541,31 @@ onPullDownRefresh(() => {
       .company-stats {
         display: flex;
         align-items: center;
-        margin-top: $margin-small;
-        padding-top: $padding-small;
-        border-top: 1rpx solid $border-color-lighter;
+        margin-top: $margin-sm;
+        padding-top: $padding-sm;
+        border-top: 1rpx solid $color-border-light;
 
         .stat-item {
           flex: 1;
           text-align: center;
 
           .stat-label {
-            font-size: $font-size-extra-small;
-            color: $text-secondary;
+            font-size: $font-size-2xs;
+            color: $color-text-secondary;
             margin-bottom: 4rpx;
           }
 
           .stat-value {
-            font-size: $font-size-medium;
-            font-weight: $font-weight-semibold;
-            color: $text-primary;
+            font-size: $font-size-base;
+            font-weight: $font-weight-medium;
+            color: $color-text-primary;
           }
         }
 
         .stat-divider {
           width: 1rpx;
           height: 40rpx;
-          background: $border-color-lighter;
+          background: $color-border-light;
         }
       }
     }
@@ -574,9 +574,9 @@ onPullDownRefresh(() => {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: $padding-small $padding-base;
-      background: $background-color;
-      border-top: 1rpx solid $border-color-lighter;
+      padding: $padding-sm $padding-base;
+      background: $bg-color;
+      border-top: 1rpx solid $color-border-light;
 
       .time-info {
         display: flex;
@@ -584,29 +584,29 @@ onPullDownRefresh(() => {
         gap: 4rpx;
 
         .time-label {
-          font-size: $font-size-extra-small;
-          color: $text-secondary;
+          font-size: $font-size-2xs;
+          color: $color-text-secondary;
         }
       }
 
       .detail-btn {
         padding: 8rpx 20rpx;
-        background: $primary-color;
+        background: $color-primary;
         color: white;
-        border-radius: $border-radius-small;
-        font-size: $font-size-small;
+        border-radius: $border-radius-sm;
+        font-size: $font-size-sm;
         font-weight: $font-weight-medium;
       }
     }
   }
 
   .loading-container {
-    padding: $padding-large 0;
+    padding: $padding-lg 0;
 
     .loading, .no-more {
       text-align: center;
-      color: $text-secondary;
-      font-size: $font-size-small;
+      color: $color-text-secondary;
+      font-size: $font-size-sm;
     }
   }
 

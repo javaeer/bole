@@ -373,15 +373,15 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .guide-container {
-  background-color: $background-color;
+  bg-color: $bg-color;
   min-height: 100vh;
 }
 
 /* 头部区域 */
 .guide-header {
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness:   15%) 100%);
+  background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness:   15%) 100%);
   padding: $padding-base;
-  color: $background-color-white;
+  color: $bg-color-white;
   border-bottom-left-radius: 30rpx;
   border-bottom-right-radius: 30rpx;
 }
@@ -392,20 +392,20 @@ onMounted(() => {
 
 .header-title {
   display: block;
-  font-size: $font-size-extra-large;
+  font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   margin-bottom: $margin-mini;
 }
 
 .header-subtitle {
   display: block;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   opacity: 0.9;
 }
 
 /* 搜索区域 */
 .search-section {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-mini $padding-base;
 }
@@ -417,8 +417,8 @@ onMounted(() => {
 }
 
 .search-icon {
-  font-size: $font-size-medium;
-  color: $text-placeholder;
+  font-size: $font-size-base;
+  color: $color-text-placeholder;
   margin-right: $margin-mini;
 }
 
@@ -426,23 +426,23 @@ onMounted(() => {
   flex: 1;
   height: 60rpx;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .search-clear {
   width: 40rpx;
   height: 40rpx;
-  border-radius: $border-radius-round;
-  background: $border-color-light;
+  border-radius: $border-radius-circle;
+  background: $color-border-light;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: $text-placeholder;
-  font-size: $font-size-small;
+  color: $color-text-placeholder;
+  font-size: $font-size-sm;
 }
 
 .placeholder {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 
@@ -450,7 +450,7 @@ onMounted(() => {
 .category-scroll {
   white-space: nowrap;
   padding: $padding-base $padding-base 0;
-  background: $background-color-white;
+  background: $bg-color-white;
 }
 
 .category-list {
@@ -467,7 +467,7 @@ onMounted(() => {
   
   &.active {
     .category-text {
-      color: $primary-color;
+      color: $color-primary;
       font-weight: $font-weight-bold;
     }
   }
@@ -475,7 +475,7 @@ onMounted(() => {
 
 .category-text {
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
   transition: color $transition-fast;
 }
 
@@ -486,7 +486,7 @@ onMounted(() => {
   transform: translateX(-50%);
   width: 40rpx;
   height: 4rpx;
-  background: $primary-color;
+  background: $color-primary;
   border-radius: 2rpx;
 }
 
@@ -498,7 +498,7 @@ onMounted(() => {
 
 /* 通用区块样式 */
 .section {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   margin-bottom: $margin-base;
@@ -513,14 +513,14 @@ onMounted(() => {
 }
 
 .section-title {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .section-more {
-  font-size: $font-size-small;
-  color: $primary-color;
+  font-size: $font-size-sm;
+  color: $color-primary;
 }
 
 /* 热门文章 */
@@ -532,14 +532,14 @@ onMounted(() => {
 
 .hot-article-card {
   display: flex;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   overflow: hidden;
   transition: transform $transition-fast;
   
   &:active {
     transform: scale(0.99);
-    background: color.adjust($background-color, $lightness:  - 2%);
+    background: color.adjust($bg-color, $lightness:  - 2%);
   }
 }
 
@@ -564,17 +564,17 @@ onMounted(() => {
 }
 
 .article-tag {
-  font-size: $font-size-extra-small;
-  color: $primary-color;
-  background: $primary-color-light;
+  font-size: $font-size-2xs;
+  color: $color-primary;
+  background: $color-primary-light;
   padding: 2rpx 10rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 }
 
 .article-title {
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -589,13 +589,13 @@ onMounted(() => {
 }
 
 .meta-item {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 .meta-divider {
-  color: $text-placeholder;
-  font-size: $font-size-extra-small;
+  color: $color-text-placeholder;
+  font-size: $font-size-2xs;
 }
 
 /* 分类内容 */
@@ -608,14 +608,14 @@ onMounted(() => {
 .content-item {
   display: flex;
   padding: $padding-base 0;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  border-bottom: 1rpx solid $color-border-extra-light;
   
   &:last-child {
     border-bottom: none;
   }
   
   &:active {
-    background: $background-color;
+    background: $bg-color;
   }
 }
 
@@ -628,7 +628,7 @@ onMounted(() => {
   display: block;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -638,8 +638,8 @@ onMounted(() => {
 
 .item-desc {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   margin-bottom: $margin-mini;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -655,17 +655,17 @@ onMounted(() => {
 
 .item-type {
   margin-left: auto;
-  font-size: $font-size-extra-small;
-  color: $primary-color;
-  background: $primary-color-light;
+  font-size: $font-size-2xs;
+  color: $color-primary;
+  background: $color-primary-light;
   padding: 2rpx 8rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 }
 
 .item-image {
   width: 120rpx;
   height: 120rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
   flex-shrink: 0;
 }
 
@@ -676,10 +676,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: $font-size-extra-large;
-  background: $primary-color-light;
-  border-radius: $border-radius-small;
-  color: $primary-color;
+  font-size: $font-size-xl;
+  background: $color-primary-light;
+  border-radius: $border-radius-sm;
+  color: $color-primary;
 }
 
 /* 实用工具 */
@@ -705,7 +705,7 @@ onMounted(() => {
 .tool-icon {
   width: 100rpx;
   height: 100rpx;
-  background: linear-gradient(135deg, $primary-color, color.adjust($primary-color, $lightness:   15%));
+  background: linear-gradient(135deg, $color-primary, color.adjust($color-primary, $lightness:   15%));
   border-radius: $border-radius;
   display: flex;
   align-items: center;
@@ -714,14 +714,14 @@ onMounted(() => {
   transition: transform $transition-fast;
   
   text {
-    font-size: $font-size-extra-large;
-    color: $background-color-white;
+    font-size: $font-size-xl;
+    color: $bg-color-white;
   }
 }
 
 .tool-name {
-  font-size: $font-size-small;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
 }
 
 /* 加载状态 */
@@ -730,14 +730,14 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: $padding-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
 }
 
 .loading-spinner {
   width: 40rpx;
   height: 40rpx;
-  border: 4rpx solid $border-color;
-  border-top-color: $primary-color;
+  border: 4rpx solid $color-border;
+  border-top-color: $color-primary;
   border-radius: 50%;
   margin-bottom: $margin-mini;
   animation: spin 1s linear infinite;
@@ -750,13 +750,13 @@ onMounted(() => {
 }
 
 .loading-text {
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
 }
 
 .no-more {
   text-align: center;
   padding: $padding-base;
-  color: $text-placeholder;
-  font-size: $font-size-small;
+  color: $color-text-placeholder;
+  font-size: $font-size-sm;
 }
 </style>

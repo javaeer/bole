@@ -356,18 +356,18 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .search-page {
-  background-color: $background-color;
+  bg-color: $bg-color;
   min-height: 100vh;
 }
 
 /* 顶部搜索栏 */
 .search-header {
-  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  background: linear-gradient(135deg, $color-primary 0%, $color-secondary 100%);
   padding: var(--status-bar-height, 0) $padding-base $padding-base;
   padding-top: calc(var(--status-bar-height) + 20rpx);
   display: flex;
   align-items: center;
-  gap: $margin-small;
+  gap: $margin-sm;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -375,9 +375,9 @@ onMounted(() => {
 
 .search-box {
   flex: 1;
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
-  padding: 0 $padding-small;
+  padding: 0 $padding-sm;
   display: flex;
   align-items: center;
   height: $input-height;
@@ -387,7 +387,7 @@ onMounted(() => {
   .search-icon {
     margin-right: $margin-mini;
     font-size: $font-size-base;
-    color: $text-placeholder;
+    color: $color-text-placeholder;
     flex-shrink: 0;
   }
 
@@ -395,13 +395,13 @@ onMounted(() => {
     flex: 1;
     height: 100%;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     background: transparent;
     border: none;
     outline: none;
 
     &::placeholder {
-      color: $text-placeholder;
+      color: $color-text-placeholder;
     }
   }
 
@@ -409,14 +409,14 @@ onMounted(() => {
     width: 32rpx;
     height: 32rpx;
     @extend .flex-center;
-    background: $border-color-light;
-    border-radius: $border-radius-round;
+    background: $color-border-light;
+    border-radius: $border-radius-circle;
     flex-shrink: 0;
     margin-left: $margin-mini;
 
     .clear-icon {
-      font-size: $font-size-medium;
-      color: $text-placeholder;
+      font-size: $font-size-base;
+      color: $color-text-placeholder;
       font-weight: bold;
     }
   }
@@ -425,9 +425,9 @@ onMounted(() => {
 .search-btn {
   height: $input-height;
   min-width: 80rpx;
-  background: rgba($background-color-white, 0.2);
-  color: $background-color-white;
-  border: 2rpx solid $background-color-white;
+  background: rgba($bg-color-white, 0.2);
+  color: $bg-color-white;
+  border: 2rpx solid $bg-color-white;
   border-radius: $border-radius;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
@@ -446,7 +446,7 @@ onMounted(() => {
 
 /* 通用区块样式 */
 .section {
-  background: $background-color-white;
+  background: $bg-color-white;
   margin: 0 $margin-base $margin-base;
   border-radius: $border-radius;
   padding: $padding-base;
@@ -460,9 +460,9 @@ onMounted(() => {
   margin-bottom: $margin-base;
 
   .section-title {
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
     font-weight: $font-weight-bold;
-    color: $text-primary;
+    color: $color-text-primary;
   }
 }
 
@@ -474,34 +474,34 @@ onMounted(() => {
   padding: $padding-mini;
 
   .clear-history-icon {
-    font-size: $font-size-small;
+    font-size: $font-size-sm;
     margin-right: 4rpx;
   }
 
   .clear-history-text {
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 }
 
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .history-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: $padding-small $padding-base;
-  background: $background-color;
-  border-radius: $border-radius-small;
-  border-left: 4rpx solid $primary-color;
+  padding: $padding-sm $padding-base;
+  background: $bg-color;
+  border-radius: $border-radius-sm;
+  border-left: 4rpx solid $color-primary;
 
   .history-text {
     font-size: $font-size-base;
-    color: $text-regular;
+    color: $color-text-regular;
     @extend .text-truncate;
     flex: 1;
   }
@@ -514,8 +514,8 @@ onMounted(() => {
     margin-left: $margin-mini;
 
     .remove-icon {
-      font-size: $font-size-large;
-      color: $text-placeholder;
+      font-size: $font-size-lg;
+      color: $color-text-placeholder;
       font-weight: bold;
     }
   }
@@ -525,7 +525,7 @@ onMounted(() => {
 .hot-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .tag-item {
@@ -533,12 +533,12 @@ onMounted(() => {
   align-items: center;
   padding: $padding-mini $padding-base;
   border-radius: $border-radius * 2;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   gap: $margin-mini;
 
   .tag-rank {
-    font-size: $font-size-extra-small;
+    font-size: $font-size-2xs;
     font-weight: $font-weight-bold;
   }
 
@@ -548,7 +548,7 @@ onMounted(() => {
   }
 
   .hot-badge {
-    font-size: $font-size-small;
+    font-size: $font-size-sm;
   }
 }
 
@@ -562,8 +562,8 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: $padding-small 0;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding: $padding-sm 0;
+  border-bottom: 1rpx solid $color-border-extra-light;
 
   &:last-child {
     border-bottom: none;
@@ -576,22 +576,22 @@ onMounted(() => {
     flex: 1;
 
     .suggestion-icon {
-      font-size: $font-size-small;
-      color: $text-placeholder;
+      font-size: $font-size-sm;
+      color: $color-text-placeholder;
       flex-shrink: 0;
     }
 
     .suggestion-text {
       font-size: $font-size-base;
-      color: $text-regular;
+      color: $color-text-regular;
       @extend .text-truncate;
       flex: 1;
     }
   }
 
   .suggestion-arrow {
-    font-size: $font-size-medium;
-    color: $text-placeholder;
+    font-size: $font-size-base;
+    color: $color-text-placeholder;
     margin-left: $margin-mini;
     flex-shrink: 0;
   }
@@ -603,18 +603,18 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: $margin-base;
-  padding-bottom: $padding-small;
-  border-bottom: 1rpx solid $border-color-light;
+  padding-bottom: $padding-sm;
+  border-bottom: 1rpx solid $color-border-light;
 
   .results-title {
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
     font-weight: $font-weight-bold;
-    color: $text-primary;
+    color: $color-text-primary;
   }
 
   .results-count {
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 }
 
@@ -626,28 +626,28 @@ onMounted(() => {
 
 .result-item {
   padding: $padding-base;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
-  border-left: 4rpx solid $primary-color;
+  border-left: 4rpx solid $color-primary;
 
   .result-main {
-    margin-bottom: $margin-small;
+    margin-bottom: $margin-sm;
 
     .result-title {
       display: block;
       font-size: $font-size-base;
       font-weight: $font-weight-bold;
-      color: $text-primary;
+      color: $color-text-primary;
       margin-bottom: $margin-mini;
       @extend .text-truncate;
     }
 
     .result-desc {
       display: block;
-      font-size: $font-size-small;
-      color: $text-secondary;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
       line-height: 1.5;
-      margin-bottom: $margin-small;
+      margin-bottom: $margin-sm;
     }
 
     .result-tags {
@@ -657,10 +657,10 @@ onMounted(() => {
 
       .result-tag {
         padding: 4rpx 8rpx;
-        background: rgba($primary-color, 0.1);
-        color: $primary-color;
-        font-size: $font-size-extra-small;
-        border-radius: $border-radius-small;
+        background: rgba($color-primary, 0.1);
+        color: $color-primary;
+        font-size: $font-size-2xs;
+        border-radius: $border-radius-sm;
       }
     }
   }
@@ -669,8 +669,8 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: $font-size-extra-small;
-    color: $text-placeholder;
+    font-size: $font-size-2xs;
+    color: $color-text-placeholder;
   }
 }
 
@@ -688,14 +688,14 @@ onMounted(() => {
   }
 
   .empty-title {
-    font-size: $font-size-medium;
-    color: $text-secondary;
+    font-size: $font-size-base;
+    color: $color-text-secondary;
     margin-bottom: $margin-mini;
   }
 
   .empty-tip {
-    font-size: $font-size-small;
-    color: $text-placeholder;
+    font-size: $font-size-sm;
+    color: $color-text-placeholder;
   }
 }
 
@@ -707,9 +707,9 @@ onMounted(() => {
     margin-bottom: $margin-base;
 
     .tip-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-bold;
-      color: $text-primary;
+      color: $color-text-primary;
     }
   }
 
@@ -722,17 +722,17 @@ onMounted(() => {
   .tip-item {
     display: flex;
     align-items: center;
-    gap: $margin-small;
+    gap: $margin-sm;
 
     .tip-icon {
       font-size: $font-size-base;
-      color: $primary-color;
+      color: $color-primary;
       flex-shrink: 0;
     }
 
     .tip-text {
-      font-size: $font-size-small;
-      color: $text-secondary;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
       flex: 1;
     }
   }
@@ -751,7 +751,7 @@ onMounted(() => {
 }
 
 .filter-panel {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   width: 80vw;
   max-height: 70vh;
@@ -763,12 +763,12 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     padding: $padding-base;
-    border-bottom: 1rpx solid $border-color-light;
+    border-bottom: 1rpx solid $color-border-light;
 
     .filter-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-bold;
-      color: $text-primary;
+      color: $color-text-primary;
     }
 
     .filter-close {
@@ -777,8 +777,8 @@ onMounted(() => {
       @extend .flex-center;
 
       .close-icon {
-        font-size: $font-size-large;
-        color: $text-placeholder;
+        font-size: $font-size-lg;
+        color: $color-text-placeholder;
         font-weight: bold;
       }
     }
@@ -792,9 +792,9 @@ onMounted(() => {
 
   .filter-actions {
     display: flex;
-    gap: $margin-small;
+    gap: $margin-sm;
     padding: $padding-base;
-    border-top: 1rpx solid $border-color-light;
+    border-top: 1rpx solid $color-border-light;
 
     .btn-reset,
     .btn-confirm {
@@ -806,14 +806,14 @@ onMounted(() => {
     }
 
     .btn-reset {
-      background: $background-color;
-      color: $text-regular;
-      border: 2rpx solid $border-color;
+      background: $bg-color;
+      color: $color-text-regular;
+      border: 2rpx solid $color-border;
     }
 
     .btn-confirm {
-      background: $primary-color;
-      color: $background-color-white;
+      background: $color-primary;
+      color: $bg-color-white;
       border: none;
     }
   }

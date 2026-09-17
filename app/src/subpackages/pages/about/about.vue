@@ -134,19 +134,19 @@ const handleContactUs = () => {
 
 <style scoped lang="scss">
 .about-container {
-  background-color: $background-color;
+  bg-color: $bg-color;
   min-height: 100vh;
   padding: $padding-base;
 }
 
 /* 品牌头部 */
 .brand-header {
-  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  background: linear-gradient(135deg, $color-primary 0%, $color-secondary 100%);
   border-radius: $border-radius * 2;
   padding: $padding-base * 2 $padding-base;
   margin-bottom: $margin-base;
   text-align: center;
-  color: $background-color-white;
+  color: $bg-color-white;
   box-shadow: $box-shadow;
 }
 
@@ -158,7 +158,7 @@ const handleContactUs = () => {
 
 .brand-name {
   display: block;
-  font-size: $font-size-extra-large;
+  font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   margin-bottom: $margin-mini;
 }
@@ -171,7 +171,7 @@ const handleContactUs = () => {
 
 /* 信息卡片 */
 .info-card {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   margin-bottom: $margin-base;
@@ -179,21 +179,21 @@ const handleContactUs = () => {
 }
 
 .card-header {
-  border-bottom: 1rpx solid $border-color-lighter;
-  padding-bottom: $padding-small;
+  border-bottom: 1rpx solid $color-border-light;
+  padding-bottom: $padding-sm;
   margin-bottom: $padding-base;
 }
 
 .card-title {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .info-list {
   display: flex;
   flex-direction: column;
-  gap: $padding-small;
+  gap: $padding-sm;
 }
 
 .info-item {
@@ -205,18 +205,18 @@ const handleContactUs = () => {
 
 .info-label {
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
 }
 
 .info-value {
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
 }
 
 /* 功能特色 */
 .features-section {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   margin-bottom: $margin-base;
@@ -224,15 +224,15 @@ const handleContactUs = () => {
 }
 
 .section-header {
-  border-bottom: 1rpx solid $border-color-lighter;
-  padding-bottom: $padding-small;
+  border-bottom: 1rpx solid $color-border-light;
+  padding-bottom: $padding-sm;
   margin-bottom: $padding-base;
 }
 
 .section-title {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .features-grid {
@@ -251,34 +251,34 @@ const handleContactUs = () => {
 .feature-icon {
   width: 60rpx;
   height: 60rpx;
-  background: $primary-color-light;
-  border-radius: $border-radius-round;
+  background: $color-primary-light;
+  border-radius: $border-radius-circle;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 
   text {
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
   }
 }
 
 .feature-title {
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: calc($margin-mini / 2);
 }
 
 .feature-desc {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
   line-height: 1.3;
 }
 
 /* 支持与反馈 */
 .support-section {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   margin-bottom: $margin-base * 2;
@@ -295,11 +295,11 @@ const handleContactUs = () => {
   justify-content: space-between;
   align-items: center;
   padding: $padding-base 0;
-  border-bottom: 1rpx solid $border-color-extra-light;
-  transition: all $transition-duration;
+  border-bottom: 1rpx solid $color-border-extra-light;
+  transition: all $transition-normal;
 
   &:active {
-    background: $background-color;
+    background: $bg-color;
   }
 
   &:last-child {
@@ -313,7 +313,7 @@ const handleContactUs = () => {
 }
 
 .menu-icon {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   margin-right: $padding-base;
   width: 40rpx;
   text-align: center;
@@ -321,12 +321,12 @@ const handleContactUs = () => {
 
 .menu-text {
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .menu-arrow {
-  font-size: $font-size-medium;
-  color: $text-placeholder;
+  font-size: $font-size-base;
+  color: $color-text-placeholder;
 }
 
 /* 页脚 */
@@ -337,15 +337,15 @@ const handleContactUs = () => {
 
 .copyright {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   margin-bottom: $margin-mini;
 }
 
 .footer-text {
   display: block;
-  font-size: $font-size-small;
-  color: $text-placeholder;
+  font-size: $font-size-sm;
+  color: $color-text-placeholder;
 }
 
 /* 响应式调整 */

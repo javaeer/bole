@@ -602,7 +602,7 @@ onLoad((options: any) => {
   justify-content: space-between;
   align-items: center;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: 0 0 $border-radius $border-radius;
   box-shadow: $box-shadow;
 
@@ -612,7 +612,7 @@ onLoad((options: any) => {
 
     .btn {
       padding: 12rpx 24rpx;
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
       min-width: 80rpx;
     }
   }
@@ -620,38 +620,38 @@ onLoad((options: any) => {
   .status-badge {
     .project-status {
       padding: 4rpx 12rpx;
-      border-radius: $border-radius-small;
-      font-size: $font-size-extra-small;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-2xs;
       font-weight: $font-weight-medium;
 
       &.status-pending {
-        background: $info-bg;
-        color: $info-color;
-        border: 1rpx solid $info-border;
+        background: $bg-color-info;
+        color: $color-info;
+        border: 1rpx solid $color-info-border;
       }
 
       &.status-in-progress {
-        background: $primary-color-light;
-        color: $primary-color;
-        border: 1rpx solid $primary-border;
+        background: $color-primary-light;
+        color: $color-primary;
+        border: 1rpx solid $color-primary-border;
       }
 
       &.status-completed {
-        background: $success-bg;
-        color: $success-color;
-        border: 1rpx solid $success-border;
+        background: $bg-color-success;
+        color: $color-success;
+        border: 1rpx solid $color-success-border;
       }
 
       &.status-paused {
-        background: $warning-bg;
-        color: $warning-color;
-        border: 1rpx solid $warning-border;
+        background: $bg-color-warning;
+        color: $color-warning;
+        border: 1rpx solid $color-warning-border;
       }
 
       &.status-default {
-        background: $background-color;
-        color: $text-secondary;
-        border: 1rpx solid $border-color-light;
+        background: $bg-color;
+        color: $color-text-secondary;
+        border: 1rpx solid $color-border-light;
       }
     }
   }
@@ -662,11 +662,11 @@ onLoad((options: any) => {
 }
 
 .detail-content {
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .info-card {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   box-shadow: $box-shadow;
@@ -678,12 +678,12 @@ onLoad((options: any) => {
     align-items: center;
     margin-bottom: $margin-base;
     padding-bottom: $margin-mini;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     .card-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
     }
   }
 }
@@ -696,12 +696,12 @@ onLoad((options: any) => {
       display: block;
       font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
       margin-bottom: $margin-mini;
 
       &.required::after {
         content: '*';
-        color: $danger-color;
+        color: $color-danger;
         margin-left: 4rpx;
       }
     }
@@ -709,42 +709,42 @@ onLoad((options: any) => {
     .form-input {
       width: 100%;
       padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
+      color: $color-text-primary;
+      background: $bg-color-white;
       transition: all $transition-fast $ease-in-out;
       min-height: 80rpx;
       box-sizing: border-box;
 
       &:focus {
-        border-color: $primary-color;
+        color-border: $color-primary;
         box-shadow: $input-focus-shadow;
         outline: none;
       }
 
       &.error {
-        border-color: $danger-color;
+        color-border: $color-danger;
         box-shadow: $input-error-shadow;
       }
 
       &[disabled] {
-        background: $background-color;
-        color: $text-secondary;
+        background: $bg-color;
+        color: $color-text-secondary;
         cursor: not-allowed;
       }
     }
 
     .progress-display {
       padding: 16rpx;
-      background: $background-color;
+      background: $bg-color;
       border-radius: $border-radius;
 
       .progress-label {
         display: block;
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
         margin-bottom: 12rpx;
       }
 
@@ -756,14 +756,14 @@ onLoad((options: any) => {
         .progress-value {
           font-size: $font-size-base;
           font-weight: $font-weight-medium;
-          color: $primary-color;
+          color: $color-primary;
           min-width: 60rpx;
         }
 
         .progress-bar {
           flex: 1;
           height: 12rpx;
-          background: $background-color-white;
+          background: $bg-color-white;
           border-radius: 6rpx;
           overflow: hidden;
 
@@ -772,19 +772,19 @@ onLoad((options: any) => {
             border-radius: 6rpx;
 
             &.progress-early {
-              background: linear-gradient(90deg, $success-color, color.adjust($success-color, $lightness: 20%));
+              background: linear-gradient(90deg, $color-success, color.adjust($color-success, $lightness: 20%));
             }
 
             &.progress-middle {
-              background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+              background: linear-gradient(90deg, $color-primary, color.adjust($color-primary, $lightness: 20%));
             }
 
             &.progress-late {
-              background: linear-gradient(90deg, $warning-color, color.adjust($warning-color, $lightness: 20%));
+              background: linear-gradient(90deg, $color-warning, color.adjust($color-warning, $lightness: 20%));
             }
 
             &.progress-completed {
-              background: linear-gradient(90deg, $info-color, color.adjust($info-color, $lightness: 20%));
+              background: linear-gradient(90deg, $color-info, color.adjust($color-info, $lightness: 20%));
             }
           }
         }
@@ -794,33 +794,33 @@ onLoad((options: any) => {
     .form-textarea {
       width: 100%;
       padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
+      color: $color-text-primary;
+      background: $bg-color-white;
       min-height: 200rpx;
       line-height: 1.5;
       box-sizing: border-box;
 
       &[disabled] {
-        background: $background-color;
-        color: $text-secondary;
+        background: $bg-color;
+        color: $color-text-secondary;
         cursor: not-allowed;
       }
     }
 
     .textarea-count {
       text-align: right;
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
       margin-top: 8rpx;
     }
 
     .error-text {
       display: block;
-      font-size: $font-size-extra-small;
-      color: $danger-color;
+      font-size: $font-size-2xs;
+      color: $color-danger;
       margin-top: 8rpx;
     }
   }
@@ -836,14 +836,14 @@ onLoad((options: any) => {
     .achievement-input {
       flex: 1;
       padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
+      color: $color-text-primary;
+      background: $bg-color-white;
 
       &:focus {
-        border-color: $primary-color;
+        color-border: $color-primary;
         outline: none;
       }
     }
@@ -852,10 +852,10 @@ onLoad((options: any) => {
       width: 60rpx;
       height: 60rpx;
       margin-left: 12rpx;
-      background: $danger-color;
+      background: $color-danger;
       color: white;
       border: none;
-      border-radius: $border-radius-small;
+      border-radius: $border-radius-sm;
       font-size: 28rpx;
       display: flex;
       align-items: center;
@@ -870,22 +870,22 @@ onLoad((options: any) => {
   .btn-add-achievement {
     width: 100%;
     padding: 20rpx;
-    background: $primary-color-light;
-    color: $primary-color;
-    border: 2rpx dashed $primary-color;
+    background: $color-primary-light;
+    color: $color-primary;
+    border: 2rpx dashed $color-primary;
     border-radius: $border-radius;
     font-size: $font-size-base;
     margin-top: 8rpx;
 
     &:active {
-      background: $primary-color-light;
+      background: $color-primary-light;
     }
   }
 
   .achievements-count {
     text-align: right;
-    font-size: $font-size-extra-small;
-    color: $text-secondary;
+    font-size: $font-size-2xs;
+    color: $color-text-secondary;
     margin-top: 8rpx;
   }
 }
@@ -895,7 +895,7 @@ onLoad((options: any) => {
     display: flex;
     align-items: flex-start;
     padding: 16rpx 0;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     &:last-child {
       border-bottom: none;
@@ -903,13 +903,13 @@ onLoad((options: any) => {
 
     .achievement-index {
       width: 40rpx;
-      color: $text-secondary;
+      color: $color-text-secondary;
       font-weight: $font-weight-medium;
     }
 
     .achievement-content {
       flex: 1;
-      color: $text-regular;
+      color: $color-text-regular;
       line-height: 1.5;
     }
   }
@@ -917,7 +917,7 @@ onLoad((options: any) => {
   .no-achievements {
     padding: 40rpx 0;
     text-align: center;
-    color: $text-placeholder;
+    color: $color-text-placeholder;
     font-size: $font-size-base;
   }
 }
@@ -928,7 +928,7 @@ onLoad((options: any) => {
     justify-content: space-between;
     align-items: center;
     padding: 16rpx 0;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     &:last-child {
       border-bottom: none;
@@ -936,12 +936,12 @@ onLoad((options: any) => {
 
     .info-label {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: $color-text-secondary;
     }
 
     .info-value {
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
       font-weight: $font-weight-medium;
     }
   }
@@ -953,8 +953,8 @@ onLoad((options: any) => {
   left: 0;
   right: 0;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
-  border-top: 1rpx solid $border-color-light;
+  background: $bg-color-white;
+  border-top: 1rpx solid $color-border-light;
   z-index: $z-index-base;
 
   .btn-block {
@@ -964,7 +964,7 @@ onLoad((options: any) => {
 
 @media (max-width: $screen-md) {
   .detail-header {
-    padding: 16rpx $padding-small;
+    padding: 16rpx $padding-sm;
   }
 
   .detail-content {
@@ -988,7 +988,7 @@ onLoad((options: any) => {
   }
 
   .detail-footer {
-    padding: 16rpx $padding-small;
+    padding: 16rpx $padding-sm;
   }
 }
 </style>

@@ -183,8 +183,8 @@ onMounted(() => {
 
 .message-tabs {
   display: flex;
-  background: $background-color-white;
-  border-bottom: 1rpx solid $border-color-lighter;
+  background: $bg-color-white;
+  border-bottom: 1rpx solid $color-border-light;
   position: sticky;
   top: 0;
   z-index: $z-index-base;
@@ -208,7 +208,7 @@ onMounted(() => {
 
   &.active {
     color: $tab-active-color;
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-medium;
 
     .badge {
       background: $tab-active-color;
@@ -256,7 +256,7 @@ onMounted(() => {
   transition: transform $transition-fast;
 
   &.unread {
-    border-color: rgba($primary-color, 0.1);
+    color-border: rgba($color-primary, 0.1);
 
     .unread-dot {
       display: block;
@@ -272,7 +272,7 @@ onMounted(() => {
   width: $avatar-size;
   height: $avatar-size;
   border-radius: $avatar-border-radius;
-  margin-right: $margin-small;
+  margin-right: $margin-sm;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -281,24 +281,24 @@ onMounted(() => {
   overflow: hidden;
 
   &.system-avatar {
-    background: $message-system-color;
-    color: $background-color-white;
+    background: $color-message-system;
+    color: $bg-color-white;
   }
 
   &.notice-avatar {
-    background: $message-notice-color;
-    color: $background-color-white;
+    background: $color-message-notice;
+    color: $bg-color-white;
   }
 
   &.interact-avatar {
-    background: $message-interact-color;
-    color: $background-color-white;
+    background: $color-message-interact;
+    color: $bg-color-white;
   }
 }
 
 .message-avatar .icon-system {
-  font-size: $font-size-large;
-  color: $message-system-color;
+  font-size: $font-size-lg;
+  color: $color-message-system;
 }
 
 .empty-icon {
@@ -320,22 +320,22 @@ onMounted(() => {
 }
 
 .message-title {
-  font-size: $font-size-medium;
-  font-weight: $font-weight-semibold;
-  color: $text-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
   margin-bottom: 2rpx;
   @extend .text-truncate;
 }
 
 .message-sender {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   @extend .text-truncate;
 }
 
 .message-time {
-  font-size: $font-size-extra-small;
-  color: $text-placeholder;
+  font-size: $font-size-2xs;
+  color: $color-text-placeholder;
   white-space: nowrap;
   flex-shrink: 0;
   margin-top: 2rpx;
@@ -343,7 +343,7 @@ onMounted(() => {
 
 .message-preview {
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
   line-height: 1.5;
   margin-bottom: $margin-mini;
   display: -webkit-box;
@@ -361,24 +361,24 @@ onMounted(() => {
 
 .btn-reply {
   @extend .btn;
-  @extend .btn-small;
-  background: $primary-color;
-  color: $background-color-white;
+  @extend .btn-sm;
+  background: $color-primary;
+  color: $bg-color-white;
   border: none;
   padding: 0 $padding-mini;
-  height: $button-small-height;
-  border-radius: $button-small-border-radius;
-  font-size: $button-small-font-size;
+  height: $button-sm-height;
+  border-radius: $button-sm-border-radius;
+  font-size: $button-sm-font-size;
   font-weight: $font-weight-medium;
-  transition: background-color $transition-fast;
+  transition: bg-color $transition-fast;
   cursor: pointer;
 
   &:hover {
-    background: color.adjust($primary-color, $lightness: -10%);
+    background: color.adjust($color-primary, $lightness: -10%);
   }
 
   &:disabled {
-    background: $text-placeholder;
+    background: $color-text-placeholder;
     cursor: not-allowed;
   }
 }
@@ -418,17 +418,17 @@ onMounted(() => {
 .loading-more {
   text-align: center;
   padding: $padding-base 0;
-  color: $text-placeholder;
-  font-size: $font-size-small;
+  color: $color-text-placeholder;
+  font-size: $font-size-sm;
 }
 
 @media (max-width: $breakpoint-sm) {
   .message-list {
-    padding: $padding-small;
+    padding: $padding-sm;
   }
 
   .message-item {
-    padding: $padding-small;
+    padding: $padding-sm;
   }
 
   .message-avatar {
@@ -438,7 +438,7 @@ onMounted(() => {
   }
 
   .icon-system {
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
   }
 
   .message-title {
@@ -446,7 +446,7 @@ onMounted(() => {
   }
 
   .message-preview {
-    font-size: $font-size-small;
+    font-size: $font-size-sm;
   }
 }
 

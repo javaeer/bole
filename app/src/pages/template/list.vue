@@ -451,16 +451,16 @@ onMounted(async () => {
 
 .list-page-container {
   min-height: 100vh;
-  background-color: $background-color;
+  bg-color: $bg-color;
   padding-bottom: $tabbar-height;
 }
 
 .search-bar {
   display: flex;
   align-items: center;
-  padding: $padding-small $padding-base;
-  background-color: $background-color-white;
-  border-bottom: 1px solid $border-color-light;
+  padding: $padding-sm $padding-base;
+  bg-color: $bg-color-white;
+  border-bottom: 1px solid $color-border-light;
 }
 
 .search-input-wrapper {
@@ -468,30 +468,30 @@ onMounted(async () => {
   position: relative;
   display: flex;
   align-items: center;
-  background-color: $background-color;
-  border-radius: $border-radius-large;
+  bg-color: $bg-color;
+  border-radius: $border-radius-lg;
   padding: 12rpx 20rpx;
-  margin-right: $margin-small;
+  margin-right: $margin-sm;
 }
 
 .search-icon {
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   margin-right: 8rpx;
 }
 
 .search-input {
   flex: 1;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   background: transparent;
   border: none;
   outline: none;
 }
 
 .search-placeholder {
-  color: $text-placeholder;
-  font-size: $font-size-small;
+  color: $color-text-placeholder;
+  font-size: $font-size-sm;
 }
 
 .search-clear {
@@ -500,31 +500,31 @@ onMounted(async () => {
   justify-content: center;
   width: 32rpx;
   height: 32rpx;
-  background-color: $border-color;
+  bg-color: $color-border;
   border-radius: 50%;
   margin-left: 8rpx;
 }
 
 .clear-icon {
-  font-size: $font-size-large;
-  color: $text-secondary;
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
   line-height: 1;
 }
 
 .btn-filter {
   padding: 12rpx 20rpx;
-  background-color: $primary-color-light;
-  border: 1px solid $border-color-light;
-  border-radius: $border-radius-small;
-  font-size: $font-size-small;
-  color: $text-primary;
+  bg-color: $color-primary-light;
+  border: 1px solid $color-border-light;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
   white-space: nowrap;
 }
 
 .filter-tags {
   padding: $padding-mini $padding-base;
-  background-color: $background-color-white;
-  border-bottom: 1px solid $border-color-light;
+  bg-color: $bg-color-white;
+  border-bottom: 1px solid $color-border-light;
 }
 
 .tags-scroll {
@@ -541,35 +541,35 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   padding: 4rpx 12rpx;
-  background-color: $primary-color-light;
-  border-radius: $border-radius-small;
+  bg-color: $color-primary-light;
+  border-radius: $border-radius-sm;
   margin-right: $margin-mini;
-  border: 1px solid $border-color-light;
+  border: 1px solid $color-border-light;
 }
 
 .tag-text {
-  font-size: $font-size-extra-small;
-  color: $text-primary;
+  font-size: $font-size-2xs;
+  color: $color-text-primary;
   margin-right: 4rpx;
 }
 
 .tag-remove {
-  font-size: $font-size-large;
-  color: $text-secondary;
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
   line-height: 1;
   margin-left: 4rpx;
 }
 
 .clear-all {
   padding: 4rpx 12rpx;
-  background-color: $background-color;
-  border-radius: $border-radius-small;
-  border: 1px solid $border-color-light;
+  bg-color: $bg-color;
+  border-radius: $border-radius-sm;
+  border: 1px solid $color-border-light;
 }
 
 .clear-all-text {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 .sort-bar {
@@ -577,8 +577,8 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   padding: $padding-mini $padding-base;
-  background-color: $background-color-white;
-  border-bottom: 1px solid $border-color-light;
+  bg-color: $bg-color-white;
+  border-bottom: 1px solid $color-border-light;
 }
 
 .sort-tabs {
@@ -591,13 +591,13 @@ onMounted(async () => {
   align-items: center;
   padding: 8rpx 16rpx;
   margin-right: $margin-mini;
-  border-radius: $border-radius-small;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 
   &.active {
-    background-color: $primary-color-light;
-    color: $primary-color;
+    bg-color: $color-primary-light;
+    color: $color-primary;
   }
 }
 
@@ -606,7 +606,7 @@ onMounted(async () => {
 }
 
 .sort-arrow {
-  font-size: $font-size-extra-small;
+  font-size: $font-size-2xs;
 }
 
 .view-mode {
@@ -616,14 +616,14 @@ onMounted(async () => {
 
 .view-mode-btn {
   padding: 8rpx;
-  font-size: $font-size-large;
-  color: $text-secondary;
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
   margin-left: $margin-mini;
 
   &.active {
-    color: $primary-color;
-    background-color: $primary-color-light;
-    border-radius: $border-radius-small;
+    color: $color-primary;
+    bg-color: $color-primary-light;
+    border-radius: $border-radius-sm;
   }
 }
 
@@ -632,17 +632,17 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: $padding-large * 2 $padding-base;
+  padding: $padding-lg * 2 $padding-base;
 }
 
 .loading-spinner {
   width: 60rpx;
   height: 60rpx;
-  border: 4rpx solid $border-color-light;
-  border-top-color: $primary-color;
+  border: 4rpx solid $color-border-light;
+  border-top-color: $color-primary;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 }
 
 @keyframes spin {
@@ -652,8 +652,8 @@ onMounted(async () => {
 }
 
 .loading-text {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .empty-state {
@@ -661,7 +661,7 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: $padding-large * 2 $padding-base;
+  padding: $padding-lg * 2 $padding-base;
   text-align: center;
 }
 
@@ -671,21 +671,21 @@ onMounted(async () => {
 }
 
 .empty-text {
-  font-size: $font-size-large;
-  color: $text-primary;
+  font-size: $font-size-lg;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
   margin-bottom: $margin-mini;
 }
 
 .empty-subtext {
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   margin-bottom: $margin-base;
 }
 
 .btn-create {
   padding: 16rpx 32rpx;
-  background-color: $primary-color;
+  bg-color: $color-primary;
   border-radius: $border-radius;
   font-size: $font-size-base;
   color: white;
@@ -703,7 +703,7 @@ onMounted(async () => {
 }
 
 .template-item {
-  background-color: $background-color-white;
+  bg-color: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   box-shadow: $box-shadow-light;
@@ -718,22 +718,22 @@ onMounted(async () => {
 .template-item-header {
   display: flex;
   align-items: center;
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 }
 
 .template-avatar {
   width: $avatar-size;
   height: $avatar-size;
-  border-radius: $border-radius-round;
+  border-radius: $border-radius-circle;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: $margin-small;
+  margin-right: $margin-sm;
   flex-shrink: 0;
 }
 
 .avatar-text {
-  font-size: $font-size-large;
+  font-size: $font-size-lg;
   color: white;
   font-weight: $font-weight-medium;
 }
@@ -744,16 +744,16 @@ onMounted(async () => {
 }
 
 .template-name {
-  font-size: $font-size-medium;
-  color: $text-primary;
+  font-size: $font-size-base;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
   margin-bottom: 4rpx;
   display: block;
 }
 
 .template-description {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   display: block;
 }
 
@@ -778,22 +778,22 @@ onMounted(async () => {
 }
 
 .template-item-content {
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 }
 
 .template-meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: $margin-small;
-  margin-bottom: $margin-small;
+  gap: $margin-sm;
+  margin-bottom: $margin-sm;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 .meta-icon {
@@ -807,12 +807,12 @@ onMounted(async () => {
 }
 
 .feature-tag {
-  font-size: $font-size-extra-small;
+  font-size: $font-size-2xs;
 }
 
 .template-item-actions {
-  padding-top: $padding-small;
-  border-top: 1px solid $border-color-light;
+  padding-top: $padding-sm;
+  border-top: 1px solid $color-border-light;
 }
 
 .price-info {
@@ -821,14 +821,14 @@ onMounted(async () => {
 }
 
 .price-label {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   margin-right: 4rpx;
 }
 
 .price-value {
-  font-size: $font-size-medium;
-  color: $danger-color;
+  font-size: $font-size-base;
+  color: $color-danger;
   font-weight: $font-weight-medium;
 }
 
@@ -839,7 +839,7 @@ onMounted(async () => {
 
 .btn-action {
   padding: 12rpx 24rpx;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   min-width: 120rpx;
 }
@@ -866,17 +866,17 @@ onMounted(async () => {
 }
 
 .card-header {
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 }
 
 .card-avatar {
   width: 60rpx;
   height: 60rpx;
-  border-radius: $border-radius-round;
+  border-radius: $border-radius-circle;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: $margin-small;
+  margin-right: $margin-sm;
   flex-shrink: 0;
 }
 
@@ -887,20 +887,20 @@ onMounted(async () => {
 
 .card-name {
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
   margin-bottom: 4rpx;
   display: block;
 }
 
 .card-description {
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
   min-height: 80rpx;
 }
 
 .description-text {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   line-height: 1.4;
 }
 
@@ -908,25 +908,25 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   gap: 8rpx;
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 }
 
 .feature-chip {
-  font-size: $font-size-extra-small;
+  font-size: $font-size-2xs;
 }
 
 .card-footer {
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 }
 
 .update-time {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 .card-actions {
-  padding-top: $padding-small;
-  border-top: 1px solid $border-color-light;
+  padding-top: $padding-sm;
+  border-top: 1px solid $color-border-light;
 }
 
 .load-more {
@@ -935,11 +935,11 @@ onMounted(async () => {
   justify-content: center;
   padding: $padding-base;
   margin-top: $margin-base;
-  background-color: $background-color-white;
+  bg-color: $bg-color-white;
   border-radius: $border-radius;
-  border: 1px solid $border-color-light;
+  border: 1px solid $color-border-light;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
 }
 </style>

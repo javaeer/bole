@@ -605,7 +605,7 @@ defineExpose({
   height: 80rpx;
   line-height: 80rpx;
   padding: 0 32rpx 0 24rpx;
-  background-color: #ffffff;
+  bg-color: #ffffff;
   border: 2rpx solid #e5e5e5;
   border-radius: 8rpx;
   font-size: 28rpx;
@@ -618,8 +618,8 @@ defineExpose({
   }
 
   &.disabled {
-    background-color: #f5f5f5;
-    border-color: #d9d9d9;
+    bg-color: #f5f5f5;
+    color-border: #d9d9d9;
     cursor: not-allowed;
 
     .disabled-text {
@@ -642,7 +642,7 @@ defineExpose({
   }
 
   &:active:not(.disabled) {
-    border-color: #409eff;
+    color-border: #409eff;
   }
 }
 
@@ -660,7 +660,7 @@ defineExpose({
 .selected-region {
   margin-top: 24rpx;
   padding: 20rpx;
-  background-color: #f5f7fa;
+  bg-color: #f5f7fa;
   border-radius: 8rpx;
   border: 1rpx solid #e4e7ed;
   display: flex;
@@ -681,17 +681,17 @@ defineExpose({
   padding: 8rpx 16rpx;
   border-radius: 4rpx;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: bg-color 0.3s;
 
   &:active {
-    background-color: rgba(24, 144, 255, 0.1);
+    bg-color: rgba(24, 144, 255, 0.1);
   }
 }
 
 .global-error {
   margin-top: 16rpx;
   padding: 16rpx;
-  background-color: #fff2f0;
+  bg-color: #fff2f0;
   border: 1rpx solid #ffccc7;
   border-radius: 8rpx;
   font-size: 26rpx;
@@ -701,7 +701,7 @@ defineExpose({
 .debug-info {
   margin-top: 24rpx;
   padding: 20rpx;
-  background-color: #f6ffed;
+  bg-color: #f6ffed;
   border: 1rpx solid #b7eb8f;
   border-radius: 8rpx;
   font-size: 24rpx;

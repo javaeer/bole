@@ -34,7 +34,7 @@ const TemplateAPI = {
   },
 
   pageIndex(params: PageParam, query?: TemplateQuery) {
-    return request.page<PageResult<TemplateResult>>(`${TEMPLATE_BASE_URL}/index`, params, query);
+    return request.page<PageResult<TemplateResult>>(`${TEMPLATE_BASE_URL}/index`, params, query, { skipAuth: true });
   },
 
 };

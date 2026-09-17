@@ -229,13 +229,13 @@ const containerStyle = computed(() => {
 
   // 设置主题颜色作为CSS变量
   if (globalStyle?.primaryColor) {
-    style['--primary-color'] = globalStyle.primaryColor;
+    style['--color-primary'] = globalStyle.primaryColor;
   }
   if (globalStyle?.accentColor) {
     style['--accent-color'] = globalStyle.accentColor;
   }
   if (globalStyle?.secondaryColor) {
-    style['--secondary-color'] = globalStyle.secondaryColor;
+    style['--color-secondary'] = globalStyle.secondaryColor;
   }
 
   return style;
@@ -394,9 +394,9 @@ const getComponentWrapperStyle = (index: number, column?: string) => {
 <style scoped lang="scss">
 .template-preview {
   // 定义CSS变量
-  --primary-color: #d4af37;
+  --color-primary: #d4af37;
   --accent-color: #f7ef8a;
-  --secondary-color: #f9f3e3;
+  --color-secondary: #f9f3e3;
 
   min-height: 400rpx;
   transition: all 0.3s ease;
@@ -553,16 +553,16 @@ const getComponentWrapperStyle = (index: number, column?: string) => {
     transition: all 0.3s ease;
 
     &.primary {
-      background-color: var(--primary-color);
+      bg-color: var(--color-primary);
     }
 
     &.secondary {
-      background-color: var(--secondary-color);
+      bg-color: var(--color-secondary);
       color: #333;
     }
 
     &.accent {
-      background-color: var(--accent-color);
+      bg-color: var(--accent-color);
       color: #333;
     }
 

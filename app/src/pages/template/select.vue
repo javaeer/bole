@@ -219,35 +219,35 @@ onMounted(async () => {
 
 .template-select-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, $primary-color-lighter 0%, $background-color-white 100%);
+  background: linear-gradient(135deg, $color-primary-light 0%, $bg-color-white 100%);
   padding-bottom: 160rpx;
 }
 
 /* 头部区域 */
 .select-header {
-  padding: $uni-spacing-row-base;
+  padding: $spacing-2;
   text-align: center;
 }
 
 .header-title {
   display: block;
-  font-size: $font-size-extra-large;
+  font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $text-primary;
-  margin-bottom: calc($uni-spacing-col-sm / 2);
+  color: $color-text-primary;
+  margin-bottom: calc($spacing-1 / 2);
 }
 
 .header-subtitle {
   display: block;
-  font-size: $uni-font-size-base;
-  color: $text-secondary;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
 }
 
 /* 分类标签 */
 .category-tabs {
-  background: $uni-bg-color;
-  padding: $uni-spacing-col-sm $uni-spacing-row-base;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  background: $bg-color;
+  padding: $spacing-1 $spacing-2;
+  border-bottom: 1rpx solid $color-border-extra-light;
 }
 
 .tabs-scroll {
@@ -258,23 +258,23 @@ onMounted(async () => {
 .tabs-container {
   display: inline-flex;
   align-items: center;
-  gap: $uni-spacing-col-base;
+  gap: $spacing-2;
 }
 
 .tab-item {
-  padding: calc($uni-spacing-col-sm / 2) $uni-spacing-col-base;
-  border-radius: $uni-border-radius-circle;
-  font-size: $uni-font-size-base;
-  color: $text-regular;
-  background: $background-color;
+  padding: calc($spacing-1 / 2) $spacing-2;
+  border-radius: $border-radius-circle;
+  font-size: $font-size-base;
+  color: $color-text-regular;
+  background: $bg-color;
   cursor: pointer;
   transition: all $transition-fast;
   white-space: nowrap;
   flex-shrink: 0;
 
   &.active {
-    background: $primary-color;
-    color: $uni-bg-color;
+    background: $color-primary;
+    color: $bg-color;
     font-weight: $font-weight-medium;
   }
 }
@@ -283,13 +283,13 @@ onMounted(async () => {
 .template-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $uni-spacing-col-base;
-  padding: $uni-spacing-row-base;
+  gap: $spacing-2;
+  padding: $spacing-2;
 }
 
 .template-card {
-  background: $uni-bg-color;
-  border-radius: $border-radius-large;
+  background: $bg-color;
+  border-radius: $border-radius-lg;
   overflow: hidden;
   box-shadow: $card-shadow;
   transition: all $transition-normal;
@@ -302,58 +302,58 @@ onMounted(async () => {
   }
 
   &-active {
-    border-color: $primary-color;
-    background: linear-gradient(135deg, $primary-color-lighter 0%, $uni-bg-color 100%);
+    color-border: $color-primary;
+    background: linear-gradient(135deg, $color-primary-light 0%, $bg-color 100%);
   }
 }
 
 .template-preview {
   @extend .flex-center;
   height: 320rpx;
-  border-radius: calc($border-radius-large / 2) calc($border-radius-large / 2) 0 0;
-  padding: $uni-spacing-col-base;
+  border-radius: calc($border-radius-lg / 2) calc($border-radius-lg / 2) 0 0;
+  padding: $spacing-2;
   position: relative;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  border-bottom: 1rpx solid $color-border-extra-light;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .preview-header {
   display: flex;
   align-items: center;
-  margin-bottom: $uni-spacing-col-base;
+  margin-bottom: $spacing-2;
 }
 
 .preview-avatar {
   width: 60rpx;
   height: 60rpx;
-  background: $border-color;
-  border-radius: $uni-border-radius-circle;
-  margin-right: $uni-spacing-col-sm;
+  background: $color-border;
+  border-radius: $border-radius-circle;
+  margin-right: $spacing-1;
   @extend .flex-center;
 }
 
 .avatar-placeholder {
-  font-size: $uni-font-size-lg;
-  color: $text-placeholder;
+  font-size: $font-size-lg;
+  color: $color-text-placeholder;
 }
 
 .preview-title {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: calc($uni-spacing-col-sm / 2);
+  gap: calc($spacing-1 / 2);
 }
 
 .preview-name-line {
   height: 16rpx;
-  background: $text-primary;
+  background: $color-text-primary;
   border-radius: 4rpx;
   width: 60%;
 }
 
 .preview-position-line {
   height: 12rpx;
-  background: $text-secondary;
+  background: $color-text-secondary;
   border-radius: 4rpx;
   width: 40%;
 }
@@ -361,7 +361,7 @@ onMounted(async () => {
 .preview-content {
   .preview-section {
     height: 12rpx;
-    background: $border-color-light;
+    background: $color-border-light;
     border-radius: 4rpx;
     margin-bottom: 8rpx;
 
@@ -379,14 +379,14 @@ onMounted(async () => {
   position: absolute;
   top: 20rpx;
   right: 20rpx;
-  padding: calc($uni-spacing-col-sm / 2) $uni-spacing-col-sm;
-  border-radius: $uni-border-radius-circle;
-  font-size: $uni-font-size-sm;
+  padding: calc($spacing-1 / 2) $spacing-1;
+  border-radius: $border-radius-circle;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  color: $uni-bg-color;
+  color: $bg-color;
 
   &.badge-classic {
-    background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -20%) 100%);
+    background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness: -20%) 100%);
   }
 
   &.badge-modern {
@@ -412,60 +412,60 @@ onMounted(async () => {
   right: 20rpx;
   display: flex;
   align-items: center;
-  gap: calc($uni-spacing-col-sm / 2);
-  background: rgba($uni-bg-color, 0.8);
-  padding: calc($uni-spacing-col-sm / 2) $uni-spacing-col-sm;
-  border-radius: $uni-border-radius-sm;
-  font-size: $uni-font-size-sm;
-  color: $text-secondary;
+  gap: calc($spacing-1 / 2);
+  background: rgba($bg-color, 0.8);
+  padding: calc($spacing-1 / 2) $spacing-1;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .template-info {
-  padding: $uni-spacing-col-base;
+  padding: $spacing-2;
   display: flex;
   flex-direction: column;
-  gap: calc($uni-spacing-col-sm / 2);
+  gap: calc($spacing-1 / 2);
 }
 
 .template-desc {
-  font-size: $uni-font-size-sm;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
   line-height: 1.4;
 }
 
 .template-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: calc($uni-spacing-col-sm / 2);
-  margin-top: calc($uni-spacing-col-sm / 2);
+  gap: calc($spacing-1 / 2);
+  margin-top: calc($spacing-1 / 2);
 }
 
 .tag-item {
-  font-size: $uni-font-size-sm;
-  color: $text-secondary;
-  background: $background-color;
-  padding: calc($uni-spacing-col-sm / 4) calc($uni-spacing-col-sm / 2);
-  border-radius: $uni-border-radius-sm;
-  border: 1rpx solid $border-color-light;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: $bg-color;
+  padding: calc($spacing-1 / 4) calc($spacing-1 / 2);
+  border-radius: $border-radius-sm;
+  border: 1rpx solid $color-border-light;
 }
 
 /* 加载更多 */
 .load-more {
   @extend .flex-center;
-  padding: $uni-spacing-row-base;
+  padding: $spacing-2;
 }
 
 .load-more-text {
-  font-size: $uni-font-size-base;
-  color: $primary-color;
+  font-size: $font-size-base;
+  color: $color-primary;
   cursor: pointer;
-  padding: $uni-spacing-col-sm $uni-spacing-row-base;
-  border: 1rpx solid $primary-color;
-  border-radius: $uni-border-radius-lg;
+  padding: $spacing-1 $spacing-2;
+  border: 1rpx solid $color-primary;
+  border-radius: $border-radius-lg;
   transition: all $transition-fast;
 
   &:active {
-    background: $primary-color-light;
+    background: $color-primary-light;
     opacity: 0.8;
   }
 }
@@ -476,18 +476,18 @@ onMounted(async () => {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: $uni-spacing-col-base $uni-spacing-row-base;
-  background: linear-gradient(to top, $uni-bg-color 80%, transparent);
+  padding: $spacing-2 $spacing-2;
+  background: linear-gradient(to top, $bg-color 80%, transparent);
   z-index: $z-index-dropdown;
 }
 
 .next-button {
   width: 100%;
   height: $button-height;
-  background: $primary-color;
-  border-radius: $uni-border-radius-lg;
-  color: $uni-bg-color;
-  font-size: $uni-font-size-base;
+  background: $color-primary;
+  border-radius: $border-radius-lg;
+  color: $bg-color;
+  font-size: $font-size-base;
   font-weight: $font-weight-medium;
   border: none;
   transition: all $transition-normal;
@@ -495,7 +495,7 @@ onMounted(async () => {
   &:active {
     transform: scale(0.98);
     box-shadow: $button-active-shadow;
-    background: color.adjust($primary-color, $lightness: -10%);
+    background: color.adjust($color-primary, $lightness: -10%);
   }
 
   &-disabled {
@@ -511,26 +511,26 @@ onMounted(async () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($uni-bg-color, 0.8);
+  background: rgba($bg-color, 0.8);
   z-index: $z-index-modal;
 }
 
 .loading-content {
-  background: $uni-bg-color;
-  border-radius: $border-radius-large;
-  padding: $uni-spacing-row-base;
+  background: $bg-color;
+  border-radius: $border-radius-lg;
+  padding: $spacing-2;
   box-shadow: $box-shadow-dark;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $uni-spacing-col-sm;
+  gap: $spacing-1;
 }
 
 .loading-spinner {
   width: 60rpx;
   height: 60rpx;
-  border: 4rpx solid $border-color-light;
-  border-top-color: $primary-color;
+  border: 4rpx solid $color-border-light;
+  border-top-color: $color-primary;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -542,8 +542,8 @@ onMounted(async () => {
 }
 
 .loading-text {
-  font-size: $uni-font-size-base;
-  color: $text-regular;
+  font-size: $font-size-base;
+  color: $color-text-regular;
 }
 
 /* 响应式调整 */
@@ -553,7 +553,7 @@ onMounted(async () => {
   }
 
   .tabs-container {
-    gap: $uni-spacing-col-sm;
+    gap: $spacing-1;
   }
 }
 </style>

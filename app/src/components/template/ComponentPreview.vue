@@ -354,9 +354,9 @@ const emit = defineEmits(['remove', 'configure']);
 
 <style scoped lang="scss">
 .component-preview {
-  --primary-color: #d4af37;
+  --color-primary: #d4af37;
   --accent-color: #f7ef8a;
-  --danger-color: #f56c6c;
+  --color-danger: #f56c6c;
 
   margin-bottom: 20rpx;
   border: 1px solid #eee;
@@ -377,14 +377,14 @@ const emit = defineEmits(['remove', 'configure']);
   margin-bottom: 16rpx;
   padding-bottom: 12rpx;
   border-bottom: 1px solid #f0f0f0;
-  border-left: 3px solid var(--primary-color);
+  border-left: 3px solid var(--color-primary);
   padding-left: 8rpx;
 }
 
 .component-title {
   font-size: 28rpx;
   font-weight: bold;
-  color: var(--primary-color);
+  color: var(--color-primary);
 }
 
 .component-actions {

@@ -373,8 +373,8 @@ const handleReport = () => {
 
 /* 自定义导航栏 */
 .custom-navbar {
-  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-  color: $background-color-white;
+  background: linear-gradient(135deg, $color-primary 0%, $color-secondary 100%);
+  color: $bg-color-white;
   padding: $navigation-bar-height $padding-base $padding-base;
   display: flex;
   justify-content: space-between;
@@ -384,22 +384,22 @@ const handleReport = () => {
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .navbar-back-icon {
-  font-size: $font-size-large;
+  font-size: $font-size-lg;
   font-weight: $font-weight-bold;
 }
 
 .navbar-title {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
 }
 
 .navbar-right {
   .navbar-more-icon {
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
     font-weight: $font-weight-bold;
     padding: $padding-mini;
   }
@@ -407,22 +407,22 @@ const handleReport = () => {
 
 /* 消息头部信息 */
 .message-header {
-  background: $background-color-white;
+  background: $bg-color-white;
   padding: $padding-base;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  border-bottom: 1rpx solid $color-border-extra-light;
 }
 
 .message-sender {
   display: flex;
   align-items: center;
-  gap: $margin-small;
+  gap: $margin-sm;
   margin-bottom: $margin-mini;
 }
 
 .sender-avatar {
   width: 80rpx;
   height: 80rpx;
-  border-radius: $border-radius-round;
+  border-radius: $border-radius-circle;
 }
 
 .sender-info {
@@ -435,20 +435,20 @@ const handleReport = () => {
 .sender-name {
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .sender-title {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .official-badge {
-  background: $primary-color;
-  color: $background-color-white;
-  font-size: $font-size-extra-small;
+  background: $color-primary;
+  color: $bg-color-white;
+  font-size: $font-size-2xs;
   padding: 4rpx $padding-mini;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
   font-weight: $font-weight-medium;
 }
 
@@ -460,21 +460,21 @@ const handleReport = () => {
 }
 
 .message-time {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .message-status {
-  font-size: $font-size-small;
-  color: $info-color;
+  font-size: $font-size-sm;
+  color: $color-info;
   padding: 2rpx $padding-mini;
-  background: $border-color-extra-light;
-  border-radius: $border-radius-small;
+  background: $color-border-extra-light;
+  border-radius: $border-radius-sm;
 }
 
 /* 消息内容区域 */
 .message-content {
-  background: $background-color-white;
+  background: $bg-color-white;
   margin: $margin-base;
   border-radius: $border-radius;
   padding: $padding-base;
@@ -484,44 +484,44 @@ const handleReport = () => {
 .message-title-wrapper {
   display: flex;
   align-items: center;
-  gap: $margin-small;
+  gap: $margin-sm;
   margin-bottom: $margin-base;
-  padding-bottom: $padding-small;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding-bottom: $padding-sm;
+  border-bottom: 1rpx solid $color-border-extra-light;
 }
 
 .message-title {
   flex: 1;
-  font-size: $font-size-large;
+  font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .priority-badge {
-  font-size: $font-size-extra-small;
+  font-size: $font-size-2xs;
   font-weight: $font-weight-bold;
   padding: 4rpx $padding-mini;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
   
   &.priority-high {
-    background: $danger-light;
-    color: $danger-color;
+    background: $color-danger-light;
+    color: $color-danger;
   }
   
   &.priority-medium {
-    background: $warning-light;
-    color: $warning-color;
+    background: $color-warning-light;
+    color: $color-warning;
   }
 }
 
 .message-body {
   padding-bottom: $padding-base;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  border-bottom: 1rpx solid $color-border-extra-light;
 }
 
 .message-text {
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
   line-height: 1.6;
   white-space: pre-line;
 }
@@ -535,34 +535,34 @@ const handleReport = () => {
 .links-title {
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
-  margin-bottom: $margin-small;
+  color: $color-text-primary;
+  margin-bottom: $margin-sm;
   display: block;
 }
 
 .attachments-list {
   display: flex;
   flex-direction: column;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .attachment-item {
   display: flex;
   align-items: center;
-  padding: $padding-small;
-  background: $background-color;
+  padding: $padding-sm;
+  background: $bg-color;
   border-radius: $border-radius;
-  border: 1rpx solid $border-color-light;
+  border: 1rpx solid $color-border-light;
   transition: all $transition-fast;
   
   &:active {
-    background: color.adjust($background-color, $lightness:  - 5%);
+    background: color.adjust($bg-color, $lightness:  - 5%);
   }
 }
 
 .attachment-icon {
-  font-size: $font-size-medium;
-  margin-right: $margin-small;
+  font-size: $font-size-base;
+  margin-right: $margin-sm;
   width: 40rpx;
   text-align: center;
 }
@@ -576,22 +576,22 @@ const handleReport = () => {
 
 .attachment-name {
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   @extend .text-truncate;
 }
 
 .attachment-size {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 .attachment-action {
   padding: $padding-mini;
-  margin-left: $margin-small;
+  margin-left: $margin-sm;
   
   .download-icon {
-    font-size: $font-size-medium;
-    color: $primary-color;
+    font-size: $font-size-base;
+    color: $color-primary;
   }
 }
 
@@ -603,61 +603,61 @@ const handleReport = () => {
 .links-list {
   display: flex;
   flex-direction: column;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .link-item {
   display: flex;
   align-items: center;
-  padding: $padding-small;
-  background: $primary-color-lighter;
+  padding: $padding-sm;
+  background: $color-primary-light;
   border-radius: $border-radius;
-  border: 1rpx solid rgba($primary-color, 0.2);
+  border: 1rpx solid rgba($color-primary, 0.2);
   transition: all $transition-fast;
   
   &:active {
-    background: color.adjust($primary-color-lighter, $lightness:  -5%);
+    background: color.adjust($color-primary-light, $lightness:  -5%);
   }
 }
 
 .link-icon {
-  font-size: $font-size-medium;
-  margin-right: $margin-small;
+  font-size: $font-size-base;
+  margin-right: $margin-sm;
 }
 
 .link-text {
   flex: 1;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   @extend .text-truncate;
 }
 
 .link-arrow {
-  font-size: $font-size-medium;
-  color: $primary-color;
-  margin-left: $margin-small;
+  font-size: $font-size-base;
+  color: $color-primary;
+  margin-left: $margin-sm;
 }
 
 /* 操作按钮 */
 .message-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: $margin-small;
+  gap: $margin-sm;
   margin-top: $margin-base;
   padding-top: $padding-base;
-  border-top: 1rpx solid $border-color-extra-light;
+  border-top: 1rpx solid $color-border-extra-light;
 }
 
 .btn-action {
   flex: 1;
-  min-width: calc(50% - #{$margin-small});
+  min-width: calc(50% - #{$margin-sm});
   height: $button-height;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: $margin-mini;
   border: none;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
   transition: all $transition-fast;
@@ -667,23 +667,23 @@ const handleReport = () => {
   }
   
   &.btn-read {
-    background: $success-color;
-    color: $background-color-white;
+    background: $color-success;
+    color: $bg-color-white;
   }
   
   &.btn-reply {
-    background: $primary-color;
-    color: $background-color-white;
+    background: $color-primary;
+    color: $bg-color-white;
   }
   
   &.btn-forward {
-    background: $info-color;
-    color: $background-color-white;
+    background: $color-info;
+    color: $bg-color-white;
   }
   
   &.btn-delete {
-    background: $danger-color;
-    color: $background-color-white;
+    background: $color-danger;
+    color: $bg-color-white;
   }
 }
 
@@ -701,11 +701,11 @@ const handleReport = () => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: $background-color-white;
-  padding: $padding-small $padding-base;
-  border-top: 1rpx solid $border-color-light;
+  background: $bg-color-white;
+  padding: $padding-sm $padding-base;
+  border-top: 1rpx solid $color-border-light;
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
   z-index: $z-index-dropdown;
 }
 
@@ -727,17 +727,17 @@ const handleReport = () => {
   }
   
   &.btn-reply-bottom {
-    background: $primary-color;
-    color: $background-color-white;
+    background: $color-primary;
+    color: $bg-color-white;
   }
   
   &.btn-star {
-    background: $background-color;
-    color: $text-secondary;
+    background: $bg-color;
+    color: $color-text-secondary;
     
     &.starred {
-      background: $warning-light;
-      color: $warning-color;
+      background: $color-warning-light;
+      color: $color-warning;
     }
   }
 }
@@ -752,7 +752,7 @@ const handleReport = () => {
 
 /* 相关消息 */
 .related-messages {
-  background: $background-color-white;
+  background: $bg-color-white;
   margin: $margin-base;
   border-radius: $border-radius;
   padding: $padding-base;
@@ -767,9 +767,9 @@ const handleReport = () => {
 }
 
 .section-title {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .related-list {
@@ -782,12 +782,12 @@ const handleReport = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: $padding-small 0;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding: $padding-sm 0;
+  border-bottom: 1rpx solid $color-border-extra-light;
   transition: all $transition-fast;
   
   &:active {
-    background: $background-color;
+    background: $bg-color;
   }
   
   &:last-child {
@@ -803,13 +803,13 @@ const handleReport = () => {
 }
 
 .related-sender {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .related-title {
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   @extend .text-truncate;
   max-width: 400rpx;
 }
@@ -821,16 +821,16 @@ const handleReport = () => {
 }
 
 .related-time {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
   white-space: nowrap;
 }
 
 .unread-dot {
   width: 12rpx;
   height: 12rpx;
-  background: $primary-color;
-  border-radius: $border-radius-round;
+  background: $color-primary;
+  border-radius: $border-radius-circle;
 }
 
 /* 响应式调整 */

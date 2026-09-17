@@ -435,14 +435,14 @@ watch(selectedRegion, (newValue) => {
 <style scoped lang="scss">
 .region-test-page {
   padding: 32rpx;
-  background-color: #f5f7fa;
+  bg-color: #f5f7fa;
   min-height: 100vh;
 }
 
 .header {
   margin-bottom: 32rpx;
   padding: 32rpx;
-  background-color: #ffffff;
+  bg-color: #ffffff;
   border-radius: 16rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
@@ -456,7 +456,7 @@ watch(selectedRegion, (newValue) => {
 .section {
   margin-bottom: 32rpx;
   padding: 32rpx;
-  background-color: #ffffff;
+  bg-color: #ffffff;
   border-radius: 16rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
@@ -478,7 +478,7 @@ watch(selectedRegion, (newValue) => {
 
 .test-btn {
   padding: 16rpx 24rpx;
-  background-color: #409eff;
+  bg-color: #409eff;
   color: white;
   border-radius: 8rpx;
   font-size: 24rpx;
@@ -491,30 +491,30 @@ watch(selectedRegion, (newValue) => {
   }
 
   &:nth-child(2) {
-    background-color: #67c23a;
+    bg-color: #67c23a;
   }
 
   &:nth-child(3) {
-    background-color: #e6a23c;
+    bg-color: #e6a23c;
   }
 
   &:nth-child(4) {
-    background-color: #f56c6c;
+    bg-color: #f56c6c;
   }
 
   &:nth-child(5) {
-    background-color: #909399;
+    bg-color: #909399;
   }
 
   &:nth-child(6) {
-    background-color: #409eff;
+    bg-color: #409eff;
   }
 }
 
 .result-display {
   margin: 24rpx 0;
   padding: 24rpx;
-  background-color: #f0f9eb;
+  bg-color: #f0f9eb;
   border-radius: 8rpx;
   border: 1rpx solid #e1f3d8;
 }
@@ -536,7 +536,7 @@ watch(selectedRegion, (newValue) => {
 .raw-data {
   margin-top: 24rpx;
   padding: 24rpx;
-  background-color: #f4f4f5;
+  bg-color: #f4f4f5;
   border-radius: 8rpx;
   border: 1rpx solid #e9e9eb;
 }
@@ -560,7 +560,7 @@ watch(selectedRegion, (newValue) => {
 .config-controls {
   margin-top: 24rpx;
   padding: 24rpx;
-  background-color: #f9f9f9;
+  bg-color: #f9f9f9;
   border-radius: 8rpx;
 }
 
@@ -589,7 +589,7 @@ watch(selectedRegion, (newValue) => {
 
 .hot-city-item {
   padding: 16rpx 24rpx;
-  background-color: #ecf5ff;
+  bg-color: #ecf5ff;
   border-radius: 8rpx;
   border: 1rpx solid #d9ecff;
   display: flex;
@@ -598,7 +598,7 @@ watch(selectedRegion, (newValue) => {
   min-width: 160rpx;
 
   &:active {
-    background-color: #d9ecff;
+    bg-color: #d9ecff;
   }
 }
 
@@ -623,7 +623,7 @@ watch(selectedRegion, (newValue) => {
 
 .info-item {
   padding: 16rpx;
-  background-color: #f9f9f9;
+  bg-color: #f9f9f9;
   border-radius: 8rpx;
 
   &.full-width {
@@ -657,7 +657,7 @@ watch(selectedRegion, (newValue) => {
 .cache-stats {
   margin-top: 24rpx;
   padding: 24rpx;
-  background-color: #f4f4f5;
+  bg-color: #f4f4f5;
   border-radius: 8rpx;
   border: 1rpx solid #e9e9eb;
 }
@@ -682,7 +682,7 @@ watch(selectedRegion, (newValue) => {
   width: 100%;
   height: 80rpx;
   padding: 0 24rpx;
-  background-color: #ffffff;
+  bg-color: #ffffff;
   border: 2rpx solid #e5e5e5;
   border-radius: 8rpx;
   font-size: 28rpx;
@@ -690,7 +690,7 @@ watch(selectedRegion, (newValue) => {
   margin-top: 16rpx;
 
   &:focus {
-    border-color: #409eff;
+    color-border: #409eff;
   }
 }
 
@@ -702,14 +702,14 @@ watch(selectedRegion, (newValue) => {
 
 .search-result-item {
   padding: 24rpx;
-  background-color: #ffffff;
+  bg-color: #ffffff;
   border-bottom: 1rpx solid #f0f0f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   &:active {
-    background-color: #f5f7fa;
+    bg-color: #f5f7fa;
   }
 
   &:last-child {
@@ -729,7 +729,7 @@ watch(selectedRegion, (newValue) => {
   color: #409eff;
   margin: 0 16rpx;
   padding: 4rpx 12rpx;
-  background-color: #ecf5ff;
+  bg-color: #ecf5ff;
   border-radius: 4rpx;
 }
 
