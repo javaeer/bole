@@ -136,7 +136,7 @@
         <!-- 加载更多 -->
         <view v-if="hasMore" class="load-more">
           <view v-if="loading" class="loading-more">
-            <view class="loading-spinner-small"></view>
+            <view class="loading-spinner-sm"></view>
             <text>加载中...</text>
           </view>
           <view v-else class="load-more-btn" @click="loadMore">
@@ -385,27 +385,27 @@ onReachBottom(() => {
   z-index: $z-index-base;
   border-radius: 0 0 $border-radius $border-radius;
   box-shadow: $box-shadow;
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .search-box {
   display: flex;
   align-items: center;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: 20rpx 24rpx;
-  margin-bottom: $margin-small;
-  border: 1rpx solid $border-color-light;
+  margin-bottom: $margin-sm;
+  border: 1rpx solid $color-border-light;
 
   .search-icon {
     font-size: 32rpx;
-    color: $text-secondary;
+    color: $color-text-secondary;
   }
 
   .search-input {
     flex: 1;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-left: 16rpx;
     background: transparent;
   }
@@ -421,7 +421,7 @@ onReachBottom(() => {
 
     .clear-icon {
       font-size: 36rpx;
-      color: $text-secondary;
+      color: $color-text-secondary;
       width: 40rpx;
       height: 40rpx;
       display: flex;
@@ -433,7 +433,7 @@ onReachBottom(() => {
 
 .filter-row {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
   justify-content: space-between;
 
   .filter-group {
@@ -441,25 +441,25 @@ onReachBottom(() => {
 
     .filter-label {
       display: block;
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
       margin-bottom: 8rpx;
     }
 
     .filter-select {
       padding: 16rpx;
-      background: $background-color;
-      border-radius: $border-radius-small;
-      font-size: $font-size-small;
-      color: $text-primary;
-      border: 1rpx solid $border-color-light;
+      background: $bg-color;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-sm;
+      color: $color-text-primary;
+      border: 1rpx solid $color-border-light;
       display: flex;
       align-items: center;
       justify-content: space-between;
 
       .arrow-icon {
         font-size: 18rpx;
-        color: $text-secondary;
+        color: $color-text-secondary;
       }
     }
   }
@@ -467,7 +467,7 @@ onReachBottom(() => {
 
 .list-scroll {
   height: calc(100vh - 220rpx);
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .intention-item {
@@ -485,9 +485,9 @@ onReachBottom(() => {
       flex: 1;
 
       .intention-position {
-        font-size: $font-size-medium;
+        font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
         margin-bottom: 8rpx;
         display: block;
       }
@@ -495,38 +495,38 @@ onReachBottom(() => {
       .intention-type {
         .type-tag {
           padding: 4rpx 12rpx;
-          border-radius: $border-radius-small;
-          font-size: $font-size-extra-small;
+          border-radius: $border-radius-sm;
+          font-size: $font-size-2xs;
           font-weight: $font-weight-medium;
 
           &.type-fulltime {
-            background: $success-bg;
-            color: $success-color;
-            border: 1rpx solid $success-border;
+            background: $bg-color-success;
+            color: $color-success;
+            border: 1rpx solid $color-success-border;
           }
 
           &.type-parttime {
-            background: $warning-bg;
-            color: $warning-color;
-            border: 1rpx solid $warning-border;
+            background: $bg-color-warning;
+            color: $color-warning;
+            border: 1rpx solid $color-warning-border;
           }
 
           &.type-intern {
-            background: $info-bg;
-            color: $info-color;
-            border: 1rpx solid $info-border;
+            background: $bg-color-info;
+            color: $color-info;
+            border: 1rpx solid $color-info-border;
           }
 
           &.type-remote {
-            background: $primary-color-light;
-            color: $primary-color;
-            border: 1rpx solid $primary-border;
+            background: $color-primary-light;
+            color: $color-primary;
+            border: 1rpx solid $color-primary-border;
           }
 
           &.type-default {
-            background: $background-color;
-            color: $text-secondary;
-            border: 1rpx solid $border-color-light;
+            background: $bg-color;
+            color: $color-text-secondary;
+            border: 1rpx solid $color-border-light;
           }
         }
       }
@@ -534,9 +534,9 @@ onReachBottom(() => {
 
     .intention-salary {
       .salary-text {
-        font-size: $font-size-large;
+        font-size: $font-size-lg;
         font-weight: $font-weight-bold;
-        color: $primary-color;
+        color: $color-primary;
       }
     }
   }
@@ -551,16 +551,16 @@ onReachBottom(() => {
 
       .location-icon, .time-icon {
         font-size: 28rpx;
-        color: $text-secondary;
+        color: $color-text-secondary;
       }
 
       .info-text {
-        font-size: $font-size-small;
-        color: $text-regular;
+        font-size: $font-size-sm;
+        color: $color-text-regular;
       }
 
       .info-separator {
-        color: $border-color;
+        color: $color-border;
         margin: 0 8rpx;
       }
     }
@@ -569,9 +569,9 @@ onReachBottom(() => {
   .salary-details {
     margin-bottom: $margin-base;
     padding: 16rpx;
-    background: $primary-color-light;
-    border-radius: $border-radius-small;
-    border: 1rpx solid $primary-border;
+    background: $color-primary-light;
+    border-radius: $border-radius-sm;
+    border: 1rpx solid $color-primary-border;
 
     .salary-header {
       display: flex;
@@ -580,21 +580,21 @@ onReachBottom(() => {
       margin-bottom: 8rpx;
 
       .salary-label {
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
       }
 
       .salary-value {
-        font-size: $font-size-medium;
+        font-size: $font-size-base;
         font-weight: $font-weight-bold;
-        color: $primary-color;
+        color: $color-primary;
       }
     }
 
     .salary-analysis {
       .analysis-text {
-        font-size: $font-size-extra-small;
-        color: $text-secondary;
+        font-size: $font-size-2xs;
+        color: $color-text-secondary;
       }
     }
   }
@@ -607,7 +607,7 @@ onReachBottom(() => {
     .action-btn {
       flex: 1;
       padding: 16rpx;
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
     }
   }
 
@@ -615,11 +615,11 @@ onReachBottom(() => {
     display: flex;
     justify-content: space-between;
     padding-top: $margin-mini;
-    border-top: 1rpx solid $border-color-extra-light;
+    border-top: 1rpx solid $color-border-extra-light;
 
     .time-text {
-      font-size: $font-size-extra-small;
-      color: $text-placeholder;
+      font-size: $font-size-2xs;
+      color: $color-text-placeholder;
     }
   }
 }
@@ -634,8 +634,8 @@ onReachBottom(() => {
   .loading-spinner {
     width: 60rpx;
     height: 60rpx;
-    border: 4rpx solid rgba($primary-color, 0.2);
-    border-top-color: $primary-color;
+    border: 4rpx solid rgba($color-primary, 0.2);
+    border-top-color: $color-primary;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 20rpx;
@@ -668,14 +668,14 @@ onReachBottom(() => {
     display: flex;
     align-items: center;
     gap: 10rpx;
-    color: $text-secondary;
-    font-size: $font-size-small;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
 
-    .loading-spinner-small {
+    .loading-spinner-sm {
       width: 24rpx;
       height: 24rpx;
-      border: 2rpx solid rgba($primary-color, 0.2);
-      border-top-color: $primary-color;
+      border: 2rpx solid rgba($color-primary, 0.2);
+      border-top-color: $color-primary;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -683,18 +683,18 @@ onReachBottom(() => {
 
   .load-more-btn {
     padding: 16rpx 32rpx;
-    background: $background-color;
+    background: $bg-color;
     border-radius: $border-radius;
-    color: $text-primary;
-    font-size: $font-size-small;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
   }
 }
 
 .no-more {
   text-align: center;
   padding: 40rpx 0;
-  color: $text-secondary;
-  font-size: $font-size-small;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
 }
 
 .add-btn {
@@ -719,7 +719,7 @@ onReachBottom(() => {
 }
 
 .placeholder-text {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 

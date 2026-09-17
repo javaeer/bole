@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 讨论区 / Discussions
+    url: https://github.com/javaeer/bole/discussions
+    about: 提出想法、交流用法，或询问一般性问题。
+  - name: 🔒 安全漏洞报告 / Security
+    url: https://github.com/javaeer/bole/security/advisories/new
+    about: 请勿在此提交安全漏洞，请通过私密安全公告报告。

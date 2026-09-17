@@ -277,9 +277,9 @@ const wrapperStyle = computed(() => {
   style.boxSizing = "border-box";
   
   // 设置CSS变量供子元素使用
-  style["--base-primary-color"] = styles.primaryColor;
+  style["--base-color-primary"] = styles.primaryColor;
   style["--base-accent-color"] = styles.accentColor;
-  style["--base-secondary-color"] = styles.secondaryColor;
+  style["--base-color-secondary"] = styles.secondaryColor;
   style["--base-text-color"] = styles.textColor;
   style["--base-title-color"] = styles.titleColor;
   style["--base-highlight-bg"] = styles.highlightBackground;
@@ -308,7 +308,7 @@ const headerStyle = computed(() => {
   return {
     marginBottom: "12px",
     paddingBottom: "8px",
-    borderBottom: `1px solid var(--base-secondary-color, #f0f0f0)`
+    borderBottom: `1px solid var(--base-color-secondary, #f0f0f0)`
   };
 });
 
@@ -356,9 +356,9 @@ defineExpose({
   break-inside: avoid; // 防止打印时内容分页断开
   
   // 使用CSS变量设置默认值
-  --base-primary-color: #1890ff;
+  --base-color-primary: #1890ff;
   --base-accent-color: #52c41a;
-  --base-secondary-color: #f0f0f0;
+  --base-color-secondary: #f0f0f0;
   --base-text-color: #555555;
   --base-title-color: #1890ff;
   --base-highlight-bg: #fff7e6;
@@ -426,7 +426,7 @@ defineExpose({
   .base-component {
     // 移除阴影和背景色，确保打印清晰
     box-shadow: none !important;
-    background-color: transparent !important;
+    bg-color: transparent !important;
     
     // 确保边框可见但不会太深
     border: 1px solid #ddd !important;
@@ -463,12 +463,12 @@ defineExpose({
   .base-component:not([data-theme="light"]) {
     --base-text-color: #e0e0e0;
     --base-title-color: #64b5f6;
-    --base-secondary-color: #424242;
+    --base-color-secondary: #424242;
     --base-highlight-bg: #5d4037;
     --base-tag-bg: #0d47a1;
     
-    background-color: #1e1e1e;
-    border-color: #424242;
+    bg-color: #1e1e1e;
+    color-border: #424242;
   }
 }
 </style>

@@ -344,7 +344,7 @@ const getRoleStyle = (styles: any) => {
   return {
     fontSize: '13px',
     color: '#fff',
-    background: `linear-gradient(135deg, var(--base-accent-color, #5ac8fa), var(--base-primary-color, #1890ff))`,
+    background: `linear-gradient(135deg, var(--base-accent-color, #5ac8fa), var(--base-color-primary, #1890ff))`,
     padding: '3px 10px',
     borderRadius: '12px',
     fontWeight: '500',
@@ -375,7 +375,7 @@ const getDescriptionStyle = (styles: any) => {
     lineHeight: styles.lineHeight || '1.6',
     marginBottom: '16px',
     paddingBottom: '12px',
-    borderBottom: '1px dashed var(--base-secondary-color, #eee)',
+    borderBottom: '1px dashed var(--base-color-secondary, #eee)',
     width: '100%',
   };
 };
@@ -411,7 +411,7 @@ const getLinkTextStyle = (styles: any) => {
 
   return {
     fontSize: '13px',
-    color: styles.linkColor || 'var(--base-primary-color, #1890ff)',
+    color: styles.linkColor || 'var(--base-color-primary, #1890ff)',
     flex: 1,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -430,7 +430,7 @@ const getSectionStyle = (styles: any, sectionType: string) => {
   if (sectionType === 'achievements') {
     baseStyle.marginTop = '16px';
     baseStyle.paddingTop = '16px';
-    baseStyle.borderTop = '1px dashed var(--base-secondary-color, #eee)';
+    baseStyle.borderTop = '1px dashed var(--base-color-secondary, #eee)';
   }
 
   return baseStyle;
@@ -553,7 +553,7 @@ const getMetricsStyle = (styles: any) => {
     justifyContent: 'space-around',
     marginTop: '16px',
     paddingTop: '16px',
-    borderTop: '1px solid var(--base-secondary-color, #eee)',
+    borderTop: '1px solid var(--base-color-secondary, #eee)',
     textAlign: 'center',
     width: '100%',
     flexWrap: 'wrap',
@@ -566,7 +566,7 @@ const getMetricValueStyle = (styles: any) => {
 
   return {
     fontSize: '20px',
-    color: 'var(--base-primary-color, #1890ff)',
+    color: 'var(--base-color-primary, #1890ff)',
     fontWeight: 'bold',
     display: 'block',
     marginBottom: '4px',
@@ -589,10 +589,10 @@ const getEmptyStateStyle = (styles: any) => {
   return {
     textAlign: 'center',
     padding: '60px 20px',
-    color: 'var(--base-secondary-color, #999)',
+    color: 'var(--base-color-secondary, #999)',
     background: 'repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f0f0f0 10px, #f0f0f0 20px)',
     borderRadius: '8px',
-    border: '2px dashed var(--base-secondary-color, #ddd)',
+    border: '2px dashed var(--base-color-secondary, #ddd)',
     width: '100%',
     boxSizing: 'border-box',
   };
@@ -623,7 +623,7 @@ const getEmptyStateStyle = (styles: any) => {
     top: 0;
     bottom: 0;
     width: 4px;
-    background: linear-gradient(to bottom, var(--base-accent-color, #52c41a), var(--base-primary-color, #73d13d));
+    background: linear-gradient(to bottom, var(--base-accent-color, #52c41a), var(--base-color-primary, #73d13d));
     border-radius: 2px 0 0 2px;
   }
 }
@@ -689,7 +689,7 @@ const getEmptyStateStyle = (styles: any) => {
 .achievements-list {
   .list-item {
     &:hover {
-      background: rgba(var(--base-primary-color-rgb, 90, 200, 250), 0.05);
+      background: rgba(var(--base-color-primary-rgb, 90, 200, 250), 0.05);
       border-radius: 4px;
       padding-left: 8px;
     }
@@ -749,7 +749,7 @@ const getEmptyStateStyle = (styles: any) => {
 
   .empty-hint {
     font-size: 12px;
-    color: var(--base-secondary-color, #ccc);
+    color: var(--base-color-secondary, #ccc);
   }
 }
 
@@ -872,7 +872,7 @@ const getEmptyStateStyle = (styles: any) => {
 @media (prefers-color-scheme: dark) {
   .project-item {
     background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
-    border-color: #424242;
+    color-border: #424242;
   }
 
   .project-link {
@@ -883,12 +883,12 @@ const getEmptyStateStyle = (styles: any) => {
   .tech-tag {
     background: #374151 !important;
     color: #e5e7eb !important;
-    border-color: #4b5563 !important;
+    color-border: #4b5563 !important;
   }
 
   .empty-state {
     background: #374151;
-    border-color: #4b5563;
+    color-border: #4b5563;
     color: #9ca3af;
   }
 }

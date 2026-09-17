@@ -244,7 +244,7 @@ const formatDegree = (degree: string, format: string = 'full') => {
 .empty-description {
   display: block;
   font-size: 14px;
-  color: var(--base-secondary-color, #999);
+  color: var(--base-color-secondary, #999);
 }
 
 /* 教育经历列表 */
@@ -265,11 +265,11 @@ const formatDegree = (degree: string, format: string = 'full') => {
   flex-shrink: 0;
   width: 4px;
   border-radius: 2px;
-  background-color: var(--base-primary-color, #52c41a);
+  bg-color: var(--base-color-primary, #52c41a);
 }
 
 .current-item .item-decoration {
-  background-color: var(--base-accent-color, #fa8c16);
+  bg-color: var(--base-accent-color, #fa8c16);
 }
 
 /* 内容区域 */
@@ -287,7 +287,7 @@ const formatDegree = (degree: string, format: string = 'full') => {
   display: block;
   font-size: 16px;
   font-weight: bold;
-  color: var(--base-university-color, var(--base-primary-color, #52c41a));
+  color: var(--base-university-color, var(--base-color-primary, #52c41a));
   margin-bottom: 4px;
   line-height: 1.3;
 }
@@ -325,7 +325,7 @@ const formatDegree = (degree: string, format: string = 'full') => {
 
 .time-text {
   font-size: 13px;
-  color: var(--base-period-color, var(--base-secondary-color, #999));
+  color: var(--base-period-color, var(--base-color-secondary, #999));
 }
 
 /* 描述 */
@@ -380,7 +380,7 @@ const formatDegree = (degree: string, format: string = 'full') => {
 /* 分隔线 */
 .item-divider {
   height: 1px;
-  background-color: var(--base-secondary-color, #f0f0f0);
+  bg-color: var(--base-color-secondary, #f0f0f0);
   margin-top: 24px;
 }
 
@@ -466,7 +466,7 @@ const formatDegree = (degree: string, format: string = 'full') => {
   }
 
   .item-decoration {
-    background-color: #333 !important;
+    bg-color: #333 !important;
   }
 
   .school-name {
@@ -479,7 +479,7 @@ const formatDegree = (degree: string, format: string = 'full') => {
   }
 
   .item-divider {
-    background-color: #ddd !important;
+    bg-color: #ddd !important;
   }
 
   .empty-icon {

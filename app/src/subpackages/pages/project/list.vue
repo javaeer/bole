@@ -165,7 +165,7 @@
         <!-- 加载更多 -->
         <view v-if="hasMore" class="load-more">
           <view v-if="loading" class="loading-more">
-            <view class="loading-spinner-small"></view>
+            <view class="loading-spinner-sm"></view>
             <text>加载中...</text>
           </view>
           <view v-else class="load-more-btn" @click="loadMore">
@@ -511,28 +511,28 @@ onReachBottom(() => {
   z-index: $z-index-base;
   border-radius: 0 0 $border-radius $border-radius;
   box-shadow: $box-shadow;
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .search-box {
   @extend .form-group;
   display: flex;
   align-items: center;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: 20rpx 24rpx;
-  margin-bottom: $margin-small;
-  border: 1rpx solid $border-color-light;
+  margin-bottom: $margin-sm;
+  border: 1rpx solid $color-border-light;
 
   .search-icon {
     font-size: 32rpx;
-    color: $text-secondary;
+    color: $color-text-secondary;
   }
 
   .search-input {
     flex: 1;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-left: 16rpx;
     background: transparent;
   }
@@ -548,7 +548,7 @@ onReachBottom(() => {
 
     .clear-icon {
       font-size: 36rpx;
-      color: $text-secondary;
+      color: $color-text-secondary;
       width: 40rpx;
       height: 40rpx;
       display: flex;
@@ -560,7 +560,7 @@ onReachBottom(() => {
 
 .filter-row {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
   justify-content: space-between;
 
   .filter-group {
@@ -568,24 +568,24 @@ onReachBottom(() => {
 
     .filter-label {
       @extend .form-label;
-      font-size: $font-size-extra-small;
+      font-size: $font-size-2xs;
       margin-bottom: 8rpx;
     }
 
     .filter-select {
       padding: 16rpx;
-      background: $background-color;
-      border-radius: $border-radius-small;
-      font-size: $font-size-small;
-      color: $text-primary;
-      border: 1rpx solid $border-color-light;
+      background: $bg-color;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-sm;
+      color: $color-text-primary;
+      border: 1rpx solid $color-border-light;
       display: flex;
       align-items: center;
       justify-content: space-between;
 
       .arrow-icon {
         font-size: 20rpx;
-        color: $text-secondary;
+        color: $color-text-secondary;
       }
     }
   }
@@ -593,7 +593,7 @@ onReachBottom(() => {
 
 .list-scroll {
   height: calc(100vh - 220rpx);
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .project-item {
@@ -616,9 +616,9 @@ onReachBottom(() => {
       flex: 1;
 
       .project-name {
-        font-size: $font-size-medium;
+        font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
         margin-bottom: 8rpx;
         display: block;
       }
@@ -655,21 +655,21 @@ onReachBottom(() => {
       margin-left: $margin-mini;
 
       .time-text {
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
         white-space: nowrap;
       }
     }
   }
 
   .project-desc {
-    font-size: $font-size-small;
-    color: $text-regular;
+    font-size: $font-size-sm;
+    color: $color-text-regular;
     line-height: 1.5;
     margin-bottom: $margin-base;
     padding: 12rpx;
-    background: $background-color;
-    border-radius: $border-radius-small;
+    background: $bg-color;
+    border-radius: $border-radius-sm;
   }
 
   .project-progress {
@@ -682,20 +682,20 @@ onReachBottom(() => {
       margin-bottom: 12rpx;
 
       .progress-label {
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
       }
 
       .progress-value {
         font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
       }
     }
 
     .progress-bar {
       height: 16rpx;
-      background: $background-color;
+      background: $bg-color;
       border-radius: 8rpx;
       overflow: hidden;
       margin-bottom: 8rpx;
@@ -706,19 +706,19 @@ onReachBottom(() => {
         transition: width $transition-normal $ease-in-out;
 
         &.progress-early {
-          background: linear-gradient(90deg, $success-color, color.adjust($success-color, $lightness: 20%));
+          background: linear-gradient(90deg, $color-success, color.adjust($color-success, $lightness: 20%));
         }
 
         &.progress-middle {
-          background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+          background: linear-gradient(90deg, $color-primary, color.adjust($color-primary, $lightness: 20%));
         }
 
         &.progress-late {
-          background: linear-gradient(90deg, $warning-color, color.adjust($warning-color, $lightness: 20%));
+          background: linear-gradient(90deg, $color-warning, color.adjust($color-warning, $lightness: 20%));
         }
 
         &.progress-completed {
-          background: linear-gradient(90deg, $info-color, color.adjust($info-color, $lightness: 20%));
+          background: linear-gradient(90deg, $color-info, color.adjust($color-info, $lightness: 20%));
         }
       }
     }
@@ -726,17 +726,17 @@ onReachBottom(() => {
     .progress-labels {
       display: flex;
       justify-content: space-between;
-      font-size: $font-size-extra-small;
-      color: $text-placeholder;
+      font-size: $font-size-2xs;
+      color: $color-text-placeholder;
     }
   }
 
   .project-achievements {
     margin-bottom: $margin-base;
     padding: 16rpx;
-    background: $warning-light;
-    border-radius: $border-radius-small;
-    border: 1rpx solid $warning-border;
+    background: $color-warning-light;
+    border-radius: $border-radius-sm;
+    border: 1rpx solid $color-warning-border;
 
     .achievements-header {
       display: flex;
@@ -746,19 +746,19 @@ onReachBottom(() => {
 
       .star-icon {
         font-size: 20rpx;
-        color: $warning-color;
+        color: $color-warning;
       }
 
       .achievements-title {
-        font-size: $font-size-small;
+        font-size: $font-size-sm;
         font-weight: $font-weight-medium;
-        color: $warning-color;
+        color: $color-warning;
       }
 
       .achievements-count {
-        font-size: $font-size-extra-small;
-        color: $warning-color;
-        background: rgba($warning-color, 0.1);
+        font-size: $font-size-2xs;
+        color: $color-warning;
+        background: rgba($color-warning, 0.1);
         padding: 2rpx 8rpx;
         border-radius: 10rpx;
         margin-left: auto;
@@ -777,15 +777,15 @@ onReachBottom(() => {
 
         .achievement-index {
           width: 30rpx;
-          color: $warning-color;
+          color: $color-warning;
           font-weight: $font-weight-medium;
-          font-size: $font-size-extra-small;
+          font-size: $font-size-2xs;
         }
 
         .achievement-text {
           flex: 1;
-          font-size: $font-size-small;
-          color: $text-regular;
+          font-size: $font-size-sm;
+          color: $color-text-regular;
           line-height: 1.4;
           -webkit-line-clamp: 2;
         }
@@ -796,20 +796,20 @@ onReachBottom(() => {
         align-items: center;
         justify-content: space-between;
         padding: 12rpx;
-        background: rgba($warning-color, 0.05);
-        border-radius: $border-radius-small;
-        border: 1rpx dashed $warning-border;
+        background: rgba($color-warning, 0.05);
+        border-radius: $border-radius-sm;
+        border: 1rpx dashed $color-warning-border;
         margin-top: 8rpx;
         cursor: pointer;
 
         text {
-          font-size: $font-size-small;
-          color: $warning-color;
+          font-size: $font-size-sm;
+          color: $color-warning;
         }
 
         .arrow-right {
           font-size: 20rpx;
-          color: $warning-color;
+          color: $color-warning;
         }
       }
     }
@@ -824,7 +824,7 @@ onReachBottom(() => {
       @extend .btn;
       flex: 1;
       padding: 16rpx;
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
 
       &.btn-primary {
         @extend .btn-primary;
@@ -840,11 +840,11 @@ onReachBottom(() => {
     display: flex;
     justify-content: space-between;
     padding-top: $margin-mini;
-    border-top: 1rpx solid $border-color-extra-light;
+    border-top: 1rpx solid $color-border-extra-light;
 
     .time-text {
-      font-size: $font-size-extra-small;
-      color: $text-placeholder;
+      font-size: $font-size-2xs;
+      color: $color-text-placeholder;
     }
   }
 }
@@ -859,8 +859,8 @@ onReachBottom(() => {
   .loading-spinner {
     width: 60rpx;
     height: 60rpx;
-    border: 4rpx solid rgba($primary-color, 0.2);
-    border-top-color: $primary-color;
+    border: 4rpx solid rgba($color-primary, 0.2);
+    border-top-color: $color-primary;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 20rpx;
@@ -893,14 +893,14 @@ onReachBottom(() => {
     display: flex;
     align-items: center;
     gap: 10rpx;
-    color: $text-secondary;
-    font-size: $font-size-small;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
 
-    .loading-spinner-small {
+    .loading-spinner-sm {
       width: 24rpx;
       height: 24rpx;
-      border: 2rpx solid rgba($primary-color, 0.2);
-      border-top-color: $primary-color;
+      border: 2rpx solid rgba($color-primary, 0.2);
+      border-top-color: $color-primary;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -908,18 +908,18 @@ onReachBottom(() => {
 
   .load-more-btn {
     padding: 16rpx 32rpx;
-    background: $background-color;
+    background: $bg-color;
     border-radius: $border-radius;
-    color: $text-primary;
-    font-size: $font-size-small;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
   }
 }
 
 .no-more {
   text-align: center;
   padding: 40rpx 0;
-  color: $text-secondary;
-  font-size: $font-size-small;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
 }
 
 .add-btn {
@@ -958,8 +958,8 @@ onReachBottom(() => {
   padding: $padding-base;
 
   .modal-content {
-    background: $background-color-white;
-    border-radius: $border-radius-large;
+    background: $bg-color-white;
+    border-radius: $border-radius-lg;
     width: 100%;
     max-width: 700rpx;
     max-height: 80vh;
@@ -971,20 +971,20 @@ onReachBottom(() => {
       justify-content: space-between;
       align-items: center;
       padding: $padding-base;
-      border-bottom: 1rpx solid $border-color-extra-light;
-      background: $warning-light;
+      border-bottom: 1rpx solid $color-border-extra-light;
+      background: $color-warning-light;
 
       .modal-title {
-        font-size: $font-size-medium;
+        font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $warning-color;
+        color: $color-warning;
       }
 
       .modal-close-btn {
         background: transparent;
         border: none;
         font-size: 32rpx;
-        color: $warning-color;
+        color: $color-warning;
         width: 40rpx;
         height: 40rpx;
         display: flex;
@@ -1003,7 +1003,7 @@ onReachBottom(() => {
           display: flex;
           align-items: flex-start;
           padding: 16rpx 0;
-          border-bottom: 1rpx solid $border-color-extra-light;
+          border-bottom: 1rpx solid $color-border-extra-light;
 
           &:last-child {
             border-bottom: none;
@@ -1011,15 +1011,15 @@ onReachBottom(() => {
 
           .achievement-index-modal {
             width: 40rpx;
-            color: $warning-color;
+            color: $color-warning;
             font-weight: $font-weight-medium;
-            font-size: $font-size-small;
+            font-size: $font-size-sm;
           }
 
           .achievement-text-modal {
             flex: 1;
             font-size: $font-size-base;
-            color: $text-regular;
+            color: $color-text-regular;
             line-height: 1.5;
           }
         }
@@ -1029,7 +1029,7 @@ onReachBottom(() => {
 }
 
 .placeholder-text {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 

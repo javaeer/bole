@@ -124,7 +124,7 @@ const goBack = () => {
 <style lang="scss" scoped>
 .agreement-container {
   min-height: 100vh;
-  background-color: $background-color;
+  bg-color: $bg-color;
   display: flex;
   flex-direction: column;
 }
@@ -144,28 +144,28 @@ const goBack = () => {
 .agreement-title {
   margin-bottom: $margin-base * 1.5;
   padding-bottom: $padding-base;
-  border-bottom: 2rpx solid $border-color-lighter;
+  border-bottom: 2rpx solid $color-border-light;
 
   .title-main {
     display: block;
-    font-size: $font-size-extra-large;
+    font-size: $font-size-xl;
     font-weight: $font-weight-bold;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-bottom: $margin-mini;
     text-align: center;
   }
 
   .title-sub {
     display: block;
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
     text-align: center;
   }
 }
 
 /* 协议正文 */
 .agreement-body {
-  background-color: $background-color-white;
+  bg-color: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   box-shadow: $box-shadow;
@@ -182,17 +182,17 @@ const goBack = () => {
 
 .section-title {
   display: block;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
-  margin-bottom: $margin-small;
+  color: $color-text-primary;
+  margin-bottom: $margin-sm;
   line-height: 1.4;
 }
 
 .section-text {
   display: block;
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
   line-height: 1.6;
   text-align: justify;
 }
@@ -207,7 +207,7 @@ const goBack = () => {
 .list-item {
   display: block;
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
   line-height: 1.6;
   text-align: justify;
   padding-left: 20rpx;
@@ -217,7 +217,7 @@ const goBack = () => {
     content: "•";
     position: absolute;
     left: 0;
-    color: $primary-color;
+    color: $color-primary;
     font-weight: bold;
   }
 }
@@ -232,7 +232,7 @@ const goBack = () => {
 .contact-item {
   display: block;
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
   line-height: 1.6;
 }
 
@@ -240,12 +240,12 @@ const goBack = () => {
 .effective-date {
   margin-top: $margin-base * 2;
   padding-top: $padding-base;
-  border-top: 1rpx solid $border-color-lighter;
+  border-top: 1rpx solid $color-border-light;
   text-align: center;
 
   .date-text {
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
     font-weight: $font-weight-medium;
   }
 }

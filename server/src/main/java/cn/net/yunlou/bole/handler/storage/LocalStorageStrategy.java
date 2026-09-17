@@ -79,7 +79,7 @@ public class LocalStorageStrategy implements IStorageStrategy {
             // 保存文件
             multipartFile.transferTo(targetPath.toFile());
 
-            File file = new File();
+            /*File file = new File();
             file.setFileKey(fileKey);
             file.setFileName(uniqueFilename);
             file.setOriginalFilename(originalFilename);
@@ -87,7 +87,7 @@ public class LocalStorageStrategy implements IStorageStrategy {
             file.setFileSizeBytes(multipartFile.getSize());
             file.setContentType(multipartFile.getContentType());
             file.setFileKey(fileKey);
-            file.setFileKey(fileKey);
+            file.setFileKey(fileKey);*/
             // 构建文件信息对象
             return File.builder()
                     .fileName(uniqueFilename)

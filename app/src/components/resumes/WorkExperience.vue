@@ -313,7 +313,7 @@ const calculateDuration = (experience: any) => {
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: var(--base-secondary-color, #e8e8e8);
+  bg-color: var(--base-color-secondary, #e8e8e8);
   z-index: 1;
   
   @media (max-width: 768px) {
@@ -328,7 +328,7 @@ const calculateDuration = (experience: any) => {
   padding-left: 40px;
   margin-bottom: var(--base-item-spacing, 20px);
   padding-bottom: var(--base-item-spacing, 20px);
-  border-bottom: 1px dashed var(--base-secondary-color, #e8e8e8);
+  border-bottom: 1px dashed var(--base-color-secondary, #e8e8e8);
   width: 100%;
   box-sizing: border-box;
   transition: all 0.3s ease;
@@ -342,7 +342,7 @@ const calculateDuration = (experience: any) => {
   &.current-item {
     border-left: 3px solid var(--base-accent-color, #52c41a);
     padding-left: 37px;
-    background-color: rgba(82, 196, 26, 0.05);
+    bg-color: rgba(82, 196, 26, 0.05);
     border-radius: 4px;
     padding: 12px 12px 12px 37px;
     margin-left: -12px;
@@ -368,13 +368,13 @@ const calculateDuration = (experience: any) => {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: var(--base-primary-color, #1890ff);
-  border: 2px solid var(--base-background-color, #fff);
+  bg-color: var(--base-color-primary, #1890ff);
+  border: 2px solid var(--base-bg-color, #fff);
   z-index: 2;
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
   
   &.current-node {
-    background-color: var(--base-accent-color, #52c41a);
+    bg-color: var(--base-accent-color, #52c41a);
     box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);
   }
   
@@ -410,7 +410,7 @@ const calculateDuration = (experience: any) => {
 .company-name {
   font-size: 16px;
   font-weight: bold;
-  color: var(--base-company-color, var(--base-primary-color, #1890ff));
+  color: var(--base-company-color, var(--base-color-primary, #1890ff));
   margin-bottom: 4px;
   display: block;
   width: 100%;
@@ -429,7 +429,7 @@ const calculateDuration = (experience: any) => {
   flex-shrink: 0;
   font-size: 12px;
   color: #fff;
-  background-color: var(--base-accent-color, #52c41a);
+  bg-color: var(--base-accent-color, #52c41a);
   padding: 2px 8px;
   border-radius: 10px;
   font-weight: bold;
@@ -462,14 +462,14 @@ const calculateDuration = (experience: any) => {
 .time-text {
   font-size: 12px;
   color: var(--base-period-color, #999);
-  background-color: #f5f5f5;
+  bg-color: #f5f5f5;
   padding: 2px 8px;
   border-radius: 10px;
 }
 
 .duration {
   margin-left: 4px;
-  color: var(--base-secondary-color, #999);
+  color: var(--base-color-secondary, #999);
 }
 
 /* 描述文本 */
@@ -542,8 +542,8 @@ const calculateDuration = (experience: any) => {
 
 .skill-tag {
   font-size: 12px;
-  color: var(--base-primary-color, #1890ff);
-  background-color: rgba(24, 144, 255, 0.1);
+  color: var(--base-color-primary, #1890ff);
+  bg-color: rgba(24, 144, 255, 0.1);
   padding: 2px 8px;
   border-radius: 12px;
   border: 1px solid rgba(24, 144, 255, 0.2);
@@ -593,9 +593,9 @@ const calculateDuration = (experience: any) => {
 .reference {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px dashed var(--base-secondary-color, #eee);
+  border-top: 1px dashed var(--base-color-secondary, #eee);
   font-size: 12px;
-  color: var(--base-secondary-color, #888);
+  color: var(--base-color-secondary, #888);
   width: 100%;
 }
 
@@ -612,7 +612,7 @@ const calculateDuration = (experience: any) => {
 /* 空状态 */
 .empty-placeholder {
   text-align: center;
-  color: var(--base-secondary-color, #999);
+  color: var(--base-color-secondary, #999);
   padding: 40px 20px;
   background: repeating-linear-gradient(
     45deg,
@@ -638,7 +638,7 @@ const calculateDuration = (experience: any) => {
 
 .placeholder-text {
   font-size: 14px;
-  color: var(--base-secondary-color, #999);
+  color: var(--base-color-secondary, #999);
 }
 
 /* ===================== 响应式设计 ===================== */

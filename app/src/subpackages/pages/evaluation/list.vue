@@ -137,7 +137,7 @@
         <!-- 加载更多 -->
         <view v-if="hasMore" class="load-more">
           <view v-if="loading" class="loading-more">
-            <view class="loading-spinner-small"></view>
+            <view class="loading-spinner-sm"></view>
             <text>加载中...</text>
           </view>
           <view v-else class="load-more-btn" @click="loadMore">
@@ -167,7 +167,7 @@
             <view
               v-for="(highlight, index) in currentHighlights"
               :key="index"
-              class="highlight-tag-large"
+              class="highlight-tag-lg"
               @click.stop="searchByHighlight(highlight)"
             >
               <text>{{ highlight }}</text>
@@ -350,7 +350,7 @@ const loadMore = () => {
 // 页面跳转
 const goToDetail = (id: number) => {
   uni.navigateTo({
-    url: `/subpackages/subpackages/pages/evaluation/evaluation?id=${id}`,
+    url: `/subpackages/pages/evaluation/evaluation?id=${id}`,
   });
 };
 
@@ -394,21 +394,21 @@ onReachBottom(() => {
 .search-box {
   display: flex;
   align-items: center;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: 20rpx 24rpx;
-  margin-bottom: $margin-small;
-  border: 1rpx solid $border-color-light;
+  margin-bottom: $margin-sm;
+  border: 1rpx solid $color-border-light;
 
   .search-icon {
     font-size: 32rpx;
-    color: $text-secondary;
+    color: $color-text-secondary;
   }
 
   .search-input {
     flex: 1;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-left: 16rpx;
     background: transparent;
   }
@@ -424,7 +424,7 @@ onReachBottom(() => {
 
     .clear-icon {
       font-size: 36rpx;
-      color: $text-secondary;
+      color: $color-text-secondary;
       width: 40rpx;
       height: 40rpx;
       display: flex;
@@ -436,25 +436,25 @@ onReachBottom(() => {
 
 .sort-options {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
   overflow-x: auto;
 
   .sort-item {
     padding: 12rpx 24rpx;
-    background: $background-color;
-    border-radius: $border-radius-small;
-    font-size: $font-size-small;
-    color: $text-secondary;
+    background: $bg-color;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
     white-space: nowrap;
     display: flex;
     align-items: center;
     gap: 8rpx;
-    border: 1rpx solid $border-color-light;
+    border: 1rpx solid $color-border-light;
 
     &.active {
-      background: $primary-color-light;
-      color: $primary-color;
-      border-color: $primary-color;
+      background: $color-primary-light;
+      color: $color-primary;
+      color-border: $color-primary;
       font-weight: $font-weight-medium;
     }
   }
@@ -466,7 +466,7 @@ onReachBottom(() => {
 
 .list-scroll {
   height: calc(100vh - 200rpx);
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .evaluation-item {
@@ -486,16 +486,16 @@ onReachBottom(() => {
     top: 20rpx;
     width: 40rpx;
     height: 40rpx;
-    background: $primary-color-light;
-    border-radius: $border-radius-round;
+    background: $color-primary-light;
+    border-radius: $border-radius-circle;
     display: flex;
     align-items: center;
     justify-content: center;
 
     .index-number {
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
       font-weight: $font-weight-bold;
-      color: $primary-color;
+      color: $color-primary;
     }
   }
 
@@ -503,15 +503,15 @@ onReachBottom(() => {
     .content-wrapper {
       .content-text {
         font-size: $font-size-base;
-        color: $text-primary;
+        color: $color-text-primary;
         line-height: 1.6;
-        margin-bottom: $margin-small;
+        margin-bottom: $margin-sm;
         display: block;
         -webkit-line-clamp: 3;
       }
 
       .highlights-section {
-        margin-bottom: $margin-small;
+        margin-bottom: $margin-sm;
 
         .highlights-label {
           display: flex;
@@ -524,15 +524,15 @@ onReachBottom(() => {
           }
 
           .label-text {
-            font-size: $font-size-extra-small;
-            color: $text-secondary;
+            font-size: $font-size-2xs;
+            color: $color-text-secondary;
             font-weight: $font-weight-medium;
           }
 
           .count-badge {
-            background: $primary-color-light;
-            color: $primary-color;
-            font-size: $font-size-extra-small;
+            background: $color-primary-light;
+            color: $color-primary;
+            font-size: $font-size-2xs;
             padding: 2rpx 8rpx;
             border-radius: 10rpx;
             font-weight: $font-weight-medium;
@@ -547,11 +547,11 @@ onReachBottom(() => {
 
           .highlight-tag {
             padding: 6rpx 12rpx;
-            background: $primary-color-light;
-            border-radius: $border-radius-round;
-            font-size: $font-size-extra-small;
-            color: $primary-color;
-            border: 1rpx solid $primary-border;
+            background: $color-primary-light;
+            border-radius: $border-radius-circle;
+            font-size: $font-size-2xs;
+            color: $color-primary;
+            border: 1rpx solid $color-primary-border;
             cursor: pointer;
             max-width: 150rpx;
             overflow: hidden;
@@ -561,11 +561,11 @@ onReachBottom(() => {
 
           .more-highlights {
             padding: 6rpx 12rpx;
-            background: $info-bg;
-            border-radius: $border-radius-round;
-            font-size: $font-size-extra-small;
-            color: $info-color;
-            border: 1rpx solid $info-border;
+            background: $bg-color-info;
+            border-radius: $border-radius-circle;
+            font-size: $font-size-2xs;
+            color: $color-info;
+            border: 1rpx solid $color-info-border;
             cursor: pointer;
           }
         }
@@ -583,18 +583,18 @@ onReachBottom(() => {
 
           .font-size-icon {
             font-size: 18rpx;
-            color: $text-secondary;
+            color: $color-text-secondary;
             font-weight: bold;
           }
 
           .tag-count-icon {
             font-size: 18rpx;
-            color: $text-secondary;
+            color: $color-text-secondary;
           }
 
           .stat-text {
-            font-size: $font-size-extra-small;
-            color: $text-secondary;
+            font-size: $font-size-2xs;
+            color: $color-text-secondary;
           }
         }
       }
@@ -609,7 +609,7 @@ onReachBottom(() => {
     .action-btn {
       flex: 1;
       padding: 16rpx;
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
     }
   }
 
@@ -617,11 +617,11 @@ onReachBottom(() => {
     display: flex;
     justify-content: space-between;
     padding-top: $margin-mini;
-    border-top: 1rpx solid $border-color-extra-light;
+    border-top: 1rpx solid $color-border-extra-light;
 
     .time-text {
-      font-size: $font-size-extra-small;
-      color: $text-placeholder;
+      font-size: $font-size-2xs;
+      color: $color-text-placeholder;
     }
   }
 }
@@ -636,8 +636,8 @@ onReachBottom(() => {
   .loading-spinner {
     width: 60rpx;
     height: 60rpx;
-    border: 4rpx solid rgba($primary-color, 0.2);
-    border-top-color: $primary-color;
+    border: 4rpx solid rgba($color-primary, 0.2);
+    border-top-color: $color-primary;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 20rpx;
@@ -670,14 +670,14 @@ onReachBottom(() => {
     display: flex;
     align-items: center;
     gap: 10rpx;
-    color: $text-secondary;
-    font-size: $font-size-small;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
 
-    .loading-spinner-small {
+    .loading-spinner-sm {
       width: 24rpx;
       height: 24rpx;
-      border: 2rpx solid rgba($primary-color, 0.2);
-      border-top-color: $primary-color;
+      border: 2rpx solid rgba($color-primary, 0.2);
+      border-top-color: $color-primary;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -685,18 +685,18 @@ onReachBottom(() => {
 
   .load-more-btn {
     padding: 16rpx 32rpx;
-    background: $background-color;
+    background: $bg-color;
     border-radius: $border-radius;
-    color: $text-primary;
-    font-size: $font-size-small;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
   }
 }
 
 .no-more {
   text-align: center;
   padding: 40rpx 0;
-  color: $text-secondary;
-  font-size: $font-size-small;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
 }
 
 .add-btn {
@@ -735,8 +735,8 @@ onReachBottom(() => {
   padding: $padding-base;
 
   .modal-content {
-    background: $background-color-white;
-    border-radius: $border-radius-large;
+    background: $bg-color-white;
+    border-radius: $border-radius-lg;
     width: 100%;
     max-width: 600rpx;
     max-height: 70vh;
@@ -748,19 +748,19 @@ onReachBottom(() => {
       justify-content: space-between;
       align-items: center;
       padding: $padding-base;
-      border-bottom: 1rpx solid $border-color-extra-light;
+      border-bottom: 1rpx solid $color-border-extra-light;
 
       .modal-title {
-        font-size: $font-size-medium;
+        font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
       }
 
       .modal-close-btn {
         background: transparent;
         border: none;
         font-size: 32rpx;
-        color: $text-secondary;
+        color: $color-text-secondary;
         width: 40rpx;
         height: 40rpx;
         display: flex;
@@ -779,13 +779,13 @@ onReachBottom(() => {
         flex-wrap: wrap;
         gap: 12rpx;
 
-        .highlight-tag-large {
+        .highlight-tag-lg {
           padding: 10rpx 16rpx;
-          background: $primary-color-light;
+          background: $color-primary-light;
           border-radius: $border-radius;
-          font-size: $font-size-small;
-          color: $primary-color;
-          border: 1rpx solid $primary-border;
+          font-size: $font-size-sm;
+          color: $color-primary;
+          border: 1rpx solid $color-primary-border;
           cursor: pointer;
         }
       }
@@ -794,7 +794,7 @@ onReachBottom(() => {
 }
 
 .placeholder-text {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 
@@ -814,7 +814,7 @@ onReachBottom(() => {
       height: 30rpx;
 
       .index-number {
-        font-size: $font-size-extra-small;
+        font-size: $font-size-2xs;
       }
     }
 

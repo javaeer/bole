@@ -290,15 +290,15 @@ onMounted(() => {
 <style scoped lang="scss">
 
 .btn-clear {
-  padding: $padding-mini $padding-small;
-  background: $danger-light;
-  border-radius: $border-radius-small;
+  padding: $padding-mini $padding-sm;
+  background: $color-danger-light;
+  border-radius: $border-radius-sm;
   cursor: pointer;
 }
 
 .btn-clear-text {
-  font-size: $font-size-small;
-  color: $danger-color;
+  font-size: $font-size-sm;
+  color: $color-danger;
   font-weight: $font-weight-medium;
 }
 
@@ -306,7 +306,7 @@ onMounted(() => {
 .empty-state {
   padding: $margin-base * 3 $padding-base;
   text-align: center;
-  background: $background-color-white;
+  background: $bg-color-white;
   margin: $margin-base;
   border-radius: $border-radius;
   box-shadow: $box-shadow;
@@ -320,29 +320,29 @@ onMounted(() => {
 
 .empty-text {
   display: block;
-  font-size: $font-size-medium;
-  color: $text-secondary;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
   margin-bottom: $margin-mini;
   font-weight: $font-weight-medium;
 }
 
 .empty-subtext {
   display: block;
-  font-size: $font-size-small;
-  color: $text-placeholder;
+  font-size: $font-size-sm;
+  color: $color-text-placeholder;
   margin-bottom: $margin-base * 2;
 }
 
 .btn-explore {
   display: inline-block;
   padding: $padding-mini $padding-base * 2;
-  background: $primary-color;
+  background: $color-primary;
   border-radius: $border-radius;
   cursor: pointer;
 }
 
 .btn-explore-text {
-  color: $background-color-white;
+  color: $bg-color-white;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
 }
@@ -350,7 +350,7 @@ onMounted(() => {
 /* 筛选选项卡 */
 .filter-tabs {
   display: flex;
-  background: $background-color-white;
+  background: $bg-color-white;
   margin: $margin-base;
   border-radius: $border-radius;
   box-shadow: $box-shadow;
@@ -363,16 +363,16 @@ onMounted(() => {
 .filter-tab {
   flex: 1;
   text-align: center;
-  padding: $padding-small 0;
+  padding: $padding-sm 0;
   cursor: pointer;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
   transition: all $transition-fast;
   
   &--active {
-    background: $primary-color;
+    background: $color-primary;
     
     .filter-tab-text {
-      color: $background-color-white;
+      color: $bg-color-white;
       font-weight: $font-weight-bold;
     }
   }
@@ -380,7 +380,7 @@ onMounted(() => {
 
 .filter-tab-text {
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   transition: color $transition-fast;
 }
 
@@ -391,9 +391,9 @@ onMounted(() => {
 }
 
 .history-item {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
   padding: $padding-base;
   display: flex;
   justify-content: space-between;
@@ -415,40 +415,40 @@ onMounted(() => {
 }
 
 .item-type {
-  margin-right: $margin-small;
+  margin-right: $margin-sm;
 }
 
 .type-icon {
   width: 60rpx;
   height: 60rpx;
-  background: $primary-color-light;
-  border-radius: $border-radius-round;
+  background: $color-primary-light;
+  border-radius: $border-radius-circle;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   margin-bottom: $margin-mini;
 }
 
 .type-badge {
   padding: 4rpx 12rpx;
   border-radius: 12rpx;
-  font-size: $font-size-extra-small;
+  font-size: $font-size-2xs;
   text-align: center;
   
   &.type-resumes {
-    background: rgba($success-color, 0.1);
+    background: rgba($color-success, 0.1);
     
     .type-text {
-      color: $success-color;
+      color: $color-success;
     }
   }
   
   &.type-company {
-    background: rgba($info-color, 0.1);
+    background: rgba($color-info, 0.1);
     
     .type-text {
-      color: $info-color;
+      color: $color-info;
     }
   }
 }
@@ -459,8 +459,8 @@ onMounted(() => {
 
 .item-title {
   display: block;
-  font-size: $font-size-medium;
-  color: $text-primary;
+  font-size: $font-size-base;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
   margin-bottom: $margin-mini;
   @extend .text-truncate;
@@ -473,19 +473,19 @@ onMounted(() => {
 }
 
 .item-time {
-  font-size: $font-size-small;
-  color: $text-placeholder;
+  font-size: $font-size-sm;
+  color: $color-text-placeholder;
 }
 
 .item-divider {
   margin: 0 8rpx;
-  color: $border-color;
+  color: $color-border;
 }
 
 .item-tag {
-  font-size: $font-size-small;
-  color: $text-secondary;
-  background: $border-color-extra-light;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: $color-border-extra-light;
   padding: 2rpx 8rpx;
   border-radius: 4rpx;
 }
@@ -495,28 +495,28 @@ onMounted(() => {
 }
 
 .item-desc-text {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   line-height: 1.4;
 }
 
 .history-item-right {
-  margin-left: $margin-small;
+  margin-left: $margin-sm;
 }
 
 .btn-delete {
   width: 40rpx;
   height: 40rpx;
-  border-radius: $border-radius-round;
-  background: $danger-light;
+  border-radius: $border-radius-circle;
+  background: $color-danger-light;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   
   .delete-icon {
-    color: $danger-color;
-    font-size: $font-size-large;
+    color: $color-danger;
+    font-size: $font-size-lg;
     font-weight: $font-weight-bold;
     line-height: 1;
   }
@@ -528,48 +528,48 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: $background-color-white;
+  background: $bg-color-white;
   padding: $padding-base;
-  border-top: 1rpx solid $border-color-light;
+  border-top: 1rpx solid $color-border-light;
   box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 .action-stats {
   text-align: center;
-  margin-bottom: $margin-small;
+  margin-bottom: $margin-sm;
 }
 
 .stats-text {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .action-buttons {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .btn-action {
   flex: 1;
   text-align: center;
-  padding: $padding-small 0;
+  padding: $padding-sm 0;
   border-radius: $border-radius;
   cursor: pointer;
   
   &--export {
-    background: $primary-color;
+    background: $color-primary;
     
     .btn-action-text {
-      color: $background-color-white;
+      color: $bg-color-white;
     }
   }
   
   &--refresh {
-    background: $background-color;
-    border: 1rpx solid $border-color;
+    background: $bg-color;
+    border: 1rpx solid $color-border;
     
     .btn-action-text {
-      color: $text-regular;
+      color: $color-text-regular;
     }
   }
 }
@@ -582,11 +582,11 @@ onMounted(() => {
 /* 响应式调整 */
 @media (max-width: 375px) {
   .history-list {
-    padding: 0 $margin-small;
+    padding: 0 $margin-sm;
   }
   
   .history-item {
-    padding: $padding-small;
+    padding: $padding-sm;
   }
 }
 </style>

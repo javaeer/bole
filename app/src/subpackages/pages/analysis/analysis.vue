@@ -457,14 +457,14 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .scan-container {
-  background-color: $background-color;
+  bg-color: $bg-color;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 .scan-header {
-  background: $background-color-white;
+  background: $bg-color-white;
   padding: 20rpx $padding-base;
   display: flex;
   justify-content: space-between;
@@ -476,21 +476,21 @@ onMounted(() => {
 }
 
 .header-title {
-  font-size: $font-size-large;
+  font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .header-actions {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .btn-icon {
   background: transparent;
   border: none;
   padding: $padding-mini;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
 }
 
 .scan-content {
@@ -504,53 +504,53 @@ onMounted(() => {
 }
 
 .upload-card {
-  background: linear-gradient(135deg, $primary-color-lighter 0%, color.adjust($primary-color-lighter, $lightness:  5%) 100%);
-  border: 2rpx dashed $primary-color;
+  background: linear-gradient(135deg, $color-primary-light 0%, color.adjust($color-primary-light, $lightness:  5%) 100%);
+  border: 2rpx dashed $color-primary;
   border-radius: $border-radius;
   padding: $padding-base * 1.5;
   text-align: center;
   margin-bottom: $margin-base;
   cursor: pointer;
-  transition: all $transition-duration;
+  transition: all $transition-normal;
   position: relative;
 
   &:active {
     transform: scale(0.98);
-    background: color.adjust($primary-color-lighter, $lightness:  -5%);
+    background: color.adjust($color-primary-light, $lightness:  -5%);
   }
 }
 
 .upload-icon {
-  font-size: $font-size-extra-large * 2;
+  font-size: $font-size-xl * 2;
   margin-bottom: $margin-base;
 }
 
 .upload-title {
   display: block;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
 }
 
 .upload-subtitle {
   display: block;
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .upload-progress {
   margin-top: $margin-base;
   height: 8rpx;
-  background: $border-color-light;
+  background: $color-border-light;
   border-radius: 4rpx;
   overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
-  background: $primary-color;
-  transition: width $transition-duration;
+  background: $color-primary;
+  transition: width $transition-normal;
 }
 
 .recent-files {
@@ -558,7 +558,7 @@ onMounted(() => {
     display: block;
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
-    color: $text-regular;
+    color: $color-text-regular;
     margin-bottom: $margin-base;
   }
 }
@@ -566,25 +566,25 @@ onMounted(() => {
 .file-list {
   display: flex;
   flex-direction: column;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .file-item {
   display: flex;
   align-items: center;
-  padding: $padding-small;
-  background: $background-color;
-  border-radius: $border-radius-small;
+  padding: $padding-sm;
+  background: $bg-color;
+  border-radius: $border-radius-sm;
   transition: all $transition-fast;
 
   &:active {
-    background: color.adjust($background-color, $lightness:  - 5%);
+    background: color.adjust($bg-color, $lightness:  - 5%);
   }
 }
 
 .file-icon {
-  font-size: $font-size-extra-large;
-  margin-right: $margin-small;
+  font-size: $font-size-xl;
+  margin-right: $margin-sm;
 }
 
 .file-info {
@@ -595,23 +595,23 @@ onMounted(() => {
 
 .file-name {
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: calc($margin-mini / 2);
   @extend .text-truncate;
 }
 
 .file-time {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 .file-score {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $primary-color;
+  color: $color-primary;
   padding: $padding-mini;
-  background: $primary-color-lighter;
-  border-radius: $border-radius-small;
+  background: $color-primary-light;
+  border-radius: $border-radius-sm;
 }
 
 /* 分析概览 */
@@ -622,8 +622,8 @@ onMounted(() => {
 }
 
 .scan-time {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 .overview-cards {
@@ -637,13 +637,13 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: $padding-base;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
 }
 
 .score-label {
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
   margin-bottom: $margin-base;
 }
 
@@ -664,15 +664,15 @@ onMounted(() => {
     left: 10rpx;
     right: 10rpx;
     bottom: 10rpx;
-    background: $background-color-white;
+    background: $bg-color-white;
     border-radius: 50%;
   }
 }
 
 .score-number {
-  font-size: $font-size-extra-large * 1.5;
+  font-size: $font-size-xl * 1.5;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   position: relative;
   z-index: 1;
 }
@@ -680,47 +680,47 @@ onMounted(() => {
 .score-level {
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-regular;
+  color: $color-text-regular;
 }
 
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .metric-card {
-  background: $background-color;
+  background: $bg-color;
   padding: $padding-base;
   border-radius: $border-radius;
 }
 
 .metric-label {
   display: block;
-  font-size: $font-size-small;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
   margin-bottom: $margin-mini;
 }
 
 .metric-value {
   display: block;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-base;
 }
 
 .metric-bar {
   height: 8rpx;
-  background: $border-color-light;
+  background: $color-border-light;
   border-radius: 4rpx;
   overflow: hidden;
 }
 
 .metric-fill {
   height: 100%;
-  background: $primary-color;
-  transition: width $transition-duration;
+  background: $color-primary;
+  transition: width $transition-normal;
 }
 
 /* 详细分析 */
@@ -734,7 +734,7 @@ onMounted(() => {
 
 .analysis-tabs {
   display: flex;
-  background: $background-color;
+  background: $bg-color;
   padding: $padding-mini;
   border-radius: $border-radius;
   width: 100%;
@@ -743,15 +743,15 @@ onMounted(() => {
 .tab-item {
   flex: 1;
   text-align: center;
-  padding: $padding-small;
+  padding: $padding-sm;
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   transition: all $transition-fast;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 
   &.active {
-    background: $background-color-white;
-    color: $primary-color;
+    background: $bg-color-white;
+    color: $color-primary;
     font-weight: $font-weight-medium;
     box-shadow: $box-shadow-light;
   }
@@ -771,12 +771,12 @@ onMounted(() => {
   display: flex;
   gap: $margin-base;
   padding: $padding-base;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
 }
 
 .strength-icon, .improvement-icon {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   flex-shrink: 0;
 }
 
@@ -788,7 +788,7 @@ onMounted(() => {
   display: block;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
 }
 
@@ -800,31 +800,31 @@ onMounted(() => {
 }
 
 .improvement-priority {
-  font-size: $font-size-extra-small;
+  font-size: $font-size-2xs;
   font-weight: $font-weight-bold;
   padding: calc($padding-mini / 2) $padding-mini;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 
   &.priority-high {
-    background: $danger-light;
-    color: $danger-color;
+    background: $color-danger-light;
+    color: $color-danger;
   }
 
   &.priority-medium {
-    background: $warning-light;
-    color: $warning-color;
+    background: $color-warning-light;
+    color: $color-warning;
   }
 
   &.priority-low {
-    background: $primary-color-lighter;
-    color: $primary-color;
+    background: $color-primary-light;
+    color: $color-primary;
   }
 }
 
 .strength-desc, .improvement-desc {
   display: block;
-  font-size: $font-size-small;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
   line-height: 1.5;
   margin-bottom: $margin-base;
 }
@@ -836,11 +836,11 @@ onMounted(() => {
 }
 
 .tag {
-  font-size: $font-size-extra-small;
-  color: $primary-color;
-  background: $primary-color-lighter;
+  font-size: $font-size-2xs;
+  color: $color-primary;
+  background: $color-primary-light;
   padding: calc($padding-mini / 2) $padding-mini;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 }
 
 .improvement-actions {
@@ -850,15 +850,15 @@ onMounted(() => {
 }
 
 .btn-action {
-  background: $background-color-white;
-  border: 1rpx solid $border-color;
-  border-radius: $border-radius-small;
-  padding: $padding-mini $padding-small;
-  font-size: $font-size-extra-small;
-  color: $text-regular;
+  background: $bg-color-white;
+  border: 1rpx solid $color-border;
+  border-radius: $border-radius-sm;
+  padding: $padding-mini $padding-sm;
+  font-size: $font-size-2xs;
+  color: $color-text-regular;
 
   &:active {
-    background: $background-color;
+    background: $bg-color;
   }
 }
 
@@ -868,16 +868,16 @@ onMounted(() => {
   gap: $margin-base;
   justify-content: center;
   padding: $padding-base;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   margin-bottom: $margin-base;
 }
 
 .keyword-item {
-  color: $primary-color;
+  color: $color-primary;
   font-weight: $font-weight-medium;
-  padding: $padding-mini $padding-small;
-  background: $primary-color-lighter;
+  padding: $padding-mini $padding-sm;
+  background: $color-primary-light;
   border-radius: $border-radius;
   transition: all $transition-fast;
 
@@ -890,7 +890,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-around;
   padding: $padding-base;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
 
   .stat-item {
@@ -900,15 +900,15 @@ onMounted(() => {
   }
 
   .stat-number {
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
     font-weight: $font-weight-bold;
-    color: $primary-color;
+    color: $color-primary;
     margin-bottom: calc($margin-mini / 2);
   }
 
   .stat-label {
-    font-size: $font-size-extra-small;
-    color: $text-secondary;
+    font-size: $font-size-2xs;
+    color: $color-text-secondary;
   }
 }
 
@@ -920,7 +920,7 @@ onMounted(() => {
 .optimize-options {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $margin-small;
+  gap: $margin-sm;
   margin-bottom: $margin-base;
 }
 
@@ -929,8 +929,8 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: $padding-base;
-  background: $background-color;
-  border: 2rpx solid $border-color-light;
+  background: $bg-color;
+  border: 2rpx solid $color-border-light;
   border-radius: $border-radius;
   transition: all $transition-fast;
 
@@ -939,30 +939,30 @@ onMounted(() => {
   }
 
   &--active {
-    background: $primary-color-lighter;
-    border-color: $primary-color;
+    background: $color-primary-light;
+    color-border: $color-primary;
   }
 }
 
 .optimize-icon {
-  font-size: $font-size-large;
+  font-size: $font-size-lg;
   margin-bottom: $margin-mini;
 }
 
 .optimize-text {
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .btn-primary {
   width: 100%;
   height: $button-height;
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness:  -10%) 100%);
-  color: $background-color-white;
+  background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness:  -10%) 100%);
+  color: $bg-color-white;
   border: none;
   border-radius: $border-radius;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
 
   &:disabled {
@@ -973,8 +973,8 @@ onMounted(() => {
 .loading-spinner {
   width: 40rpx;
   height: 40rpx;
-  border: 4rpx solid rgba($background-color-white, 0.3);
-  border-top-color: $background-color-white;
+  border: 4rpx solid rgba($bg-color-white, 0.3);
+  border-top-color: $bg-color-white;
   border-radius: 50%;
   margin: 0 auto;
   animation: spin 0.8s linear infinite;
@@ -988,8 +988,8 @@ onMounted(() => {
 
 /* 底部操作栏 */
 .scan-footer {
-  background: $background-color-white;
-  padding: $padding-small $padding-base;
+  background: $bg-color-white;
+  padding: $padding-sm $padding-base;
   display: flex;
   gap: $margin-base;
   box-shadow: $box-shadow-light;
@@ -1000,19 +1000,19 @@ onMounted(() => {
 .btn-secondary {
   flex: 1;
   height: $button-height;
-  background: $background-color-white;
-  border: 2rpx solid $border-color;
+  background: $bg-color-white;
+  border: 2rpx solid $color-border;
   border-radius: $border-radius;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: $margin-mini;
 
   &:active {
-    background: $background-color;
+    background: $bg-color;
   }
 }
 

@@ -118,7 +118,7 @@ const getItemStyle = (styles: any, index: number) => {
     marginBottom: index < evaluations.value.length - 1 ? '20px' : '0',
     paddingBottom: index < evaluations.value.length - 1 ? '20px' : '0',
     borderBottom: index < evaluations.value.length - 1 ?
-      `1px dashed var(--base-secondary-color, #e8e8e8)` : 'none'
+      `1px dashed var(--base-color-secondary, #e8e8e8)` : 'none'
   };
 };
 

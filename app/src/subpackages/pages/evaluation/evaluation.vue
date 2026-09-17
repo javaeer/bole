@@ -541,7 +541,7 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: 0 0 $border-radius $border-radius;
   box-shadow: $box-shadow;
 
@@ -552,7 +552,7 @@ onUnmounted(() => {
 
     .back-icon {
       font-size: 40rpx;
-      color: $text-primary;
+      color: $color-text-primary;
       width: 40rpx;
       height: 40rpx;
       display: flex;
@@ -561,9 +561,9 @@ onUnmounted(() => {
     }
 
     .header-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
     }
   }
 
@@ -573,7 +573,7 @@ onUnmounted(() => {
 
     .btn {
       padding: 12rpx 24rpx;
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
       min-width: 80rpx;
     }
   }
@@ -584,7 +584,7 @@ onUnmounted(() => {
 }
 
 .detail-content {
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .info-card {
@@ -596,26 +596,26 @@ onUnmounted(() => {
     align-items: center;
     margin-bottom: $margin-base;
     padding-bottom: $margin-mini;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     .card-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
     }
 
     .card-subtitle {
-      font-size: $font-size-small;
-      color: $text-secondary;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
     }
 
     .content-stats {
       .stats-text {
-        font-size: $font-size-small;
-        color: $text-secondary;
-        background: $background-color;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+        background: $bg-color;
         padding: 4rpx 12rpx;
-        border-radius: $border-radius-small;
+        border-radius: $border-radius-sm;
       }
     }
   }
@@ -625,38 +625,38 @@ onUnmounted(() => {
   .content-textarea {
     width: 100%;
     padding: 24rpx;
-    border: 2rpx solid $border-color-lighter;
+    border: 2rpx solid $color-border-light;
     border-radius: $border-radius;
     font-size: $font-size-base;
-    color: $text-primary;
-    background: $background-color-white;
+    color: $color-text-primary;
+    background: $bg-color-white;
     min-height: 300rpx;
     line-height: 1.6;
     box-sizing: border-box;
     transition: all $transition-fast $ease-in-out;
 
     &:focus {
-      border-color: $primary-color;
+      color-border: $color-primary;
       box-shadow: $input-focus-shadow;
       outline: none;
     }
 
     &.error {
-      border-color: $danger-color;
+      color-border: $color-danger;
       box-shadow: $input-error-shadow;
     }
 
     &[disabled] {
-      background: $background-color;
-      color: $text-regular;
+      background: $bg-color;
+      color: $color-text-regular;
       cursor: not-allowed;
     }
   }
 
   .textarea-count {
     text-align: right;
-    font-size: $font-size-extra-small;
-    color: $text-secondary;
+    font-size: $font-size-2xs;
+    color: $color-text-secondary;
     margin-top: 8rpx;
   }
 
@@ -668,28 +668,28 @@ onUnmounted(() => {
     .highlights-input {
       flex: 1;
       padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
+      color: $color-text-primary;
+      background: $bg-color-white;
 
       &:focus {
-        border-color: $primary-color;
+        color-border: $color-primary;
         box-shadow: $input-focus-shadow;
         outline: none;
       }
 
       &[disabled] {
-        background: $background-color;
-        color: $text-secondary;
+        background: $bg-color;
+        color: $color-text-secondary;
         cursor: not-allowed;
       }
     }
 
     .add-highlight-btn {
       padding: 0 24rpx;
-      background: $primary-color;
+      background: $color-primary;
       color: white;
       border: none;
       border-radius: $border-radius;
@@ -699,7 +699,7 @@ onUnmounted(() => {
       font-size: 24rpx;
 
       &:active {
-        background: color.adjust($primary-color, $lightness: -10%);
+        background: color.adjust($color-primary, $lightness: -10%);
       }
     }
   }
@@ -710,8 +710,8 @@ onUnmounted(() => {
     justify-content: space-between;
 
     .hint-text {
-      font-size: $font-size-extra-small;
-      color: $text-placeholder;
+      font-size: $font-size-2xs;
+      color: $color-text-placeholder;
       display: block;
     }
   }
@@ -727,11 +727,11 @@ onUnmounted(() => {
       align-items: center;
       gap: 8rpx;
       padding: 8rpx 16rpx;
-      background: $primary-color-light;
-      border-radius: $border-radius-round;
-      font-size: $font-size-small;
-      color: $primary-color;
-      border: 1rpx solid $primary-border;
+      background: $color-primary-light;
+      border-radius: $border-radius-circle;
+      font-size: $font-size-sm;
+      color: $color-primary;
+      border: 1rpx solid $color-primary-border;
 
       .remove-highlight-btn {
         width: 20rpx;
@@ -739,7 +739,7 @@ onUnmounted(() => {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: $text-secondary;
+        color: $color-text-secondary;
         cursor: pointer;
         font-size: 20rpx;
       }
@@ -750,26 +750,26 @@ onUnmounted(() => {
     display: flex;
     justify-content: flex-end;
     padding-top: $margin-mini;
-    border-top: 1rpx solid $border-color-extra-light;
+    border-top: 1rpx solid $color-border-extra-light;
 
     .clear-all-btn {
-      font-size: $font-size-extra-small;
-      color: $danger-color;
+      font-size: $font-size-2xs;
+      color: $color-danger;
       background: transparent;
       border: none;
       padding: 8rpx 16rpx;
 
       &:active {
-        background: $background-color;
-        border-radius: $border-radius-small;
+        background: $bg-color;
+        border-radius: $border-radius-sm;
       }
     }
   }
 
   .error-text {
     display: block;
-    font-size: $font-size-extra-small;
-    color: $danger-color;
+    font-size: $font-size-2xs;
+    color: $color-danger;
     margin-top: 8rpx;
   }
 }
@@ -778,9 +778,9 @@ onUnmounted(() => {
   .analysis-item {
     display: flex;
     align-items: center;
-    gap: $margin-small;
+    gap: $margin-sm;
     padding: 20rpx 0;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     &:last-child {
       border-bottom: none;
@@ -789,8 +789,8 @@ onUnmounted(() => {
     .analysis-icon {
       width: 40rpx;
       height: 40rpx;
-      background: $background-color;
-      border-radius: $border-radius-round;
+      background: $bg-color;
+      border-radius: $border-radius-circle;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -805,28 +805,28 @@ onUnmounted(() => {
 
       .analysis-label {
         display: block;
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
         margin-bottom: 4rpx;
       }
 
       .analysis-value {
         font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
       }
     }
 
     .analysis-progress {
       width: 100rpx;
       height: 8rpx;
-      background: $background-color;
+      background: $bg-color;
       border-radius: 4rpx;
       overflow: hidden;
 
       .progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, $primary-color, color.adjust($primary-color, $lightness: 20%));
+        background: linear-gradient(90deg, $color-primary, color.adjust($color-primary, $lightness: 20%));
         border-radius: 4rpx;
         transition: width $transition-normal $ease-in-out;
       }
@@ -840,7 +840,7 @@ onUnmounted(() => {
     justify-content: space-between;
     align-items: center;
     padding: 16rpx 0;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     &:last-child {
       border-bottom: none;
@@ -848,12 +848,12 @@ onUnmounted(() => {
 
     .info-label {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: $color-text-secondary;
     }
 
     .info-value {
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
       font-weight: $font-weight-medium;
     }
   }
@@ -865,8 +865,8 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
-  border-top: 1rpx solid $border-color-light;
+  background: $bg-color-white;
+  border-top: 1rpx solid $color-border-light;
   z-index: $z-index-base;
 
   .btn-block {
@@ -882,7 +882,7 @@ onUnmounted(() => {
   width: 60rpx;
   height: 60rpx;
   border-radius: 50%;
-  background: $primary-color;
+  background: $color-primary;
   color: white;
   display: flex;
   align-items: center;
@@ -904,7 +904,7 @@ onUnmounted(() => {
 
 @media (max-width: $screen-md) {
   .detail-header {
-    padding: 16rpx $padding-small;
+    padding: 16rpx $padding-sm;
   }
 
   .detail-content {
@@ -923,7 +923,7 @@ onUnmounted(() => {
   }
 
   .detail-footer {
-    padding: 16rpx $padding-small;
+    padding: 16rpx $padding-sm;
   }
 
   .back-to-top {

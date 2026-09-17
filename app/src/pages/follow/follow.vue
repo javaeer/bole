@@ -262,7 +262,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .page-container {
   min-height: 100vh;
-  background-color: $background-color;
+  bg-color: $bg-color;
 }
 
 .content {
@@ -289,16 +289,16 @@ onUnmounted(() => {
 .loading-spinner {
   width: 60rpx;
   height: 60rpx;
-  border: 4rpx solid $border-color-light;
-  border-top-color: $primary-color;
-  border-radius: $border-radius-round;
+  border: 4rpx solid $color-border-light;
+  border-top-color: $color-primary;
+  border-radius: $border-radius-circle;
   margin-bottom: $margin-base;
   animation: spin 1s linear infinite;
 }
 
 .loading-text {
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
 }
 
 @keyframes spin {
@@ -345,13 +345,13 @@ onUnmounted(() => {
 .template-cover {
   width: 100%;
   height: 240rpx;
-  background: linear-gradient(135deg, $primary-color-light 0%, transparent 100%);
+  background: linear-gradient(135deg, $color-primary-light 0%, transparent 100%);
   object-fit: cover;
   border-radius: $border-radius $border-radius 0 0;
 }
 
 .template-info {
-  padding: $padding-small;
+  padding: $padding-sm;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -361,7 +361,7 @@ onUnmounted(() => {
   display: block;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
 }
 
@@ -374,17 +374,17 @@ onUnmounted(() => {
 
 .template-type {
   align-self: flex-start;
-  font-size: $font-size-small;
-  background: $background-color;
-  border: 1px solid $border-color-light;
+  font-size: $font-size-sm;
+  background: $bg-color;
+  border: 1px solid $color-border-light;
   padding: 4rpx 12rpx;
 }
 
 .template-stats {
   display: flex;
   align-items: center;
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 
   .stat-count {
     font-size: inherit;
@@ -396,8 +396,8 @@ onUnmounted(() => {
 }
 
 .template-actions {
-  padding: $padding-mini $padding-small $padding-small;
-  border-top: 1px solid $border-color-lighter;
+  padding: $padding-mini $padding-sm $padding-sm;
+  border-top: 1px solid $color-border-light;
   gap: $margin-mini;
 }
 
@@ -423,7 +423,7 @@ onUnmounted(() => {
   justify-content: center;
   padding: 16rpx 24rpx;
   border-radius: $border-radius;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   transition: all $transition-fast $ease-in-out;
   border: none;
@@ -434,7 +434,7 @@ onUnmounted(() => {
 
   &-primary {
     background: $button-primary-bg;
-    color: $background-color-white;
+    color: $bg-color-white;
 
     &:active {
       transform: scale(0.98);
@@ -447,23 +447,23 @@ onUnmounted(() => {
     justify-content: center;
     padding: 12rpx 20rpx;
     border-radius: $border-radius;
-    font-size: $font-size-small;
+    font-size: $font-size-sm;
     font-weight: $font-weight-medium;
     transition: all $transition-fast $ease-in-out;
-    border: 1px solid $border-color-light;
-    background: $background-color-white;
+    border: 1px solid $color-border-light;
+    background: $bg-color-white;
     cursor: pointer;
     gap: 6rpx;
     min-height: 60rpx;
     flex: 1;
 
     &-danger {
-      color: $danger-color;
-      border-color: rgba($danger-color, 0.3);
-      background: $danger-bg;
+      color: $color-danger;
+      color-border: rgba($color-danger, 0.3);
+      background: $bg-color-danger;
 
       &:active {
-        background: rgba($danger-color, 0.15);
+        background: rgba($color-danger, 0.15);
       }
     }
   }
@@ -473,7 +473,7 @@ onUnmounted(() => {
     white-space: nowrap;
 
     &-sm {
-      font-size: $font-size-extra-small;
+      font-size: $font-size-2xs;
       font-weight: $font-weight-bold;
     }
   }
@@ -490,8 +490,8 @@ onUnmounted(() => {
 
 .load-more-text,
 .no-more-text {
-  color: $text-secondary;
-  font-size: $font-size-small;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
 }
 
 .loading-more {
@@ -505,7 +505,7 @@ onUnmounted(() => {
   width: 8rpx;
   height: 8rpx;
   border-radius: 50%;
-  background-color: $primary-color;
+  bg-color: $color-primary;
   position: relative;
   animation: pulse 1.5s infinite ease-in-out;
 
@@ -516,7 +516,7 @@ onUnmounted(() => {
     width: 8rpx;
     height: 8rpx;
     border-radius: 50%;
-    background-color: $primary-color;
+    bg-color: $color-primary;
   }
 
   &:before {

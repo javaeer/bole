@@ -160,7 +160,7 @@
                     @changing="onColumnWidthChanging"
                     data-side="left"
                     active-color="#d4af37"
-                    background-color="#ebeef5"
+                    bg-color="#ebeef5"
                     class="form-slider"
                   />
                 </view>
@@ -174,7 +174,7 @@
                     @changing="onColumnWidthChanging"
                     data-side="right"
                     active-color="#d4af37"
-                    background-color="#ebeef5"
+                    bg-color="#ebeef5"
                     class="form-slider"
                   />
                 </view>
@@ -1542,32 +1542,32 @@ onMounted(() => {
 <style scoped lang="scss">
 .template-editor {
   min-height: 100vh;
-  background-color: $background-color;
+  bg-color: $bg-color;
   display: flex;
   flex-direction: column;
 }
 
 /* 头部样式 */
 .editor-header {
-  background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
+  background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness: -10%) 100%);
   color: white;
   padding: $padding-base;
-  border-radius: 0 0 $border-radius-large $border-radius-large;
+  border-radius: 0 0 $border-radius-lg $border-radius-lg;
   box-shadow: $box-shadow-dark;
   z-index: 10;
 
   .header-title {
-    margin-bottom: $margin-small;
+    margin-bottom: $margin-sm;
 
     .title {
-      font-size: $font-size-extra-large;
+      font-size: $font-size-xl;
       font-weight: $font-weight-bold;
       margin: 0 0 8rpx 0;
       color: white;
     }
 
     .subtitle {
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
       opacity: 0.9;
       color: rgba(white, 0.9);
     }
@@ -1575,7 +1575,7 @@ onMounted(() => {
 
   .header-actions {
     display: flex;
-    gap: $margin-small;
+    gap: $margin-sm;
     flex-wrap: wrap;
 
     .action-btn {
@@ -1603,18 +1603,18 @@ onMounted(() => {
       }
 
       &.draft-btn {
-        background: $warning-color;
-        border-color: $warning-color;
+        background: $color-warning;
+        color-border: $color-warning;
       }
 
       &.save-btn {
-        background: $success-color;
-        border-color: $success-color;
+        background: $color-success;
+        color-border: $color-success;
       }
 
       &.cancel-btn {
-        background: $danger-color;
-        border-color: $danger-color;
+        background: $color-danger;
+        color-border: $color-danger;
       }
 
       &:disabled {
@@ -1637,8 +1637,8 @@ onMounted(() => {
 /* 左侧配置面板 */
 .config-panel {
   flex: 0 0 45%;
-  background: $background-color-white;
-  border-radius: $border-radius-large;
+  background: $bg-color-white;
+  border-radius: $border-radius-lg;
   box-shadow: $box-shadow;
   display: flex;
   flex-direction: column;
@@ -1646,9 +1646,9 @@ onMounted(() => {
 
   .config-tabs {
     display: flex;
-    background: $background-color;
+    background: $bg-color;
     padding: 8rpx;
-    border-bottom: 2rpx solid $border-color-lighter;
+    border-bottom: 2rpx solid $color-border-light;
 
     .tab-item {
       flex: 1;
@@ -1660,14 +1660,14 @@ onMounted(() => {
 
       .tab-text {
         font-size: $font-size-base;
-        color: $text-secondary;
+        color: $color-text-secondary;
         font-weight: $font-weight-medium;
       }
 
       &.active {
         .tab-text {
-          color: $primary-color;
-          font-weight: $font-weight-semibold;
+          color: $color-primary;
+          font-weight: $font-weight-medium;
         }
 
         .tab-indicator {
@@ -1677,13 +1677,13 @@ onMounted(() => {
           transform: translateX(-50%);
           width: 60%;
           height: 4rpx;
-          background: $primary-color;
+          background: $color-primary;
           border-radius: 2rpx;
         }
       }
 
       &:hover:not(.active) {
-        background: rgba($primary-color, 0.05);
+        background: rgba($color-primary, 0.05);
       }
     }
   }
@@ -1698,20 +1698,20 @@ onMounted(() => {
 .config-section {
   .component-header {
     margin-bottom: $margin-base;
-    padding-bottom: $padding-small;
-    border-bottom: 1px solid $border-color-lighter;
+    padding-bottom: $padding-sm;
+    border-bottom: 1px solid $color-border-light;
 
     .component-title {
       display: block;
-      font-size: $font-size-large;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
       margin-bottom: 4rpx;
     }
 
     .component-desc {
-      font-size: $font-size-small;
-      color: $text-secondary;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
     }
   }
 }
@@ -1724,12 +1724,12 @@ onMounted(() => {
     display: block;
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-bottom: var(--margin-mini);
 
     &.required::after {
       content: '*';
-      color: $danger-color;
+      color: $color-danger;
       margin-left: 4rpx;
     }
   }
@@ -1737,30 +1737,30 @@ onMounted(() => {
   .form-input {
     width: 100%;
     padding: 20rpx;
-    border: 2rpx solid $border-color-lighter;
+    border: 2rpx solid $color-border-light;
     border-radius: $border-radius;
     font-size: $font-size-base;
-    color: $text-primary;
-    background: $background-color-white;
+    color: $color-text-primary;
+    background: $bg-color-white;
     transition: all $transition-fast $ease-in-out;
 
     &:focus {
-      border-color: $primary-color;
+      color-border: $color-primary;
       box-shadow: $input-focus-shadow;
       outline: none;
     }
 
     &.disabled {
-      background: $background-color;
-      color: $text-secondary;
+      background: $bg-color;
+      color: $color-text-secondary;
       cursor: not-allowed;
     }
   }
 
   .form-tip {
     display: block;
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
     margin-top: 4rpx;
   }
 }
@@ -1777,15 +1777,15 @@ onMounted(() => {
 .form-picker {
   .picker-display {
     padding: 20rpx;
-    border: 2rpx solid $border-color-lighter;
+    border: 2rpx solid $color-border-light;
     border-radius: $border-radius;
-    background: $background-color-white;
+    background: $bg-color-white;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
 
     .picker-arrow {
-      color: $text-secondary;
-      font-size: $font-size-small;
+      color: $color-text-secondary;
+      font-size: $font-size-sm;
     }
   }
 }
@@ -1794,7 +1794,7 @@ onMounted(() => {
   position: relative;
   width: 100%;
   height: 240rpx;
-  border: 2rpx dashed $border-color-light;
+  border: 2rpx dashed $color-border-light;
   border-radius: $border-radius;
   overflow: hidden;
   display: flex;
@@ -1810,7 +1810,7 @@ onMounted(() => {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    background: $background-color;
+    background: $bg-color;
   }
 
   .preview-image-placeholder {
@@ -1821,21 +1821,21 @@ onMounted(() => {
 
     .preview-image-icon {
       font-size: 64rpx;
-      color: $primary-color;
-      margin-bottom: $uni-spacing-col-sm;
+      color: $color-primary;
+      margin-bottom: $spacing-1;
     }
 
     .preview-image-text {
       font-size: $font-size-base;
-      color: $text-placeholder;
+      color: $color-text-placeholder;
     }
   }
 }
 
 .preview-image-tips {
   display: block;
-  font-size: $font-size-extra-small;
-  color: $text-placeholder;
+  font-size: $font-size-2xs;
+  color: $color-text-placeholder;
   margin-top: $margin-mini;
   text-align: center;
 }
@@ -1847,7 +1847,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: $uni-bg-color-mask;
+  background: $bg-color-mask;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1863,30 +1863,30 @@ onMounted(() => {
   position: relative;
   width: 60rpx;
   height: 60rpx;
-  margin-bottom: $uni-spacing-col-sm;
+  margin-bottom: $spacing-1;
 }
 
 .circle-bg {
   position: absolute;
   width: 100%;
   height: 100%;
-  border: 4rpx solid rgba($background-color-white, 0.3);
-  border-radius: $border-radius-round;
+  border: 4rpx solid rgba($bg-color-white, 0.3);
+  border-radius: $border-radius-circle;
 }
 
 .circle-fill {
   position: absolute;
   width: 100%;
   height: 100%;
-  border: 4rpx solid $background-color-white;
-  border-radius: $border-radius-round;
+  border: 4rpx solid $bg-color-white;
+  border-radius: $border-radius-circle;
   clip: rect(0, 30rpx, 60rpx, 0);
   transform-origin: center;
 }
 
 .progress-text {
-  font-size: $font-size-small;
-  color: $background-color-white;
+  font-size: $font-size-sm;
+  color: $bg-color-white;
   font-weight: $font-weight-medium;
 }
 
@@ -1894,15 +1894,15 @@ onMounted(() => {
   width: 100%;
   min-height: 160rpx;
   padding: 20rpx;
-  border: 2rpx solid $border-color-lighter;
+  border: 2rpx solid $color-border-light;
   border-radius: $border-radius;
   font-size: $font-size-base;
-  color: $text-primary;
-  background: $background-color-white;
+  color: $color-text-primary;
+  background: $bg-color-white;
   resize: vertical;
 
   &:focus {
-    border-color: $primary-color;
+    color-border: $color-primary;
     box-shadow: $input-focus-shadow;
     outline: none;
   }
@@ -1912,13 +1912,13 @@ onMounted(() => {
   margin-top: 8rpx;
 
   .textarea-tip {
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 
   .textarea-count {
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 }
 
@@ -1926,28 +1926,28 @@ onMounted(() => {
 /* 布局类型选择 */
 .layout-types {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
   flex-wrap: wrap;
 
   .layout-type-item {
     flex: 1;
     min-width: 0;
     padding: 24rpx 16rpx;
-    border: 2rpx solid $border-color-lighter;
+    border: 2rpx solid $color-border-light;
     border-radius: $border-radius;
-    background: $background-color-white;
+    background: $bg-color-white;
     text-align: center;
     cursor: pointer;
     transition: all $transition-fast $ease-in-out;
 
     &:hover {
-      border-color: $primary-color;
+      color-border: $color-primary;
       transform: translateY(-2rpx);
     }
 
     &.active {
-      border-color: $primary-color;
-      background: rgba($primary-color, 0.05);
+      color-border: $color-primary;
+      background: rgba($color-primary, 0.05);
       box-shadow: $input-focus-shadow;
     }
 
@@ -1955,38 +1955,38 @@ onMounted(() => {
       width: 48rpx;
       height: 48rpx;
       margin: 0 auto 12rpx;
-      background: $background-color;
-      border-radius: var(--border-radius-small);
+      background: $bg-color;
+      border-radius: var(--border-radius-sm);
 
       &.single {
-        background: linear-gradient(90deg, $primary-color 100%, transparent 0%);
+        background: linear-gradient(90deg, $color-primary 100%, transparent 0%);
       }
 
       &.double {
-        background: linear-gradient(90deg, $primary-color 40%, $secondary-color 40%, $secondary-color 100%);
+        background: linear-gradient(90deg, $color-primary 40%, $color-secondary 40%, $color-secondary 100%);
       }
 
       &.triple {
-        background: linear-gradient(90deg, $primary-color 33%, $secondary-color 33%, $secondary-color 66%, $primary-color 66%);
+        background: linear-gradient(90deg, $color-primary 33%, $color-secondary 33%, $color-secondary 66%, $color-primary 66%);
       }
 
       &.creative {
-        background: linear-gradient(45deg, $primary-color 25%, $secondary-color 25%, $secondary-color 50%, $primary-color 50%, $primary-color 75%, $secondary-color 75%);
+        background: linear-gradient(45deg, $color-primary 25%, $color-secondary 25%, $color-secondary 50%, $color-primary 50%, $color-primary 75%, $color-secondary 75%);
         background-size: 20rpx 20rpx;
       }
     }
 
     .layout-name {
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
     }
   }
 }
 
 /* 布局配置 */
 .layout-config {
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: $padding-base;
   margin: $margin-base 0;
@@ -1998,15 +1998,15 @@ onMounted(() => {
       display: block;
       font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
-      margin-bottom: $margin-small;
+      color: $color-text-primary;
+      margin-bottom: $margin-sm;
     }
   }
 
   .two-column-preview {
     height: 120rpx;
-    background: $background-color-white;
-    border: 2rpx solid $border-color-lighter;
+    background: $bg-color-white;
+    border: 2rpx solid $color-border-light;
     border-radius: $border-radius;
     overflow: hidden;
     display: flex;
@@ -2021,16 +2021,16 @@ onMounted(() => {
       color: white;
 
       .column-label {
-        font-size: $font-size-small;
+        font-size: $font-size-sm;
       }
     }
 
     .column-left {
-      background: $primary-color;
+      background: $color-primary;
     }
 
     .column-right {
-      background: $secondary-color;
+      background: $color-secondary;
     }
   }
 
@@ -2041,7 +2041,7 @@ onMounted(() => {
       .control-label {
         display: block;
         font-size: $font-size-base;
-        color: $text-primary;
+        color: $color-text-primary;
         margin-bottom: var(--margin-mini);
       }
     }
@@ -2056,15 +2056,15 @@ onMounted(() => {
 .component-recommendation {
   margin-bottom: $margin-base;
   padding: $padding-base;
-  background: rgba($success-color, 0.05);
+  background: rgba($color-success, 0.05);
   border-radius: $border-radius;
-  border: 1px solid rgba($success-color, 0.2);
+  border: 1px solid rgba($color-success, 0.2);
 
   .recommendation-title {
-    font-size: $font-size-small;
-    color: $success-color;
+    font-size: $font-size-sm;
+    color: $color-success;
     font-weight: $font-weight-medium;
-    margin-bottom: $padding-small;
+    margin-bottom: $padding-sm;
     display: flex;
     align-items: center;
     gap: 8rpx;
@@ -2082,21 +2082,21 @@ onMounted(() => {
     .recommendation-item {
       padding: 12rpx 16rpx;
       background: white;
-      border: 1px solid $border-color-lighter;
-      border-radius: var(--border-radius-small);
-      font-size: $font-size-small;
-      color: $text-primary;
+      border: 1px solid $color-border-light;
+      border-radius: var(--border-radius-sm);
+      font-size: $font-size-sm;
+      color: $color-text-primary;
       cursor: pointer;
       transition: all 0.2s ease;
 
       &:active {
-        background: $background-color;
+        background: $bg-color;
         transform: translateY(1rpx);
       }
 
       &:hover {
-        border-color: $primary-color;
-        background: rgba($primary-color, 0.05);
+        color-border: $color-primary;
+        background: rgba($color-primary, 0.05);
       }
     }
   }
@@ -2108,26 +2108,26 @@ onMounted(() => {
     margin-bottom: $margin-base;
 
     .component-item {
-      margin-bottom: $margin-small;
-      background: $background-color-white;
-      border: 2rpx solid $border-color-lighter;
+      margin-bottom: $margin-sm;
+      background: $bg-color-white;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       overflow: hidden;
       transition: all 0.3s ease;
       cursor: pointer;
 
       &:hover {
-        border-color: rgba($primary-color, 0.5);
+        color-border: rgba($color-primary, 0.5);
         box-shadow: $box-shadow-light;
       }
 
       &.selected {
-        border-color: $primary-color;
-        background: rgba($primary-color, 0.05);
-        box-shadow: 0 4rpx 16rpx rgba($primary-color, 0.15);
+        color-border: $color-primary;
+        background: rgba($color-primary, 0.05);
+        box-shadow: 0 4rpx 16rpx rgba($color-primary, 0.15);
 
         .component-index {
-          background: $primary-color;
+          background: $color-primary;
           color: white;
         }
       }
@@ -2135,8 +2135,8 @@ onMounted(() => {
       .component-item-main {
         display: flex;
         align-items: center;
-        padding: $padding-small;
-        gap: $padding-small;
+        padding: $padding-sm;
+        gap: $padding-sm;
 
         .component-index {
           width: 48rpx;
@@ -2144,10 +2144,10 @@ onMounted(() => {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: $background-color;
+          background: $bg-color;
           border-radius: 50%;
-          font-weight: $font-weight-semibold;
-          color: $text-secondary;
+          font-weight: $font-weight-medium;
+          color: $color-text-secondary;
           transition: all 0.3s ease;
 
           .index-text {
@@ -2170,15 +2170,15 @@ onMounted(() => {
             .component-name {
               font-size: $font-size-base;
               font-weight: $font-weight-medium;
-              color: $text-primary;
+              color: $color-text-primary;
               display: block;
             }
 
             .component-key {
-              font-size: $font-size-small;
-              color: $text-secondary;
+              font-size: $font-size-sm;
+              color: $color-text-secondary;
               font-family: monospace;
-              background: rgba($primary-color, 0.05);
+              background: rgba($color-primary, 0.05);
               padding: 2rpx 8rpx;
               border-radius: 4rpx;
             }
@@ -2188,8 +2188,8 @@ onMounted(() => {
             margin-top: 4rpx;
 
             .desc-text {
-              font-size: $font-size-small;
-              color: $text-secondary;
+              font-size: $font-size-sm;
+              color: $color-text-secondary;
               font-style: italic;
             }
           }
@@ -2197,20 +2197,20 @@ onMounted(() => {
           .component-picker {
             .picker-display {
               padding: 12rpx;
-              border: 1px solid $border-color-lighter;
-              border-radius: var(--border-radius-small);
-              background: $background-color-white;
+              border: 1px solid $color-border-light;
+              border-radius: var(--border-radius-sm);
+              background: $bg-color-white;
               font-size: $font-size-base;
-              color: $text-primary;
+              color: $color-text-primary;
               transition: all 0.2s ease;
 
               &:active {
-                background: $background-color;
+                background: $bg-color;
               }
 
               .picker-arrow {
-                color: $text-secondary;
-                font-size: $font-size-small;
+                color: $color-text-secondary;
+                font-size: $font-size-sm;
               }
             }
           }
@@ -2228,49 +2228,49 @@ onMounted(() => {
             align-items: center;
             justify-content: center;
             border: none;
-            border-radius: var(--border-radius-small);
-            font-size: $font-size-small;
+            border-radius: var(--border-radius-sm);
+            font-size: $font-size-sm;
             transition: all 0.2s ease;
 
             &.move-up-btn {
-              background: rgba($success-color, 0.1);
-              color: $success-color;
+              background: rgba($color-success, 0.1);
+              color: $color-success;
 
               &:not(.disabled):active {
-                background: rgba($success-color, 0.2);
+                background: rgba($color-success, 0.2);
               }
 
               &.disabled {
-                background: rgba($text-secondary, 0.1);
-                color: $text-secondary;
+                background: rgba($color-text-secondary, 0.1);
+                color: $color-text-secondary;
                 cursor: not-allowed;
                 opacity: 0.5;
               }
             }
 
             &.move-down-btn {
-              background: rgba($warning-color, 0.1);
-              color: $warning-color;
+              background: rgba($color-warning, 0.1);
+              color: $color-warning;
 
               &:not(.disabled):active {
-                background: rgba($warning-color, 0.2);
+                background: rgba($color-warning, 0.2);
               }
 
               &.disabled {
-                background: rgba($text-secondary, 0.1);
-                color: $text-secondary;
+                background: rgba($color-text-secondary, 0.1);
+                color: $color-text-secondary;
                 cursor: not-allowed;
                 opacity: 0.5;
               }
             }
 
             &.remove-btn {
-              background: rgba($danger-color, 0.1);
-              color: $danger-color;
+              background: rgba($color-danger, 0.1);
+              color: $color-danger;
               margin-top: 4rpx;
 
               &:active {
-                background: rgba($danger-color, 0.2);
+                background: rgba($color-danger, 0.2);
               }
             }
 
@@ -2284,16 +2284,16 @@ onMounted(() => {
 
       /* 组件详情按钮 */
       .component-details-container {
-        padding: 0 $padding-small $padding-small;
+        padding: 0 $padding-sm $padding-sm;
 
         .component-details-btn {
           width: 100%;
           padding: 8rpx;
-          background: rgba($info-color, 0.05);
-          border: 1px solid rgba($info-color, 0.2);
-          border-radius: var(--border-radius-small);
-          color: $info-color;
-          font-size: $font-size-small;
+          background: rgba($color-info, 0.05);
+          border: 1px solid rgba($color-info, 0.2);
+          border-radius: var(--border-radius-sm);
+          color: $color-info;
+          font-size: $font-size-sm;
           text-align: center;
           display: flex;
           align-items: center;
@@ -2301,7 +2301,7 @@ onMounted(() => {
           gap: 4rpx;
 
           &:active {
-            background: rgba($info-color, 0.1);
+            background: rgba($color-info, 0.1);
           }
 
           .details-icon {
@@ -2309,7 +2309,7 @@ onMounted(() => {
           }
 
           .details-text {
-            font-size: $font-size-small;
+            font-size: $font-size-sm;
           }
         }
       }
@@ -2319,15 +2319,15 @@ onMounted(() => {
   .sort-controls {
     margin-bottom: $margin-base;
     padding: $padding-base;
-    background: $background-color;
+    background: $bg-color;
     border-radius: $border-radius;
-    border: 1px solid $border-color-lighter;
+    border: 1px solid $color-border-light;
 
     .sort-hint {
       display: block;
-      font-size: $font-size-small;
-      color: $text-primary;
-      margin-bottom: $padding-small;
+      font-size: $font-size-sm;
+      color: $color-text-primary;
+      margin-bottom: $padding-sm;
       font-weight: $font-weight-medium;
 
       &:before {
@@ -2337,16 +2337,16 @@ onMounted(() => {
 
     .sort-buttons {
       display: flex;
-      gap: $padding-small;
+      gap: $padding-sm;
 
       .sort-btn {
         flex: 1;
         padding: 16rpx;
-        background: rgba($primary-color, 0.1);
-        border: 1px solid $primary-color;
-        border-radius: var(--border-radius-small);
-        color: $primary-color;
-        font-size: $font-size-small;
+        background: rgba($color-primary, 0.1);
+        border: 1px solid $color-primary;
+        border-radius: var(--border-radius-sm);
+        color: $color-primary;
+        font-size: $font-size-sm;
         font-weight: $font-weight-medium;
         display: flex;
         align-items: center;
@@ -2355,14 +2355,14 @@ onMounted(() => {
         transition: all 0.2s ease;
 
         &:not(.disabled):active {
-          background: rgba($primary-color, 0.2);
+          background: rgba($color-primary, 0.2);
           transform: translateY(1rpx);
         }
 
         &.disabled {
-          background: rgba($text-secondary, 0.1);
-          border-color: $text-secondary;
-          color: $text-secondary;
+          background: rgba($color-text-secondary, 0.1);
+          color-border: $color-text-secondary;
+          color: $color-text-secondary;
           cursor: not-allowed;
           opacity: 0.5;
         }
@@ -2377,16 +2377,16 @@ onMounted(() => {
   .component-help {
     margin-top: $margin-base;
     padding: 12rpx;
-    background: rgba($info-color, 0.05);
-    border-radius: var(--border-radius-small);
-    font-size: $font-size-small;
-    color: $text-secondary;
+    background: rgba($color-info, 0.05);
+    border-radius: var(--border-radius-sm);
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
     display: flex;
     align-items: center;
     gap: 8rpx;
 
     .help-icon {
-      color: $info-color;
+      color: $color-info;
       font-size: $font-size-base;
     }
 
@@ -2398,10 +2398,10 @@ onMounted(() => {
   .add-component-btn {
     width: 100%;
     padding: 24rpx;
-    background: rgba($primary-color, 0.05);
-    border: 2rpx dashed rgba($primary-color, 0.3);
+    background: rgba($color-primary, 0.05);
+    border: 2rpx dashed rgba($color-primary, 0.3);
     border-radius: $border-radius;
-    color: $primary-color;
+    color: $color-primary;
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
     display: flex;
@@ -2413,16 +2413,16 @@ onMounted(() => {
     overflow: hidden;
 
     &:hover {
-      background: rgba($primary-color, 0.1);
-      border-color: $primary-color;
+      background: rgba($color-primary, 0.1);
+      color-border: $color-primary;
     }
 
     &:active {
-      background: rgba($primary-color, 0.15);
+      background: rgba($color-primary, 0.15);
     }
 
     .add-icon {
-      font-size: $font-size-large;
+      font-size: $font-size-lg;
       font-weight: $font-weight-bold;
     }
   }
@@ -2430,7 +2430,7 @@ onMounted(() => {
 
 /* 颜色配置 */
 .color-config {
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: $padding-base;
   margin-bottom: $margin-base;
@@ -2443,21 +2443,21 @@ onMounted(() => {
 
     .config-title {
       font-size: $font-size-base;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
     }
 
     .reset-btn {
       padding: 8rpx 16rpx;
-      background: rgba($danger-color, 0.1);
-      color: $danger-color;
-      border: 1px solid $danger-color;
-      border-radius: var(--border-radius-small);
-      font-size: $font-size-small;
+      background: rgba($color-danger, 0.1);
+      color: $color-danger;
+      border: 1px solid $color-danger;
+      border-radius: var(--border-radius-sm);
+      font-size: $font-size-sm;
       transition: all 0.2s ease;
 
       &:active {
-        background: rgba($danger-color, 0.2);
+        background: rgba($color-danger, 0.2);
       }
     }
   }
@@ -2467,8 +2467,8 @@ onMounted(() => {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: $padding-small 0;
-      border-bottom: 1px solid $border-color-lighter;
+      padding: $padding-sm 0;
+      border-bottom: 1px solid $color-border-light;
 
       &:last-child {
         border-bottom: none;
@@ -2481,26 +2481,26 @@ onMounted(() => {
           display: block;
           font-size: $font-size-base;
           font-weight: $font-weight-medium;
-          color: $text-primary;
+          color: $color-text-primary;
           margin-bottom: 4rpx;
         }
 
         .color-desc {
-          font-size: $font-size-small;
-          color: $text-secondary;
+          font-size: $font-size-sm;
+          color: $color-text-secondary;
         }
       }
 
       .color-controls {
         display: flex;
         align-items: center;
-        gap: $padding-small;
+        gap: $padding-sm;
 
         .color-input {
           width: 160rpx;
           padding: 12rpx;
-          border: 1px solid $border-color-lighter;
-          border-radius: var(--border-radius-small);
+          border: 1px solid $color-border-light;
+          border-radius: var(--border-radius-sm);
           font-size: $font-size-base;
           text-align: center;
           font-family: monospace;
@@ -2508,8 +2508,8 @@ onMounted(() => {
           transition: all 0.2s ease;
 
           &:focus {
-            border-color: $primary-color;
-            box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+            color-border: $color-primary;
+            box-shadow: 0 0 0 2px rgba($color-primary, 0.1);
             outline: none;
           }
 
@@ -2521,8 +2521,8 @@ onMounted(() => {
         .color-preview {
           width: 48rpx;
           height: 48rpx;
-          border-radius: var(--border-radius-small);
-          border: 2rpx solid $border-color-lighter;
+          border-radius: var(--border-radius-sm);
+          border: 2rpx solid $color-border-light;
           cursor: pointer;
           transition: all 0.2s ease;
 
@@ -2542,12 +2542,12 @@ onMounted(() => {
   .color-presets {
     margin-top: $margin-base;
     padding-top: $padding-base;
-    border-top: 1px solid $border-color-lighter;
+    border-top: 1px solid $color-border-light;
 
     .presets-title {
-      font-size: $font-size-small;
-      color: $text-secondary;
-      margin-bottom: $padding-small;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      margin-bottom: $padding-sm;
     }
 
     .presets-grid {
@@ -2578,15 +2578,15 @@ onMounted(() => {
 
 /* 字体配置 */
 .font-config {
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: $padding-base;
   margin-bottom: $margin-base;
 
   .font-sizes {
     .size-item {
-      padding: $padding-small 0;
-      border-bottom: 1px solid $border-color-lighter;
+      padding: $padding-sm 0;
+      border-bottom: 1px solid $color-border-light;
 
       &:last-child {
         border-bottom: none;
@@ -2596,27 +2596,27 @@ onMounted(() => {
         display: block;
         font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
         margin-bottom: var(--margin-mini);
       }
 
       .size-controls {
         display: flex;
         align-items: center;
-        gap: $padding-small;
+        gap: $padding-sm;
 
         .size-input {
           width: 80rpx;
           padding: 12rpx;
-          border: 1px solid $border-color-lighter;
-          border-radius: var(--border-radius-small);
+          border: 1px solid $color-border-light;
+          border-radius: var(--border-radius-sm);
           font-size: $font-size-base;
           text-align: center;
         }
 
         .size-unit {
           font-size: $font-size-base;
-          color: $text-secondary;
+          color: $color-text-secondary;
         }
 
         .size-slider {
@@ -2633,7 +2633,7 @@ onMounted(() => {
 
 /* 间距配置 */
 .spacing-config {
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: $padding-base;
 
@@ -2642,8 +2642,8 @@ onMounted(() => {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: $padding-small 0;
-      border-bottom: 1px solid $border-color-lighter;
+      padding: $padding-sm 0;
+      border-bottom: 1px solid $color-border-light;
 
       &:last-child {
         border-bottom: none;
@@ -2656,21 +2656,21 @@ onMounted(() => {
           display: block;
           font-size: $font-size-base;
           font-weight: $font-weight-medium;
-          color: $text-primary;
+          color: $color-text-primary;
           margin-bottom: 4rpx;
         }
 
         .spacing-desc {
-          font-size: $font-size-small;
-          color: $text-secondary;
+          font-size: $font-size-sm;
+          color: $color-text-secondary;
         }
       }
 
       .spacing-input {
         width: 120rpx;
         padding: 12rpx;
-        border: 1px solid $border-color-lighter;
-        border-radius: var(--border-radius-small);
+        border: 1px solid $color-border-light;
+        border-radius: var(--border-radius-sm);
         font-size: $font-size-base;
         text-align: center;
       }
@@ -2681,8 +2681,8 @@ onMounted(() => {
 /* 右侧预览面板 */
 .preview-panel {
   flex: 1;
-  background: $background-color-white;
-  border-radius: $border-radius-large;
+  background: $bg-color-white;
+  border-radius: $border-radius-lg;
   box-shadow: $box-shadow;
   display: flex;
   flex-direction: column;
@@ -2690,21 +2690,21 @@ onMounted(() => {
 
   .preview-header {
     padding: $padding-base;
-    border-bottom: 1px solid $border-color-lighter;
-    background: linear-gradient(to right, rgba($primary-color, 0.03), rgba($secondary-color, 0.03));
+    border-bottom: 1px solid $color-border-light;
+    background: linear-gradient(to right, rgba($color-primary, 0.03), rgba($color-secondary, 0.03));
 
     .preview-title-container {
       .preview-title {
         display: block;
-        font-size: $font-size-large;
-        font-weight: $font-weight-semibold;
-        color: $text-primary;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-medium;
+        color: $color-text-primary;
         margin-bottom: 4rpx;
       }
 
       .preview-subtitle {
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
       }
     }
 
@@ -2716,11 +2716,11 @@ onMounted(() => {
       .device-switch {
         display: flex;
         align-items: center;
-        gap: $padding-small;
+        gap: $padding-sm;
 
         .switch-label {
           font-size: $font-size-base;
-          color: $text-primary;
+          color: $color-text-primary;
         }
 
         .switch-buttons {
@@ -2729,18 +2729,18 @@ onMounted(() => {
 
           .device-btn {
             padding: 8rpx 16rpx;
-            border: 1px solid $border-color-lighter;
-            border-radius: var(--border-radius-small);
-            background: $background-color-white;
-            font-size: $font-size-small;
+            border: 1px solid $color-border-light;
+            border-radius: var(--border-radius-sm);
+            background: $bg-color-white;
+            font-size: $font-size-sm;
             display: flex;
             align-items: center;
             gap: 4rpx;
 
             &.active {
-              background: $primary-color;
+              background: $color-primary;
               color: white;
-              border-color: $primary-color;
+              color-border: $color-primary;
             }
 
             .device-icon {
@@ -2752,7 +2752,7 @@ onMounted(() => {
 
       .refresh-btn {
         padding: 12rpx 24rpx;
-        background: $primary-color;
+        background: $color-primary;
         color: white;
         border: none;
         border-radius: $border-radius;
@@ -2791,7 +2791,7 @@ onMounted(() => {
 
     .preview-container {
       flex: 1;
-      background: $background-color;
+      background: $bg-color;
       border-radius: $border-radius;
       overflow: hidden;
       position: relative;
@@ -2816,22 +2816,22 @@ onMounted(() => {
 
           .placeholder-title {
             display: block;
-            font-size: $font-size-large;
-            font-weight: $font-weight-semibold;
-            color: $text-primary;
-            margin-bottom: $margin-small;
+            font-size: $font-size-lg;
+            font-weight: $font-weight-medium;
+            color: $color-text-primary;
+            margin-bottom: $margin-sm;
           }
 
           .placeholder-desc {
             display: block;
             font-size: $font-size-base;
-            color: $text-secondary;
+            color: $color-text-secondary;
             margin-bottom: $margin-base;
           }
 
           .placeholder-btn {
             padding: 20rpx 40rpx;
-            background: $primary-color;
+            background: $color-primary;
             color: white;
             border: none;
             border-radius: $border-radius;
@@ -2845,15 +2845,15 @@ onMounted(() => {
     .preview-info {
       margin-top: $margin-base;
       padding: $padding-base;
-      background: $background-color;
+      background: $bg-color;
       border-radius: $border-radius;
 
       .info-title {
         display: block;
         font-size: $font-size-base;
-        font-weight: $font-weight-semibold;
-        color: $text-primary;
-        margin-bottom: $margin-small;
+        font-weight: $font-weight-medium;
+        color: $color-text-primary;
+        margin-bottom: $margin-sm;
       }
 
       .info-items {
@@ -2861,7 +2861,7 @@ onMounted(() => {
           display: flex;
           justify-content: space-between;
           padding: 8rpx 0;
-          border-bottom: 1px solid $border-color-lighter;
+          border-bottom: 1px solid $color-border-light;
 
           &:last-child {
             border-bottom: none;
@@ -2869,12 +2869,12 @@ onMounted(() => {
 
           .info-label {
             font-size: $font-size-base;
-            color: $text-secondary;
+            color: $color-text-secondary;
           }
 
           .info-value {
             font-size: $font-size-base;
-            color: $text-primary;
+            color: $color-text-primary;
             font-weight: $font-weight-medium;
           }
         }
@@ -2886,8 +2886,8 @@ onMounted(() => {
 /* 底部操作栏 */
 .editor-footer {
   padding: $padding-base;
-  background: $background-color-white;
-  border-top: 1px solid $border-color-lighter;
+  background: $bg-color-white;
+  border-top: 1px solid $color-border-light;
   box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
 
   .footer-left {
@@ -2897,40 +2897,40 @@ onMounted(() => {
 
     .footer-status {
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
       font-weight: $font-weight-medium;
     }
 
     .footer-error {
-      font-size: $font-size-small;
-      color: $danger-color;
+      font-size: $font-size-sm;
+      color: $color-danger;
       font-weight: $font-weight-medium;
     }
   }
 
   .footer-right {
     display: flex;
-    gap: $margin-small;
+    gap: $margin-sm;
 
     .footer-btn {
       padding: 20rpx 40rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
       font-weight: $font-weight-medium;
       transition: all $transition-fast $ease-in-out;
 
       &.secondary {
-        background: $background-color-white;
-        color: $text-primary;
+        background: $bg-color-white;
+        color: $color-text-primary;
 
         &:hover {
-          border-color: $text-secondary;
+          color-border: $color-text-secondary;
         }
       }
 
       &.primary {
-        background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
+        background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness: -10%) 100%);
         color: white;
         border: none;
 
@@ -2957,8 +2957,8 @@ onMounted(() => {
 
 .preview-mode-switch {
   margin-top: $margin-base;
-  padding: $padding-small;
-  background: $background-color;
+  padding: $padding-sm;
+  background: $bg-color;
   border-radius: $border-radius;
   display: flex;
   align-items: center;
@@ -2966,7 +2966,7 @@ onMounted(() => {
 
   .switch-label {
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
   }
 
   .switch-buttons {
@@ -2975,15 +2975,15 @@ onMounted(() => {
 
     .mode-btn {
       padding: 8rpx 16rpx;
-      border: 1px solid $border-color-lighter;
-      border-radius: var(--border-radius-small);
-      background: $background-color-white;
-      font-size: $font-size-small;
+      border: 1px solid $color-border-light;
+      border-radius: var(--border-radius-sm);
+      background: $bg-color-white;
+      font-size: $font-size-sm;
 
       &.active {
-        background: $primary-color;
+        background: $color-primary;
         color: white;
-        border-color: $primary-color;
+        color-border: $color-primary;
       }
     }
   }
@@ -3036,7 +3036,7 @@ onMounted(() => {
 @media (max-width: 480px) {
   .preview-mode-switch {
     flex-direction: column;
-    gap: $margin-small;
+    gap: $margin-sm;
     align-items: flex-start;
   }
   .editor-container {
@@ -3066,7 +3066,7 @@ onMounted(() => {
     .color-item {
       flex-direction: column;
       align-items: flex-start;
-      gap: $padding-small;
+      gap: $padding-sm;
 
       .color-info {
         width: 100%;

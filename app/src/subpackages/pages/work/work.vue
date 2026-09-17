@@ -607,9 +607,9 @@ onLoad((options: any) => {
     gap: 20rpx;
 
     .header-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
     }
   }
 
@@ -619,7 +619,7 @@ onLoad((options: any) => {
 
     .btn {
       @extend .btn;
-      @extend .btn-small;
+      @extend .btn-sm;
       min-width: 80rpx;
     }
   }
@@ -628,8 +628,8 @@ onLoad((options: any) => {
     .work-status {
       @extend .status-badge;
       padding: 4rpx 12rpx;
-      border-radius: $border-radius-small;
-      font-size: $font-size-extra-small;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-2xs;
       font-weight: $font-weight-medium;
 
       &.status-current {
@@ -648,7 +648,7 @@ onLoad((options: any) => {
 }
 
 .detail-content {
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .info-card {
@@ -659,12 +659,12 @@ onLoad((options: any) => {
     @extend .flex-between;
     margin-bottom: $margin-base;
     padding-bottom: $margin-mini;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     .card-title {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-medium;
-      color: $text-primary;
+      color: $color-text-primary;
     }
   }
 }
@@ -678,7 +678,7 @@ onLoad((options: any) => {
       @extend .form-label;
       &.required::after {
         content: '*';
-        color: $danger-color;
+        color: $color-danger;
         margin-left: 4rpx;
       }
     }
@@ -694,14 +694,14 @@ onLoad((options: any) => {
       }
 
       &[disabled] {
-        background: $background-color;
-        color: $text-secondary;
+        background: $bg-color;
+        color: $color-text-secondary;
         cursor: not-allowed;
       }
 
       &.disabled-input {
-        background: $background-color;
-        color: $text-secondary;
+        background: $bg-color;
+        color: $color-text-secondary;
         cursor: not-allowed;
       }
     }
@@ -723,8 +723,8 @@ onLoad((options: any) => {
           display: flex;
           align-items: center;
           gap: 8rpx;
-          font-size: $font-size-small;
-          color: $text-primary;
+          font-size: $font-size-sm;
+          color: $color-text-primary;
           white-space: nowrap;
         }
       }
@@ -735,18 +735,18 @@ onLoad((options: any) => {
       justify-content: space-between;
       align-items: center;
       padding: 16rpx;
-      background: $background-color;
+      background: $bg-color;
       border-radius: $border-radius;
 
       .duration-label {
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
       }
 
       .duration-value {
         font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $primary-color;
+        color: $color-primary;
       }
     }
 
@@ -759,23 +759,23 @@ onLoad((options: any) => {
       resize: vertical;
 
       &[disabled] {
-        background: $background-color;
-        color: $text-secondary;
+        background: $bg-color;
+        color: $color-text-secondary;
         cursor: not-allowed;
       }
     }
 
     .textarea-count {
       text-align: right;
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
       margin-top: 8rpx;
     }
 
     .error-text {
       display: block;
-      font-size: $font-size-extra-small;
-      color: $danger-color;
+      font-size: $font-size-2xs;
+      color: $color-danger;
       margin-top: 8rpx;
     }
   }
@@ -791,14 +791,14 @@ onLoad((options: any) => {
     .achievement-input {
       flex: 1;
       padding: 20rpx 24rpx;
-      border: 2rpx solid $border-color-lighter;
+      border: 2rpx solid $color-border-light;
       border-radius: $border-radius;
       font-size: $font-size-base;
-      color: $text-primary;
-      background: $background-color-white;
+      color: $color-text-primary;
+      background: $bg-color-white;
 
       &:focus {
-        border-color: $primary-color;
+        color-border: $color-primary;
         outline: none;
       }
     }
@@ -807,10 +807,10 @@ onLoad((options: any) => {
       width: 60rpx;
       height: 60rpx;
       margin-left: 12rpx;
-      background: $danger-color;
+      background: $color-danger;
       color: white;
       border: none;
-      border-radius: $border-radius-small;
+      border-radius: $border-radius-sm;
       font-size: 28rpx;
       display: flex;
       align-items: center;
@@ -825,22 +825,22 @@ onLoad((options: any) => {
   .btn-add-achievement {
     width: 100%;
     padding: 20rpx;
-    background: $primary-color-light;
-    color: $primary-color;
-    border: 2rpx dashed $primary-color;
+    background: $color-primary-light;
+    color: $color-primary;
+    border: 2rpx dashed $color-primary;
     border-radius: $border-radius;
     font-size: $font-size-base;
     margin-top: 8rpx;
 
     &:active {
-      background: $primary-color-light;
+      background: $color-primary-light;
     }
   }
 
   .achievements-count {
     text-align: right;
-    font-size: $font-size-extra-small;
-    color: $text-secondary;
+    font-size: $font-size-2xs;
+    color: $color-text-secondary;
     margin-top: 8rpx;
   }
 }
@@ -850,7 +850,7 @@ onLoad((options: any) => {
     display: flex;
     align-items: flex-start;
     padding: 16rpx 0;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     &:last-child {
       border-bottom: none;
@@ -858,13 +858,13 @@ onLoad((options: any) => {
 
     .achievement-index {
       width: 40rpx;
-      color: $text-secondary;
+      color: $color-text-secondary;
       font-weight: $font-weight-medium;
     }
 
     .achievement-content {
       flex: 1;
-      color: $text-regular;
+      color: $color-text-regular;
       line-height: 1.5;
     }
   }
@@ -872,7 +872,7 @@ onLoad((options: any) => {
   .no-achievements {
     padding: 40rpx 0;
     text-align: center;
-    color: $text-placeholder;
+    color: $color-text-placeholder;
     font-size: $font-size-base;
   }
 }
@@ -881,7 +881,7 @@ onLoad((options: any) => {
   .info-row {
     @extend .flex-between;
     padding: 16rpx 0;
-    border-bottom: 1rpx solid $border-color-extra-light;
+    border-bottom: 1rpx solid $color-border-extra-light;
 
     &:last-child {
       border-bottom: none;
@@ -889,12 +889,12 @@ onLoad((options: any) => {
 
     .info-label {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: $color-text-secondary;
     }
 
     .info-value {
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
       font-weight: $font-weight-medium;
     }
   }
@@ -906,8 +906,8 @@ onLoad((options: any) => {
   left: 0;
   right: 0;
   padding: 20rpx $padding-base;
-  background: $background-color-white;
-  border-top: 1rpx solid $border-color-light;
+  background: $bg-color-white;
+  border-top: 1rpx solid $color-border-light;
   z-index: $z-index-base;
 
   .btn-block {
@@ -917,7 +917,7 @@ onLoad((options: any) => {
 
 @media (max-width: $screen-md) {
   .detail-header {
-    padding: 16rpx $padding-small;
+    padding: 16rpx $padding-sm;
   }
 
   .detail-content {
@@ -934,7 +934,7 @@ onLoad((options: any) => {
   }
 
   .detail-footer {
-    padding: 16rpx $padding-small;
+    padding: 16rpx $padding-sm;
   }
 }
 </style>

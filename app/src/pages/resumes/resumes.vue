@@ -1161,13 +1161,13 @@ onShow(() => {
 /* 查看模式样式调整 */
 .resume-view-container {
   min-height: 100vh;
-  background: $background-color;
+  background: $bg-color;
   display: flex;
   flex-direction: column;
   
   .preview-content {
     flex: 1;
-    background: $background-color-white;
+    background: $bg-color-white;
     box-sizing: border-box;
     overflow-y: auto;
     
@@ -1179,17 +1179,17 @@ onShow(() => {
 
 .preview-content {
   flex: 1;
-  background: $background-color-white;
+  background: $bg-color-white;
   box-sizing: border-box;
   overflow-y: auto;
 }
 
 .view-footer {
-  background: $background-color-white;
-  padding: $padding-mini $padding-small;
+  background: $bg-color-white;
+  padding: $padding-mini $padding-sm;
   display: flex;
   gap: $margin-mini;
-  border-top: 1rpx solid $border-color-light;
+  border-top: 1rpx solid $color-border-light;
   flex-shrink: 0;
   z-index: $z-index-dropdown;
   position: sticky;
@@ -1205,45 +1205,45 @@ onShow(() => {
     justify-content: center;
     gap: 4rpx;
     padding: $padding-mini 8rpx;
-    border-radius: $border-radius-small;
+    border-radius: $border-radius-sm;
     border: none;
-    font-size: $font-size-small;
+    font-size: $font-size-sm;
     transition: all $transition-fast $ease-in-out;
     min-height: 60rpx;
 
     .footer-icon {
-      font-size: $font-size-large;
+      font-size: $font-size-lg;
       margin-bottom: 4rpx;
     }
 
     .footer-text {
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
     }
 
     &.delete-btn {
-      background: rgba($danger-color, 0.1);
-      color: $danger-color;
+      background: rgba($color-danger, 0.1);
+      color: $color-danger;
 
       &:active {
-        background: rgba($danger-color, 0.2);
+        background: rgba($color-danger, 0.2);
       }
     }
 
     &.download-btn {
-      background: rgba($success-color, 0.1);
-      color: $success-color;
+      background: rgba($color-success, 0.1);
+      color: $color-success;
 
       &:active {
-        background: rgba($success-color, 0.2);
+        background: rgba($color-success, 0.2);
       }
     }
 
     &.share-btn {
-      background: rgba($primary-color, 0.1);
-      color: $primary-color;
+      background: rgba($color-primary, 0.1);
+      color: $color-primary;
 
       &:active {
-        background: rgba($primary-color, 0.2);
+        background: rgba($color-primary, 0.2);
       }
     }
   }
@@ -1255,7 +1255,7 @@ onShow(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: $uni-bg-color-mask;
+  background: $bg-color-mask;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1263,8 +1263,8 @@ onShow(() => {
 }
 
 .custom-modal {
-  background: $background-color-white;
-  border-radius: $border-radius-large;
+  background: $bg-color-white;
+  border-radius: $border-radius-lg;
   width: 90%;
   max-width: 600rpx;
   max-height: 80vh;
@@ -1273,55 +1273,55 @@ onShow(() => {
   animation: slideUp $transition-normal $ease-in-out;
 
   .modal-header {
-    padding: $padding-small;
-    border-bottom: 1rpx solid $border-color-lighter;
+    padding: $padding-sm;
+    border-bottom: 1rpx solid $color-border-light;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     .modal-title {
       font-size: $font-size-base;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
     }
 
     .modal-close {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: $color-text-secondary;
       background: transparent;
       border: none;
       padding: 8rpx;
-      border-radius: $border-radius-small;
+      border-radius: $border-radius-sm;
 
       &:active {
-        background: $background-color;
+        background: $bg-color;
       }
     }
   }
 
   .modal-content {
-    padding: $padding-small;
+    padding: $padding-sm;
   }
 
   .share-options {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: $margin-mini;
-    margin-bottom: $margin-small;
+    margin-bottom: $margin-sm;
 
     .share-option {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8rpx;
-      padding: $padding-small;
-      background: $background-color;
-      border: 1rpx solid $border-color-lighter;
+      padding: $padding-sm;
+      background: $bg-color;
+      border: 1rpx solid $color-border-light;
       border-radius: $border-radius;
-      transition: background-color $transition-fast $ease-in-out;
+      transition: bg-color $transition-fast $ease-in-out;
 
       &:active {
-        background: $uni-bg-color-hover;
+        background: $bg-color-hover;
       }
 
       .option-icon {
@@ -1331,28 +1331,28 @@ onShow(() => {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: $border-radius-round;
+        border-radius: $border-radius-circle;
         margin-bottom: 8rpx;
 
         &.wechat {
-          background: $success-color;
-          color: $background-color-white;
+          background: $color-success;
+          color: $bg-color-white;
         }
 
         &.qrcode {
-          background: $primary-color;
-          color: $background-color-white;
+          background: $color-primary;
+          color: $bg-color-white;
         }
 
         &.link {
-          background: $warning-color;
-          color: $background-color-white;
+          background: $color-warning;
+          color: $bg-color-white;
         }
       }
 
       .option-text {
         font-size: $font-size-base;
-        color: $text-primary;
+        color: $color-text-primary;
         font-weight: $font-weight-medium;
       }
     }
@@ -1363,14 +1363,14 @@ onShow(() => {
     flex-direction: column;
     align-items: center;
     gap: $margin-mini;
-    padding: $padding-small;
-    background: $background-color;
+    padding: $padding-sm;
+    background: $bg-color;
     border-radius: $border-radius;
-    border: 1rpx solid $border-color-lighter;
+    border: 1rpx solid $color-border-light;
 
     .qrcode-title {
       font-size: $font-size-base;
-      color: $text-primary;
+      color: $color-text-primary;
       font-weight: $font-weight-medium;
     }
 
@@ -1380,8 +1380,8 @@ onShow(() => {
     }
 
     .qrcode-hint {
-      font-size: $font-size-small;
-      color: $text-secondary;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
     }
   }
 }
@@ -1400,7 +1400,7 @@ onShow(() => {
 /* ==================== 编辑模式样式 ==================== */
 .page-container {
   min-height: 100vh;
-  background: $background-color;
+  background: $bg-color;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -1426,8 +1426,8 @@ onShow(() => {
     left: 0;
     top: 0;
     z-index: $z-index-base;
-    background: $background-color-white;
-    border-bottom: 1rpx solid $border-color-light;
+    background: $bg-color-white;
+    border-bottom: 1rpx solid $color-border-light;
   }
 
   .preview-section.fixed-preview {
@@ -1437,8 +1437,8 @@ onShow(() => {
     left: 0;
     bottom: 60px;
     z-index: $z-index-base;
-    background: $background-color-white;
-    border-top: 1rpx solid $border-color-light;
+    background: $bg-color-white;
+    border-top: 1rpx solid $color-border-light;
   }
 }
 
@@ -1451,8 +1451,8 @@ onShow(() => {
     left: 0;
     top: 0;
     z-index: $z-index-base;
-    background: $background-color-white;
-    border-bottom: 1rpx solid $border-color-light;
+    background: $bg-color-white;
+    border-bottom: 1rpx solid $color-border-light;
   }
 
   .preview-section.fixed-preview {
@@ -1462,8 +1462,8 @@ onShow(() => {
     left: 0;
     bottom: 60px;
     z-index: $z-index-base;
-    background: $background-color-white;
-    border-top: 1rpx solid $border-color-light;
+    background: $bg-color-white;
+    border-top: 1rpx solid $color-border-light;
   }
 }
 
@@ -1476,8 +1476,8 @@ onShow(() => {
     left: 0;
     top: 0;
     z-index: $z-index-base;
-    background: $background-color-white;
-    border-right: 1rpx solid $border-color-light;
+    background: $bg-color-white;
+    border-right: 1rpx solid $color-border-light;
     overflow-y: auto;
     box-sizing: border-box;
   }
@@ -1489,8 +1489,8 @@ onShow(() => {
     right: 0;
     top: 0;
     z-index: $z-index-base;
-    background: $background-color-white;
-    border-left: 1rpx solid $border-color-light;
+    background: $bg-color-white;
+    border-left: 1rpx solid $color-border-light;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1502,33 +1502,33 @@ onShow(() => {
   overflow: hidden;
 
   .form-container {
-    padding: $padding-small;
+    padding: $padding-sm;
     padding-bottom: 90rpx;
   }
 }
 
 .form-section-card {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
-  padding: $padding-small;
+  padding: $padding-sm;
   margin-bottom: $margin-mini;
   box-shadow: $box-shadow-light;
-  border: 1rpx solid $border-color-lighter;
+  border: 1rpx solid $color-border-light;
 
   .form-section-header {
     margin-bottom: $margin-mini;
 
     .section-title {
       display: block;
-      font-size: $font-size-medium;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
       margin-bottom: 8rpx;
     }
 
     .section-divider {
       height: 2rpx;
-      background: linear-gradient(90deg, $primary-color, $success-color);
+      background: linear-gradient(90deg, $color-primary, $color-success);
       border-radius: 1rpx;
     }
   }
@@ -1554,7 +1554,7 @@ onShow(() => {
   .item-label {
     display: block;
     font-size: $font-size-base;
-    color: $text-secondary;
+    color: $color-text-secondary;
     margin-bottom: 6rpx;
     font-weight: $font-weight-medium;
   }
@@ -1562,35 +1562,35 @@ onShow(() => {
   .form-input {
     width: 100%;
     height: 80rpx;
-    background: $background-color;
-    border: 1rpx solid $border-color-lighter;
-    border-radius: $border-radius-small;
+    background: $bg-color;
+    border: 1rpx solid $color-border-light;
+    border-radius: $border-radius-sm;
     padding: 0 $padding-mini;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     transition: all $transition-fast $ease-in-out;
 
     &:focus {
-      border-color: $primary-color;
+      color-border: $color-primary;
       box-shadow: $input-focus-shadow;
     }
   }
 
   .picker-content {
     height: 80rpx;
-    background: $background-color;
-    border: 1rpx solid $border-color-lighter;
-    border-radius: $border-radius-small;
+    background: $bg-color;
+    border: 1rpx solid $color-border-light;
+    border-radius: $border-radius-sm;
     padding: 0 $padding-mini;
     display: flex;
     align-items: center;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     cursor: pointer;
-    transition: background-color $transition-fast $ease-in-out;
+    transition: bg-color $transition-fast $ease-in-out;
 
     &:active {
-      background: $uni-bg-color-hover;
+      background: $bg-color-hover;
     }
   }
 
@@ -1605,7 +1605,7 @@ onShow(() => {
 
     .proficiency-unit {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: $color-text-secondary;
       min-width: 40rpx;
     }
   }
@@ -1613,16 +1613,16 @@ onShow(() => {
   .form-textarea {
     width: 100%;
     min-height: 120rpx;
-    background: $background-color;
-    border: 1rpx solid $border-color-lighter;
-    border-radius: $border-radius-small;
+    background: $bg-color;
+    border: 1rpx solid $color-border-light;
+    border-radius: $border-radius-sm;
     padding: $padding-mini;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     transition: all $transition-fast $ease-in-out;
 
     &:focus {
-      border-color: $primary-color;
+      color-border: $color-primary;
       box-shadow: $input-focus-shadow;
     }
   }
@@ -1634,11 +1634,11 @@ onShow(() => {
   .experience-item,
   .education-item,
   .skill-item {
-    background: $background-color;
-    border-radius: $border-radius-small;
+    background: $bg-color;
+    border-radius: $border-radius-sm;
     padding: $padding-mini;
     margin-bottom: $margin-mini;
-    border: 1rpx solid $border-color-lighter;
+    border: 1rpx solid $color-border-light;
 
     .item-header {
       display: flex;
@@ -1646,25 +1646,25 @@ onShow(() => {
       align-items: center;
       margin-bottom: 6rpx;
       padding-bottom: 6rpx;
-      border-bottom: 1rpx solid $border-color-lighter;
+      border-bottom: 1rpx solid $color-border-light;
 
       .item-title {
         font-size: $font-size-base;
-        font-weight: $font-weight-semibold;
-        color: $text-primary;
+        font-weight: $font-weight-medium;
+        color: $color-text-primary;
       }
 
       .remove-btn {
-        color: $danger-color;
-        font-size: $font-size-small;
+        color: $color-danger;
+        font-size: $font-size-sm;
         cursor: pointer;
         padding: 4rpx 8rpx;
-        border-radius: $border-radius-small;
-        background: $danger-bg;
-        transition: background-color $transition-fast $ease-in-out;
+        border-radius: $border-radius-sm;
+        background: $bg-color-danger;
+        transition: bg-color $transition-fast $ease-in-out;
 
         &:active {
-          background: rgba($danger-color, 0.2);
+          background: rgba($color-danger, 0.2);
         }
       }
     }
@@ -1674,23 +1674,23 @@ onShow(() => {
     width: 100%;
     height: 80rpx;
     background: transparent;
-    border: 1rpx dashed $border-color-lighter;
-    border-radius: $border-radius-small;
-    color: $text-secondary;
+    border: 1rpx dashed $color-border-light;
+    border-radius: $border-radius-sm;
+    color: $color-text-secondary;
     font-size: $font-size-base;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8rpx;
     margin-top: 8rpx;
-    transition: background-color $transition-fast $ease-in-out;
+    transition: bg-color $transition-fast $ease-in-out;
 
     .icon-add {
-      font-size: $font-size-large;
+      font-size: $font-size-lg;
     }
 
     &:active {
-      background: $background-color;
+      background: $bg-color;
     }
   }
 }
@@ -1709,12 +1709,12 @@ onShow(() => {
   }
 
   .preview-header {
-    padding: 8rpx $padding-small;
-    border-bottom: 1rpx solid $border-color-light;
+    padding: 8rpx $padding-sm;
+    border-bottom: 1rpx solid $color-border-light;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: $background-color-white;
+    background: $bg-color-white;
     flex-shrink: 0;
     min-height: 96rpx;
     height: 96rpx;
@@ -1722,8 +1722,8 @@ onShow(() => {
 
     .preview-title {
       font-size: $font-size-base;
-      font-weight: $font-weight-semibold;
-      color: $text-primary;
+      font-weight: $font-weight-medium;
+      color: $color-text-primary;
       line-height: 1.4;
     }
 
@@ -1731,14 +1731,14 @@ onShow(() => {
       display: flex;
       align-items: center;
       gap: 8rpx;
-      background: $background-color;
-      border: 1rpx solid $border-color-lighter;
-      border-radius: $border-radius-small;
+      background: $bg-color;
+      border: 1rpx solid $color-border-light;
+      border-radius: $border-radius-sm;
       padding: 12rpx 24rpx;
-      font-size: $font-size-small;
-      color: $text-secondary;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
       white-space: nowrap;
-      transition: background-color $transition-fast $ease-in-out;
+      transition: bg-color $transition-fast $ease-in-out;
       height: 64rpx;
       min-height: 64rpx;
       box-sizing: border-box;
@@ -1748,11 +1748,11 @@ onShow(() => {
       }
 
       .action-text {
-        font-size: $font-size-small;
+        font-size: $font-size-sm;
       }
 
       &:active {
-        background: $uni-bg-color-hover;
+        background: $bg-color-hover;
       }
     }
   }
@@ -1766,11 +1766,11 @@ onShow(() => {
 }
 
 .action-buttons-edit {
-  background: $background-color-white;
-  padding: 8rpx $padding-small;
+  background: $bg-color-white;
+  padding: 8rpx $padding-sm;
   display: flex;
   gap: $margin-mini;
-  border-top: 1rpx solid $border-color-light;
+  border-top: 1rpx solid $color-border-light;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -1801,22 +1801,22 @@ onShow(() => {
     justify-content: center;
     transition: opacity $transition-fast $ease-in-out;
     white-space: nowrap;
-    padding: 0 $padding-small;
+    padding: 0 $padding-sm;
 
     &:disabled {
-      opacity: $uni-opacity-disabled;
+      opacity: $opacity-disabled;
       cursor: not-allowed;
     }
   }
 
   .save-btn {
-    background: $primary-color;
-    color: $background-color-white;
+    background: $color-primary;
+    color: $bg-color-white;
   }
 
   .back-btn {
-    background: $background-color;
-    color: $text-secondary;
+    background: $bg-color;
+    color: $color-text-secondary;
   }
 }
 
@@ -1827,24 +1827,24 @@ onShow(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($background-color-white, 0.95);
+  background: rgba($bg-color-white, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: $z-index-toast;
   flex-direction: column;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .loading-content {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: 64rpx;
   box-shadow: $box-shadow-dark;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $margin-small;
+  gap: $margin-sm;
   max-width: 600rpx;
   width: 80%;
 }
@@ -1852,9 +1852,9 @@ onShow(() => {
 .loading-spinner {
   width: 80rpx;
   height: 80rpx;
-  border: 3rpx solid $border-color-extra-light;
-  border-top-color: $primary-color;
-  border-radius: $border-radius-round;
+  border: 3rpx solid $color-border-extra-light;
+  border-top-color: $color-primary;
+  border-radius: $border-radius-circle;
   animation: spin $transition-slow linear infinite;
 }
 
@@ -1865,8 +1865,8 @@ onShow(() => {
 }
 
 .loading-text {
-  font-size: $font-size-medium;
-  color: $text-primary;
+  font-size: $font-size-base;
+  color: $color-text-primary;
   font-weight: $font-weight-medium;
 }
 
@@ -1881,7 +1881,7 @@ onShow(() => {
       padding: 8rpx 4rpx;
 
       .footer-text {
-        font-size: $font-size-small;
+        font-size: $font-size-sm;
       }
     }
   }
@@ -1892,7 +1892,7 @@ onShow(() => {
     height: 88rpx;
 
     .preview-title {
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
     }
 
     .preview-action-btn {
@@ -1924,11 +1924,11 @@ onShow(() => {
       padding: 12rpx 4rpx;
 
       .footer-icon {
-        font-size: $font-size-medium;
+        font-size: $font-size-base;
       }
 
       .footer-text {
-        font-size: $font-size-small;
+        font-size: $font-size-sm;
       }
     }
   }

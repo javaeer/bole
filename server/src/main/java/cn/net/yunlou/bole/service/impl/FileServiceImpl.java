@@ -34,8 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl
-        extends BaseService<
-                FileMapper, File, FileCreate, FileView, FileEdit, FileQuery, FileStructMapper>
+        extends BaseService<FileMapper, File, FileCreate, FileView, FileEdit, FileQuery, FileStructMapper>
         implements FileService {
 
     private final StorageService storageService;
@@ -130,7 +129,7 @@ public class FileServiceImpl
             }
         }
 
-        return List.of();
+        return results;
     }
 
     @Override

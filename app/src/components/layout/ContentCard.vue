@@ -73,46 +73,46 @@ const handleClick = () => {
 @import "@/responsive.scss";
 
 .content-card {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   overflow: hidden;
   transition: all $transition-fast $ease-in-out;
 
   &--default {
-    background: $background-color-white;
+    background: $bg-color-white;
   }
 
   &--primary {
-    background: $primary-color-light;
-    border-left: 4rpx solid $primary-color;
+    background: $color-primary-light;
+    border-left: 4rpx solid $color-primary;
   }
 
   &--secondary {
-    background: $background-color;
+    background: $bg-color;
   }
 
   &--success {
-    background: $success-bg;
-    border-left: 4rpx solid $success-color;
+    background: $bg-color-success;
+    border-left: 4rpx solid $color-success;
   }
 
   &--warning {
-    background: $warning-bg;
-    border-left: 4rpx solid $warning-color;
+    background: $bg-color-warning;
+    border-left: 4rpx solid $color-warning;
   }
 
   &--danger {
-    background: $danger-bg;
-    border-left: 4rpx solid $danger-color;
+    background: $bg-color-danger;
+    border-left: 4rpx solid $color-danger;
   }
 
   &--info {
-    background: $info-bg;
-    border-left: 4rpx solid $info-color;
+    background: $bg-color-info;
+    border-left: 4rpx solid $color-info;
   }
 
   &--bordered {
-    border: 1rpx solid $border-color;
+    border: 1rpx solid $color-border;
   }
 
   &--elevated {
@@ -138,14 +138,14 @@ const handleClick = () => {
 
   &__header {
     padding: $padding-base;
-    border-bottom: 1rpx solid $border-color-light;
-    font-size: $font-size-medium;
+    border-bottom: 1rpx solid $color-border-light;
+    font-size: $font-size-base;
     font-weight: $font-weight-medium;
-    color: $text-primary;
+    color: $color-text-primary;
 
     @media (min-width: #{$screen-md}) {
-      padding: $padding-large;
-      font-size: $font-size-large;
+      padding: $padding-lg;
+      font-size: $font-size-lg;
     }
   }
 
@@ -153,17 +153,17 @@ const handleClick = () => {
     padding: $padding-base;
 
     @media (min-width: #{$screen-md}) {
-      padding: $padding-large;
+      padding: $padding-lg;
     }
   }
 
   &__footer {
     padding: $padding-base;
-    border-top: 1rpx solid $border-color-light;
-    background: $background-color;
+    border-top: 1rpx solid $color-border-light;
+    background: $bg-color;
 
     @media (min-width: #{$screen-md}) {
-      padding: $padding-large;
+      padding: $padding-lg;
     }
   }
 }

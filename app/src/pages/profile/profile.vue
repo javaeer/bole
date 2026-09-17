@@ -360,9 +360,9 @@ defineExpose({
 
 // 用户头部样式
 .user-header {
-  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  background: linear-gradient(135deg, $color-primary 0%, $color-secondary 100%);
   padding: 80rpx $padding-base 40rpx;
-  color: $background-color-white;
+  color: $bg-color-white;
   position: relative;
   overflow: hidden;
 
@@ -394,7 +394,7 @@ defineExpose({
   .user-avatar {
     width: 140rpx;
     height: 140rpx;
-    border-radius: $border-radius-round;
+    border-radius: $border-radius-circle;
     border: 4rpx solid rgba(255, 255, 255, 0.8);
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.2);
@@ -466,7 +466,7 @@ defineExpose({
   margin: -20rpx $margin-base $margin-base;
   padding: 40rpx 30rpx;
   border-radius: 24rpx;
-  background: $background-color-white;
+  background: $bg-color-white;
   box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.08);
 
   .section-header {
@@ -479,12 +479,12 @@ defineExpose({
   .section-title {
     font-size: 36rpx;
     font-weight: 700;
-    color: $text-primary;
+    color: $color-text-primary;
   }
 
   .section-subtitle {
     font-size: 24rpx;
-    color: $text-secondary;
+    color: $color-text-secondary;
     opacity: 0.8;
   }
 }
@@ -501,13 +501,13 @@ defineExpose({
     flex-direction: column;
     align-items: center;
     padding: 30rpx 0;
-    background: $background-color;
+    background: $bg-color;
     border-radius: 16rpx;
     transition: all 0.2s ease;
     border: 1rpx solid rgba(0, 0, 0, 0.05);
 
     &:active {
-      background: color.adjust($background-color, $lightness: -5%);
+      background: color.adjust($bg-color, $lightness: -5%);
       transform: translateY(-2rpx);
     }
   }
@@ -520,7 +520,7 @@ defineExpose({
 
   .stat-title {
     font-size: 24rpx;
-    color: $text-primary;
+    color: $color-text-primary;
     font-weight: 500;
     text-align: center;
     line-height: 1.3;
@@ -532,7 +532,7 @@ defineExpose({
   margin: 0 $margin-base;
   padding: 40rpx 30rpx;
   border-radius: 24rpx;
-  background: $background-color-white;
+  background: $bg-color-white;
   box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.08);
 
   .section-header {
@@ -542,7 +542,7 @@ defineExpose({
   .section-title {
     font-size: 36rpx;
     font-weight: 700;
-    color: $text-primary;
+    color: $color-text-primary;
   }
 }
 
@@ -559,9 +559,9 @@ defineExpose({
   justify-content: space-between;
   align-items: center;
   padding: 30rpx;
-  background: $background-color-white;
+  background: $bg-color-white;
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
-  transition: background-color 0.2s ease;
+  transition: bg-color 0.2s ease;
 
   &:active {
     background: rgba(0, 0, 0, 0.02);
@@ -593,7 +593,7 @@ defineExpose({
 
 .menu-text {
   font-size: 30rpx;
-  color: $text-primary;
+  color: $color-text-primary;
   font-weight: 500;
 }
 

@@ -481,12 +481,12 @@ const showHistorySection = computed(() => {
 
 /* 顶部标题栏 */
 .review-header {
-  background: $background-color-white;
+  background: $bg-color-white;
   padding: 20rpx $padding-base;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1rpx solid $border-color-light;
+  border-bottom: 1rpx solid $color-border-light;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -496,8 +496,8 @@ const showHistorySection = computed(() => {
   width: 80rpx;
 
   .back-icon {
-    font-size: $font-size-large;
-    color: $text-primary;
+    font-size: $font-size-lg;
+    color: $color-text-primary;
     cursor: pointer;
 
     &:active {
@@ -507,9 +507,9 @@ const showHistorySection = computed(() => {
 }
 
 .header-title {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   flex: 1;
   text-align: center;
 }
@@ -519,8 +519,8 @@ const showHistorySection = computed(() => {
   text-align: right;
 
   .header-action {
-    font-size: $font-size-small;
-    color: $danger-color;
+    font-size: $font-size-sm;
+    color: $color-danger;
     cursor: pointer;
 
     &:active {
@@ -541,19 +541,19 @@ const showHistorySection = computed(() => {
 }
 
 .section-title {
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
-  margin-bottom: $margin-small;
+  color: $color-text-primary;
+  margin-bottom: $margin-sm;
   padding-left: $padding-mini;
-  border-left: 6rpx solid $primary-color;
+  border-left: 6rpx solid $color-primary;
 }
 
 /* 信息卡片 */
 .info-card,
 .resumes-card,
 .reason-card {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   box-shadow: $box-shadow;
@@ -562,8 +562,8 @@ const showHistorySection = computed(() => {
 .info-row {
   display: flex;
   align-items: center;
-  padding: $padding-small 0;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding: $padding-sm 0;
+  border-bottom: 1rpx solid $color-border-extra-light;
 
   &:last-child {
     border-bottom: none;
@@ -573,28 +573,28 @@ const showHistorySection = computed(() => {
 .info-label {
   width: 180rpx;
   font-size: $font-size-base;
-  color: $text-secondary;
+  color: $color-text-secondary;
   flex-shrink: 0;
 }
 
 .info-value {
   flex: 1;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 /* 申请人信息 */
 .applicant-info {
   display: flex;
   align-items: center;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .applicant-avatar {
   width: 80rpx;
   height: 80rpx;
-  border-radius: $border-radius-round;
-  border: 2rpx solid $border-color-light;
+  border-radius: $border-radius-circle;
+  border: 2rpx solid $color-border-light;
 }
 
 .applicant-details {
@@ -605,56 +605,56 @@ const showHistorySection = computed(() => {
 .applicant-name {
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: 5rpx;
 }
 
 .applicant-contact {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
 }
 
 /* 状态徽章 */
 .status-badge {
   display: inline-block;
-  font-size: $font-size-small;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   padding: 4rpx 12rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 
   &.status-pending {
-    background: $warning-light;
-    color: $warning-color;
+    background: $color-warning-light;
+    color: $color-warning;
   }
 
   &.status-approved {
-    background: rgba($success-color, 0.1);
-    color: $success-color;
+    background: rgba($color-success, 0.1);
+    color: $color-success;
   }
 
   &.status-rejected {
-    background: $danger-light;
-    color: $danger-color;
+    background: $color-danger-light;
+    color: $color-danger;
   }
 
   &.status-exported {
-    background: rgba($info-color, 0.1);
-    color: $info-color;
+    background: rgba($color-info, 0.1);
+    color: $color-info;
   }
 }
 
 /* 简历卡片 */
 .resumes-header {
   margin-bottom: $margin-base;
-  padding-bottom: $padding-small;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding-bottom: $padding-sm;
+  border-bottom: 1rpx solid $color-border-extra-light;
 }
 
 .resumes-title {
   display: block;
-  font-size: $font-size-medium;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: $text-primary;
+  color: $color-text-primary;
   margin-bottom: $margin-mini;
 }
 
@@ -665,11 +665,11 @@ const showHistorySection = computed(() => {
 }
 
 .resumes-tag {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
-  background: $background-color;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
+  background: $bg-color;
   padding: 4rpx 12rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 }
 
 .resumes-content {
@@ -682,12 +682,12 @@ const showHistorySection = computed(() => {
 .resumes-position {
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .resumes-salary {
   font-size: $font-size-base;
-  color: $primary-color;
+  color: $color-primary;
   font-weight: $font-weight-bold;
 }
 
@@ -696,8 +696,8 @@ const showHistorySection = computed(() => {
 }
 
 .skills-label {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   margin-right: $margin-mini;
 }
 
@@ -709,28 +709,28 @@ const showHistorySection = computed(() => {
 }
 
 .skill-tag {
-  font-size: $font-size-extra-small;
-  color: $text-primary;
-  background: $primary-color-light;
+  font-size: $font-size-2xs;
+  color: $color-text-primary;
+  background: $color-primary-light;
   padding: 4rpx 12rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 }
 
 .btn-preview {
   width: 100%;
   height: 70rpx;
-  background: $background-color;
-  border: 1rpx solid $border-color-light;
-  border-radius: $border-radius-small;
+  background: $bg-color;
+  border: 1rpx solid $color-border-light;
+  border-radius: $border-radius-sm;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: $margin-mini;
-  font-size: $font-size-small;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
 
   &:active {
-    background: color.adjust($background-color, $lightness:  - 5%);
+    background: color.adjust($bg-color, $lightness:  - 5%);
   }
 }
 
@@ -738,38 +738,38 @@ const showHistorySection = computed(() => {
 .reason-content {
   display: block;
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
   line-height: 1.6;
   margin-bottom: $margin-base;
 }
 
 .reason-attachments {
-  border-top: 1rpx solid $border-color-extra-light;
-  padding-top: $padding-small;
+  border-top: 1rpx solid $color-border-extra-light;
+  padding-top: $padding-sm;
 }
 
 .attachments-label {
-  font-size: $font-size-small;
-  color: $text-secondary;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
   margin-right: $margin-mini;
 }
 
 .attachment-list {
-  margin-top: $margin-small;
+  margin-top: $margin-sm;
 }
 
 .attachment-item {
   display: flex;
   align-items: center;
-  padding: $padding-small;
-  background: $background-color;
-  border-radius: $border-radius-small;
+  padding: $padding-sm;
+  background: $bg-color;
+  border-radius: $border-radius-sm;
   margin-bottom: $margin-mini;
   cursor: pointer;
-  transition: background-color $transition-fast;
+  transition: bg-color $transition-fast;
 
   &:active {
-    background: color.adjust($background-color, $lightness:  - 5%);
+    background: color.adjust($bg-color, $lightness:  - 5%);
   }
 
   &:last-child {
@@ -779,25 +779,25 @@ const showHistorySection = computed(() => {
 
 .attachment-icon {
   font-size: $font-size-base;
-  margin-right: $margin-small;
+  margin-right: $margin-sm;
 }
 
 .attachment-name {
   flex: 1;
-  font-size: $font-size-small;
-  color: $text-primary;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
   @extend .text-truncate;
-  margin-right: $margin-small;
+  margin-right: $margin-sm;
 }
 
 .attachment-size {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 /* 审核表单 */
 .review-form {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   box-shadow: $box-shadow;
@@ -811,8 +811,8 @@ const showHistorySection = computed(() => {
   display: block;
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
-  margin-bottom: $margin-small;
+  color: $color-text-primary;
+  margin-bottom: $margin-sm;
 }
 
 .radio-group {
@@ -829,8 +829,8 @@ const showHistorySection = computed(() => {
 .radio-circle {
   width: 36rpx;
   height: 36rpx;
-  border: 2rpx solid $border-color;
-  border-radius: $border-radius-round;
+  border: 2rpx solid $color-border;
+  border-radius: $border-radius-circle;
   margin-right: $margin-mini;
   display: flex;
   align-items: center;
@@ -838,12 +838,12 @@ const showHistorySection = computed(() => {
   transition: all $transition-fast;
 
   &.checked {
-    border-color: $primary-color;
+    color-border: $color-primary;
 
     .radio-inner {
       width: 18rpx;
       height: 18rpx;
-      background: $primary-color;
+      background: $color-primary;
       border-radius: 50%;
     }
   }
@@ -851,38 +851,38 @@ const showHistorySection = computed(() => {
 
 .radio-label {
   font-size: $font-size-base;
-  color: $text-regular;
+  color: $color-text-regular;
 }
 
 /* 文本域 */
 .review-textarea {
   width: 100%;
   min-height: 200rpx;
-  background: $background-color;
-  border: 2rpx solid $border-color-light;
-  border-radius: $border-radius-small;
-  padding: $padding-small;
+  background: $bg-color;
+  border: 2rpx solid $color-border-light;
+  border-radius: $border-radius-sm;
+  padding: $padding-sm;
   font-size: $font-size-base;
-  color: $text-primary;
+  color: $color-text-primary;
   line-height: 1.4;
-  transition: border-color $transition-fast;
+  transition: color-border $transition-fast;
 
   &:focus {
-    border-color: $primary-color;
+    color-border: $color-primary;
     box-shadow: $input-focus-shadow;
-    background: $background-color-white;
+    background: $bg-color-white;
   }
 }
 
 .textarea-placeholder {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   font-size: $font-size-base;
 }
 
 .textarea-counter {
   text-align: right;
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
   margin-top: $margin-mini;
 }
 
@@ -897,7 +897,7 @@ const showHistorySection = computed(() => {
     flex: 1;
     height: 90rpx;
     border-radius: $border-radius;
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
     font-weight: $font-weight-bold;
     border: none;
     transition: all $transition-fast;
@@ -913,18 +913,18 @@ const showHistorySection = computed(() => {
   }
 
   .btn-cancel {
-    background: $background-color;
-    color: $text-regular;
-    border: 1rpx solid $border-color-light;
+    background: $bg-color;
+    color: $color-text-regular;
+    border: 1rpx solid $color-border-light;
 
     &:active {
-      background: color.adjust($background-color, $lightness:  - 5%);
+      background: color.adjust($bg-color, $lightness:  - 5%);
     }
   }
 
   .btn-submit {
-    background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness:  -10%) 100%);
-    color: $background-color-white;
+    background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness:  -10%) 100%);
+    color: $bg-color-white;
     box-shadow: $box-shadow;
 
     &:active {
@@ -935,7 +935,7 @@ const showHistorySection = computed(() => {
 
 /* 历史记录时间线 */
 .history-timeline {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   box-shadow: $box-shadow;
@@ -943,7 +943,7 @@ const showHistorySection = computed(() => {
 
 .timeline-item {
   display: flex;
-  padding: $padding-small 0;
+  padding: $padding-sm 0;
   position: relative;
 
   &:not(:last-child)::after {
@@ -951,9 +951,9 @@ const showHistorySection = computed(() => {
     position: absolute;
     left: 18rpx;
     top: 50rpx;
-    bottom: -$padding-small;
+    bottom: -$padding-sm;
     width: 2rpx;
-    background: $border-color-light;
+    background: $color-border-light;
   }
 }
 
@@ -967,13 +967,13 @@ const showHistorySection = computed(() => {
   z-index: 1;
 
   &.dot-approve {
-    background: rgba($success-color, 0.1);
-    border: 2rpx solid $success-color;
+    background: rgba($color-success, 0.1);
+    border: 2rpx solid $color-success;
 
     &::before {
       content: '✓';
-      color: $success-color;
-      font-size: $font-size-small;
+      color: $color-success;
+      font-size: $font-size-sm;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -982,13 +982,13 @@ const showHistorySection = computed(() => {
   }
 
   &.dot-reject {
-    background: rgba($danger-color, 0.1);
-    border: 2rpx solid $danger-color;
+    background: rgba($color-danger, 0.1);
+    border: 2rpx solid $color-danger;
 
     &::before {
       content: '✕';
-      color: $danger-color;
-      font-size: $font-size-small;
+      color: $color-danger;
+      font-size: $font-size-sm;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -997,13 +997,13 @@ const showHistorySection = computed(() => {
   }
 
   &.dot-submit {
-    background: rgba($primary-color, 0.1);
-    border: 2rpx solid $primary-color;
+    background: rgba($color-primary, 0.1);
+    border: 2rpx solid $color-primary;
 
     &::before {
       content: '📝';
-      color: $primary-color;
-      font-size: $font-size-small;
+      color: $color-primary;
+      font-size: $font-size-sm;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -1014,7 +1014,7 @@ const showHistorySection = computed(() => {
 
 .timeline-content {
   flex: 1;
-  padding-bottom: $padding-small;
+  padding-bottom: $padding-sm;
 }
 
 .timeline-header {
@@ -1027,40 +1027,40 @@ const showHistorySection = computed(() => {
 .timeline-title {
   font-size: $font-size-base;
   font-weight: $font-weight-medium;
-  color: $text-primary;
+  color: $color-text-primary;
 }
 
 .timeline-time {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 .timeline-comment {
   display: block;
-  font-size: $font-size-small;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
   line-height: 1.4;
   margin-bottom: $margin-mini;
-  background: $background-color;
-  padding: $padding-mini $padding-small;
-  border-radius: $border-radius-small;
-  border-left: 3rpx solid $border-color;
+  background: $bg-color;
+  padding: $padding-mini $padding-sm;
+  border-radius: $border-radius-sm;
+  border-left: 3rpx solid $color-border;
 }
 
 .timeline-operator {
-  font-size: $font-size-extra-small;
-  color: $text-secondary;
+  font-size: $font-size-2xs;
+  color: $color-text-secondary;
 }
 
 /* 响应式调整 */
 @media (max-width: 375px) {
   .content-container {
-    padding: $padding-small;
+    padding: $padding-sm;
   }
 
   .radio-group {
     flex-direction: column;
-    gap: $margin-small;
+    gap: $margin-sm;
   }
 }
 </style>

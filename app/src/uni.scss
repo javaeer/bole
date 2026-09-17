@@ -1,137 +1,93 @@
 @use "sass:color";
 @use "sass:math";
 
-/* ==================== 颜色变量 ==================== */
-/* 行为相关颜色 (官方基础变量) */
-$uni-color-primary: #007aff;
-$uni-color-success: #4cd964;
-$uni-color-warning: #f0ad4e;
-$uni-color-error: #dd524d;
 
-/* 文字基本颜色 (官方基础变量) */
-$uni-text-color: #333;
-$uni-text-color-inverse: #fff;
-$uni-text-color-grey: #999;
-$uni-text-color-placeholder: #808080;
-$uni-text-color-disable: #c0c0c0;
 
-/* 背景颜色 (官方基础变量) */
-$uni-bg-color: #ffffff;
-$uni-bg-color-grey: #f8f8f8;
-$uni-bg-color-hover: #f1f1f1;
-$uni-bg-color-mask: rgba(0, 0, 0, 0.4);
-
-/* 边框颜色 (官方基础变量) */
-$uni-border-color: #c8c7cc;
-
-/* 文章场景相关 (官方基础变量) */
-$uni-color-title: #2C405A;
-$uni-color-subtitle: #555555;
-$uni-color-paragraph: #3F536E;
-
-/* ==================== 尺寸变量 ==================== */
-/* 文字尺寸 (官方基础变量) */
-$uni-font-size-sm: 24rpx;
-$uni-font-size-base: 28rpx;
-$uni-font-size-lg: 32rpx;
-$uni-font-size-title: 40rpx;
-$uni-font-size-subtitle: 36rpx;
-$uni-font-size-paragraph: 30rpx;
-
-/* 图片尺寸 (官方基础变量) */
-$uni-img-size-sm: 40rpx;
-$uni-img-size-base: 52rpx;
-$uni-img-size-lg: 80rpx;
-
-/* Border Radius (官方基础变量) */
-$uni-border-radius-sm: 4rpx;
-$uni-border-radius-base: 6rpx;
-$uni-border-radius-lg: 12rpx;
-$uni-border-radius-circle: 50%;
-
-/* 水平间距 (官方基础变量) */
-$uni-spacing-row-sm: 10px;
-$uni-spacing-row-base: 20rpx;
-$uni-spacing-row-lg: 30rpx;
-
-/* 垂直间距 (官方基础变量) */
-$uni-spacing-col-sm: 8rpx;
-$uni-spacing-col-base: 16rpx;
-$uni-spacing-col-lg: 24rpx;
-
-/* 透明度 (官方基础变量) */
-$uni-opacity-disabled: 0.3;
+/* 透明度  */
+$opacity-disabled: 0.3;
 
 /* ==================== 项目扩展变量 ==================== */
 /* 主色与功能色 */
-$primary-color: #d4af37;
-$secondary-color: #f7ef8a;
-$success-color: #67c23a;
-$warning-color: #e6a23c;
-$danger-color: #f56c6c;
-$info-color: #909399;
-$error-color: #e81717;
+$color-primary: #d4af37;
+$color-secondary: #f7ef8a;
+$color-success: #67c23a;
+$color-warning: #e6a23c;
+$color-danger: #f56c6c;
+$color-info: #909399;
 
 /* 主色衍生色 */
-$primary-color-light: #f9f3e3;
-$primary-color-lighter: #fef9ed;
+$color-primary-light: #f9f3e3;
 
 /* 文本色系 */
-$text-primary: #303133;
-$text-regular: #606266;
-$text-secondary: #909399;
-$text-placeholder: #c0c4cc;
+$color-text-primary: #303133;
+$color-text-regular: #606266;
+$color-text-secondary: #909399;
+$color-text-placeholder: #c0c4cc;
+$color-text-inverse: #ffffff;
+$color-text-grey: #999999;
+$color-text-disable: #c0c0c0;
 
 /* 边框色系 */
-$border-color: #dcdfe6;
-$border-color-light: #e4e7ed;
-$border-color-lighter: #ebeef5;
-$border-color-extra-light: #f2f6fc;
+$color-border: #dcdfe6;
+$color-border-light: #e4e7ed;
+$color-border-extra-light: #f2f6fc;
 
 /* 背景色系 */
-$background-color: #f8f8f8;
-$background-color-white: #ffffff;
+$bg-color: #f8f8f8;
+$bg-color-white: #ffffff;
+$bg-color-grey: #f8f8f8;
+$bg-color-hover: #f1f1f1;
+$bg-color-mask: rgba(0, 0, 0, 0.4);
+$bg-color-success: rgba($color-success, 0.1);
+$bg-color-warning: rgba($color-warning, 0.1);
+$bg-color-danger: rgba($color-danger, 0.1);
+$bg-color-info: rgba($color-info, 0.1);
+
 
 /* 功能色衍生 */
-$danger-light: #fee;
-$warning-light: #fef6ec;
+$color-danger-light: #fee;
+$color-warning-light: #fef6ec;
 
 /* ==================== 尺寸系统 ==================== */
 /* 圆角 */
+$border-radius-base: 6rpx;
+$border-radius-sm: 10rpx;
 $border-radius: 15rpx;
-$border-radius-small: 10rpx;
-$border-radius-large: 20rpx;
-$border-radius-round: 50%;
-$card-border-radius-lg: 20rpx;
+$border-radius-lg: 20rpx;
+$border-radius-circle: 50%;
 
 /* 内边距 */
 $padding-base: 30rpx;
-$padding-small: 20rpx;
+$padding-sm: 20rpx;
 $padding-mini: 15rpx;
 
 /* 外边距 */
 $margin-base: 30rpx;
-$margin-small: 20rpx;
+$margin-sm: 20rpx;
 $margin-mini: 15rpx;
 
-/* 字体大小 */
-$font-size-extra-large: 40rpx;
-$font-size-large: 36rpx;
-$font-size-medium: 32rpx;
-$font-size-base: 28rpx;
-$font-size-small: 24rpx;
-$font-size-extra-small: 20rpx;
+
+/* 字体大小扩展（系统化） */
+$font-size-2xs: 20rpx;
+$font-size-xs: 24rpx;
+$font-size-sm: 28rpx;
+$font-size-base: 32rpx;
+$font-size-lg: 36rpx;
+$font-size-xl: 40rpx;
+$font-size-2xl: 44rpx;
+$font-size-3xl: 48rpx;
+$font-size-4xl: 52rpx;
 
 /* 字体粗细 */
 $font-weight-thin: 100;
 $font-weight-light: 300;
 $font-weight-normal: 400;
 $font-weight-medium: 500;
-$font-weight-semibold: 500;
 $font-weight-bold: 600;
 
 /* 高度扩展 */
 $card-height: 120rpx;
+$card-border-radius-lg: 20rpx;
 
 /* ==================== 平台特定变量 ==================== */
 // #ifdef MP-WEIXIN
@@ -155,7 +111,6 @@ $box-shadow-light: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
 $box-shadow-dark: 0 8rpx 40rpx rgba(0, 0, 0, 0.08);
 
 /* ==================== 动画系统 ==================== */
-$transition-duration: 0.3s;
 $transition-timing-function: ease-in-out;
 $transition-fast: 0.2s;
 $transition-normal: 0.3s;
@@ -168,85 +123,79 @@ $ease-in: cubic-bezier(0.4, 0, 1, 1);
 
 /* ==================== 状态颜色系统 ==================== */
 /* 边框颜色 */
-$focus-border-color: $primary-color;
-$error-border-color: $danger-color;
-$success-border-color: $success-color;
-
-/* 背景颜色 */
-$success-bg: rgba($success-color, 0.1);
-$warning-bg: rgba($warning-color, 0.1);
-$danger-bg: rgba($danger-color, 0.1);
-$info-bg: rgba($info-color, 0.1);
+$color-focus-border: $color-primary;
+$color-error-border: $color-danger;
+$color-success-border: $color-success;
 
 /* 边框透明色 */
-$primary-border: rgba($primary-color, 0.3);
-$success-border: rgba($success-color, 0.3);
-$warning-border: rgba($warning-color, 0.3);
-$danger-border: rgba($danger-color, 0.3);
-$info-border: rgba($info-color, 0.3);
+$color-primary-border: rgba($color-primary, 0.3);
+$color-success-border: rgba($color-success, 0.3);
+$color-warning-border: rgba($color-warning, 0.3);
+$color-danger-border: rgba($color-danger, 0.3);
+$color-info-border: rgba($color-info, 0.3);
 
 /* ==================== 组件变量 ==================== */
 /* 按钮变量 */
 $button-height: 80rpx;
-$button-small-height: 50rpx;
-$button-small-font-size: $font-size-small;
-$button-small-border-radius: $border-radius-small;
+$button-sm-height: 50rpx;
+$button-sm-font-size: $font-size-sm;
+$button-sm-border-radius: $border-radius-sm;
 $button-border-radius: $border-radius;
-$button-primary-bg: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness: -10%) 100%);
+$button-primary-bg: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness: -10%) 100%);
 $button-disabled-opacity: 0.6;
-$button-disabled-bg: linear-gradient(135deg, $text-placeholder 0%, color.adjust($text-placeholder, $lightness: -10%) 100%);
-$button-active-shadow: 0 4rpx 12rpx rgba($primary-color, 0.3);
+$button-disabled-bg: linear-gradient(135deg, $color-text-placeholder 0%, color.adjust($color-text-placeholder, $lightness: -10%) 100%);
+$button-active-shadow: 0 4rpx 12rpx rgba($color-primary, 0.3);
 
 /* 输入框变量 */
 $input-height: 80rpx;
 $input-border-radius: 12rpx;
-$input-focus-border-color: $primary-color;
-$input-error-border: $danger-color;
-$input-success-border: $success-color;
-$input-focus-shadow: 0 0 0 2rpx rgba($primary-color, 0.2);
-$input-error-shadow: 0 0 0 2rpx rgba($danger-color, 0.2);
+$input-color-focus-border: $color-primary;
+$input-error-border: $color-danger;
+$input-color-success-border: $color-success;
+$input-focus-shadow: 0 0 0 2rpx rgba($color-primary, 0.2);
+$input-error-shadow: 0 0 0 2rpx rgba($color-danger, 0.2);
 
 /* 消息组件变量 */
-$message-bg-color: $background-color-white;
+$message-bg-color: $bg-color-white;
 $message-border-radius: $border-radius;
 $message-padding: $padding-base;
-$message-margin-bottom: $margin-small;
+$message-margin-bottom: $margin-sm;
 $message-item-shadow: $box-shadow-light;
 $message-item-hover-shadow: $box-shadow;
 
 /* 标签页变量 */
 $tab-item-height: 80rpx;
 $tab-item-font-size: $font-size-base;
-$tab-active-color: $primary-color;
-$tab-inactive-color: $text-secondary;
+$tab-active-color: $color-primary;
+$tab-inactive-color: $color-text-secondary;
 $tab-indicator-width: 80rpx;
 $tab-indicator-height: 4rpx;
 
 /* 徽章变量 */
-$badge-bg-color: $danger-color;
-$badge-text-color: $background-color-white;
-$badge-font-size: $font-size-extra-small;
+$badge-bg-color: $color-danger;
+$badge-text-color: $bg-color-white;
+$badge-font-size: $font-size-2xs;
 $badge-padding: 4rpx 12rpx;
 $badge-min-width: 30rpx;
 $badge-border-radius: 20rpx;
 
 /* 头像变量 */
 $avatar-size: 80rpx;
-$avatar-border-radius: $border-radius-round;
-$avatar-bg-color: $background-color;
+$avatar-border-radius: $border-radius-circle;
+$avatar-bg-color: $bg-color;
 
 /* 状态指示器 */
 $unread-dot-size: 20rpx;
-$unread-dot-color: $danger-color;
+$unread-dot-color: $color-danger;
 
 /* 消息类型颜色 */
-$message-system-color: $warning-color;
-$message-notice-color: $info-color;
-$message-interact-color: $success-color;
+$color-message-system: $color-warning;
+$color-message-notice: $color-info;
+$color-message-interact: $color-success;
 
 /* 空状态 */
 $empty-icon-size: 120rpx;
-$empty-text-color: $text-placeholder;
+$empty-text-color: $color-text-placeholder;
 $empty-text-font-size: $font-size-base;
 
 /* 卡片相关 */
@@ -256,47 +205,47 @@ $card-shadow: $box-shadow;
 $card-hover-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.12);
 
 /* ==================== 项目状态颜色 ==================== */
-$status-pending-bg: $info-bg;
-$status-pending-color: $info-color;
-$status-pending-border: $info-border;
+$status-pending-bg: $bg-color-info;
+$status-pending-color: $color-info;
+$status-pending-border: $color-info-border;
 
-$status-in-progress-bg: $primary-color-light;
-$status-in-progress-color: $primary-color;
-$status-in-progress-border: $primary-border;
+$status-in-progress-bg: $color-primary-light;
+$status-in-progress-color: $color-primary;
+$status-in-progress-border: $color-primary-border;
 
-$status-completed-bg: $success-bg;
-$status-completed-color: $success-color;
-$status-completed-border: $success-border;
+$status-completed-bg: $bg-color-success;
+$status-completed-color: $color-success;
+$status-completed-border: $color-success-border;
 
-$status-paused-bg: $warning-bg;
-$status-paused-color: $warning-color;
-$status-paused-border: $warning-border;
+$status-paused-bg: $bg-color-warning;
+$status-paused-color: $color-warning;
+$status-paused-border: $color-warning-border;
 
 /* 进度条颜色 */
-$progress-early-color: $success-color;
-$progress-middle-color: $primary-color;
-$progress-late-color: $warning-color;
-$progress-completed-color: $info-color;
+$progress-early-color: $color-success;
+$progress-middle-color: $color-primary;
+$progress-late-color: $color-warning;
+$progress-completed-color: $color-info;
 
 /* ==================== 成就列表相关变量 ==================== */
-$achievement-add-bg: $primary-color-light;
-$achievement-add-color: $primary-color;
-$achievement-add-border: $primary-color;
-$achievement-remove-bg: $danger-color;
-$achievement-remove-color: $background-color-white;
+$achievement-add-bg: $color-primary-light;
+$achievement-add-color: $color-primary;
+$achievement-add-border: $color-primary;
+$achievement-remove-bg: $color-danger;
+$achievement-remove-color: $bg-color-white;
 $achievement-item-height: 60rpx;
 $achievement-input-height: 60rpx;
 $achievement-remove-btn-size: 60rpx;
 $achievement-item-gap: 16rpx;
 $achievement-index-width: 40rpx;
-$achievement-input-border: 2rpx solid $border-color-lighter;
+$achievement-input-border: 2rpx solid $color-border-light;
 $achievement-add-border-style: dashed;
 $achievement-input-radius: $border-radius;
-$achievement-remove-btn-radius: $border-radius-small;
-$achievement-content-color: $text-regular;
-$achievement-index-color: $text-secondary;
-$achievement-count-color: $text-secondary;
-$achievement-empty-color: $text-placeholder;
+$achievement-remove-btn-radius: $border-radius-sm;
+$achievement-content-color: $color-text-regular;
+$achievement-index-color: $color-text-secondary;
+$achievement-count-color: $color-text-secondary;
+$achievement-empty-color: $color-text-placeholder;
 $achievement-empty-font-size: $font-size-base;
 
 /* ==================== 模板编辑器特定变量 ==================== */
@@ -317,18 +266,18 @@ $device-btn-padding: 8rpx 16rpx;
 /* ==================== 响应式系统 ==================== */
 /* 容器最大宽度 */
 $container-xs: 100%;
-$container-sm: 540px;
-$container-md: 720px;
-$container-lg: 960px;
-$container-xl: 1140px;
-$container-xxl: 1320px;
+$container-sm: 540rpx;
+$container-md: 720rpx;
+$container-lg: 960rpx;
+$container-xl: 1140rpx;
+$container-xxl: 1320rpx;
 
 /* 断点像素值（用于媒体查询） */
-$breakpoint-xs: 320px;    // 对应 640rpx
-$breakpoint-sm: 375px;    // 对应 750rpx
-$breakpoint-md: 414px;    // 对应 828rpx
-$breakpoint-lg: 768px;    // 对应 1536rpx
-$breakpoint-xl: 1024px;   // 对应 2048rpx
+$breakpoint-xs: 320rpx;    // 对应 640rpx
+$breakpoint-sm: 375rpx;    // 对应 750rpx
+$breakpoint-md: 414rpx;    // 对应 828rpx
+$breakpoint-lg: 768rpx;    // 对应 1536rpx
+$breakpoint-xl: 1024rpx;   // 对应 2048rpx
 
 /* 屏幕断点（基于rpx） */
 $screen-sm: 640rpx;
@@ -342,29 +291,6 @@ $safe-area-inset-bottom: env(safe-area-inset-bottom);
 $safe-area-inset-left: env(safe-area-inset-left);
 $safe-area-inset-right: env(safe-area-inset-right);
 
-/* 间距扩展（系统化） */
-$spacing-0: 0;
-$spacing-1: 8rpx;
-$spacing-2: 16rpx;
-$spacing-3: 24rpx;
-$spacing-4: 32rpx;
-$spacing-5: 40rpx;
-$spacing-6: 48rpx;
-$spacing-7: 56rpx;
-$spacing-8: 64rpx;
-$spacing-9: 72rpx;
-$spacing-10: 80rpx;
-
-/* 字体大小扩展（系统化） */
-$font-size-2xs: 20rpx;
-$font-size-xs: 24rpx;
-$font-size-sm: 28rpx;
-$font-size-base: 32rpx;
-$font-size-lg: 36rpx;
-$font-size-xl: 40rpx;
-$font-size-2xl: 44rpx;
-$font-size-3xl: 48rpx;
-$font-size-4xl: 52rpx;
 
 /* 圆角扩展（系统化） */
 $rounded-none: 0;
@@ -398,9 +324,23 @@ $z-index-dropdown: 2000;
 $z-index-modal: 3000;
 $z-index-toast: 4000;
 
+
+/* 间距扩展（系统化） */
+$spacing-0: 0;
+$spacing-1: 8rpx;
+$spacing-2: 16rpx;
+$spacing-3: 24rpx;
+$spacing-4: 32rpx;
+$spacing-5: 40rpx;
+$spacing-6: 48rpx;
+$spacing-7: 56rpx;
+$spacing-8: 64rpx;
+$spacing-9: 72rpx;
+$spacing-10: 80rpx;
+
 /* 间距扩展（基于已有变量的倍数） */
-$padding-large: $padding-base * 1.5; // 45rpx
-$margin-large: $margin-base * 1.5; // 45rpx
+$padding-lg: $padding-base * 1.5; // 45rpx
+$margin-lg: $margin-base * 1.5; // 45rpx
 
 /* ==================== 项目列表特定变量 ==================== */
 $project-item-shadow: $box-shadow;
@@ -408,7 +348,7 @@ $project-item-hover-shadow: $box-shadow-dark;
 $project-item-padding: $padding-base;
 $project-item-margin: $margin-base;
 
-/* ==================== 工具类系统 ==================== */
+
 /* ===== 布局工具类 ===== */
 .flex-center {
   display: flex;
@@ -447,15 +387,15 @@ $project-item-margin: $margin-base;
 /* 布局容器类 */
 .page-container {
   min-height: 100vh;
-  background-color: $background-color;
+  bg-color: $bg-color;
   padding-bottom: calc(#{$safe-area-inset-bottom} + 100rpx);
 }
 
 .filter-container {
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: 0 0 $border-radius $border-radius;
   box-shadow: $box-shadow;
-  padding: $padding-small;
+  padding: $padding-sm;
   position: sticky;
   top: 0;
   z-index: $z-index-base;
@@ -463,7 +403,7 @@ $project-item-margin: $margin-base;
 
 .list-scroll {
   height: calc(100vh - 220rpx);
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 /* ===== 文本工具类 ===== */
@@ -494,72 +434,72 @@ $project-item-margin: $margin-base;
 }
 
 /* 文本颜色类 */
-.text-primary {
-  color: $primary-color;
+.color-text-primary {
+  color: $color-primary;
 }
 
 .text-success {
-  color: $success-color;
+  color: $color-success;
 }
 
 .text-warning {
-  color: $warning-color;
+  color: $color-warning;
 }
 
 .text-danger {
-  color: $danger-color;
+  color: $color-danger;
 }
 
 .text-info {
-  color: $info-color;
+  color: $color-info;
 }
 
-.text-secondary {
-  color: $text-secondary;
+.color-text-secondary {
+  color: $color-text-secondary;
 }
 
 .text-muted {
-  color: $text-placeholder;
+  color: $color-text-placeholder;
 }
 
 /* ===== 状态工具类 ===== */
 .status-text {
   &.success {
-    color: $success-color;
+    color: $color-success;
   }
 
   &.warning {
-    color: $warning-color;
+    color: $color-warning;
   }
 
   &.danger {
-    color: $danger-color;
+    color: $color-danger;
   }
 
   &.info {
-    color: $info-color;
+    color: $color-info;
   }
 }
 
 .status-bg {
   &.success {
-    background: $success-bg;
-    border-color: $success-border;
+    background: $bg-color-success;
+    color-border: $color-success-border;
   }
 
   &.warning {
-    background: $warning-bg;
-    border-color: $warning-border;
+    background: $bg-color-warning;
+    color-border: $color-warning-border;
   }
 
   &.danger {
-    background: $danger-bg;
-    border-color: $danger-border;
+    background: $bg-color-danger;
+    color-border: $color-danger-border;
   }
 
   &.info {
-    background: $info-bg;
-    border-color: $info-border;
+    background: $bg-color-info;
+    color-border: $color-info-border;
   }
 }
 
@@ -568,32 +508,32 @@ $project-item-margin: $margin-base;
   display: inline-flex;
   align-items: center;
   padding: 4rpx 12rpx;
-  border-radius: $border-radius-small;
-  font-size: $font-size-small;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
   font-weight: $font-weight-medium;
 
   &.status-success {
-    background: $success-bg;
-    color: $success-color;
-    border: 1rpx solid $success-border;
+    background: $bg-color-success;
+    color: $color-success;
+    border: 1rpx solid $color-success-border;
   }
 
   &.status-warning {
-    background: $warning-bg;
-    color: $warning-color;
-    border: 1rpx solid $warning-border;
+    background: $bg-color-warning;
+    color: $color-warning;
+    border: 1rpx solid $color-warning-border;
   }
 
   &.status-danger {
-    background: $danger-bg;
-    color: $danger-color;
-    border: 1rpx solid $danger-border;
+    background: $bg-color-danger;
+    color: $color-danger;
+    border: 1rpx solid $color-danger-border;
   }
 
   &.status-info {
-    background: $info-bg;
-    color: $info-color;
-    border: 1rpx solid $info-border;
+    background: $bg-color-info;
+    color: $color-info;
+    border: 1rpx solid $color-info-border;
   }
 }
 
@@ -602,33 +542,33 @@ $project-item-margin: $margin-base;
   display: inline-flex;
   align-items: center;
   padding: 4rpx 12rpx;
-  border-radius: $border-radius-small;
-  font-size: $font-size-extra-small;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-2xs;
   font-weight: $font-weight-medium;
 
   /* 通用状态 */
   &.status-success {
-    background: $success-bg;
-    color: $success-color;
-    border: 1rpx solid $success-border;
+    background: $bg-color-success;
+    color: $color-success;
+    border: 1rpx solid $color-success-border;
   }
 
   &.status-warning {
-    background: $warning-bg;
-    color: $warning-color;
-    border: 1rpx solid $warning-border;
+    background: $bg-color-warning;
+    color: $color-warning;
+    border: 1rpx solid $color-warning-border;
   }
 
   &.status-danger {
-    background: $danger-bg;
-    color: $danger-color;
-    border: 1rpx solid $danger-border;
+    background: $bg-color-danger;
+    color: $color-danger;
+    border: 1rpx solid $color-danger-border;
   }
 
   &.status-info {
-    background: $info-bg;
-    color: $info-color;
-    border: 1rpx solid $info-border;
+    background: $bg-color-info;
+    color: $color-info;
+    border: 1rpx solid $color-info-border;
   }
 
   /* 项目特定状态 */
@@ -660,39 +600,39 @@ $project-item-margin: $margin-base;
 /* 徽章样式类 */
 .badge {
   padding: 4rpx 12rpx;
-  border-radius: $border-radius-small;
-  font-size: $font-size-extra-small;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-2xs;
   font-weight: $font-weight-medium;
 
   &-current, &-public, &-published, &-approved, &-completed {
-    background: $success-bg;
-    color: $success-color;
-    border: 1rpx solid $success-border;
+    background: $bg-color-success;
+    color: $color-success;
+    border: 1rpx solid $color-success-border;
   }
 
   &-past, &-pending, &-draft, &-archived, &-exported {
-    background: $info-bg;
-    color: $info-color;
-    border: 1rpx solid $info-border;
+    background: $bg-color-info;
+    color: $color-info;
+    border: 1rpx solid $color-info-border;
   }
 
   &-in-progress, &-certified {
-    background: $primary-color-light;
-    color: $primary-color;
-    border: 1rpx solid $primary-border;
+    background: $color-primary-light;
+    color: $color-primary;
+    border: 1rpx solid $color-primary-border;
   }
 
   &-paused, &-rejected {
-    background: $warning-bg;
-    color: $warning-color;
-    border: 1rpx solid $warning-border;
+    background: $bg-color-warning;
+    color: $color-warning;
+    border: 1rpx solid $color-warning-border;
   }
 }
 
 /* ===== 卡片容器类 ===== */
 .card-container {
   width: 100%;
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   padding: $padding-base;
   box-shadow: $box-shadow;
@@ -701,7 +641,7 @@ $project-item-margin: $margin-base;
 
 .section-container {
   padding: $padding-base;
-  background: $background-color-white;
+  background: $bg-color-white;
   border-radius: $border-radius;
   margin-bottom: $margin-base;
 }
@@ -723,61 +663,61 @@ $project-item-margin: $margin-base;
 
   /* 按钮变体 */
   &-primary {
-    background: $primary-color;
+    background: $color-primary;
     color: white;
 
     &:hover, &:active {
-      background: color.adjust($primary-color, $lightness: -10%);
+      background: color.adjust($color-primary, $lightness: -10%);
     }
   }
 
   &-secondary {
-    background: $background-color-white;
-    color: $text-primary;
-    border: 1px solid $border-color-light;
+    background: $bg-color-white;
+    color: $color-text-primary;
+    border: 1px solid $color-border-light;
 
     &:hover, &:active {
-      background: $background-color;
+      background: $bg-color;
     }
   }
 
   &-danger {
-    background: $danger-color;
+    background: $color-danger;
     color: white;
 
     &:hover, &:active {
-      background: color.adjust($danger-color, $lightness: -10%);
+      background: color.adjust($color-danger, $lightness: -10%);
     }
   }
 
   &-success {
-    background: $success-color;
+    background: $color-success;
     color: white;
 
     &:hover, &:active {
-      background: color.adjust($success-color, $lightness: -10%);
+      background: color.adjust($color-success, $lightness: -10%);
     }
   }
 
   &-warning {
-    background: $warning-color;
+    background: $color-warning;
     color: white;
 
     &:hover, &:active {
-      background: color.adjust($warning-color, $lightness: -10%);
+      background: color.adjust($color-warning, $lightness: -10%);
     }
   }
 
   /* 按钮尺寸 */
-  &-small {
+  &-sm {
     padding: 12rpx 24rpx;
-    font-size: $font-size-small;
+    font-size: $font-size-sm;
     min-height: 60rpx;
   }
 
-  &-large {
+  &-lg {
     padding: 24rpx 40rpx;
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
     min-height: 100rpx;
   }
 
@@ -802,12 +742,12 @@ $project-item-margin: $margin-base;
     display: block;
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-bottom: $margin-mini;
 
     &.required::after {
       content: '*';
-      color: $danger-color;
+      color: $color-danger;
       margin-left: 4rpx;
     }
   }
@@ -815,29 +755,29 @@ $project-item-margin: $margin-base;
   .form-input {
     width: 100%;
     padding: 20rpx 24rpx;
-    border: 2rpx solid $border-color-lighter;
+    border: 2rpx solid $color-border-light;
     border-radius: $border-radius;
     font-size: $font-size-base;
-    color: $text-primary;
-    background: $background-color-white;
+    color: $color-text-primary;
+    background: $bg-color-white;
     transition: all $transition-fast $ease-in-out;
     min-height: 80rpx;
     box-sizing: border-box;
 
     &:focus {
-      border-color: $primary-color;
+      color-border: $color-primary;
       box-shadow: $input-focus-shadow;
       outline: none;
     }
 
     &.error {
-      border-color: $danger-color;
+      color-border: $color-danger;
       box-shadow: $input-error-shadow;
     }
 
     &[disabled] {
-      background: $background-color;
-      color: $text-secondary;
+      background: $bg-color;
+      color: $color-text-secondary;
       cursor: not-allowed;
     }
   }
@@ -845,19 +785,19 @@ $project-item-margin: $margin-base;
   .form-textarea {
     width: 100%;
     padding: 20rpx 24rpx;
-    border: 2rpx solid $border-color-lighter;
+    border: 2rpx solid $color-border-light;
     border-radius: $border-radius;
     font-size: $font-size-base;
-    color: $text-primary;
-    background: $background-color-white;
+    color: $color-text-primary;
+    background: $bg-color-white;
     min-height: 160rpx;
     line-height: 1.5;
     box-sizing: border-box;
     resize: vertical;
 
     &[disabled] {
-      background: $background-color;
-      color: $text-secondary;
+      background: $bg-color;
+      color: $color-text-secondary;
       cursor: not-allowed;
     }
   }
@@ -867,21 +807,21 @@ $project-item-margin: $margin-base;
 .search-box {
   display: flex;
   align-items: center;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
   padding: 20rpx 24rpx;
-  margin-bottom: $margin-small;
-  border: 1rpx solid $border-color-light;
+  margin-bottom: $margin-sm;
+  border: 1rpx solid $color-border-light;
 
   .search-icon, .icon {
     font-size: 32rpx;
-    color: $text-secondary;
+    color: $color-text-secondary;
   }
 
   .search-input {
     flex: 1;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-left: 16rpx;
     background: transparent;
   }
@@ -897,7 +837,7 @@ $project-item-margin: $margin-base;
 
     .clear-icon, .icon {
       font-size: 36rpx;
-      color: $text-secondary;
+      color: $color-text-secondary;
       width: 40rpx;
       height: 40rpx;
       display: flex;
@@ -909,7 +849,7 @@ $project-item-margin: $margin-base;
 
 .filter-row {
   display: flex;
-  gap: $margin-small;
+  gap: $margin-sm;
   justify-content: space-between;
 
   .filter-group {
@@ -917,25 +857,25 @@ $project-item-margin: $margin-base;
 
     .filter-label {
       display: block;
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
       margin-bottom: 8rpx;
     }
 
     .filter-select {
       padding: 16rpx;
-      background: $background-color;
-      border-radius: $border-radius-small;
-      font-size: $font-size-small;
-      color: $text-primary;
-      border: 1rpx solid $border-color-light;
+      background: $bg-color;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-sm;
+      color: $color-text-primary;
+      border: 1rpx solid $color-border-light;
       display: flex;
       align-items: center;
       justify-content: space-between;
 
       .arrow-down {
         font-size: 20rpx;
-        color: $text-secondary;
+        color: $color-text-secondary;
       }
     }
   }
@@ -958,16 +898,16 @@ $project-item-margin: $margin-base;
     top: 20rpx;
     width: 40rpx;
     height: 40rpx;
-    background: $primary-color-light;
-    border-radius: $border-radius-round;
+    background: $color-primary-light;
+    border-radius: $border-radius-circle;
     display: flex;
     align-items: center;
     justify-content: center;
 
     .index-number {
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
       font-weight: $font-weight-bold;
-      color: $primary-color;
+      color: $color-primary;
     }
   }
 }
@@ -976,9 +916,9 @@ $project-item-margin: $margin-base;
 .tags-scroll {
   width: 100%;
   white-space: nowrap;
-  padding: $padding-mini $padding-small;
-  background: $background-color-white;
-  border-bottom: 1rpx solid $border-color-extra-light;
+  padding: $padding-mini $padding-sm;
+  background: $bg-color-white;
+  border-bottom: 1rpx solid $color-border-extra-light;
 
   .tags-container {
     display: flex;
@@ -989,11 +929,11 @@ $project-item-margin: $margin-base;
       align-items: center;
       gap: 8rpx;
       padding: 8rpx 16rpx;
-      background: $primary-color-light;
-      border-radius: $border-radius-round;
-      font-size: $font-size-extra-small;
-      color: $primary-color;
-      border: 1rpx solid $primary-border;
+      background: $color-primary-light;
+      border-radius: $border-radius-circle;
+      font-size: $font-size-2xs;
+      color: $color-primary;
+      border: 1rpx solid $color-primary-border;
 
       .icon {
         font-size: 24rpx;
@@ -1002,11 +942,11 @@ $project-item-margin: $margin-base;
 
     .tag-clear {
       padding: 8rpx 16rpx;
-      background: $background-color;
-      border-radius: $border-radius-small;
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
-      border: 1rpx solid $border-color-light;
+      background: $bg-color;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
+      border: 1rpx solid $color-border-light;
       display: flex;
       align-items: center;
     }
@@ -1026,7 +966,7 @@ $project-item-margin: $margin-base;
     top: 0;
     bottom: 0;
     width: 2rpx;
-    background: $border-color-light;
+    background: $color-border-light;
   }
 
   .timeline-item {
@@ -1040,9 +980,9 @@ $project-item-margin: $margin-base;
       width: 12rpx;
       height: 12rpx;
       border-radius: 50%;
-      background: $primary-color;
-      border: 2rpx solid $background-color-white;
-      box-shadow: 0 0 0 2rpx $primary-color;
+      background: $color-primary;
+      border: 2rpx solid $bg-color-white;
+      box-shadow: 0 0 0 2rpx $color-primary;
     }
 
     .timeline-range {
@@ -1054,26 +994,26 @@ $project-item-margin: $margin-base;
       .timeline-date {
         font-size: $font-size-base;
         font-weight: $font-weight-medium;
-        color: $text-primary;
+        color: $color-text-primary;
 
         &.current-date {
-          color: $success-color;
+          color: $color-success;
           font-weight: $font-weight-bold;
         }
       }
 
       .timeline-separator {
-        font-size: $font-size-small;
-        color: $text-secondary;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
       }
     }
 
     .timeline-duration {
-      font-size: $font-size-small;
-      color: $text-secondary;
-      background: $background-color;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      background: $bg-color;
       padding: 4rpx 12rpx;
-      border-radius: $border-radius-small;
+      border-radius: $border-radius-sm;
       display: inline-block;
     }
   }
@@ -1083,9 +1023,9 @@ $project-item-margin: $margin-base;
 .achievements-container {
   margin-bottom: $margin-base;
   padding: 16rpx;
-  background: $warning-light;
-  border-radius: $border-radius-small;
-  border: 1rpx solid $warning-border;
+  background: $color-warning-light;
+  border-radius: $border-radius-sm;
+  border: 1rpx solid $color-warning-border;
 
   .achievements-header {
     display: flex;
@@ -1095,18 +1035,18 @@ $project-item-margin: $margin-base;
 
     .star-icon {
       font-size: 20rpx;
-      color: $warning-color;
+      color: $color-warning;
     }
 
     .achievements-title {
-      font-size: $font-size-small;
+      font-size: $font-size-sm;
       font-weight: $font-weight-medium;
-      color: $warning-color;
+      color: $color-warning;
     }
 
     .achievements-count {
-      font-size: $font-size-extra-small;
-      color: $text-secondary;
+      font-size: $font-size-2xs;
+      color: $color-text-secondary;
     }
   }
 
@@ -1122,15 +1062,15 @@ $project-item-margin: $margin-base;
 
       .achievement-index {
         width: 30rpx;
-        color: $warning-color;
+        color: $color-warning;
         font-weight: $font-weight-medium;
-        font-size: $font-size-extra-small;
+        font-size: $font-size-2xs;
       }
 
       .achievement-text {
         flex: 1;
-        font-size: $font-size-small;
-        color: $text-regular;
+        font-size: $font-size-sm;
+        color: $color-text-regular;
         line-height: 1.5;
         -webkit-line-clamp: 2;
       }
@@ -1141,9 +1081,9 @@ $project-item-margin: $margin-base;
       align-items: center;
       justify-content: space-between;
       padding: 8rpx 0;
-      color: $primary-color;
-      font-size: $font-size-extra-small;
-      border-top: 1rpx solid $border-color-extra-light;
+      color: $color-primary;
+      font-size: $font-size-2xs;
+      border-top: 1rpx solid $color-border-extra-light;
       margin-top: 8rpx;
       cursor: pointer;
     }
@@ -1156,56 +1096,56 @@ $project-item-margin: $margin-base;
   display: inline-flex;
   align-items: center;
   padding: 4rpx 12rpx;
-  background: $background-color;
-  border-radius: $border-radius-small;
-  font-size: $font-size-small;
-  color: $text-regular;
-  border: 1px solid $border-color-light;
+  background: $bg-color;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
+  border: 1px solid $color-border-light;
 }
 
 /* 技能等级标签类 */
 .level-tag {
   padding: 4rpx 16rpx;
-  border-radius: $border-radius-small;
-  font-size: $font-size-extra-small;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-2xs;
   font-weight: $font-weight-medium;
 
   &.level-beginner {
-    background: $info-bg;
-    color: $info-color;
-    border: 1rpx solid $info-border;
+    background: $bg-color-info;
+    color: $color-info;
+    border: 1rpx solid $color-info-border;
   }
 
   &.level-intermediate {
-    background: $success-bg;
-    color: $success-color;
-    border: 1rpx solid $success-border;
+    background: $bg-color-success;
+    color: $color-success;
+    border: 1rpx solid $color-success-border;
   }
 
   &.level-advanced {
-    background: $warning-bg;
-    color: $warning-color;
-    border: 1rpx solid $warning-border;
+    background: $bg-color-warning;
+    color: $color-warning;
+    border: 1rpx solid $color-warning-border;
   }
 }
 
 /* 内容描述样式类 */
 .content-desc {
-  font-size: $font-size-small;
-  color: $text-regular;
+  font-size: $font-size-sm;
+  color: $color-text-regular;
   line-height: 1.6;
-  background: $background-color;
+  background: $bg-color;
   padding: 16rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 }
 
 /* 公司标签样式类 */
 .company-tag {
-  font-size: $font-size-small;
-  color: $text-secondary;
-  background: $background-color;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: $bg-color;
   padding: 4rpx 12rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
 }
 
 /* 标题区域样式类 */
@@ -1213,9 +1153,9 @@ $project-item-margin: $margin-base;
   flex: 1;
 
   .title-text {
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
     font-weight: $font-weight-medium;
-    color: $text-primary;
+    color: $color-text-primary;
     margin-bottom: 8rpx;
     display: block;
   }
@@ -1243,8 +1183,8 @@ $project-item-margin: $margin-base;
     left: 50%;
     width: 20rpx;
     height: 20rpx;
-    border: 2rpx solid rgba($text-primary, 0.2);
-    border-top-color: $primary-color;
+    border: 2rpx solid rgba($color-text-primary, 0.2);
+    border-top-color: $color-primary;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -1261,8 +1201,8 @@ $project-item-margin: $margin-base;
   margin: $margin-base;
 }
 
-.margin-small {
-  margin: $margin-small;
+.margin-sm {
+  margin: $margin-sm;
 }
 
 .margin-mini {
@@ -1273,8 +1213,8 @@ $project-item-margin: $margin-base;
   padding: $padding-base;
 }
 
-.padding-small {
-  padding: $padding-small;
+.padding-sm {
+  padding: $padding-sm;
 }
 
 .padding-mini {
@@ -1297,7 +1237,7 @@ $project-item-margin: $margin-base;
   }
 
   .section-container {
-    padding: $padding-small;
+    padding: $padding-sm;
   }
 
   .btn {
@@ -1305,6 +1245,6 @@ $project-item-margin: $margin-base;
   }
 
   .card-container {
-    padding: $padding-small;
+    padding: $padding-sm;
   }
 }

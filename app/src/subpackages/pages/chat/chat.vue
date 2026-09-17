@@ -321,7 +321,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: $background-color;
+  background: $bg-color;
 }
 
 /* 顶部导航栏 */
@@ -331,8 +331,8 @@ onMounted(() => {
   justify-content: space-between;
   padding: 0 $padding-base;
   height: $navigation-bar-height;
-  background: $background-color-white;
-  border-bottom: 1rpx solid $border-color-light;
+  background: $bg-color-white;
+  border-bottom: 1rpx solid $color-border-light;
   box-shadow: $box-shadow-light;
   z-index: $z-index-base + 1;
 }
@@ -347,8 +347,8 @@ onMounted(() => {
   .chat-avatar {
     width: 60rpx;
     height: 60rpx;
-    border-radius: $border-radius-round;
-    margin-right: $margin-small;
+    border-radius: $border-radius-circle;
+    margin-right: $margin-sm;
   }
 
   .chat-info {
@@ -356,14 +356,14 @@ onMounted(() => {
     flex-direction: column;
 
     .chat-name {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
       font-weight: $font-weight-bold;
-      color: $text-primary;
+      color: $color-text-primary;
     }
 
     .chat-status {
-      font-size: $font-size-small;
-      color: $success-color;
+      font-size: $font-size-sm;
+      color: $color-success;
     }
   }
 }
@@ -374,8 +374,8 @@ onMounted(() => {
   justify-content: flex-end;
 
   .icon-more {
-    font-size: $font-size-large;
-    color: $text-regular;
+    font-size: $font-size-lg;
+    color: $color-text-regular;
   }
 }
 
@@ -393,9 +393,9 @@ onMounted(() => {
 
   .date-text {
     padding: $padding-mini $padding-base;
-    background: $border-color-lighter;
-    color: $text-secondary;
-    font-size: $font-size-small;
+    background: $color-border-light;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
     border-radius: $border-radius;
   }
 }
@@ -417,7 +417,7 @@ onMounted(() => {
 
 .message-other {
   .message-bubble {
-    margin-left: $margin-small;
+    margin-left: $margin-sm;
   }
 }
 
@@ -426,26 +426,26 @@ onMounted(() => {
   margin-left: auto;
 
   .message-bubble {
-    margin-right: $margin-small;
+    margin-right: $margin-sm;
   }
 }
 
 .message-avatar {
   width: 80rpx;
   height: 80rpx;
-  border-radius: $border-radius-small;
+  border-radius: $border-radius-sm;
   flex-shrink: 0;
 }
 
 .message-bubble {
   position: relative;
-  padding: $padding-small $padding-base;
+  padding: $padding-sm $padding-base;
   border-radius: $border-radius;
   max-width: 100%;
 
   &.other-bubble {
-    background: $background-color-white;
-    border: 1rpx solid $border-color-light;
+    background: $bg-color-white;
+    border: 1rpx solid $color-border-light;
 
     &::before {
       content: '';
@@ -453,13 +453,13 @@ onMounted(() => {
       left: -16rpx;
       top: 20rpx;
       border: 8rpx solid transparent;
-      border-right-color: $background-color-white;
+      border-right-color: $bg-color-white;
     }
   }
 
   &.self-bubble {
-    background: linear-gradient(135deg, $primary-color 0%, color.adjust($primary-color, $lightness:   10%) 100%);
-    color: $background-color-white;
+    background: linear-gradient(135deg, $color-primary 0%, color.adjust($color-primary, $lightness:   10%) 100%);
+    color: $bg-color-white;
 
     &::before {
       content: '';
@@ -467,7 +467,7 @@ onMounted(() => {
       right: -16rpx;
       top: 20rpx;
       border: 8rpx solid transparent;
-      border-left-color: $primary-color;
+      border-left-color: $color-primary;
     }
   }
 }
@@ -486,20 +486,20 @@ onMounted(() => {
 }
 
 .message-time {
-  font-size: $font-size-extra-small;
+  font-size: $font-size-2xs;
   opacity: 0.7;
 }
 
 .message-status {
   margin-left: $margin-mini;
-  font-size: $font-size-extra-small;
+  font-size: $font-size-2xs;
 
   &.sending {
     opacity: 0.6;
   }
 
   &.failed {
-    color: $danger-color;
+    color: $color-danger;
   }
 }
 
@@ -513,16 +513,16 @@ onMounted(() => {
   .loading-spinner {
     width: 40rpx;
     height: 40rpx;
-    border: 4rpx solid $border-color;
-    border-top-color: $primary-color;
+    border: 4rpx solid $color-border;
+    border-top-color: $color-primary;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: $margin-mini;
   }
 
   .loading-text {
-    font-size: $font-size-small;
-    color: $text-secondary;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 }
 
@@ -532,15 +532,15 @@ onMounted(() => {
 
 /* 输入区域 */
 .input-area {
-  background: $background-color-white;
-  border-top: 1rpx solid $border-color-light;
-  padding: $padding-small $padding-base;
+  background: $bg-color-white;
+  border-top: 1rpx solid $color-border-light;
+  padding: $padding-sm $padding-base;
 }
 
 .input-row {
   display: flex;
   align-items: center;
-  gap: $margin-small;
+  gap: $margin-sm;
 }
 
 .input-actions {
@@ -553,34 +553,34 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: $border-radius-round;
-    background: $background-color;
+    border-radius: $border-radius-circle;
+    background: $bg-color;
 
     .action-icon {
-      font-size: $font-size-medium;
+      font-size: $font-size-base;
     }
   }
 }
 
 .input-wrapper {
   flex: 1;
-  background: $background-color;
+  background: $bg-color;
   border-radius: $border-radius;
-  border: 2rpx solid $border-color-light;
+  border: 2rpx solid $color-border-light;
 
   .chat-input {
     width: 100%;
     height: 60rpx;
-    padding: 0 $padding-small;
+    padding: 0 $padding-sm;
     font-size: $font-size-base;
-    color: $text-primary;
+    color: $color-text-primary;
     background: transparent;
     border: none;
     outline: none;
   }
 
   .placeholder {
-    color: $text-placeholder;
+    color: $color-text-placeholder;
     font-size: $font-size-base;
   }
 }
@@ -588,16 +588,16 @@ onMounted(() => {
 .btn-send {
   width: 120rpx;
   height: 60rpx;
-  background: $border-color-light;
+  background: $color-border-light;
   border: none;
   border-radius: $border-radius;
   font-size: $font-size-base;
-  color: $text-placeholder;
+  color: $color-text-placeholder;
   transition: all $transition-fast;
 
   &--active {
-    background: $primary-color;
-    color: $background-color-white;
+    background: $color-primary;
+    color: $bg-color-white;
     box-shadow: $box-shadow-light;
   }
 
@@ -609,9 +609,9 @@ onMounted(() => {
 /* 表情面板 */
 .emoji-panel {
   height: 300rpx;
-  background: $background-color-white;
-  border-top: 1rpx solid $border-color-light;
-  margin-top: $margin-small;
+  background: $bg-color-white;
+  border-top: 1rpx solid $color-border-light;
+  margin-top: $margin-sm;
 }
 
 .emoji-list {
@@ -620,7 +620,7 @@ onMounted(() => {
 
 .emoji-row {
   display: flex;
-  padding: $padding-small;
+  padding: $padding-sm;
 }
 
 .emoji-item {
@@ -631,7 +631,7 @@ onMounted(() => {
   height: 60rpx;
 
   .emoji {
-    font-size: $font-size-medium;
+    font-size: $font-size-base;
   }
 }
 
@@ -639,7 +639,7 @@ onMounted(() => {
   // 响应式调整
   @media (max-width: 375px) {
     .chat-header {
-      padding: 0 $padding-small;
+      padding: 0 $padding-sm;
     }
 
     .message-avatar {
@@ -655,7 +655,7 @@ onMounted(() => {
   // 添加响应式
   @media (max-width: $screen-md) {
     .message-list {
-      padding: $padding-small;
+      padding: $padding-sm;
     }
     
     .input-area {
