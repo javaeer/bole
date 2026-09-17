@@ -24,7 +24,7 @@
         <lombok.version>1.18.30</lombok.version>
 
         <!-- 依赖版本管理 -->
-        <mybatis-plus.version>3.5.6</mybatis-plus.version>
+        <mybatis-plus.version>3.5.17</mybatis-plus.version>
         <postgresql.version>42.6.0</postgresql.version>
         <flyway.version>9.22.0</flyway.version>
         <redisson.version>3.23.2</redisson.version>
